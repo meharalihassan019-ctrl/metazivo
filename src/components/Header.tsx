@@ -9,13 +9,14 @@ import { Menu, X, Phone, Mail, LayoutDashboard, Globe } from "lucide-react";
 interface HeaderProps {
   currentTab: string;
   onNavigate: (tab: string) => void;
-  onOpenAdmin: () => void;
+  contactInfo?: { phone: string; email: string };
+  customPages?: { title: string; slug: string; isSystem: boolean }[];
 }
 
-export default function Header({ currentTab, onNavigate, onOpenAdmin }: HeaderProps) {
+export default function Header({ currentTab, onNavigate, contactInfo, customPages }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navItems = [
+  const defaultNavItems = [
     { label: "Home", tab: "home" },
     { label: "About", tab: "about" },
     { label: "Services", tab: "services" },
@@ -25,10 +26,20 @@ export default function Header({ currentTab, onNavigate, onOpenAdmin }: HeaderPr
     { label: "Contact", tab: "contact" }
   ];
 
+  const customNavItems = (customPages || [])
+    .filter(p => !p.isSystem)
+    .map(p => ({ label: p.title, tab: p.slug }));
+
+  const navItems = [...defaultNavItems, ...customNavItems];
+
   const handleNavClick = (tab: string) => {
     onNavigate(tab);
     setMobileMenuOpen(false);
   };
+
+  const formattedPhoneLink = contactInfo?.phone ? `tel:${contactInfo.phone.replace(/[^+\d]/g, "")}` : "tel:+923288518557";
+  const displayPhone = contactInfo?.phone || "+92 328 8518557";
+  const displayEmail = contactInfo?.email || "mai@metazivo.com";
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/5 backdrop-blur-xl border-b border-white/10 shadow-lg" id="app-header">
@@ -36,13 +47,13 @@ export default function Header({ currentTab, onNavigate, onOpenAdmin }: HeaderPr
       <div className="w-full bg-white/5 border-b border-white/5 py-1.5 px-4 hidden sm:block">
         <div className="max-w-7xl mx-auto flex justify-between items-center text-xs text-slate-300 font-sans">
           <div className="flex items-center gap-4">
-            <a href="tel:+923288518557" className="flex items-center gap-1.5 hover:text-blue-400 transition-colors">
+            <a href={formattedPhoneLink} className="flex items-center gap-1.5 hover:text-blue-400 transition-colors">
               <Phone className="w-3.5 h-3.5 text-blue-400" />
-              <span>+92 328 8518557</span>
+              <span>{displayPhone}</span>
             </a>
-            <a href="mailto:mai@metazivo.com" className="flex items-center gap-1.5 hover:text-blue-400 transition-colors">
+            <a href={`mailto:${displayEmail}`} className="flex items-center gap-1.5 hover:text-blue-400 transition-colors">
               <Mail className="w-3.5 h-3.5 text-blue-400" />
-              <span>mai@metazivo.com</span>
+              <span>{displayEmail}</span>
             </a>
           </div>
           <div className="flex items-center gap-3">
@@ -87,15 +98,6 @@ export default function Header({ currentTab, onNavigate, onOpenAdmin }: HeaderPr
         {/* Action button & Mobile Toggle */}
         <div className="flex items-center gap-3">
           <button
-            id="admin-dashboard-btn"
-            onClick={onOpenAdmin}
-            className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 rounded-lg text-xs font-medium tracking-wide transition-all duration-150 shadow-md backdrop-blur-md"
-          >
-            <LayoutDashboard className="w-3.5 h-3.5 text-blue-400" />
-            <span className="hidden sm:inline">Admin Portal</span>
-          </button>
-
-          <button
             onClick={() => handleNavClick("contact")}
             className="hidden sm:inline-flex px-6 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-full text-white text-xs font-semibold tracking-wide transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]"
           >
@@ -115,7 +117,7 @@ export default function Header({ currentTab, onNavigate, onOpenAdmin }: HeaderPr
 
       {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden w-full border-t border-white/10 bg-[#020617]/95 px-4 py-3 space-y-2 absolute top-full left-0 shadow-2xl backdrop-blur-xl">
+        <div className="md:hidden w-full border-t border-white/10 bg-[#020617]/95 px-4 py-3 space-y-2 absolute top-full left-0 shadow-2xl backdrop-blur-xl animate-fade-in">
           {navItems.map((item) => (
             <button
               key={item.tab}
@@ -130,15 +132,6 @@ export default function Header({ currentTab, onNavigate, onOpenAdmin }: HeaderPr
             </button>
           ))}
           <div className="pt-2 border-t border-white/10 flex flex-col gap-2">
-            <button
-              onClick={() => {
-                onOpenAdmin();
-                setMobileMenuOpen(false);
-              }}
-              className="w-full flex items-center justify-center gap-2 py-2 bg-white/5 text-slate-300 border border-white/10 rounded-lg text-xs font-medium"
-            >
-              <LayoutDashboard className="w-3.5 h-3.5 text-blue-400" /> Admin CMS Panel
-            </button>
             <button
               onClick={() => handleNavClick("contact")}
               className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-xs font-semibold text-center transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)]"

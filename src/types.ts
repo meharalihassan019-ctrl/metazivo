@@ -118,3 +118,25 @@ export interface AgencyService {
   benefits: string[];
   process: string[];
 }
+
+export interface ContactInfo {
+  phone: string;
+  email: string;
+  address: string;
+  whatsapp?: string;
+  facebook?: string;
+  instagram?: string;
+  linkedin?: string;
+}
+
+export interface CustomPage {
+  id: string;
+  title: string;
+  slug: string;
+  content: string; // HTML content
+  isSystem: boolean; // true for home, about, services, pricing, contact, privacy, terms
+  seoTitle: string;
+  seoDescription: string;
+  seoKeywords: string[];
+}
+

@@ -201,7 +201,7 @@ export const portfolioItems = [
     id: "port-2",
     title: "Aura Skincare Shop",
     category: "WooCommerce & Paid Advertising",
-    image: "https://images.unsplash.com/photo-1608248597481-496100c8c836?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=800&q=80",
     metrics: "4.8x Return on Ad Spend (ROAS)",
     description: "High-performance online store engineered with ultra-clean checkout drawers and custom Instagram ads."
   },
@@ -209,7 +209,7 @@ export const portfolioItems = [
     id: "port-3",
     title: "Apex Logistics Group",
     category: "Technical SEO & Speed Optimization",
-    image: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80",
     metrics: "Rank #1 for 18 Core Keywords",
     description: "Complete database overhaul, dynamic canonical linking, and page speed caching that raised Google score from 31 to 99."
   },
@@ -217,7 +217,7 @@ export const portfolioItems = [
     id: "port-4",
     title: "Verdant Sustainable Goods",
     category: "Shopify Custom Liquid Development",
-    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1546554137-f86b9593a222?auto=format&fit=crop&w=800&q=80",
     metrics: "+42% Average Order Value (AOV)",
     description: "Crafted modular Shopify theme utilizing WebP rendering and progressive image loading."
   }

@@ -8,9 +8,11 @@ import { Phone, Mail, MapPin, ArrowUp, CheckCircle, Globe } from "lucide-react";
 
 interface FooterProps {
   onNavigate: (tab: string) => void;
+  contactInfo?: { phone: string; email: string; address: string };
+  customPages?: { title: string; slug: string; isSystem: boolean }[];
 }
 
-export default function Footer({ onNavigate }: FooterProps) {
+export default function Footer({ onNavigate, contactInfo, customPages }: FooterProps) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -59,17 +61,17 @@ export default function Footer({ onNavigate }: FooterProps) {
             Metazivo is a full-service, enterprise digital agency crafting ultra-fast web architectures, high-ROI paid ads, and technical SEO platforms to multiply business growth.
           </p>
           <div className="flex flex-col gap-2 text-xs">
-            <a href="tel:+923288518557" className="flex items-center gap-2 hover:text-white transition-colors">
+            <a href={contactInfo?.phone ? `tel:${contactInfo.phone.replace(/[^+\d]/g, "")}` : "tel:+923288518557"} className="flex items-center gap-2 hover:text-white transition-colors">
               <Phone className="w-3.5 h-3.5 text-blue-400" />
-              <span>+92 328 8518557</span>
+              <span>{contactInfo?.phone || "+92 328 8518557"}</span>
             </a>
-            <a href="mailto:mai@metazivo.com" className="flex items-center gap-2 hover:text-white transition-colors">
+            <a href={`mailto:${contactInfo?.email || "mai@metazivo.com"}`} className="flex items-center gap-2 hover:text-white transition-colors">
               <Mail className="w-3.5 h-3.5 text-blue-400" />
-              <span>mai@metazivo.com</span>
+              <span>{contactInfo?.email || "mai@metazivo.com"}</span>
             </a>
             <div className="flex items-center gap-2 text-slate-400">
               <MapPin className="w-3.5 h-3.5 text-blue-400" />
-              <span>Islamabad / Lahore, Pakistan</span>
+              <span>{contactInfo?.address || "Office 402, Metazivo Heights, Lahore, Pakistan"}</span>
             </div>
           </div>
         </div>
@@ -97,6 +99,11 @@ export default function Footer({ onNavigate }: FooterProps) {
             <li><button onClick={() => onNavigate("blog")} className="hover:text-blue-400 transition-colors">Growth Blogging</button></li>
             <li><button onClick={() => onNavigate("pricing")} className="hover:text-blue-400 transition-colors">Pricing Packages</button></li>
             <li><button onClick={() => onNavigate("contact")} className="hover:text-blue-400 transition-colors">Request Callback</button></li>
+            {customPages && customPages.filter(p => !p.isSystem).map((p) => (
+              <li key={p.slug}>
+                <button onClick={() => onNavigate(p.slug)} className="hover:text-blue-400 transition-colors text-left">{p.title}</button>
+              </li>
+            ))}
           </ul>
         </div>
 

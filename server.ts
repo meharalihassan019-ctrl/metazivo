@@ -507,6 +507,161 @@ app.get("/api/leads/export/csv", (req, res) => {
   res.status(200).send(csvHeaders + csvRows);
 });
 
+// Contact Settings Endpoints
+app.get("/api/contact", (req, res) => {
+  db = loadDb();
+  if (!db.contact) {
+    db.contact = {
+      phone: "+92 328 8518557",
+      email: "mai@metazivo.com",
+      address: "Office 402, Metazivo Heights, Lahore, Pakistan",
+      whatsapp: "+923288518557",
+      facebook: "https://facebook.com/metazivo",
+      instagram: "https://instagram.com/metazivo",
+      linkedin: "https://linkedin.com/company/metazivo"
+    };
+    saveDb(db);
+  }
+  res.json(db.contact);
+});
+
+app.put("/api/contact", (req, res) => {
+  db = loadDb();
+  db.contact = {
+    phone: req.body.phone || "+92 328 8518557",
+    email: req.body.email || "mai@metazivo.com",
+    address: req.body.address || "",
+    whatsapp: req.body.whatsapp || "",
+    facebook: req.body.facebook || "",
+    instagram: req.body.instagram || "",
+    linkedin: req.body.linkedin || ""
+  };
+  saveDb(db);
+  res.json(db.contact);
+});
+
+// Pages Endpoints
+app.get("/api/pages", (req, res) => {
+  db = loadDb();
+  if (!db.pages) {
+    db.pages = [
+      {
+        id: "page-home",
+        title: "Home",
+        slug: "home",
+        content: "<h2>Metazivo Agency Core</h2><p>Our custom-built, optimized landing page architecture.</p>",
+        isSystem: true,
+        seoTitle: "Metazivo | Premium Digital Agency for High-Performance Architectures",
+        seoDescription: "Metazivo builds custom high-performance websites, optimized WordPress stores, Shopify websites, and runs advanced Meta and Google Ads campaigns.",
+        seoKeywords: ["digital agency", "web development", "SEO", "Shopify", "Meta Ads"]
+      },
+      {
+        id: "page-about",
+        title: "About",
+        slug: "about",
+        content: "<h2>We are Metazivo</h2><p>A full-stack engineered agency with global roots.</p>",
+        isSystem: true,
+        seoTitle: "About Metazivo | Enterprise Digital Architects",
+        seoDescription: "Metazivo's history, mission, and technical values designed to scale software operations globally.",
+        seoKeywords: ["about agency", "metazivo developers", "technical agency team"]
+      },
+      {
+        id: "page-services",
+        title: "Services",
+        slug: "services",
+        content: "<h2>Premium Agency Services</h2><p>Explore our engineering capabilities.</p>",
+        isSystem: true,
+        seoTitle: "Our Services | Custom Systems & Marketing Funnels | Metazivo",
+        seoDescription: "Web Development, WordPress Custom Themes, Shopify Stores, Advanced SEO audits, and High-ROI Meta advertising.",
+        seoKeywords: ["services list", "agency services", "seo development", "shop themes"]
+      },
+      {
+        id: "page-pricing",
+        title: "Pricing",
+        slug: "pricing",
+        content: "<h2>Transparent Enterprise Packages</h2><p>Select a budget plan suited to your velocity.</p>",
+        isSystem: true,
+        seoTitle: "Pricing Packages & CMS Retainers | Metazivo",
+        seoDescription: "High-performance services tailored to scale starting at competitive rates. Choose Web development or marketing campaigns.",
+        seoKeywords: ["agency pricing", "monthly retainer fee", "web design pricing"]
+      },
+      {
+        id: "page-privacy",
+        title: "Privacy Policy",
+        slug: "privacy",
+        content: "<h2>Privacy and Cookie Management</h2><p>Your privacy and GDPR security protocol details.</p>",
+        isSystem: true,
+        seoTitle: "Privacy Policy & GDPR Compliance | Metazivo",
+        seoDescription: "Understand cookies, analytical node monitoring, and lead verification data storage policies.",
+        seoKeywords: ["privacy policies", "cookies terms", "gdpr compliance data"]
+      },
+      {
+        id: "page-terms",
+        title: "Terms & Conditions",
+        slug: "terms",
+        content: "<h2>Terms of Service Agreement</h2><p>The rules governing the use of the Metazivo network portal.</p>",
+        isSystem: true,
+        seoTitle: "Terms & Conditions Agreement | Metazivo",
+        seoDescription: "Review intellectual property guidelines, payment gateways terms, and service liabilities.",
+        seoKeywords: ["terms and services", "user license agreement", "client liability terms"]
+      }
+    ];
+    saveDb(db);
+  }
+  res.json(db.pages);
+});
+
+app.post("/api/pages", (req, res) => {
+  db = loadDb();
+  if (!db.pages) db.pages = [];
+  const newPage = {
+    id: `page-${Date.now()}`,
+    title: req.body.title || "New Custom Page",
+    slug: req.body.slug || `page-${Date.now()}`,
+    content: req.body.content || "<p>Page content goes here...</p>",
+    isSystem: false,
+    seoTitle: req.body.seoTitle || "",
+    seoDescription: req.body.seoDescription || "",
+    seoKeywords: req.body.seoKeywords || []
+  };
+  db.pages.push(newPage);
+  saveDb(db);
+  res.status(201).json(newPage);
+});
+
+app.put("/api/pages/:id", (req, res) => {
+  db = loadDb();
+  if (!db.pages) db.pages = [];
+  const index = db.pages.findIndex((p: any) => p.id === req.params.id);
+  if (index !== -1) {
+    db.pages[index] = {
+      ...db.pages[index],
+      title: req.body.title || db.pages[index].title,
+      slug: req.body.slug || db.pages[index].slug,
+      content: req.body.content || db.pages[index].content,
+      seoTitle: req.body.seoTitle || db.pages[index].seoTitle || "",
+      seoDescription: req.body.seoDescription || db.pages[index].seoDescription || "",
+      seoKeywords: req.body.seoKeywords || db.pages[index].seoKeywords || []
+    };
+    saveDb(db);
+    res.json(db.pages[index]);
+  } else {
+    res.status(404).json({ error: "Page not found" });
+  }
+});
+
+app.delete("/api/pages/:id", (req, res) => {
+  db = loadDb();
+  if (!db.pages) db.pages = [];
+  const page = db.pages.find((p: any) => p.id === req.params.id);
+  if (page && page.isSystem) {
+    return res.status(400).json({ error: "System pages cannot be deleted" });
+  }
+  db.pages = db.pages.filter((p: any) => p.id !== req.params.id);
+  saveDb(db);
+  res.json({ success: true });
+});
+
 // -----------------------------------------------------------------------------
 // DYNAMIC SEO FILES: Robots.txt, Sitemap.xml, RSS Feed
 // -----------------------------------------------------------------------------

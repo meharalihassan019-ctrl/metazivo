@@ -46,12 +46,24 @@ import WordEditor from "./components/WordEditor";
 import SchemaEditor from "./components/SchemaEditor";
 import MediaLibrary from "./components/MediaLibrary";
 import AiAssistant from "./components/AiAssistant";
+import PagesPanel from "./components/PagesPanel";
+import FloatingCyberGlobe from "./components/FloatingCyberGlobe";
+import GlassmorphicCoreEngine from "./components/GlassmorphicCoreEngine";
+import DynamicFloatingGeometry from "./components/DynamicFloatingGeometry";
 import { servicesData, pricingPlans, portfolioItems, workProcessTimeline, faqList, testimonials, trustedCompanies } from "./data";
-import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary } from "./types";
+import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary, ContactInfo, CustomPage } from "./types";
+import { motion } from "motion/react";
+
+import hero3D from "./assets/images/metazivo_3d_hero_1783779600552.jpg";
+import coding3D from "./assets/images/3d_coding_icon_1783779624161.jpg";
+import seo3D from "./assets/images/3d_seo_icon_1783779642685.jpg";
+import funnel3D from "./assets/images/3d_funnel_icon_1783779659456.jpg";
+import branding3D from "./assets/images/3d_branding_icon_1783779696731.jpg";
 
 export default function App() {
   // Navigation Routing States
   const [currentTab, setCurrentTab] = useState<string>("home"); // home, about, services, portfolio, blog, pricing, contact, privacy, terms, service-detail, blog-detail
+  const [heroTilt, setHeroTilt] = useState({ x: 0, y: 0 });
   const [selectedServiceSlug, setSelectedServiceSlug] = useState<string>("");
   const [selectedBlogSlug, setSelectedBlogSlug] = useState<string>("");
 
@@ -62,6 +74,8 @@ export default function App() {
   const [redirects, setRedirects] = useState<RedirectRule[]>([]);
   const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
+  const [pages, setPages] = useState<CustomPage[]>([]);
+  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
 
   // Auth States
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -74,7 +88,8 @@ export default function App() {
   const [authError, setAuthError] = useState("");
 
   // CMS active editing tab
-  const [activeAdminSubTab, setActiveAdminSubTab] = useState<"analytics" | "blogs" | "media" | "leads" | "redirects" | "settings">("analytics");
+  const [activeAdminSubTab, setActiveAdminSubTab] = useState<"analytics" | "blogs" | "media" | "leads" | "redirects" | "settings" | "pages">("analytics");
+
 
   // Post Editor Workspaces
   const [isEditingPost, setIsEditingPost] = useState(false);
@@ -84,12 +99,14 @@ export default function App() {
   // Load Initial Full-Stack API Data
   const loadAllData = async () => {
     try {
-      const [blogsRes, mediaRes, leadsRes, redirectsRes, analyticsRes] = await Promise.all([
+      const [blogsRes, mediaRes, leadsRes, redirectsRes, analyticsRes, pagesRes, contactRes] = await Promise.all([
         fetch("/api/posts"),
         fetch("/api/media"),
         fetch("/api/leads"),
         fetch("/api/redirects"),
-        fetch("/api/analytics")
+        fetch("/api/analytics"),
+        fetch("/api/pages"),
+        fetch("/api/contact")
       ]);
 
       if (blogsRes.ok) setBlogs(await blogsRes.json());
@@ -97,6 +114,8 @@ export default function App() {
       if (leadsRes.ok) setLeads(await leadsRes.json());
       if (redirectsRes.ok) setRedirects(await redirectsRes.json());
       if (analyticsRes.ok) setAnalytics(await analyticsRes.json());
+      if (pagesRes.ok) setPages(await pagesRes.json());
+      if (contactRes.ok) setContactInfo(await contactRes.json());
     } catch (err) {
       console.error("Failed to sync metrics from server node", err);
     }
@@ -106,7 +125,59 @@ export default function App() {
     loadAllData();
     // Record page view on startup
     fetch("/api/analytics/hit", { method: "POST" }).catch(() => {});
+
+    // Check for administrative URL path trigger
+    if (window.location.pathname === "/admin-login") {
+      setIsAdminOpen(true);
+      window.history.replaceState({}, "", "/");
+    }
   }, []);
+
+  // Find detailed objects for views
+  const activeService = servicesData.find((s) => s.slug === selectedServiceSlug);
+  const activeBlog = blogs.find((b) => b.slug === selectedBlogSlug);
+  const activeCustomPage = pages.find((p) => p.slug === currentTab);
+  const isCustomPage = pages.some((p) => p.slug === currentTab && !p.isSystem);
+
+  // Synchronize SEO Meta Details dynamically on Tab transition
+  useEffect(() => {
+    const matchedPage = pages.find((p) => p.slug === currentTab);
+    if (matchedPage) {
+      if (matchedPage.seoTitle) {
+        document.title = matchedPage.seoTitle;
+      } else {
+        document.title = `${matchedPage.title} | Metazivo`;
+      }
+
+      // Update meta description
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.setAttribute('name', 'description');
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.setAttribute('content', matchedPage.seoDescription || "Metazivo - Premium Digital Agency");
+
+      // Update meta keywords
+      let metaKeywords = document.querySelector('meta[name="keywords"]');
+      if (!metaKeywords) {
+        metaKeywords = document.createElement('meta');
+        metaKeywords.setAttribute('name', 'keywords');
+        document.head.appendChild(metaKeywords);
+      }
+      metaKeywords.setAttribute('content', (matchedPage.seoKeywords || []).join(", "));
+    } else {
+      // Fallback handlers
+      if (currentTab === "blog-detail" && activeBlog) {
+        document.title = activeBlog.seoTitle || `${activeBlog.title} | Metazivo`;
+      } else if (currentTab === "service-detail" && activeService) {
+        document.title = `${activeService.title} | Metazivo`;
+      } else {
+        const capitalizedTab = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+        document.title = currentTab === "home" ? "Metazivo | Premium Digital Growth Agency" : `${capitalizedTab} | Metazivo`;
+      }
+    }
+  }, [currentTab, pages, activeBlog, activeService]);
 
   // Sync Activity Logs inside CRM
   const logActivity = (action: string) => {
@@ -147,21 +218,21 @@ export default function App() {
     e.preventDefault();
     setAuthError("");
 
-    if (usernameInput.trim() === "admin" && passwordInput.trim() === "admin") {
-      setLoginStep("tfa"); // Simulated Two Factor Authentication
+    if (usernameInput.trim() === "hassan" && passwordInput.trim() === "ali@123hassan") {
+      setLoginStep("tfa"); // Two Factor Authentication
     } else {
-      setAuthError("Incorrect Username or Password. Try admin / admin for the preview!");
+      setAuthError("Incorrect Username or Password.");
     }
   };
 
   const handleTfaVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    if (tfaCode === "123456" || tfaCode.trim().length === 6) {
+    if (tfaCode.trim() === "331122") {
       setIsAuthenticated(true);
       logActivity("Logged into Administrative Portal");
       loadAllData();
     } else {
-      setAuthError("Incorrect 2FA authenticator token. Enter 123456 or any 6 digit code.");
+      setAuthError("Incorrect 2FA authenticator token.");
     }
   };
 
@@ -339,10 +410,6 @@ export default function App() {
     }
   };
 
-  // Find detailed objects for views
-  const activeService = servicesData.find((s) => s.slug === selectedServiceSlug);
-  const activeBlog = blogs.find((b) => b.slug === selectedBlogSlug);
-
   return (
     <div className="min-h-screen bg-[#020617] text-slate-50 flex flex-col font-sans selection:bg-blue-500/30 selection:text-blue-200 relative overflow-hidden">
       
@@ -357,7 +424,8 @@ export default function App() {
       <Header
         currentTab={currentTab}
         onNavigate={handleNavigate}
-        onOpenAdmin={() => setIsAdminOpen(true)}
+        contactInfo={contactInfo || undefined}
+        customPages={pages}
       />
 
       {/* Main page router viewport */}
@@ -365,162 +433,349 @@ export default function App() {
         
         {/* VIEW 1: HOME PAGE */}
         {currentTab === "home" && (
-          <div id="view-home" className="space-y-20 pb-20 animate-fade-in">
-            {/* Sticky/Hero Banner */}
-            <section className="relative overflow-hidden pt-24 pb-20 px-4" id="section-hero">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(37,99,235,0.15),transparent_60%)] pointer-events-none" />
-              <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div className="space-y-6 text-center lg:text-left">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs text-blue-400 font-mono tracking-wide">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Grow Your Footprint Digitally
+          <div id="view-home" className="space-y-24 pb-20 relative overflow-hidden">
+            {/* Dynamic Floating Iridescent Glass & Chrome Geometry */}
+            <DynamicFloatingGeometry />
+
+            {/* Animated Floating Background Spheres */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <motion.div 
+                className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-tr from-blue-500/10 to-indigo-500/5 rounded-full blur-[120px]"
+                animate={{
+                  x: [0, 50, -30, 0],
+                  y: [0, -70, 40, 0],
+                }}
+                transition={{
+                  duration: 25,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.div 
+                className="absolute top-1/2 right-10 w-[500px] h-[500px] bg-gradient-to-br from-purple-500/10 to-pink-500/5 rounded-full blur-[140px]"
+                animate={{
+                  x: [0, -70, 50, 0],
+                  y: [0, 60, -50, 0],
+                }}
+                transition={{
+                  duration: 30,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.div 
+                className="absolute bottom-10 left-1/3 w-80 h-80 bg-gradient-to-tr from-cyan-500/10 to-emerald-500/5 rounded-full blur-[100px]"
+                animate={{
+                  x: [0, 40, -40, 0],
+                  y: [0, 40, -40, 0],
+                }}
+                transition={{
+                  duration: 22,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+            </div>
+
+            {/* Premium 3D Interactive Hero Section */}
+            <section className="relative pt-28 pb-16 px-4 md:px-8" id="section-hero">
+              <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                {/* Left Side: Editorial Typography & Copy */}
+                <div className="lg:col-span-6 space-y-8 text-center lg:text-left z-20">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/5 border border-white/10 rounded-full text-[11px] text-blue-400 font-mono tracking-wider uppercase">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" /> 
+                    <span>Deploying High-Fidelity Solutions</span>
                   </div>
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight font-sans">
-                    Grow Your Business with <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Powerful Solutions</span>
+                  
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] tracking-tight font-sans">
+                    We Engineer <br className="hidden lg:block"/>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 font-black drop-shadow-sm">
+                      3D-Optimized
+                    </span> <br className="hidden sm:block" />
+                    Digital Ecosystems.
                   </h1>
-                  <p className="text-slate-300 text-sm sm:text-base max-w-lg mx-auto lg:mx-0 leading-relaxed">
-                    Metazivo is a full-service, modern digital agency helping brands command Google visibility, scale paid ad funnels, and deploy optimized React/Node architectures.
+                  
+                  <p className="text-slate-300 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
+                    Metazivo is a premier full-stack design and engineering agency. We fuse high-speed React architecture with aggressive SEO algorithms and stunning three-dimensional interfaces to skyrocket your conversion.
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+                  
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
                     <button
                       onClick={() => handleNavigate("contact")}
-                      className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-sm font-semibold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_25px_rgba(37,99,235,0.6)] cursor-pointer flex items-center justify-center gap-2"
+                      className="group relative px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(37,99,235,0.4)] hover:shadow-[0_0_35px_rgba(37,99,235,0.6)] cursor-pointer flex items-center justify-center gap-2"
                     >
-                      <span>Inquire Project Scope</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <span>Initiate Strategy Call</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
                     </button>
                     <button
                       onClick={() => handleNavigate("services")}
-                      className="px-6 py-3 bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 rounded-full text-sm font-semibold transition-all"
+                      className="px-8 py-4 bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 hover:border-white/20 rounded-full text-xs font-bold uppercase tracking-wider transition-all"
                     >
-                      Explore Agency Services
+                      Explore Our capabilities
                     </button>
                   </div>
-                </div>
 
-                {/* Simulated Glassmorphism Card showcasing Speed & CMS status */}
-                <div className="relative">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-3xl blur opacity-30 animate-pulse" />
-                  <div className="relative bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[32px] p-6 shadow-2xl">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-3 h-3 rounded-full bg-red-500" />
-                        <span className="w-3 h-3 rounded-full bg-yellow-500" />
-                        <span className="w-3 h-3 rounded-full bg-green-500" />
-                      </div>
-                      <span className="text-[10px] font-mono text-slate-400">metazivo_performance_audit.json</span>
+                  {/* Trust metrics */}
+                  <div className="grid grid-cols-3 gap-6 pt-6 border-t border-white/5 max-w-md mx-auto lg:mx-0 text-left">
+                    <div>
+                      <span className="block text-2xl font-black text-white font-mono">99%</span>
+                      <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">PageSpeed</span>
                     </div>
-                    <div className="space-y-4 text-xs font-mono">
-                      <div className="flex justify-between items-center bg-white/5 p-2.5 rounded-lg border border-white/10">
-                        <span className="text-slate-300">Google PageSpeed score:</span>
-                        <span className="text-emerald-400 font-bold">99 / 100 (A+)</span>
-                      </div>
-                      <div className="flex justify-between items-center bg-white/5 p-2.5 rounded-lg border border-white/10">
-                        <span className="text-slate-300">First Contentful Paint:</span>
-                        <span className="text-emerald-400">0.2s</span>
-                      </div>
-                      <div className="flex justify-between items-center bg-white/5 p-2.5 rounded-lg border border-white/10">
-                        <span className="text-slate-300">AI SEO Assistant nodes:</span>
-                        <span className="text-blue-400">Gemini 3.5 Active</span>
-                      </div>
-                      <div className="flex justify-between items-center bg-white/5 p-2.5 rounded-lg border border-white/10">
-                        <span className="text-slate-300">Hosting Environment:</span>
-                        <span className="text-purple-400">Node.js Hostinger LTS</span>
-                      </div>
+                    <div>
+                      <span className="block text-2xl font-black text-indigo-400 font-mono">+310%</span>
+                      <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">SEO Reach</span>
+                    </div>
+                    <div>
+                      <span className="block text-2xl font-black text-purple-400 font-mono">4.8x</span>
+                      <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Ad ROAS</span>
                     </div>
                   </div>
                 </div>
+
+                {/* Right Side: Interactive Mouse-Controlled 3D Tilt Card Frame */}
+                <div className="lg:col-span-6 relative flex justify-center items-center z-10 py-6">
+                  {/* Outer glowing radial background */}
+                  <div className="absolute w-[400px] h-[400px] bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-full blur-[80px] opacity-70 pointer-events-none" />
+
+                  {/* Mouse interaction tilt canvas */}
+                  <div 
+                    className="relative w-full max-w-md rounded-[32px] cursor-grab active:cursor-grabbing select-none"
+                    onMouseMove={(e) => {
+                      const card = e.currentTarget;
+                      const rect = card.getBoundingClientRect();
+                      const x = e.clientX - rect.left - rect.width / 2;
+                      const y = e.clientY - rect.top - rect.height / 2;
+                      // Maximum 12 degrees tilt
+                      setHeroTilt({ x: -(y / (rect.height / 2)) * 12, y: (x / (rect.width / 2)) * 12 });
+                    }}
+                    onMouseLeave={() => {
+                      setHeroTilt({ x: 0, y: 0 });
+                    }}
+                    style={{
+                      transform: `perspective(1000px) rotateX(${heroTilt.x}deg) rotateY(${heroTilt.y}deg) scale3d(1.02, 1.02, 1.02)`,
+                      transition: "transform 0.15s ease-out",
+                      transformStyle: "preserve-3d"
+                    }}
+                  >
+                    {/* Inner Glassmorphic Frame containing FloatingCyberGlobe */}
+                    <div className="rounded-[32px] overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)]">
+                      <FloatingCyberGlobe />
+                    </div>
+
+                    {/* Floating 3D Badge 1: PageSpeed Radar */}
+                    <div 
+                      className="absolute -top-4 -right-4 bg-[#030712]/90 backdrop-blur-xl border border-emerald-500/30 px-4 py-2.5 rounded-2xl flex items-center gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+                      style={{ transform: "translateZ(30px)" }}
+                    >
+                      <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold font-mono">FCP</div>
+                      <div>
+                        <div className="text-[10px] text-slate-400 font-mono uppercase tracking-wider">PageSpeed Rank</div>
+                        <div className="text-xs font-black text-emerald-400 font-mono">99 / 100 (Grade A)</div>
+                      </div>
+                    </div>
+
+                    {/* Floating 3D Badge 2: Live conversion tracker */}
+                    <div 
+                      className="absolute -bottom-6 -left-4 bg-[#030712]/90 backdrop-blur-xl border border-blue-500/30 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+                      style={{ transform: "translateZ(45px)" }}
+                    >
+                      <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-ping" />
+                      <div>
+                        <div className="text-[9px] text-slate-400 font-mono uppercase tracking-wider">CMS Activity Feed</div>
+                        <div className="text-xs font-bold text-white font-sans flex items-center gap-1.5">
+                          <span>Lead Optimized Node API</span>
+                          <span className="text-[9px] text-blue-400 font-mono">Hostinger Sync</span>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
               </div>
             </section>
 
-            {/* Trusted Companies Panel */}
-            <section className="w-full bg-white/5 backdrop-blur-sm py-8 border-y border-white/5">
-              <div className="max-w-7xl mx-auto px-4 flex flex-wrap justify-center items-center gap-8 sm:gap-12 md:gap-16 text-slate-400 text-xs font-mono font-bold tracking-widest uppercase">
-                {trustedCompanies.map((tc, index) => (
-                  <span key={index} className="hover:text-slate-200 transition-colors">{tc}</span>
-                ))}
-              </div>
-            </section>
-
-            {/* About brief Section */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center" id="section-about-brief">
-              <div className="space-y-6">
-                <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Company Strategy</span>
-                <h2 className="text-3xl font-extrabold text-white tracking-tight">The Metazivo Philosophy: High Speed, Deep SEO, Proven Conversion</h2>
-                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
-                  Too many digital agencies deploy heavy WordPress installations loaded with templates, ruining your PageSpeed and losing leads before the page even loads. Metazivo designs custom, clean code environments utilizing modern layouts, structured Schema.org markups, and dedicated conversion elements to ensure organic traffic spikes immediately.
-                </p>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
-                    <span className="block text-xl sm:text-2xl font-bold text-white">99%</span>
-                    <span className="text-[9px] uppercase tracking-wider text-slate-400">PageSpeed Guarantee</span>
-                  </div>
-                  <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
-                    <span className="block text-xl sm:text-2xl font-bold text-white">+300%</span>
-                    <span className="text-[9px] uppercase tracking-wider text-slate-400">Organic Visibility</span>
-                  </div>
-                  <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
-                    <span className="block text-xl sm:text-2xl font-bold text-white">4.8x</span>
-                    <span className="text-[9px] uppercase tracking-wider text-slate-400">Ad Campaign ROAS</span>
-                  </div>
-                </div>
-                <button onClick={() => handleNavigate("about")} className="inline-flex items-center gap-2 text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors">
-                  <span>Learn More About Our Team</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* Decorative grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl flex flex-col gap-2">
-                  <Code className="w-8 h-8 text-blue-400" />
-                  <h3 className="text-sm font-bold text-white">Clean Coding</h3>
-                  <p className="text-[11px] text-slate-400">We write structured, lightweight React and Node setups.</p>
-                </div>
-                <div className="p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl flex flex-col gap-2">
-                  <Search className="w-8 h-8 text-indigo-400" />
-                  <h3 className="text-sm font-bold text-white">Advanced SEO</h3>
-                  <p className="text-[11px] text-slate-400">Automatic schema.org structures and meta keywords indexing.</p>
-                </div>
-                <div className="p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl flex flex-col gap-2">
-                  <TrendingUp className="w-8 h-8 text-emerald-400" />
-                  <h3 className="text-sm font-bold text-white">Lead Funnels</h3>
-                  <p className="text-[11px] text-slate-400">High friction landing page forms to capture rich prospects.</p>
-                </div>
-                <div className="p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl flex flex-col gap-2">
-                  <Palette className="w-8 h-8 text-pink-400" />
-                  <h3 className="text-sm font-bold text-white">Luxury Brandings</h3>
-                  <p className="text-[11px] text-slate-400">Timeless graphic outlines and beautiful typography matching.</p>
+            {/* Futuristic 3D Trusted Companies conveyor */}
+            <section className="w-full bg-white/[0.02] backdrop-blur-md py-10 border-y border-white/5 relative z-10 overflow-hidden">
+              <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#020617] to-transparent pointer-events-none z-20" />
+              <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#020617] to-transparent pointer-events-none z-20" />
+              <div className="max-w-7xl mx-auto px-4">
+                <p className="text-center text-[10px] font-mono text-slate-500 uppercase tracking-[0.2em] mb-6">Powering Brands Registered Across Global Deployments</p>
+                <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-16 text-slate-400 text-xs font-mono font-bold tracking-widest uppercase">
+                  {trustedCompanies.map((tc, index) => (
+                    <div key={index} className="flex items-center gap-2 hover:text-slate-200 transition-colors cursor-default">
+                      <span className="text-blue-500 text-sm">✦</span>
+                      <span>{tc}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </section>
 
-            {/* Core Services Section */}
-            <section className="bg-white/5 backdrop-blur-sm py-16 border-y border-white/5" id="section-services">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-                <div className="text-center space-y-3">
+            {/* Elegant 3D Bento Grid Section */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 relative z-10" id="section-about-brief">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                {/* Left Side: Editorial Philosophy copy */}
+                <div className="lg:col-span-5 text-center lg:text-left space-y-4">
+                  <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Our Design Philosophy</span>
+                  <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
+                    Premium Mechanics. <br className="sm:hidden" /> Zero Bloat. Maximum Speed.
+                  </h2>
+                  <p className="text-slate-300 text-sm font-light leading-relaxed">
+                    Heavy templates load slowly, leak security nodes, and degrade Google PageRank. Metazivo engineers custom, lightning-fast interfaces using tailored rendering modules to ensure high-end organic conversion.
+                  </p>
+                </div>
+                {/* Right Side: High-fidelity GlassmorphicCoreEngine interactive crystal console */}
+                <div className="lg:col-span-7 w-full h-[360px] lg:h-[400px]">
+                  <GlassmorphicCoreEngine />
+                </div>
+              </div>
+
+              {/* Spectacular 3D Bento Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
+                
+                {/* Bento Card 1: Clean Coding (Large/Hero Bento Item) */}
+                <div className="lg:col-span-7 bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/10 hover:border-cyan-500/30 rounded-[32px] p-6 lg:p-8 flex flex-col md:flex-row justify-between gap-6 transition-all duration-300 group hover:shadow-[0_15px_40px_rgba(6,182,212,0.06)] hover:-translate-y-1 relative overflow-hidden">
+                  <div className="flex-1 flex flex-col justify-between space-y-6">
+                    <div className="space-y-3">
+                      <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-widest bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-1 rounded-full w-fit block">React & Node LTS</span>
+                      <h3 className="text-xl font-bold text-white tracking-wide">High-Performance Clean Coding</h3>
+                      <p className="text-xs text-slate-400 leading-relaxed font-light">
+                        We compile static architectures bypassing heavy CMS loops. Absolute type-safety coupled with client-side hydration provides immediate performance metrics.
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-mono text-cyan-400 font-semibold">⚡ Node.js Core API</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                      <span className="text-xs font-mono text-slate-500">React 19 Build</span>
+                    </div>
+                  </div>
+                  <div className="w-full md:w-44 lg:w-52 aspect-square relative rounded-2xl overflow-hidden shrink-0 border border-white/10 bg-black/40 flex items-center justify-center">
+                    <img 
+                      src={coding3D} 
+                      alt="3D Code Illustration" 
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  </div>
+                </div>
+
+                {/* Bento Card 2: SEO Visibility */}
+                <div className="lg:col-span-5 bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/10 hover:border-emerald-500/30 rounded-[32px] p-6 lg:p-8 flex flex-col justify-between gap-6 transition-all duration-300 group hover:shadow-[0_15px_40px_rgba(16,185,129,0.06)] hover:-translate-y-1 relative overflow-hidden">
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="space-y-3">
+                      <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full w-fit block">Organic Domination</span>
+                      <h3 className="text-lg font-bold text-white tracking-wide">Deep SEO & Structural Markup</h3>
+                    </div>
+                    <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-white/10 bg-black/40">
+                      <img 
+                        src={seo3D} 
+                        alt="3D SEO Illustration" 
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed font-light">
+                    We inject clean JSON-LD metadata nodes automatically, ensuring rapid sitemap crawl rates and high search results rankings.
+                  </p>
+                  <div className="pt-2 border-t border-white/5 flex justify-between items-center text-[10px] text-slate-400 font-mono">
+                    <span>Google Rank index: 100%</span>
+                    <span className="text-emerald-400 font-bold">ACTIVE DEPLOY</span>
+                  </div>
+                </div>
+
+                {/* Bento Card 3: Conversion Funnels */}
+                <div className="lg:col-span-5 bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/10 hover:border-purple-500/30 rounded-[32px] p-6 lg:p-8 flex flex-col justify-between gap-6 transition-all duration-300 group hover:shadow-[0_15px_40px_rgba(168,85,247,0.06)] hover:-translate-y-1 relative overflow-hidden">
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="space-y-3">
+                      <span className="text-[10px] font-mono font-bold text-purple-400 uppercase tracking-widest bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-full w-fit block">Conversion Matrix</span>
+                      <h3 className="text-lg font-bold text-white tracking-wide">Custom Lead Capturing Funnels</h3>
+                    </div>
+                    <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-white/10 bg-black/40">
+                      <img 
+                        src={funnel3D} 
+                        alt="3D Funnel Illustration" 
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed font-light">
+                    Beautiful multi-step high friction lead forms structured directly inside fast interactive React modules, maximizing user response thresholds.
+                  </p>
+                  <div className="pt-2 border-t border-white/5 flex justify-between items-center text-[10px] text-slate-400 font-mono">
+                    <span>Conversion spike: +45%</span>
+                    <span className="text-purple-400 font-bold">ROAS OPTIMIZED</span>
+                  </div>
+                </div>
+
+                {/* Bento Card 4: Branding & Strategy */}
+                <div className="lg:col-span-7 bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/10 hover:border-pink-500/30 rounded-[32px] p-6 lg:p-8 flex flex-col md:flex-row justify-between gap-6 transition-all duration-300 group hover:shadow-[0_15px_40px_rgba(236,72,153,0.06)] hover:-translate-y-1 relative overflow-hidden">
+                  <div className="flex-1 flex flex-col justify-between space-y-6">
+                    <div className="space-y-3">
+                      <span className="text-[10px] font-mono font-bold text-pink-400 uppercase tracking-widest bg-pink-500/10 border border-pink-500/20 px-2.5 py-1 rounded-full w-fit block">Luxury Identity</span>
+                      <h3 className="text-xl font-bold text-white tracking-wide">Brand Identity & Digital Assets</h3>
+                      <p className="text-xs text-slate-400 leading-relaxed font-light">
+                        Beautiful graphic guidelines and interactive typography pairings tailored for premium visual positioning. We establish lasting aesthetics.
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-mono text-pink-400 font-semibold">✦ High Contrast Elements</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                      <span className="text-xs font-mono text-slate-500">Creative Strategy</span>
+                    </div>
+                  </div>
+                  <div className="w-full md:w-44 lg:w-52 aspect-square relative rounded-2xl overflow-hidden shrink-0 border border-white/10 bg-black/40 flex items-center justify-center">
+                    <img 
+                      src={branding3D} 
+                      alt="3D Branding Illustration" 
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+            {/* Redesigned 3D Services Showcases */}
+            <section className="bg-white/[0.01] backdrop-blur-md py-20 border-y border-white/5 relative z-10" id="section-services">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+                <div className="text-center space-y-4">
                   <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Solutions Portfolio</span>
-                  <h2 className="text-3xl font-extrabold text-white tracking-tight">Enterprise Scaling Services</h2>
-                  <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">Explore Metazivo's core agencies specializations designed to capture and monetize digital traffic.</p>
+                  <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Enterprise Scaling Services</h2>
+                  <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto font-light">Discover Metazivo's core specializations designed to capture, nurture, and convert digital traffic.</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {servicesData.map((srv) => {
                     const iconMap: { [key: string]: any } = { Code, Layout, ShoppingBag, Search, TrendingUp, Palette };
                     const IconComp = iconMap[srv.icon] || Code;
                     return (
-                      <div key={srv.id} className="p-6 bg-white/5 backdrop-blur-md border border-white/10 hover:border-blue-400/50 rounded-2xl transition-all hover:translate-y-[-4px] shadow-lg" id={`service-card-${srv.slug}`}>
-                        <div className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center mb-4 text-blue-400">
-                          <IconComp className="w-5 h-5" />
+                      <div 
+                        key={srv.id} 
+                        className="p-8 bg-white/[0.03] backdrop-blur-xl border border-white/10 hover:border-blue-500/40 rounded-[32px] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_15px_30px_rgba(37,99,235,0.06)] group flex flex-col justify-between" 
+                        id={`service-card-${srv.slug}`}
+                      >
+                        <div className="space-y-6">
+                          <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-blue-400 group-hover:text-blue-300 group-hover:bg-blue-600/10 group-hover:border-blue-500/20 transition-all duration-300">
+                            <IconComp className="w-6 h-6" />
+                          </div>
+                          <h3 className="text-lg font-bold text-white">{srv.title}</h3>
+                          <p className="text-xs text-slate-400 leading-relaxed font-light">{srv.description}</p>
                         </div>
-                        <h3 className="text-base font-bold text-white mb-2">{srv.title}</h3>
-                        <p className="text-xs text-slate-400 leading-relaxed mb-4">{srv.description}</p>
-                        <button
-                          onClick={() => handleOpenService(srv.slug)}
-                          className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-1.5"
-                        >
-                          <span>Detailed Case Studies</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
+                        
+                        <div className="pt-6 mt-6 border-t border-white/5">
+                          <button
+                            onClick={() => handleOpenService(srv.slug)}
+                            className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <span>Detailed Case Studies</span>
+                            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
@@ -564,7 +819,7 @@ export default function App() {
                   {portfolioItems.slice(0, 2).map((item) => (
                     <div key={item.id} className="group relative rounded-[32px] overflow-hidden border border-white/10 bg-white/5 backdrop-blur-md shadow-xl transition-all hover:border-white/20">
                       <div className="aspect-video w-full overflow-hidden">
-                        <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300" />
+                        <img src={item.image} alt={item.title} referrerPolicy="no-referrer" className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300" />
                       </div>
                       <div className="p-5 space-y-2">
                         <div className="flex justify-between items-center text-xs">
@@ -647,7 +902,7 @@ export default function App() {
                     <div key={t.id} className="p-6 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl flex flex-col justify-between shadow-lg">
                       <p className="text-xs text-slate-300 leading-relaxed italic">"{t.text}"</p>
                       <div className="flex items-center gap-3 mt-6">
-                        <img src={t.avatar} alt={t.name} className="w-9 h-9 rounded-full object-cover border border-white/10" />
+                        <img src={t.avatar} alt={t.name} referrerPolicy="no-referrer" className="w-9 h-9 rounded-full object-cover border border-white/10" />
                         <div>
                           <h4 className="text-xs font-bold text-white">{t.name}</h4>
                           <span className="text-[10px] text-slate-500 block">{t.role}</span>
@@ -670,15 +925,15 @@ export default function App() {
                 <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3 font-mono text-xs shadow-md">
                   <div className="flex justify-between">
                     <span className="text-slate-400">Official Email:</span>
-                    <a href="mailto:mai@metazivo.com" className="text-blue-400 hover:underline">mai@metazivo.com</a>
+                    <a href={`mailto:${contactInfo?.email || "mai@metazivo.com"}`} className="text-blue-400 hover:underline">{contactInfo?.email || "mai@metazivo.com"}</a>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Engineering Hotline:</span>
-                    <a href="tel:+923288518557" className="text-blue-400 hover:underline">+92 328 8518557</a>
+                    <a href={contactInfo?.phone ? `tel:${contactInfo.phone.replace(/[^+\d]/g, "")}` : "tel:+923288518557"} className="text-blue-400 hover:underline">{contactInfo?.phone || "+92 328 8518557"}</a>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">HQ Coordinate:</span>
-                    <span className="text-slate-300">Islamabad / Lahore, PK</span>
+                    <span className="text-slate-300">{contactInfo?.address || "Islamabad / Lahore, PK"}</span>
                   </div>
                 </div>
               </div>
@@ -723,7 +978,7 @@ export default function App() {
               <h2 className="text-xl font-bold text-white">Corporate Leadership</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="p-5 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-4 shadow-md">
-                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Mehar Ali Hassan" className="w-12 h-12 rounded-full object-cover border border-white/10" />
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Mehar Ali Hassan" referrerPolicy="no-referrer" className="w-12 h-12 rounded-full object-cover border border-white/10" />
                   <div>
                     <h3 className="text-sm font-bold text-white">Mehar Ali Hassan</h3>
                     <span className="text-[11px] text-blue-400 font-mono">Principal Systems Architect</span>
@@ -826,7 +1081,7 @@ export default function App() {
               {portfolioItems.map((item) => (
                 <div key={item.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[32px] overflow-hidden shadow-lg">
                   <div className="aspect-video w-full overflow-hidden">
-                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                    <img src={item.image} alt={item.title} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                   </div>
                   <div className="p-5 space-y-3">
                     <div className="flex justify-between items-center text-xs">
@@ -857,7 +1112,7 @@ export default function App() {
                 <div key={post.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[32px] overflow-hidden hover:border-white/20 transition-all flex flex-col justify-between" id={`blog-card-${post.slug}`}>
                   <div>
                     <div className="aspect-video w-full overflow-hidden relative">
-                      <img src={post.featuredImage} alt={post.title} className="w-full h-full object-cover" />
+                      <img src={post.featuredImage} alt={post.title} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                       {post.sticky && (
                         <span className="absolute top-3 left-3 bg-blue-600 text-white text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full">
                           Sticky Post
@@ -914,7 +1169,7 @@ export default function App() {
 
               {/* Author Row */}
               <div className="flex items-center gap-3 py-3 border-y border-white/10">
-                <img src={activeBlog.author?.avatar} alt={activeBlog.author?.name} className="w-10 h-10 rounded-full object-cover border border-white/10" />
+                <img src={activeBlog.author?.avatar} alt={activeBlog.author?.name} referrerPolicy="no-referrer" className="w-10 h-10 rounded-full object-cover border border-white/10" />
                 <div>
                   <span className="block text-xs font-bold text-white">{activeBlog.author?.name}</span>
                   <span className="text-[10px] text-slate-400 font-mono">Published on {new Date(activeBlog.publishDate).toLocaleDateString()}</span>
@@ -923,7 +1178,7 @@ export default function App() {
             </header>
 
             <div className="w-full aspect-video rounded-2xl overflow-hidden border border-white/10">
-              <img src={activeBlog.featuredImage} alt={activeBlog.title} className="w-full h-full object-cover" />
+              <img src={activeBlog.featuredImage} alt={activeBlog.title} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
             </div>
 
             {/* Blog Post Content Body */}
@@ -989,11 +1244,11 @@ export default function App() {
               <div className="space-y-4 font-mono text-xs text-slate-300">
                 <div className="flex gap-2 items-center">
                   <Phone className="w-4 h-4 text-blue-400" />
-                  <span>+92 328 8518557</span>
+                  <span>{contactInfo?.phone || "+92 328 8518557"}</span>
                 </div>
                 <div className="flex gap-2 items-center">
                   <Mail className="w-4 h-4 text-blue-400" />
-                  <span>mai@metazivo.com</span>
+                  <span>{contactInfo?.email || "mai@metazivo.com"}</span>
                 </div>
               </div>
             </div>
@@ -1006,30 +1261,62 @@ export default function App() {
                 {/* VIEW 10: PRIVACY COMPLIANCE */}
         {currentTab === "privacy" && (
           <div id="view-privacy" className="max-w-3xl mx-auto px-6 py-10 bg-white/5 border border-white/10 rounded-[32px] space-y-6 text-xs text-slate-300 leading-relaxed animate-fade-in font-sans shadow-lg my-16">
-            <h1 className="text-2xl font-bold text-white mb-2">Privacy Policy & GDPR Compliance</h1>
-            <p>At Metazivo Digital Agency, accessible from https://metazivo.com, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Metazivo and how we use it.</p>
-            <h2 className="text-base font-bold text-slate-200 mt-4">1. Data Collection & Cookie Logs</h2>
-            <p>Like any other website, Metazivo uses 'cookies' to store information including visitors' preferences, and the pages on the website that the visitor accessed or visited. The information is used to optimize the users' experience by customizing our web page content based on visitors' browser type and/or other information.</p>
-            <h2 className="text-base font-bold text-slate-200 mt-4">2. DoubleClick DART Cookies</h2>
-            <p>Google is one of a third-party vendor on our site. It also uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to our site and other sites on the internet.</p>
+            <h1 className="text-2xl font-bold text-white mb-2">{activeCustomPage?.title || "Privacy Policy & GDPR Compliance"}</h1>
+            {activeCustomPage?.content ? (
+              <div className="prose prose-invert max-w-none text-slate-300 space-y-4" dangerouslySetInnerHTML={{ __html: activeCustomPage.content }} />
+            ) : (
+              <>
+                <p>At Metazivo Digital Agency, accessible from https://metazivo.com, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Metazivo and how we use it.</p>
+                <h2 className="text-base font-bold text-slate-200 mt-4">1. Data Collection & Cookie Logs</h2>
+                <p>Like any other website, Metazivo uses 'cookies' to store information including visitors' preferences, and the pages on the website that the visitor accessed or visited. The information is used to optimize the users' experience by customizing our web page content based on visitors' browser type and/or other information.</p>
+                <h2 className="text-base font-bold text-slate-200 mt-4">2. DoubleClick DART Cookies</h2>
+                <p>Google is one of a third-party vendor on our site. It also uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to our site and other sites on the internet.</p>
+              </>
+            )}
           </div>
         )}
 
         {/* VIEW 11: TERMS COMPLIANCE */}
         {currentTab === "terms" && (
           <div id="view-terms" className="max-w-3xl mx-auto px-6 py-10 bg-white/5 border border-white/10 rounded-[32px] space-y-6 text-xs text-slate-300 leading-relaxed animate-fade-in font-sans shadow-lg my-16">
-            <h1 className="text-2xl font-bold text-white mb-2">Terms & Conditions</h1>
-            <p>Welcome to Metazivo! These terms and conditions outline the rules and regulations for the use of Metazivo's Website, located at https://metazivo.com.</p>
-            <p>By accessing this website we assume you accept these terms and conditions. Do not continue to use Metazivo if you do not agree to take all of the terms and conditions stated on this page.</p>
-            <h2 className="text-base font-bold text-slate-200 mt-4">1. Intellectual Property Rights</h2>
-            <p>Unless otherwise stated, Metazivo and/or its licensors own the intellectual property rights for all material on Metazivo. All intellectual property rights are reserved. You may access this from Metazivo for your own personal use subjected to restrictions set in these terms and conditions.</p>
+            <h1 className="text-2xl font-bold text-white mb-2">{activeCustomPage?.title || "Terms & Conditions"}</h1>
+            {activeCustomPage?.content ? (
+              <div className="prose prose-invert max-w-none text-slate-300 space-y-4" dangerouslySetInnerHTML={{ __html: activeCustomPage.content }} />
+            ) : (
+              <>
+                <p>Welcome to Metazivo! These terms and conditions outline the rules and regulations for the use of Metazivo's Website, located at https://metazivo.com.</p>
+                <p>By accessing this website we assume you accept these terms and conditions. Do not continue to use Metazivo if you do not agree to take all of the terms and conditions stated on this page.</p>
+                <h2 className="text-base font-bold text-slate-200 mt-4">1. Intellectual Property Rights</h2>
+                <p>Unless otherwise stated, Metazivo and/or its licensors own the intellectual property rights for all material on Metazivo. All intellectual property rights are reserved. You may access this from Metazivo for your own personal use subjected to restrictions set in these terms and conditions.</p>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* VIEW 12: CUSTOM DYNAMIC PAGES */}
+        {isCustomPage && activeCustomPage && (
+          <div id={`view-${activeCustomPage.slug}`} className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-fade-in min-h-[500px]">
+            <button onClick={() => handleNavigate("home")} className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors">
+              <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
+            </button>
+            <div className="space-y-6">
+              <h1 className="text-4xl font-extrabold text-white tracking-tight">{activeCustomPage.title}</h1>
+              <div 
+                className="prose prose-invert max-w-none text-slate-300 text-sm leading-relaxed space-y-4 font-sans"
+                dangerouslySetInnerHTML={{ __html: activeCustomPage.content }}
+              />
+            </div>
           </div>
         )}
 
       </main>
 
       {/* FOOTER SECTION */}
-      <Footer onNavigate={handleNavigate} />
+      <Footer 
+        onNavigate={handleNavigate} 
+        contactInfo={contactInfo || undefined}
+        customPages={pages}
+      />
 
       {/* -----------------------------------------------------------------------------
           MODAL DRAWER: WORDPRESS-STYLE ADVANCED CMS PORTAL
@@ -1093,7 +1380,7 @@ export default function App() {
                             value={usernameInput}
                             onChange={(e) => setUsernameInput(e.target.value)}
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400"
-                            placeholder="Type 'admin'"
+                            placeholder="Enter username"
                           />
                         </div>
                         <div>
@@ -1107,13 +1394,9 @@ export default function App() {
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400"
-                            placeholder="Type 'admin'"
+                            placeholder="Enter password"
                           />
                         </div>
-                      </div>
-
-                      <div className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-[10px] text-slate-400 leading-relaxed font-mono">
-                        💡 <strong>Sandbox Hint:</strong> Access CMS immediately with credentials: <span className="text-blue-400 font-bold">admin</span> / <span className="text-blue-400 font-bold">admin</span>.
                       </div>
 
                       <button
@@ -1149,12 +1432,8 @@ export default function App() {
                           value={tfaCode}
                           onChange={(e) => setTfaCode(e.target.value)}
                           className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 text-center text-lg font-mono text-blue-400 tracking-widest focus:outline-none focus:border-blue-400/50"
-                          placeholder="e.g. 123456"
+                          placeholder="••••••"
                         />
-                      </div>
-
-                      <div className="p-2 bg-white/5 border border-white/10 rounded-xl text-[10px] text-slate-400 text-center font-mono">
-                        💡 Enter <span className="text-blue-400 font-bold">123456</span> or any 6-digit value to bypass.
                       </div>
 
                       <div className="flex gap-2">
@@ -1241,6 +1520,13 @@ export default function App() {
                     >
                       <Settings className="w-3.5 h-3.5 text-blue-400" />
                       <span>301 Redirects</span>
+                    </button>
+                    <button
+                      onClick={() => { setActiveAdminSubTab("pages"); setIsEditingPost(false); }}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeAdminSubTab === "pages" ? "bg-white/10 text-blue-400 border border-white/10" : "text-slate-400 hover:text-white"}`}
+                    >
+                      <Folder className="w-3.5 h-3.5 text-blue-400" />
+                      <span>Pages Manager</span>
                     </button>
                   </div>
 
@@ -1851,9 +2137,84 @@ export default function App() {
                             </p>
                           </div>
                         </div>
+
+                        <div className="p-5 bg-white/5 border border-white/10 rounded-[32px] space-y-4 shadow-md col-span-1 md:col-span-2">
+                          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest">Update Agency Contact Information</h3>
+                          <form onSubmit={async (e) => {
+                            e.preventDefault();
+                            const form = e.currentTarget;
+                            const formData = new FormData(form);
+                            const updated = {
+                              phone: formData.get("phone") as string,
+                              email: formData.get("email") as string,
+                              address: formData.get("address") as string,
+                            };
+                            try {
+                              const res = await fetch("/api/contact", {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(updated),
+                              });
+                              if (res.ok) {
+                                loadAllData();
+                                logActivity("Updated contact info");
+                                alert("Contact information updated successfully!");
+                              }
+                            } catch (err) {
+                              console.error(err);
+                            }
+                          }} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                              <label className="block text-[10px] text-slate-400 uppercase mb-1 font-mono">Phone Number</label>
+                              <input
+                                type="text"
+                                name="phone"
+                                defaultValue={contactInfo?.phone || "+92 328 8518557"}
+                                className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-white focus:outline-none w-full"
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] text-slate-400 uppercase mb-1 font-mono">Email Address</label>
+                              <input
+                                type="email"
+                                name="email"
+                                defaultValue={contactInfo?.email || "mai@metazivo.com"}
+                                className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-white focus:outline-none w-full"
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] text-slate-400 uppercase mb-1 font-mono">HQ Address</label>
+                              <input
+                                type="text"
+                                name="address"
+                                defaultValue={contactInfo?.address || "Islamabad / Lahore, PK"}
+                                className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-white focus:outline-none w-full"
+                                required
+                              />
+                            </div>
+                            <div className="md:col-span-3 flex justify-end">
+                              <button
+                                type="submit"
+                                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-xs font-bold transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)] cursor-pointer"
+                              >
+                                Save Contact Info
+                              </button>
+                            </div>
+                          </form>
+                        </div>
                       </div>
 
                     </div>
+                  )}
+
+                  {activeAdminSubTab === "pages" && (
+                    <PagesPanel
+                      pages={pages}
+                      onReload={loadAllData}
+                      onLog={logActivity}
+                    />
                   )}
 
                 </div>
