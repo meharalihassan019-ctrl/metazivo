@@ -1,0 +1,6 @@
+{
+  "name": "Metazivo Digital Agency",
+  "description": "Production-ready digital agency website with an advanced WordPress-style CMS, media library, and an integrated AI SEO Assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
