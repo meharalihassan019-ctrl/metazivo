@@ -758,14 +758,16 @@ function generateSimulatedResponse(action: string, title: string, keywords: stri
 // VITE DEV SERVER OR STATIC PRODUCTION BUILD ENGINE
 // -----------------------------------------------------------------------------
 async function initializeServer() {
-  if (process.env.NODE_ENV !== "production") {
+  const distPath = path.join(process.cwd(), "dist");
+  const isProd = process.env.NODE_ENV === "production" || fs.existsSync(distPath);
+
+  if (!isProd) {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa"
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
