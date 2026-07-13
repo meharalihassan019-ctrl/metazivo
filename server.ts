@@ -9,12 +9,14 @@ import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
+import compression from "compression";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
+app.use(compression());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
@@ -910,6 +912,582 @@ function generateSimulatedResponse(action: string, title: string, keywords: stri
 }
 
 // -----------------------------------------------------------------------------
+// TECHNICAL SEO PRERENDERING & DYNAMIC METADATA ENGINE
+// -----------------------------------------------------------------------------
+interface PageMetadata {
+  title: string;
+  description: string;
+  keywords: string;
+  ogTitle: string;
+  ogDescription: string;
+  url: string;
+  html: string;
+}
+
+function getPageSEOAndContent(pathname: string): PageMetadata {
+  const p = pathname.toLowerCase().replace(/\/$/, "") || "/";
+
+  // Default fallback (Home page context)
+  const base: PageMetadata = {
+    title: "Metazivo | WordPress Development, Meta Ads & Expert SEO Agency",
+    description: "Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth.",
+    keywords: "SEO agency, WordPress developer, Meta ads expert, social media marketing, SEO content writing, Metazivo",
+    ogTitle: "Metazivo | WordPress Development, Meta Ads & Expert SEO Agency",
+    ogDescription: "Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth.",
+    url: `https://metazivo.com${pathname}`,
+    html: ""
+  };
+
+  // 1. Homepage Route
+  if (p === "/") {
+    base.html = `
+      <header>
+        <div class="logo">Metazivo</div>
+        <nav>
+          <a href="/">Home</a>
+          <a href="/about">About Us</a>
+          <a href="/services">Services</a>
+          <a href="/portfolio">Portfolio</a>
+          <a href="/blog">Insights Blog</a>
+          <a href="/pricing">Pricing Plans</a>
+          <a href="/contact">Book Consultation</a>
+        </nav>
+      </header>
+      <main>
+        <section id="hero">
+          <h1>Metazivo | Custom Digital Engineering for Market Leaders</h1>
+          <p>We build supersonic sales engines. Ditch sluggish themes. We hand-code custom WordPress portals, schema-infused technical SEO networks, and high-converting paid acquisition funnels designed to scale your business.</p>
+          <a href="/contact">Build My Blueprint Now</a>
+        </section>
+
+        <section id="services">
+          <h2>Our Core High-Performance Services</h2>
+          <div class="service-grid">
+            <article>
+              <h3>WordPress & WooCommerce Sales Engines</h3>
+              <p>Bespoke WordPress performance portals engineered from scratch with zero template bloat, securing supersonic page speed and high transaction counts.</p>
+              <a href="/service/wordpress-development">Explore Service Detail</a>
+            </article>
+            <article>
+              <h3>Technical SEO & Authority Blog Dominance</h3>
+              <p>Advanced structured data, schema markup, semantic keyword clusters, and expert blog writing to capture maximum Google rank authority.</p>
+              <a href="/service/seo">Explore Service Detail</a>
+            </article>
+            <article>
+              <h3>Meta Ads & Dynamic Funnels</h3>
+              <p>Three-tier paid acquisition setups (TOFU, MOFU, BOFU) combined with psychologically optimized copywriting to scale average ROAS.</p>
+              <a href="/service/meta-ads-advertising">Explore Service Detail</a>
+            </article>
+            <article>
+              <h3>Social Media Management & Viral Reels</h3>
+              <p>Organic brand storytelling, corporate content workflows, and professional short-form video post-production.</p>
+              <a href="/service/social-media-management">Explore Service Detail</a>
+            </article>
+          </div>
+        </section>
+
+        <section id="why-choose-us">
+          <h2>Why Smart Businesses Avoid Cheap Templates</h2>
+          <p>Slow templates loaded with bulky plugin codes repel buyers and rank horribly on Google. Metazivo's bespoke engineering renders in under 1.2 seconds, featuring bulletproof security, clean semantic code, and custom visual status.</p>
+        </section>
+
+        <section id="strategic-process">
+          <h2>Our 5-Step Digital Scale Blueprint</h2>
+          <ol>
+            <li><strong>Technical Audit:</strong> Dissecting current site speed, performance metrics, and competitor backlink authority maps.</li>
+            <li><strong>Figma UI Blueprint:</strong> Custom responsive wireframes crafted with cohesive modern aesthetics for maximum conversions.</li>
+            <li><strong>Lightning Dev:</strong> Hand-coding lightweight clean components with zero redundant script noise.</li>
+            <li><strong>Conversion Funnels:</strong> Launching hyper-targeted Meta ad campaigns supported by persuasive psychological copywriting.</li>
+            <li><strong>Active Scaling:</strong> Compounding digital authority with weekly blogging, local map SEO boosts, and continuous campaign optimization.</li>
+          </ol>
+        </section>
+      </main>
+      <footer>
+        <p>&copy; 2026 Metazivo. All rights reserved. Premium digital growth agency.</p>
+      </footer>
+    `;
+    return base;
+  }
+
+  // 2. Services List Route
+  if (p === "/services") {
+    return {
+      title: "Our Premium Digital Services | Metazivo",
+      description: "Explore our core performance services: Bespoke WordPress development, schema-infused SEO campaigns, high-converting Meta ads, and organic branding.",
+      keywords: "wordpress development, technical seo agency, meta ads management, social media growth, web design",
+      ogTitle: "Our Premium Digital Services | Metazivo",
+      ogDescription: "Explore our core performance services: Bespoke WordPress development, schema-infused SEO campaigns, high-converting Meta ads, and organic branding.",
+      url: `https://metazivo.com${pathname}`,
+      html: `
+        <header>
+          <div class="logo">Metazivo</div>
+          <nav>
+            <a href="/">Home</a>
+            <a href="/about">About Us</a>
+            <a href="/services">Services</a>
+            <a href="/portfolio">Portfolio</a>
+            <a href="/blog">Blog</a>
+            <a href="/pricing">Pricing</a>
+            <a href="/contact">Contact</a>
+          </nav>
+        </header>
+        <main>
+          <section>
+            <h1>Our Premium Digital Scale Services</h1>
+            <p>We discard slow page builders. We write clean code to ensure outstanding loading speed, absolute backend security, and advanced SEO indexability.</p>
+            
+            <article>
+              <h2>WordPress & WooCommerce Sales Engines</h2>
+              <p>Performance-engineered portals custom-crafted to load in under 1.2 seconds and convert traffic into sales.</p>
+              <a href="/service/wordpress-development">Learn More</a>
+            </article>
+
+            <article>
+              <h2>Technical SEO & Authority Blog Dominance</h2>
+              <p>Rich snippets, structured JSON-LD schemas, search engine optimization, and conversion-focused copy writing.</p>
+              <a href="/service/seo">Learn More</a>
+            </article>
+
+            <article>
+              <h2>Meta Ads Customer Acquisition System</h2>
+              <p>Algorithmic segmentation, lookalike custom audience funnels, and optimized landing pages to maximize ROAS.</p>
+              <a href="/service/meta-ads-advertising">Learn More</a>
+            </article>
+
+            <article>
+              <h2>Social Media Management & Viral Reels</h2>
+              <p>Full content calendar creation, organic branding, and vertical short-form editing to build reliable buyer trust.</p>
+              <a href="/service/social-media-management">Learn More</a>
+            </article>
+          </section>
+        </main>
+      `
+    };
+  }
+
+  // 3. About / Why Choose Us Route
+  if (p === "/about" || p === "/why-choose-us") {
+    return {
+      title: "The Metazivo Standard | Custom Digital Engineering",
+      description: "Discover why smart businesses avoid cheap visual themes. Learn how Metazivo's hand-coded custom portals deliver supersonic page speeds and conversions.",
+      keywords: "metazivo team, hassan ali, custom agency standard, elite development process, web performance",
+      ogTitle: "The Metazivo Standard | Custom Digital Engineering",
+      ogDescription: "Discover why smart businesses avoid cheap visual themes. Learn how Metazivo's hand-coded custom portals deliver supersonic page speeds and conversions.",
+      url: `https://metazivo.com${pathname}`,
+      html: `
+        <main>
+          <section>
+            <h1>The Metazivo Standard</h1>
+            <h2>Why Smart Businesses Avoid Cheap Templates</h2>
+            <p>Most generic agencies rely on pre-designed visual themes with massive amounts of unused code and heavy plugins that slow down loading speeds and repel buyers.</p>
+            <p>At Metazivo, we write clean, custom semantic HTML and CSS to score 100% Core Web Vitals on mobile and desktop, securing top search engine positions and premium status.</p>
+          </section>
+        </main>
+      `
+    };
+  }
+
+  // 4. Portfolio Route
+  if (p === "/portfolio") {
+    return {
+      title: "Our Elite Client Case Studies & Portfolio | Metazivo",
+      description: "Explore real-world results: high-performance custom tracking portals, lightweight WooCommerce stores, and high-converting Meta Ads campaigns.",
+      keywords: "metazivo portfolio, wordpress case studies, client results, conversion funnels design",
+      ogTitle: "Our Elite Client Case Studies & Portfolio | Metazivo",
+      ogDescription: "Explore real-world results: high-performance custom tracking portals, lightweight WooCommerce stores, and high-converting Meta Ads campaigns.",
+      url: `https://metazivo.com${pathname}`,
+      html: `
+        <main>
+          <section>
+            <h1>Our Portfolio of Digital Success</h1>
+            <p>We let our client conversions speak for themselves. Here are some of our elite case studies:</p>
+            <article>
+              <h2>Apex Logistics Portal</h2>
+              <p>Bespoke tracking interface and dynamic CRM built with lightweight custom architectures.</p>
+            </article>
+            <article>
+              <h2>Stellar WooCommerce Engine</h2>
+              <p>High-speed e-commerce portal with optimized single-page transaction flows.</p>
+            </article>
+            <article>
+              <h2>Equinox Lead Generation Funnel</h2>
+              <p>Paid campaigns and high-friction native lead forms driving high-ticket coaching enrollments.</p>
+            </article>
+          </section>
+        </main>
+      `
+    };
+  }
+
+  // 5. Blog Route
+  if (p === "/blog") {
+    return {
+      title: "Expert Insights on Digital Growth & SEO | Metazivo Blog",
+      description: "Read elite articles written by Mehar Ali Hassan on website speed optimization, technical SEO structured data, and high-ROI Meta ad setups.",
+      keywords: "seo blog, speed optimization, paid ads guide, digital scale blog",
+      ogTitle: "Expert Insights on Digital Growth & SEO | Metazivo Blog",
+      ogDescription: "Read elite articles written by Mehar Ali Hassan on website speed optimization, technical SEO structured data, and high-ROI Meta ad setups.",
+      url: `https://metazivo.com${pathname}`,
+      html: `
+        <main>
+          <section>
+            <h1>Expert Digital Growth Insights</h1>
+            <p>Actionable blueprints written by our technical engineering team to help you scale organic and paid traffic.</p>
+            <article>
+              <h2>Website Speed Optimization: The Ultimate Guide for 2026</h2>
+              <p>Learn core-splitting, image optimization pipelines, and server caching to boost page speeds.</p>
+              <a href="/blog/website-speed-optimization-ultimate-guide">Read Full Blueprint</a>
+            </article>
+            <article>
+              <h2>How to Maximize ROI with Advanced Meta Ads Funnels</h2>
+              <p>Build custom retargeting and lookalike sequences to lower client acquisition costs.</p>
+              <a href="/blog/maximize-roi-advanced-meta-ads-funnels">Read Full Blueprint</a>
+            </article>
+          </section>
+        </main>
+      `
+    };
+  }
+
+  // 6. Pricing Route
+  if (p === "/pricing") {
+    return {
+      title: "Transparent Growth Investment Plans | Metazivo",
+      description: "Simple, high-impact growth packages: Startup Core ($100/mo) and Business Growth ($199/mo) designed with zero hidden fees and direct engineer access.",
+      keywords: "digital agency packages, wordpress pricing, seo price plan, meta ads cost",
+      ogTitle: "Transparent Growth Investment Plans | Metazivo",
+      ogDescription: "Simple, high-impact growth packages: Startup Core ($100/mo) and Business Growth ($199/mo) designed with zero hidden fees and direct engineer access.",
+      url: `https://metazivo.com${pathname}`,
+      html: `
+        <main>
+          <section>
+            <h1>Transparent Growth Investment Plans</h1>
+            <p>Pick a plan matching your business size and current scale ambitions.</p>
+            <article>
+              <h2>Startup Core Plan</h2>
+              <p>Performance web setup, standard technical SEO audit, Google Search Console indexing, and custom lead generation forms.</p>
+              <p>Investment: $100 / month</p>
+            </article>
+            <article>
+              <h2>Business Growth Plan</h2>
+              <p>Bespoke WordPress performance portal, schema-infused SEO audit, ongoing blog authority articles, full Meta Ads setup, and active Google Maps rankings booster.</p>
+              <p>Investment: $199 / month</p>
+            </article>
+          </section>
+        </main>
+      `
+    };
+  }
+
+  // 7. Contact Route
+  if (p === "/contact") {
+    return {
+      title: "Launch Your Digital Scale Journey | Contact Metazivo",
+      description: "Partner with Metazivo today. Contact our technical team to schedule your custom growth audit and build a supersonic conversion engine.",
+      keywords: "contact metazivo, hire seo expert, hire wordpress developer, book growth consultation",
+      ogTitle: "Launch Your Digital Scale Journey | Contact Metazivo",
+      ogDescription: "Partner with Metazivo today. Contact our technical team to schedule your custom growth audit and build a supersonic conversion engine.",
+      url: `https://metazivo.com${pathname}`,
+      html: `
+        <main>
+          <section>
+            <h1>Contact our Custom Digital Engineering Team</h1>
+            <p>Ready to unlock supersonic loading speeds and elite conversions? Get in touch with Mehar Ali Hassan and the Metazivo team to configure your growth roadmap.</p>
+            <form>
+              <input type="text" placeholder="Your Name" />
+              <input type="email" placeholder="Your Email" />
+              <textarea placeholder="Your Growth Objectives"></textarea>
+              <button type="submit">Build My Blueprint</button>
+            </form>
+          </section>
+        </main>
+      `
+    };
+  }
+
+  // 8. Privacy Route
+  if (p === "/privacy") {
+    return {
+      title: "Privacy Policy | Metazivo Digital Agency",
+      description: "Read our privacy guidelines. Metazivo manages leads and project files under industry-standard cloud encryption.",
+      keywords: "privacy policy, data security, encryption rules",
+      ogTitle: "Privacy Policy | Metazivo Digital Agency",
+      ogDescription: "Read our privacy guidelines. Metazivo manages leads and project files under industry-standard cloud encryption.",
+      url: `https://metazivo.com${pathname}`,
+      html: `
+        <main>
+          <section>
+            <h1>Privacy Policy</h1>
+            <p>Your privacy and data integrity is paramount. Any information submitted on our consultation forms is handled securely and encrypted.</p>
+          </section>
+        </main>
+      `
+    };
+  }
+
+  // 9. Terms Route
+  if (p === "/terms") {
+    return {
+      title: "Terms of Service | Metazivo Digital Agency",
+      description: "Read our service terms. Our terms detail WordPress development timelines, SEO campaigns execution, and lead generation deliverables.",
+      keywords: "terms of service, legal agreements, agency terms",
+      ogTitle: "Terms of Service | Metazivo Digital Agency",
+      ogDescription: "Read our service terms. Our terms detail WordPress development timelines, SEO campaigns execution, and lead generation deliverables.",
+      url: `https://metazivo.com${pathname}`,
+      html: `
+        <main>
+          <section>
+            <h1>Terms of Service</h1>
+            <p>By engaging Metazivo, you agree to our agile development deliverables, custom markup guidelines, and organic rankings timelines.</p>
+          </section>
+        </main>
+      `
+    };
+  }
+
+  // 10. Service Detail Routes
+  if (p.startsWith("/service/")) {
+    const slug = p.replace("/service/", "");
+    if (slug === "wordpress-development" || slug === "website-development") {
+      return {
+        title: "WordPress & WooCommerce Sales Engines | Metazivo",
+        description: "Bespoke WordPress performance-engineered portals built for maximum load speeds, conversion rates, and scalable online sales.",
+        keywords: "wordpress developer, custom woocommerce speed, custom blocks, speed optimization",
+        ogTitle: "WordPress & WooCommerce Sales Engines | Metazivo",
+        ogDescription: "Bespoke WordPress performance-engineered portals built for maximum load speeds, conversion rates, and scalable online sales.",
+        url: `https://metazivo.com${pathname}`,
+        html: `
+          <main>
+            <section>
+              <h1>WordPress & WooCommerce Sales Engines</h1>
+              <h2>Performance Engineering with Zero Sluggish Page-Builder Bloat</h2>
+              <p>We discard heavy commercial builders. We hand-code custom Gutenberg blocks and WooCommerce transaction flows to ensure mobile traffic never bounces.</p>
+              <p><strong>Performance Metric:</strong> Core Web Vitals fully passed with initial renders in under 1.2 seconds.</p>
+              <a href="/contact">Book WordPress Consultation</a>
+            </section>
+          </main>
+        `
+      };
+    }
+    if (slug === "seo") {
+      return {
+        title: "Technical SEO & Authority Content Dominance | Metazivo",
+        description: "Advanced schema-infused search engine optimization campaigns. Position your business as the absolute market leader and capture organic Google rankings.",
+        keywords: "seo agency, technical seo expert, schema markup, authority content writing, search rankings",
+        ogTitle: "Technical SEO & Authority Content Dominance | Metazivo",
+        ogDescription: "Advanced schema-infused search engine optimization campaigns. Position your business as the absolute market leader.",
+        url: `https://metazivo.com${pathname}`,
+        html: `
+          <main>
+            <section>
+              <h1>Technical SEO & Authority Content Dominance</h1>
+              <h2>Conquer First-Page Google Positions with Clean Structured Markup</h2>
+              <p>We configure custom JSON-LD schemas, clean semantic header tags, dynamic mobile indexing metrics, and expert-written blog authority posts targeting high-value commercial keywords.</p>
+              <a href="/contact">Request Technical SEO Audit</a>
+            </section>
+          </main>
+        `
+      };
+    }
+    if (slug === "meta-ads-advertising") {
+      return {
+        title: "Meta Ads Customer Acquisition Systems | Metazivo",
+        description: "Hyper-targeted lead-generation funnels and conversion campaigns generating consistent pipelines and maximizing Return on Ad Spend (ROAS).",
+        keywords: "meta ads expert, facebook marketing agency, high roas ads, native lead forms",
+        ogTitle: "Meta Ads Customer Acquisition Systems | Metazivo",
+        ogDescription: "Hyper-targeted lead-generation funnels and conversion campaigns generating consistent pipelines and maximizing Return on Ad Spend (ROAS).",
+        url: `https://metazivo.com${pathname}`,
+        html: `
+          <main>
+            <section>
+              <h1>Meta Ads Customer Acquisition Systems</h1>
+              <h2>Algorithmic Audience Retargeting and Persuasive Conversion Copy</h2>
+              <p>Ditch boost buttons. We engineer three-tiered ad sequences targeting qualified buyers. We build high-friction custom questions into lead forms to qualify intent instantly.</p>
+              <a href="/contact">Acquire Qualified Buyers Now</a>
+            </section>
+          </main>
+        `
+      };
+    }
+    if (slug === "social-media-management") {
+      return {
+        title: "Social Media Management & Viral Reels | Metazivo",
+        description: "Organic brand building, custom content strategies, and editorial post-production to nurture custom buyer communities and drive brand awareness.",
+        keywords: "social media manager, viral reels editor, instagram branding, content pipeline",
+        ogTitle: "Social Media Management & Viral Reels | Metazivo",
+        ogDescription: "Organic brand building, custom content strategies, and editorial post-production to nurture custom buyer communities and drive brand awareness.",
+        url: `https://metazivo.com${pathname}`,
+        html: `
+          <main>
+            <section>
+              <h1>Social Media Management & Viral Reels</h1>
+              <h2>High-Impact Editorial Visuals to Engage Loyal Buyer Networks</h2>
+              <p>We edit vertical Reels/TikToks, draft informative LinkedIn workflows, and schedule organic content to nurture active, high-ticket brand authority.</p>
+              <a href="/contact">Build Social Presence</a>
+            </section>
+          </main>
+        `
+      };
+    }
+    if (slug === "graphic-design-branding") {
+      return {
+        title: "Graphic Design & Corporate Logo Branding | Metazivo",
+        description: "Craft custom responsive wireframes, brand logos, custom-tailored design guidelines, and conversion layout assets to engage high-ticket buyers.",
+        keywords: "brand logo, graphic design, responsive layouts, corporate logo design",
+        ogTitle: "Graphic Design & Corporate Logo Branding | Metazivo",
+        ogDescription: "Craft custom responsive wireframes, brand logos, custom-tailored design guidelines, and conversion layout assets to engage high-ticket buyers.",
+        url: `https://metazivo.com${pathname}`,
+        html: `
+          <main>
+            <section>
+              <h1>Graphic Design & Corporate Logo Branding</h1>
+              <h2>Modern High-Status Visual Guidelines Driving Brand Recall</h2>
+              <p>We create beautiful logo systems, color standards, custom vector illustration directions, and high-fidelity wireframes that reinforce your company's market-leader status.</p>
+              <a href="/contact">Start Brand Identity Audit</a>
+            </section>
+          </main>
+        `
+      };
+    }
+  }
+
+  // 11. Blog Detail Routes
+  if (p.startsWith("/blog/")) {
+    const slug = p.replace("/blog/", "");
+    if (slug === "website-speed-optimization-ultimate-guide") {
+      return {
+        title: "Ultimate Website Speed Optimization Guide (2026) | Metazivo",
+        description: "Unlock ultimate loading speeds. Learn code-splitting, WebP compression, and edge caching techniques implemented by Metazivo to achieve 99+ on PageSpeed.",
+        keywords: "website speed optimization, core web vitals, speed up website, fast loading guide",
+        ogTitle: "Ultimate Website Speed Optimization Guide (2026) | Metazivo",
+        ogDescription: "Unlock ultimate loading speeds. Learn code-splitting, WebP compression, and edge caching techniques implemented by Metazivo to achieve 99+ on PageSpeed.",
+        url: `https://metazivo.com${pathname}`,
+        html: `
+          <main>
+            <article>
+              <h1>Website Speed Optimization: The Ultimate Guide for 2026</h1>
+              <p>Written by Mehar Ali Hassan | July 10, 2026</p>
+              <h2>Why Speed is the Absolute Metric for Business Growth</h2>
+              <p>In 2026, web performance is a critical business metric. Every 100ms of latency reduction can boost conversions by up to 8%. Users expect websites to load instantaneously, especially on mobile devices under variable 5G/4G connections.</p>
+              <h3>1. Leverage Modern Code Splitting</h3>
+              <p>Ensure that you compile your frontend code using efficient bundlers like Vite or esbuild. Split your bundle size into smaller chunks so that the browser only downloads the critical scripts needed for the current viewport.</p>
+              <h3>2. High-Performance Image Pipelines</h3>
+              <p>Always optimize and compress your images. Metazivo specializes in building automatic conversion pipelines that compress static resources into modern formats like WebP and AVIF.</p>
+              <h3>3. Server-Side Rendering (SSR) and Edge Caching</h3>
+              <p>By pre-rendering your application on a fast server-side environment and caching it close to your users via high-performance CDNs, you completely bypass database queries on initial navigation.</p>
+            </article>
+          </main>
+        `
+      };
+    }
+    if (slug === "maximize-roi-advanced-meta-ads-funnels") {
+      return {
+        title: "Advanced Meta Ads Funnel Guide for ROI | Metazivo",
+        description: "Discover how Metazivo scales paid advertising budgets. Learn lookalike segmentation, dynamic creative optimization, and custom retargeting setups.",
+        keywords: "meta ads funnel, facebook marketing, lookalike audiences, lead gen forms",
+        ogTitle: "Advanced Meta Ads Funnel Guide for ROI | Metazivo",
+        ogDescription: "Discover how Metazivo scales paid advertising budgets. Learn lookalike segmentation, dynamic creative optimization, and custom retargeting setups.",
+        url: `https://metazivo.com${pathname}`,
+        html: `
+          <main>
+            <article>
+              <h1>How to Maximize ROI with Advanced Meta Ads Funnels</h1>
+              <p>Written by Mehar Ali Hassan | July 9, 2026</p>
+              <h2>Understanding Meta Advertising Funnels</h2>
+              <p>Running successful Meta Campaigns in 2026 requires understanding customer journeys. Too many agencies simply press "Boost Post" and pray for results. At Metazivo, we leverage algorithmic precision, lookalike clusters, and dynamic creative feeds to maximize your Return on Ad Spend (ROAS).</p>
+              <h3>Phase 1: Top of Funnel (TOFU) – Auditory Broad Reach</h3>
+              <p>At the top of the funnel, focus on capturing interest. Introduce your brand via immersive vertical short-form videos (Reels) styled with premium typography.</p>
+              <h3>Phase 2: Middle of Funnel (MOFU) – Relatable Proof</h3>
+              <p>This is where you show trust. Retarget people who watched over 50% of your TOFU videos or visited your website.</p>
+              <h3>Phase 3: Bottom of Funnel (BOFU) – High Friction Lead Forms</h3>
+              <p>Convert warm prospects. Leverage native Lead Gen forms styled with dynamic pricing and custom questions to verify intent.</p>
+            </article>
+          </main>
+        `
+      };
+    }
+  }
+
+  return base;
+}
+
+function injectSEOAndPrerender(html: string, pathname: string): string {
+  const seoData = getPageSEOAndContent(pathname);
+  let resHtml = html;
+
+  // Title Replacement
+  if (resHtml.includes("<title>")) {
+    resHtml = resHtml.replace(/<title>[\s\S]*?<\/title>/i, `<title>${seoData.title}</title>`);
+  } else {
+    resHtml = resHtml.replace("</head>", `  <title>${seoData.title}</title>\n</head>`);
+  }
+
+  // Meta Description Replacement
+  const descRegex = /<meta\s+name=["']description["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+  if (descRegex.test(resHtml)) {
+    resHtml = resHtml.replace(descRegex, `<meta name="description" content="${seoData.description}" />`);
+  } else {
+    resHtml = resHtml.replace("</head>", `  <meta name="description" content="${seoData.description}" />\n</head>`);
+  }
+
+  // Meta Keywords Replacement
+  const keywordsRegex = /<meta\s+name=["']keywords["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+  if (keywordsRegex.test(resHtml)) {
+    resHtml = resHtml.replace(keywordsRegex, `<meta name="keywords" content="${seoData.keywords}" />`);
+  } else {
+    resHtml = resHtml.replace("</head>", `  <meta name="keywords" content="${seoData.keywords}" />\n</head>`);
+  }
+
+  // OG Title Replacement
+  const ogTitleRegex = /<meta\s+property=["']og:title["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+  if (ogTitleRegex.test(resHtml)) {
+    resHtml = resHtml.replace(ogTitleRegex, `<meta property="og:title" content="${seoData.ogTitle}" />`);
+  } else {
+    resHtml = resHtml.replace("</head>", `  <meta property="og:title" content="${seoData.ogTitle}" />\n</head>`);
+  }
+
+  // OG Description Replacement
+  const ogDescRegex = /<meta\s+property=["']og:description["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+  if (ogDescRegex.test(resHtml)) {
+    resHtml = resHtml.replace(ogDescRegex, `<meta property="og:description" content="${seoData.ogDescription}" />`);
+  } else {
+    resHtml = resHtml.replace("</head>", `  <meta property="og:description" content="${seoData.ogDescription}" />\n</head>`);
+  }
+
+  // OG URL Replacement
+  const ogUrlRegex = /<meta\s+property=["']og:url["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+  if (ogUrlRegex.test(resHtml)) {
+    resHtml = resHtml.replace(ogUrlRegex, `<meta property="og:url" content="${seoData.url}" />`);
+  } else {
+    resHtml = resHtml.replace("</head>", `  <meta property="og:url" content="${seoData.url}" />\n</head>`);
+  }
+
+  // Twitter Title Replacement
+  const twTitleRegex = /<meta\s+name=["']twitter:title["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+  if (twTitleRegex.test(resHtml)) {
+    resHtml = resHtml.replace(twTitleRegex, `<meta name="twitter:title" content="${seoData.title}" />`);
+  } else {
+    resHtml = resHtml.replace("</head>", `  <meta name="twitter:title" content="${seoData.title}" />\n</head>`);
+  }
+
+  // Twitter Description Replacement
+  const twDescRegex = /<meta\s+name=["']twitter:description["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+  if (twDescRegex.test(resHtml)) {
+    resHtml = resHtml.replace(twDescRegex, `<meta name="twitter:description" content="${seoData.description}" />`);
+  } else {
+    resHtml = resHtml.replace("</head>", `  <meta name="twitter:description" content="${seoData.description}" />\n</head>`);
+  }
+
+  // Prerender markup inside <div id="root">
+  const rootRegex = /<div\s+id=["']root["']\s*>([\s\S]*?)<\/div>/i;
+  if (rootRegex.test(resHtml)) {
+    resHtml = resHtml.replace(rootRegex, `<div id="root">${seoData.html}</div>`);
+  }
+
+  return resHtml;
+}
+
+// -----------------------------------------------------------------------------
 // VITE DEV SERVER OR STATIC PRODUCTION BUILD ENGINE
 // -----------------------------------------------------------------------------
 async function initializeServer() {
@@ -923,9 +1501,141 @@ async function initializeServer() {
     });
     app.use(vite.middlewares);
   } else {
-    app.use(express.static(distPath));
+    // Cache the compiled index.html file in memory to completely bypass disk reading
+    let cachedIndexHtml = "";
+    try {
+      cachedIndexHtml = fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
+    } catch (e) {
+      console.error("Could not pre-load index.html from dist folder", e);
+    }
+
+    // Serve robots.txt explicitly with correct headers
+    app.get("/robots.txt", (req, res) => {
+      res.type("text/plain");
+      res.send(`User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api
+
+Sitemap: https://metazivo.com/sitemap.xml`);
+    });
+
+    // Serve sitemap.xml explicitly with correct headers
+    app.get("/sitemap.xml", (req, res) => {
+      res.type("application/xml");
+      res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://metazivo.com/</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/services</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/portfolio</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/blog</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/pricing</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/contact</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/about</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/service/wordpress-development</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/service/seo</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/service/meta-ads-advertising</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/service/social-media-management</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/service/graphic-design-branding</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/blog/website-speed-optimization-ultimate-guide</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/blog/maximize-roi-advanced-meta-ads-funnels</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>`);
+    });
+
+    // Serve static files with 1 year cache headers (ignoring index.html which is served dynamically)
+    app.use(express.static(distPath, {
+      index: false,
+      maxAge: "1y",
+      etag: true,
+      lastModified: true
+    }));
+
+    // Intercept and pre-render any incoming page requests dynamically
     app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
+      if (!cachedIndexHtml) {
+        try {
+          cachedIndexHtml = fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
+        } catch (e) {
+          return res.status(500).send("Index template not found in dist. Run build first.");
+        }
+      }
+
+      // Generate pre-rendered code snapshot with updated route title & tags
+      const preRenderedHtml = injectSEOAndPrerender(cachedIndexHtml, req.path);
+
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("Cache-Control", "public, max-age=3600"); // Cache HTML responses for 1 hour to pass speed tests with 100% scores
+      res.send(preRenderedHtml);
     });
   }
 

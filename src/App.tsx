@@ -180,16 +180,58 @@ export default function App() {
     }
   };
 
+  // Helper to parse URL pathname into React route state
+  const syncRouteFromPathname = () => {
+    const path = window.location.pathname;
+    if (path === "/" || path === "") {
+      setCurrentTab("home");
+    } else if (path === "/services" || path === "/services/") {
+      setCurrentTab("services");
+    } else if (path === "/portfolio" || path === "/portfolio/") {
+      setCurrentTab("portfolio");
+    } else if (path === "/blog" || path === "/blog/") {
+      setCurrentTab("blog");
+    } else if (path === "/pricing" || path === "/pricing/") {
+      setCurrentTab("pricing");
+    } else if (path === "/contact" || path === "/contact/") {
+      setCurrentTab("contact");
+    } else if (path === "/about" || path === "/about/" || path === "/why-choose-us" || path === "/why-choose-us/") {
+      setCurrentTab("about");
+    } else if (path.startsWith("/service/")) {
+      const slug = path.replace("/service/", "").replace("/", "");
+      setSelectedServiceSlug(slug);
+      setCurrentTab("service-detail");
+    } else if (path.startsWith("/blog/")) {
+      const slug = path.replace("/blog/", "").replace("/", "");
+      setSelectedBlogSlug(slug);
+      setCurrentTab("blog-detail");
+    } else if (path === "/privacy" || path === "/privacy/") {
+      setCurrentTab("privacy");
+    } else if (path === "/terms" || path === "/terms/") {
+      setCurrentTab("terms");
+    }
+  };
+
   useEffect(() => {
     loadAllData();
     // Record page view on startup
     fetch("/api/analytics/hit", { method: "POST" }).catch(() => {});
+
+    // Sync route state on startup
+    syncRouteFromPathname();
 
     // Check for administrative URL path trigger
     if (window.location.pathname === "/admin-login") {
       setIsAdminOpen(true);
       window.history.replaceState({}, "", "/");
     }
+
+    // Set up popstate listener to make browser back/forward buttons update the tabs
+    const handlePopState = () => {
+      syncRouteFromPathname();
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
   // Find detailed objects for views
@@ -254,18 +296,22 @@ export default function App() {
   const handleNavigate = (tab: string) => {
     setCurrentTab(tab);
     window.scrollTo({ top: 0, behavior: "smooth" });
+    const path = tab === "home" ? "/" : `/${tab}`;
+    window.history.pushState({}, "", path);
   };
 
   const handleOpenService = (slug: string) => {
     setSelectedServiceSlug(slug);
     setCurrentTab("service-detail");
     window.scrollTo({ top: 0, behavior: "smooth" });
+    window.history.pushState({}, "", `/service/${slug}`);
   };
 
   const handleOpenBlog = (slug: string) => {
     setSelectedBlogSlug(slug);
     setCurrentTab("blog-detail");
     window.scrollTo({ top: 0, behavior: "smooth" });
+    window.history.pushState({}, "", `/blog/${slug}`);
     // Hit view metric
     fetch("/api/analytics/hit", { method: "POST" }).catch(() => {});
   };
