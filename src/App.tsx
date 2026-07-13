@@ -47,6 +47,7 @@ import SchemaEditor from "./components/SchemaEditor";
 import MediaLibrary from "./components/MediaLibrary";
 import AiAssistant from "./components/AiAssistant";
 import PagesPanel from "./components/PagesPanel";
+import SeoDashboard from "./components/SeoDashboard";
 import FloatingCyberGlobe from "./components/FloatingCyberGlobe";
 import GlassmorphicCoreEngine from "./components/GlassmorphicCoreEngine";
 import DynamicFloatingGeometry from "./components/DynamicFloatingGeometry";
@@ -147,7 +148,7 @@ export default function App() {
   const [authError, setAuthError] = useState("");
 
   // CMS active editing tab
-  const [activeAdminSubTab, setActiveAdminSubTab] = useState<"analytics" | "blogs" | "media" | "leads" | "redirects" | "settings" | "pages">("analytics");
+  const [activeAdminSubTab, setActiveAdminSubTab] = useState<"analytics" | "blogs" | "media" | "leads" | "redirects" | "settings" | "pages" | "seo">("analytics");
 
 
   // Post Editor Workspaces
@@ -1873,6 +1874,13 @@ export default function App() {
                       <Folder className="w-3.5 h-3.5 text-blue-400" />
                       <span>Pages Manager</span>
                     </button>
+                    <button
+                      onClick={() => { setActiveAdminSubTab("seo"); setIsEditingPost(false); }}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeAdminSubTab === "seo" ? "bg-white/10 text-blue-400 border border-white/10" : "text-slate-400 hover:text-white"}`}
+                    >
+                      <TrendingUp className="w-3.5 h-3.5 text-blue-400" />
+                      <span>SEO Dashboard</span>
+                    </button>
                   </div>
 
                   <div className="pt-4 border-t border-white/10 flex flex-col gap-2">
@@ -2559,6 +2567,37 @@ export default function App() {
                       pages={pages}
                       onReload={loadAllData}
                       onLog={logActivity}
+                    />
+                  )}
+
+                  {activeAdminSubTab === "seo" && (
+                    <SeoDashboard
+                      blogs={blogs}
+                      pages={pages}
+                      redirects={redirects}
+                      onSaveBlog={(updated) => {
+                        setBlogs(prev => prev.map(b => b.id === updated.id ? updated : b));
+                        fetch(`/api/posts/${updated.id}`, {
+                          method: "PUT",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify(updated)
+                        }).then(res => {
+                          if (res.ok) loadAllData();
+                        }).catch(err => console.error(err));
+                      }}
+                      onSavePage={(updated) => {
+                        setPages(prev => prev.map(p => p.id === updated.id ? updated : p));
+                        fetch(`/api/pages/${updated.id}`, {
+                          method: "PUT",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify(updated)
+                        }).then(res => {
+                          if (res.ok) loadAllData();
+                        }).catch(err => console.error(err));
+                      }}
+                      onAddRedirect={handleCreateRedirect}
+                      onDeleteRedirect={handleDeleteRedirect}
+                      logActivity={(act) => logActivity(act)}
                     />
                   )}
 
