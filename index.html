@@ -6,22 +6,113 @@
     <title>Metazivo | WordPress Development, Meta Ads & Expert SEO Agency</title>
     <meta name="description" content="Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth." />
     <meta name="keywords" content="SEO agency, WordPress developer, Meta ads expert, social media marketing, SEO content writing, Metazivo" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://metazivo.com/" />
     
     <!-- Open Graph (OG) Tags for WhatsApp, Facebook, LinkedIn previews -->
     <meta property="og:title" content="Metazivo | WordPress Development, Meta Ads & Expert SEO Agency" />
     <meta property="og:description" content="Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://metazivo-digital-agency.ai.studio" />
-    <meta property="og:image" content="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&h=630&q=80" />
+    <meta property="og:url" content="https://metazivo.com/" />
+    <meta property="og:image" content="https://metazivo.com/og-image.jpg" />
     
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Metazivo | WordPress Development, Meta Ads & Expert SEO Agency" />
     <meta name="twitter:description" content="Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth." />
-    <meta name="twitter:image" content="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&h=630&q=80" />
+    <meta name="twitter:image" content="https://metazivo.com/og-image.jpg" />
     
     <!-- Favicon / Brand Styling -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+
+    <!-- Technical SEO JSON-LD Structured Data Schema Graph -->
+    <script type="application/ld+json" id="metazivo-schema-org">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://metazivo.com/#organization",
+          "name": "Metazivo",
+          "url": "https://metazivo.com/",
+          "logo": {
+            "@type": "ImageObject",
+            "@id": "https://metazivo.com/#logo",
+            "url": "https://metazivo.com/favicon.svg",
+            "contentUrl": "https://metazivo.com/favicon.svg",
+            "caption": "Metazivo Logo"
+          },
+          "image": {
+            "@id": "https://metazivo.com/#logo"
+          },
+          "sameAs": [
+            "https://www.facebook.com/metazivo",
+            "https://twitter.com/metazivo",
+            "https://www.linkedin.com/company/metazivo",
+            "https://www.instagram.com/metazivo"
+          ],
+          "description": "Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth."
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://metazivo.com/#website",
+          "url": "https://metazivo.com/",
+          "name": "Metazivo",
+          "publisher": {
+            "@id": "https://metazivo.com/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://metazivo.com/blog?s={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "LocalBusiness",
+          "@id": "https://metazivo.com/#localbusiness",
+          "name": "Metazivo",
+          "image": "https://metazivo.com/og-image.jpg",
+          "url": "https://metazivo.com/",
+          "telephone": "",
+          "priceRange": "$$",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Remote / Global",
+            "addressLocality": "Islamabad",
+            "addressCountry": "PK"
+          },
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "opens": "00:00",
+            "closes": "23:59"
+          }
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://metazivo.com/#webpage",
+          "url": "https://metazivo.com/",
+          "name": "Metazivo | WordPress Development, Meta Ads & Expert SEO Agency",
+          "isPartOf": {
+            "@id": "https://metazivo.com/#website"
+          },
+          "about": {
+            "@id": "https://metazivo.com/#organization"
+          },
+          "description": "Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth."
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root">

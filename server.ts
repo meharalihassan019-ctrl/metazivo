@@ -17,6 +17,15 @@ const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 app.use(compression());
+
+// Security and SEO Performance Headers
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "no-referrer-when-downgrade");
+  next();
+});
+
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
@@ -1411,6 +1420,278 @@ function getPageSEOAndContent(pathname: string): PageMetadata {
   return base;
 }
 
+function generateSchema(pathname: string): string {
+  const p = pathname.toLowerCase().replace(/\/$/, "") || "/";
+  const domain = "https://metazivo.com";
+
+  const baseSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${domain}/#organization`,
+        "name": "Metazivo",
+        "url": `${domain}/`,
+        "logo": {
+          "@type": "ImageObject",
+          "@id": `${domain}/#logo`,
+          "url": `${domain}/favicon.svg`,
+          "contentUrl": `${domain}/favicon.svg`,
+          "caption": "Metazivo Logo"
+        },
+        "image": {
+          "@id": `${domain}/#logo`
+        },
+        "sameAs": [
+          "https://www.facebook.com/metazivo",
+          "https://twitter.com/metazivo",
+          "https://www.linkedin.com/company/metazivo",
+          "https://www.instagram.com/metazivo"
+        ],
+        "description": "Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth."
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${domain}/#website`,
+        "url": `${domain}/`,
+        "name": "Metazivo",
+        "publisher": {
+          "@id": `${domain}/#organization`
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": `${domain}/blog?s={search_term_string}`,
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "LocalBusiness",
+        "@id": `${domain}/#localbusiness`,
+        "name": "Metazivo",
+        "image": `${domain}/og-image.jpg`,
+        "url": `${domain}/`,
+        "telephone": "",
+        "priceRange": "$$",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Remote / Global",
+          "addressLocality": "Islamabad",
+          "addressCountry": "PK"
+        },
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+          ],
+          "opens": "00:00",
+          "closes": "23:59"
+        }
+      }
+    ]
+  };
+
+  if (p === "/") {
+    baseSchema["@graph"].push({
+      "@type": "WebPage",
+      "@id": `${domain}/#webpage`,
+      "url": `${domain}/`,
+      "name": "Metazivo | WordPress Development, Meta Ads & Expert SEO Agency",
+      "isPartOf": { "@id": `${domain}/#website` },
+      "about": { "@id": `${domain}/#organization` },
+      "description": "Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth."
+    } as any);
+  } else if (p === "/services") {
+    baseSchema["@graph"].push({
+      "@type": "WebPage",
+      "@id": `${domain}/services/#webpage`,
+      "url": `${domain}/services`,
+      "name": "Our Premium Digital Services | Metazivo",
+      "isPartOf": { "@id": `${domain}/#website` },
+      "description": "Explore our core performance services: Bespoke WordPress development, schema-infused SEO campaigns, high-converting Meta ads, and organic branding."
+    } as any);
+
+    baseSchema["@graph"].push({
+      "@type": "BreadcrumbList",
+      "@id": `${domain}/services/#breadcrumb`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
+        { "@type": "ListItem", "position": 2, "name": "Services", "item": `${domain}/services` }
+      ]
+    } as any);
+  } else if (p.startsWith("/service/")) {
+    const slug = p.replace("/service/", "");
+    let serviceName = "Bespoke Digital Service";
+    let serviceDesc = "Metazivo high-performance digital marketing and engineering services.";
+
+    if (slug === "wordpress-development" || slug === "website-development") {
+      serviceName = "WordPress & WooCommerce Sales Engines";
+      serviceDesc = "Performance-engineered portals custom-crafted to load in under 1.2 seconds and convert traffic into sales.";
+    } else if (slug === "seo") {
+      serviceName = "Technical SEO & Authority Blog Dominance";
+      serviceDesc = "Advanced structured data, schema markup, semantic keyword clusters, and expert blog writing to capture maximum Google rank authority.";
+    } else if (slug === "meta-ads-advertising") {
+      serviceName = "Meta Ads & Dynamic Funnels";
+      serviceDesc = "Three-tier paid acquisition setups (TOFU, MOFU, BOFU) combined with psychologically optimized copywriting to scale average ROAS.";
+    } else if (slug === "social-media-management") {
+      serviceName = "Social Media Management & Viral Reels";
+      serviceDesc = "Organic brand storytelling, corporate content workflows, and professional short-form video post-production.";
+    } else if (slug === "graphic-design-branding") {
+      serviceName = "Graphic Design & Corporate Logo Branding";
+      serviceDesc = "We create beautiful logo systems, color standards, custom vector illustration directions, and high-fidelity wireframes.";
+    }
+
+    baseSchema["@graph"].push({
+      "@type": "Service",
+      "@id": `${domain}${pathname}/#service`,
+      "name": serviceName,
+      "provider": { "@id": `${domain}/#organization` },
+      "description": serviceDesc,
+      "areaServed": "Global",
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "USD",
+        "price": "100.00",
+        "eligibleRegion": "Global"
+      }
+    } as any);
+
+    baseSchema["@graph"].push({
+      "@type": "BreadcrumbList",
+      "@id": `${domain}${pathname}/#breadcrumb`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
+        { "@type": "ListItem", "position": 2, "name": "Services", "item": `${domain}/services` },
+        { "@type": "ListItem", "position": 3, "name": serviceName, "item": `${domain}${pathname}` }
+      ]
+    } as any);
+  } else if (p === "/portfolio") {
+    baseSchema["@graph"].push({
+      "@type": "WebPage",
+      "@id": `${domain}/portfolio/#webpage`,
+      "url": `${domain}/portfolio`,
+      "name": "Our Elite Client Case Studies & Portfolio | Metazivo",
+      "isPartOf": { "@id": `${domain}/#website` },
+      "description": "Explore real-world results: high-performance custom tracking portals, lightweight WooCommerce stores, and high-converting Meta Ads campaigns."
+    } as any);
+
+    baseSchema["@graph"].push({
+      "@type": "BreadcrumbList",
+      "@id": `${domain}/portfolio/#breadcrumb`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
+        { "@type": "ListItem", "position": 2, "name": "Portfolio", "item": `${domain}/portfolio` }
+      ]
+    } as any);
+  } else if (p === "/blog") {
+    baseSchema["@graph"].push({
+      "@type": "WebPage",
+      "@id": `${domain}/blog/#webpage`,
+      "url": `${domain}/blog`,
+      "name": "Expert Insights on Digital Growth & SEO | Metazivo Blog",
+      "isPartOf": { "@id": `${domain}/#website` },
+      "description": "Read elite articles written by Mehar Ali Hassan on website speed optimization, technical SEO structured data, and high-ROI Meta ad setups."
+    } as any);
+
+    baseSchema["@graph"].push({
+      "@type": "BreadcrumbList",
+      "@id": `${domain}/blog/#breadcrumb`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": `${domain}/blog` }
+      ]
+    } as any);
+  } else if (p.startsWith("/blog/")) {
+    const slug = p.replace("/blog/", "");
+    let title = "Expert Blog Insight";
+    let desc = "Actionable blueprints written by our technical engineering team to help you scale organic and paid traffic.";
+    let date = "2026-07-10T08:00:00+00:00";
+
+    if (slug === "website-speed-optimization-ultimate-guide") {
+      title = "Website Speed Optimization: The Ultimate Guide for 2026";
+      desc = "Learn core-splitting, image optimization pipelines, and server caching to boost page speeds.";
+      date = "2026-07-10T08:00:00+00:00";
+    } else if (slug === "maximize-roi-advanced-meta-ads-funnels") {
+      title = "How to Maximize ROI with Advanced Meta Ads Funnels";
+      desc = "Build custom retargeting and lookalike sequences to lower client acquisition costs.";
+      date = "2026-07-09T08:00:00+00:00";
+    }
+
+    baseSchema["@graph"].push({
+      "@type": "Article",
+      "@id": `${domain}${pathname}/#article`,
+      "isPartOf": { "@id": `${domain}${pathname}/#webpage` },
+      "headline": title,
+      "description": desc,
+      "datePublished": date,
+      "dateModified": date,
+      "author": {
+        "@type": "Person",
+        "name": "Mehar Ali Hassan",
+        "url": `${domain}/`
+      },
+      "publisher": { "@id": `${domain}/#organization` },
+      "image": {
+        "@type": "ImageObject",
+        "url": `${domain}/og-image.jpg`
+      }
+    } as any);
+
+    baseSchema["@graph"].push({
+      "@type": "BreadcrumbList",
+      "@id": `${domain}${pathname}/#breadcrumb`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": `${domain}/blog` },
+        { "@type": "ListItem", "position": 3, "name": title, "item": `${domain}${pathname}` }
+      ]
+    } as any);
+  } else if (p === "/pricing") {
+    baseSchema["@graph"].push({
+      "@type": "WebPage",
+      "@id": `${domain}/pricing/#webpage`,
+      "url": `${domain}/pricing`,
+      "name": "Transparent Growth Investment Plans | Metazivo",
+      "isPartOf": { "@id": `${domain}/#website` },
+      "description": "Simple, high-impact growth packages: Startup Core ($100/mo) and Business Growth ($199/mo) designed with zero hidden fees."
+    } as any);
+
+    baseSchema["@graph"].push({
+      "@type": "BreadcrumbList",
+      "@id": `${domain}/pricing/#breadcrumb`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
+        { "@type": "ListItem", "position": 2, "name": "Pricing", "item": `${domain}/pricing` }
+      ]
+    } as any);
+  } else if (p === "/contact") {
+    baseSchema["@graph"].push({
+      "@type": "WebPage",
+      "@id": `${domain}/contact/#webpage`,
+      "url": `${domain}/contact`,
+      "name": "Launch Your Digital Scale Journey | Contact Metazivo",
+      "isPartOf": { "@id": `${domain}/#website` },
+      "description": "Partner with Metazivo today. Contact our technical team to schedule your custom growth audit."
+    } as any);
+
+    baseSchema["@graph"].push({
+      "@type": "BreadcrumbList",
+      "@id": `${domain}/contact/#breadcrumb`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
+        { "@type": "ListItem", "position": 2, "name": "Contact", "item": `${domain}/contact` }
+      ]
+    } as any);
+  }
+
+  return JSON.stringify(baseSchema, null, 2);
+}
+
 function injectSEOAndPrerender(html: string, pathname: string): string {
   const seoData = getPageSEOAndContent(pathname);
   let resHtml = html;
@@ -1478,6 +1759,22 @@ function injectSEOAndPrerender(html: string, pathname: string): string {
     resHtml = resHtml.replace("</head>", `  <meta name="twitter:description" content="${seoData.description}" />\n</head>`);
   }
 
+  // Canonical Tag Replacement
+  const canonicalRegex = /<link\s+rel=["']canonical["']\s+href=["'][\s\S]*?["']\s*\/?>/i;
+  if (canonicalRegex.test(resHtml)) {
+    resHtml = resHtml.replace(canonicalRegex, `<link rel="canonical" href="https://metazivo.com${pathname}" />`);
+  } else {
+    resHtml = resHtml.replace("</head>", `  <link rel="canonical" href="https://metazivo.com${pathname}" />\n</head>`);
+  }
+
+  // Dynamic JSON-LD Schema Replacement
+  const schemaRegex = /<script\s+type=["']application\/ld\+json["']\s+id=["']metazivo-schema-org["']\s*>([\s\S]*?)<\/script>/i;
+  if (schemaRegex.test(resHtml)) {
+    resHtml = resHtml.replace(schemaRegex, `<script type="application/ld+json" id="metazivo-schema-org">\n${generateSchema(pathname)}\n</script>`);
+  } else {
+    resHtml = resHtml.replace("</head>", `  <script type="application/ld+json" id="metazivo-schema-org">\n${generateSchema(pathname)}\n</script>\n</head>`);
+  }
+
   // Prerender markup inside <div id="root">
   const rootRegex = /<div\s+id=["']root["']\s*>([\s\S]*?)<\/div>/i;
   if (rootRegex.test(resHtml)) {
@@ -1494,42 +1791,32 @@ async function initializeServer() {
   const distPath = path.join(process.cwd(), "dist");
   const isProd = process.env.NODE_ENV === "production" || fs.existsSync(distPath);
 
-  if (!isProd) {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa"
-    });
-    app.use(vite.middlewares);
-  } else {
-    // Cache the compiled index.html file in memory to completely bypass disk reading
-    let cachedIndexHtml = "";
-    try {
-      cachedIndexHtml = fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
-    } catch (e) {
-      console.error("Could not pre-load index.html from dist folder", e);
-    }
-
-    // Serve robots.txt explicitly with correct headers
-    app.get("/robots.txt", (req, res) => {
-      res.type("text/plain");
-      res.send(`User-agent: *
+  // Serve robots.txt explicitly with correct headers globally
+  app.get("/robots.txt", (req, res) => {
+    res.type("text/plain");
+    res.send(`User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /api
 
 Sitemap: https://metazivo.com/sitemap.xml`);
-    });
+  });
 
-    // Serve sitemap.xml explicitly with correct headers
-    app.get("/sitemap.xml", (req, res) => {
-      res.type("application/xml");
-      res.send(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  // Serve sitemap.xml with detailed URLs and Google Image Sitemap namespaces
+  app.get("/sitemap.xml", (req, res) => {
+    res.type("application/xml");
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://metazivo.com/</loc>
     <lastmod>2026-07-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://metazivo.com/og-image.jpg</image:loc>
+      <image:title>Metazivo Digital Agency</image:title>
+      <image:caption>Bespoke WordPress Development, Meta Ads &amp; Advanced SEO Agency</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://metazivo.com/services</loc>
@@ -1572,18 +1859,30 @@ Sitemap: https://metazivo.com/sitemap.xml`);
     <lastmod>2026-07-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://metazivo.com/wp_portfolio_mockup_1783857299220.jpg</image:loc>
+      <image:title>Metazivo WordPress Development Performance Dashboard</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://metazivo.com/service/seo</loc>
     <lastmod>2026-07-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://metazivo.com/seo_portfolio_mockup_1783857320829.jpg</image:loc>
+      <image:title>Metazivo Technical SEO Keyword Audits</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://metazivo.com/service/meta-ads-advertising</loc>
     <lastmod>2026-07-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://metazivo.com/meta_ads_leads_mockup_1783857339213.jpg</image:loc>
+      <image:title>Metazivo Meta Ads Funnel Setup</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://metazivo.com/service/social-media-management</loc>
@@ -1610,7 +1909,35 @@ Sitemap: https://metazivo.com/sitemap.xml`);
     <priority>0.8</priority>
   </url>
 </urlset>`);
+  });
+
+  if (!isProd) {
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: "spa"
     });
+    app.use(vite.middlewares);
+
+    // Let Vite handle fallback SPA index file rendering in development, but pre-render SEO tags
+    app.get("*", async (req, res, next) => {
+      try {
+        let template = fs.readFileSync(path.join(process.cwd(), "index.html"), "utf-8");
+        template = await vite.transformIndexHtml(req.path, template);
+        const preRenderedHtml = injectSEOAndPrerender(template, req.path);
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.send(preRenderedHtml);
+      } catch (e) {
+        next(e);
+      }
+    });
+  } else {
+    // Cache the compiled index.html file in memory to completely bypass disk reading
+    let cachedIndexHtml = "";
+    try {
+      cachedIndexHtml = fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
+    } catch (e) {
+      console.error("Could not pre-load index.html from dist folder", e);
+    }
 
     // Serve static files with 1 year cache headers (ignoring index.html which is served dynamically)
     app.use(express.static(distPath, {
