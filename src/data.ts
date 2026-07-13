@@ -144,7 +144,7 @@ export const pricingPlans = [
   {
     id: "plan-start",
     name: "Startup Core",
-    price: "$999",
+    price: "$100",
     period: "one-time",
     description: "Perfect for new businesses needing a premium digital launch pad.",
     features: [
@@ -162,7 +162,7 @@ export const pricingPlans = [
   {
     id: "plan-growth",
     name: "Business Growth",
-    price: "$2,499",
+    price: "$199",
     period: "month",
     description: "Our signature plan to systematically capture search rankings and scale sales.",
     features: [

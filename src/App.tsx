@@ -713,6 +713,7 @@ export default function App() {
                         src={coding3D} 
                         alt="3D High-Performance Coding" 
                         referrerPolicy="no-referrer"
+                        loading="lazy"
                         className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" 
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
@@ -761,6 +762,7 @@ export default function App() {
                         src={seo3D} 
                         alt="3D SEO Engine" 
                         referrerPolicy="no-referrer"
+                        loading="lazy"
                         className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" 
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
@@ -809,6 +811,7 @@ export default function App() {
                         src={funnel3D} 
                         alt="3D Funnel Optimization" 
                         referrerPolicy="no-referrer"
+                        loading="lazy"
                         className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" 
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
@@ -857,6 +860,7 @@ export default function App() {
                         src={smm3D} 
                         alt="3D Social Media Management" 
                         referrerPolicy="no-referrer"
+                        loading="lazy"
                         className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" 
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
@@ -867,6 +871,165 @@ export default function App() {
                   </ParallaxBentoCard>
                 </motion.div>
 
+              </div>
+            </section>
+
+            {/* 2.5 WHY CHOOSE METAZIVO (Bespoke vs Standard Templates) */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10" id="why-choose-us">
+              <div className="bg-slate-50 border border-slate-200/80 rounded-[40px] p-8 sm:p-12 lg:p-16 space-y-12 shadow-sm">
+                <div className="text-center space-y-4 max-w-2xl mx-auto">
+                  <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">The Metazivo Standard</span>
+                  <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Why Smart Businesses Avoid Cheap Templates</h2>
+                  <p className="text-xs sm:text-sm text-slate-600 font-light">
+                    Slow templates loaded with bulky plugin codes repel buyers and rank horribly. Here is how Metazivo's custom digital engineering makes you stand out.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+                  {/* Slow Templates Card */}
+                  <div className="bg-white border border-slate-150 p-8 rounded-3xl space-y-6 shadow-sm">
+                    <div className="flex items-center gap-3 text-red-500">
+                      <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                        <ShieldAlert className="w-5 h-5" />
+                      </div>
+                      <h4 className="text-lg font-extrabold text-slate-900">Standard Sluggish Templates</h4>
+                    </div>
+                    <p className="text-xs text-slate-500 font-light leading-relaxed">
+                      Most generic agencies use pre-designed themes with heavy visual builders (Elementor, Divi) and redundant scripts that bloat your backend.
+                    </p>
+                    <ul className="space-y-3 text-xs text-slate-600">
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500 font-bold mt-0.5 font-mono">✕</span>
+                        <span><strong>Poor Load Speed:</strong> Long rendering times exceeding 4.5 seconds cause over 50% of your mobile traffic to bounce.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500 font-bold mt-0.5 font-mono">✕</span>
+                        <span><strong>Severe Security Risks:</strong> Over-reliance on random third-party plugins opens up vulnerable entry paths for hackers.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500 font-bold mt-0.5 font-mono">✕</span>
+                        <span><strong>Cookie-Cutter Aesthetics:</strong> Your website looks exactly like thousands of other websites, failing to project brand status.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500 font-bold mt-0.5 font-mono">✕</span>
+                        <span><strong>Flawed On-Page SEO:</strong> No optimized sitemap, dynamic meta tags, or clean markup structure, making it hard to rank.</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Metazivo Custom Card */}
+                  <div className="bg-[#0a0a0c] text-white p-8 rounded-3xl space-y-6 shadow-xl relative overflow-hidden border border-[#FF5722]/10">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF5722]/10 rounded-full blur-2xl pointer-events-none" />
+                    <div className="flex items-center gap-3 text-[#FF5722]">
+                      <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center">
+                        <ShieldCheck className="w-5 h-5 text-[#FF5722]" />
+                      </div>
+                      <h4 className="text-lg font-extrabold text-white">Metazivo Bespoke Engineering</h4>
+                    </div>
+                    <p className="text-xs text-slate-400 font-light leading-relaxed">
+                      We discard pre-built template noise. We write clean, semantic code from scratch to ensure outstanding speed, design supremacy, and secure architectures.
+                    </p>
+                    <ul className="space-y-3 text-xs text-slate-300">
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
+                        <span><strong>Supersonic Speed:</strong> Rendered in under 1.2 seconds, getting 100% PageSpeed Core Web Vitals score.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
+                        <span><strong>Bulletproof Security:</strong> Custom-tailored core files with automated daily cloud updates and zero dangerous plugins.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
+                        <span><strong>Elite Custom Brand Design:</strong> Tailored specifically to your visual guideline to engage buyers.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
+                        <span><strong>Advanced Built-In SEO Engine:</strong> Integrated microdata schemas, fully optimized structures, and responsive tag architectures.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* 2.7 OUR STRATEGIC PROCESS BLUEPRINT */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16 relative z-10" id="strategic-process">
+              <div className="text-center space-y-4 max-w-2xl mx-auto">
+                <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Strategic Blueprint</span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Our 5-Step Digital Scale Blueprint</h2>
+                <p className="text-xs sm:text-sm text-slate-600 font-light">
+                  We don't rely on guesswork. We implement a systematic, step-by-step engineering roadmap to transform your business from invisible to market leader.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6 pt-4 relative">
+                {/* Horizontal progress lines for desktop */}
+                <div className="hidden md:block absolute top-[44px] left-12 right-12 h-0.5 bg-slate-200/80 z-0" />
+
+                {/* Step 1 */}
+                <div className="bg-white border border-slate-150 p-6 rounded-2xl relative z-10 shadow-sm flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <span className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-800 font-mono border border-slate-200">01</span>
+                    <h4 className="text-sm font-bold text-slate-900">Technical Audit</h4>
+                    <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                      We dissect your current performance, study competitor backlinks, and map out high-value commercial keyword opportunities.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="bg-white border border-slate-150 p-6 rounded-2xl relative z-10 shadow-sm flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <span className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-800 font-mono border border-slate-200">02</span>
+                    <h4 className="text-sm font-bold text-slate-900">Figma UI Blueprint</h4>
+                    <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                      Our graphic designers craft custom responsive wireframes and cohesive modern styles ensuring flawless user conversions.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="bg-white border border-slate-150 p-6 rounded-2xl relative z-10 shadow-sm flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <span className="w-10 h-10 rounded-full bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-xs font-black text-[#FF5722] font-mono">03</span>
+                    <h4 className="text-sm font-bold text-slate-900">Lightning Dev</h4>
+                    <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                      We hand-code clean web components or custom blocks. This guarantees a supersonic speed layout and absolute security.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 4 */}
+                <div className="bg-white border border-slate-150 p-6 rounded-2xl relative z-10 shadow-sm flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <span className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-800 font-mono border border-slate-200">04</span>
+                    <h4 className="text-sm font-bold text-slate-900">Conversion Funnels</h4>
+                    <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                      We launch hyper-targeted Meta ad structures alongside persuasive psychological copy, routing buyers directly to your service.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 5 */}
+                <div className="bg-[#0a0a0c] text-white p-6 rounded-2xl relative z-10 shadow-lg flex flex-col justify-between border border-[#FF5722]/20">
+                  <div className="space-y-4">
+                    <span className="w-10 h-10 rounded-full bg-[#FF5722] flex items-center justify-center text-xs font-black text-white font-mono">05</span>
+                    <h4 className="text-sm font-bold text-white">Active Scaling</h4>
+                    <p className="text-[11px] text-slate-400 font-light leading-relaxed">
+                      Through weekly blogging authority articles, Google map rankings boost, and continuous budget scaling, we secure your market leader status.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-center pt-2">
+                <button
+                  onClick={() => handleNavigate("contact")}
+                  className="px-8 py-3.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-[0_4px_15px_rgba(255,87,34,0.25)] flex items-center gap-2 cursor-pointer"
+                >
+                  <span>Build My Blueprint Now</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
             </section>
 
@@ -1137,6 +1300,7 @@ export default function App() {
                 src={getServiceImage(activeService.slug)} 
                 alt={activeService.title} 
                 referrerPolicy="no-referrer"
+                loading="lazy"
                 className="w-full h-full object-cover opacity-95 hover:scale-[1.01] transition-transform duration-700 ease-out" 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none" />
@@ -1216,7 +1380,7 @@ export default function App() {
               {portfolioItems.map((item) => (
                 <div key={item.id} className="bg-white border border-slate-200/80 rounded-[32px] overflow-hidden shadow-sm flex flex-col justify-between">
                   <div className="aspect-video w-full overflow-hidden border-b border-slate-100">
-                    <img src={item.image} alt={item.title} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                    <img src={item.image} alt={item.title} referrerPolicy="no-referrer" loading="lazy" className="w-full h-full object-cover" />
                   </div>
                   <div className="p-5 space-y-3">
                     <div className="flex justify-between items-center text-xs">
@@ -1247,7 +1411,7 @@ export default function App() {
                 <div key={post.id} className="bg-white border border-slate-200/80 rounded-[32px] overflow-hidden hover:border-[#FF5722]/30 transition-all flex flex-col justify-between shadow-sm" id={`blog-card-${post.slug}`}>
                   <div>
                     <div className="aspect-video w-full overflow-hidden relative border-b border-slate-100">
-                      <img src={post.featuredImage} alt={post.title} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                      <img src={post.featuredImage} alt={post.title} referrerPolicy="no-referrer" loading="lazy" className="w-full h-full object-cover" />
                       {post.sticky && (
                         <span className="absolute top-3 left-3 bg-[#FF5722] text-white text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full shadow">
                           Sticky Post
