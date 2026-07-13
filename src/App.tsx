@@ -50,19 +50,54 @@ import PagesPanel from "./components/PagesPanel";
 import FloatingCyberGlobe from "./components/FloatingCyberGlobe";
 import GlassmorphicCoreEngine from "./components/GlassmorphicCoreEngine";
 import DynamicFloatingGeometry from "./components/DynamicFloatingGeometry";
+import Floating3DRing from "./components/Floating3DRing";
+import ParallaxBentoCard from "./components/ParallaxBentoCard";
+import CustomCursor from "./components/CustomCursor";
 import { servicesData, pricingPlans, portfolioItems, workProcessTimeline, faqList, testimonials, trustedCompanies } from "./data";
 import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary, ContactInfo, CustomPage } from "./types";
 import { motion } from "motion/react";
 
-import hero3D from "./assets/images/metazivo_3d_hero_1783779600552.jpg";
-import coding3D from "./assets/images/3d_coding_icon_1783779624161.jpg";
-import seo3D from "./assets/images/3d_seo_icon_1783779642685.jpg";
-import funnel3D from "./assets/images/3d_funnel_icon_1783779659456.jpg";
-import branding3D from "./assets/images/3d_branding_icon_1783779696731.jpg";
+// Premium real stock photo URLs (Not AI-generated)
+const hero3D = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"; // Collaborative teamwork real office meeting
+const coding3D = "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80"; // Clean IDE lines of code on high-res screen
+const seo3D = "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=800&q=80"; // Laptop displaying charts and SEO dashboards
+const funnel3D = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"; // Professional analytics data visualization charts
+const branding3D = "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=800&q=80"; // Creative graphic designer workspace sketch with tablets
+const smm3D = "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80"; // Modern smartphones displaying organic feed layouts
+const metaAds3D = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80"; // Workspace team planning conversion campaigns
+
+const getServiceImage = (slug: string) => {
+  switch (slug) {
+    case "website-development":
+    case "wordpress-development":
+      return coding3D;
+    case "seo":
+      return seo3D;
+    case "meta-ads-advertising":
+      return metaAds3D;
+    case "social-media-management":
+      return smm3D;
+    case "graphic-design-branding":
+      return branding3D;
+    default:
+      return funnel3D;
+  }
+};
 
 export default function App() {
   // Navigation Routing States
   const [currentTab, setCurrentTab] = useState<string>("home"); // home, about, services, portfolio, blog, pricing, contact, privacy, terms, service-detail, blog-detail
+  const [scrollY, setScrollY] = useState(0);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const [heroTilt, setHeroTilt] = useState({ x: 0, y: 0 });
   const [selectedServiceSlug, setSelectedServiceSlug] = useState<string>("");
   const [selectedBlogSlug, setSelectedBlogSlug] = useState<string>("");
@@ -76,6 +111,30 @@ export default function App() {
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [pages, setPages] = useState<CustomPage[]>([]);
   const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
+
+  const displayEmail = contactInfo?.email || "mai@metazivo.com";
+  const displayPhone = contactInfo?.phone || "+92 328 8518557";
+
+  const getWhatsAppLink = (slug: string) => {
+    const cleanPhone = displayPhone.replace(/[^0-9]/g, "");
+    let text = "Hi! I visited your website and would like to consult about your professional digital services.";
+    
+    if (slug === "wordpress-development") {
+      text = "Hi! I am interested in your WordPress & WooCommerce Sales Engine service. Let's discuss how we can scale my website and online store.";
+    } else if (slug === "seo") {
+      text = "Hi! I am interested in your SEO & Authority Blog Writing Domination service. Let's discuss how we can rank my business on the first page of Google.";
+    } else if (slug === "meta-ads-advertising") {
+      text = "Hi! I am interested in your Meta Ads Acquisition System. Let's discuss how we can scale my campaigns and generate high-ROI leads.";
+    } else if (slug === "social-media-management") {
+      text = "Hi! I am interested in your Social Media Management & Viral Reels service. Let's discuss how to elevate my brand and increase organic reach.";
+    } else if (slug === "website-development") {
+      text = "Hi! I am interested in your High-Performance Website Development service. Let's discuss my custom React/Next.js requirements.";
+    } else if (slug === "graphic-design-branding") {
+      text = "Hi! I am interested in your Graphic Design & Corporate Logo Branding service. Let's discuss crafting a premium identity.";
+    }
+    
+    return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
+  };
 
   // Auth States
   const [isAdminOpen, setIsAdminOpen] = useState(false);
@@ -411,13 +470,16 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-50 flex flex-col font-sans selection:bg-blue-500/30 selection:text-blue-200 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-[#FF5722]/20 selection:text-[#FF5722] relative overflow-hidden">
+      
+      {/* Interactive premium custom mouse cursor */}
+      <CustomCursor />
       
       {/* Decorative Background Glow Blobs */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[120px]"></div>
-        <div className="absolute top-[20%] right-[10%] w-[300px] h-[300px] bg-emerald-500/10 rounded-full blur-[80px]"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-100/40 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-orange-100/30 rounded-full blur-[120px]"></div>
+        <div className="absolute top-[20%] right-[10%] w-[300px] h-[300px] bg-emerald-50/25 rounded-full blur-[80px]"></div>
       </div>
       
       {/* Upper Navigation bar */}
@@ -433,555 +495,574 @@ export default function App() {
         
         {/* VIEW 1: HOME PAGE */}
         {currentTab === "home" && (
-          <div id="view-home" className="space-y-24 pb-20 relative overflow-hidden">
-            {/* Dynamic Floating Iridescent Glass & Chrome Geometry */}
-            <DynamicFloatingGeometry />
-
-            {/* Animated Floating Background Spheres */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <motion.div 
-                className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-tr from-blue-500/10 to-indigo-500/5 rounded-full blur-[120px]"
-                animate={{
-                  x: [0, 50, -30, 0],
-                  y: [0, -70, 40, 0],
-                }}
-                transition={{
-                  duration: 25,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
+          <div id="view-home" className="pb-24 bg-white text-slate-800 relative overflow-hidden font-sans">
+            
+            {/* Cinematic Parallax Background Layers */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+              {/* Slower scrolling back grid */}
+              <div 
+                className="absolute inset-0 opacity-[0.06] bg-[radial-gradient(#FF5722_1.5px,transparent_1.5px)] [background-size:24px_24px]"
+                style={{ transform: `translateY(${scrollY * 0.15}px)` }}
               />
-              <motion.div 
-                className="absolute top-1/2 right-10 w-[500px] h-[500px] bg-gradient-to-br from-purple-500/10 to-pink-500/5 rounded-full blur-[140px]"
-                animate={{
-                  x: [0, -70, 50, 0],
-                  y: [0, 60, -50, 0],
-                }}
-                transition={{
-                  duration: 30,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
+              {/* Slower scrolling ambient orange orbs */}
+              <div 
+                className="absolute top-20 left-10 w-[500px] h-[500px] rounded-full bg-[#FF5722]/3 blur-[120px]"
+                style={{ transform: `translateY(${scrollY * 0.08}px)` }}
               />
-              <motion.div 
-                className="absolute bottom-10 left-1/3 w-80 h-80 bg-gradient-to-tr from-cyan-500/10 to-emerald-500/5 rounded-full blur-[100px]"
-                animate={{
-                  x: [0, 40, -40, 0],
-                  y: [0, 40, -40, 0],
-                }}
-                transition={{
-                  duration: 22,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
+              <div 
+                className="absolute top-1/2 right-10 w-[600px] h-[600px] rounded-full bg-[#FF5722]/2 blur-[140px]"
+                style={{ transform: `translateY(${scrollY * -0.05}px)` }}
               />
             </div>
 
-            {/* Premium 3D Interactive Hero Section */}
-            <section className="relative pt-28 pb-16 px-4 md:px-8" id="section-hero">
+            {/* 1. HERO SECTION */}
+            <section className="relative pt-24 pb-20 px-4 sm:px-6 lg:px-8 z-10" id="hero-showcase">
               <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                {/* Left Side: Editorial Typography & Copy */}
-                <div className="lg:col-span-6 space-y-8 text-center lg:text-left z-20">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/5 border border-white/10 rounded-full text-[11px] text-blue-400 font-mono tracking-wider uppercase">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" /> 
-                    <span>Deploying High-Fidelity Solutions</span>
+                
+                {/* Left: Cinematic Content */}
+                <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-100 rounded-full text-xs text-[#FF5722] font-mono tracking-wider uppercase shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-[#FF5722] animate-ping" />
+                    <span>Premium Digital Agency</span>
                   </div>
-                  
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] tracking-tight font-sans">
-                    We Engineer <br className="hidden lg:block"/>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 font-black drop-shadow-sm">
-                      3D-Optimized
-                    </span> <br className="hidden sm:block" />
-                    Digital Ecosystems.
+
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-slate-900">
+                    We Build <br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF5722] via-[#FF7043] to-[#FF8A50]">
+                      Digital Experiences
+                    </span> <br />
+                    That Drive Growth.
                   </h1>
-                  
-                  <p className="text-slate-300 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
-                    Metazivo is a premier full-stack design and engineering agency. We fuse high-speed React architecture with aggressive SEO algorithms and stunning three-dimensional interfaces to skyrocket your conversion.
+
+                  <p className="text-slate-600 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
+                    Metazivo is a premier full-service engineering agency specializing in high-converting <strong className="text-slate-900 font-semibold">SEO Algorithms</strong>, <strong className="text-slate-900 font-semibold">Website Development</strong>, and authoritative <strong className="text-slate-900 font-semibold">Content Strategy</strong>.
                   </p>
-                  
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
+
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
                     <button
-                      onClick={() => handleNavigate("contact")}
-                      className="group relative px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(37,99,235,0.4)] hover:shadow-[0_0_35px_rgba(37,99,235,0.6)] cursor-pointer flex items-center justify-center gap-2"
+                      onClick={() => {
+                        const target = document.getElementById("core-services");
+                        target?.scrollIntoView({ behavior: "smooth" });
+                      }}
+                      className="group relative px-8 py-4 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-[0_4px_20px_rgba(255,87,34,0.35)] hover:shadow-[0_6px_25px_rgba(255,87,34,0.5)] flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <span>Initiate Strategy Call</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
+                      <span>Discover More</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
                     <button
-                      onClick={() => handleNavigate("services")}
-                      className="px-8 py-4 bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 hover:border-white/20 rounded-full text-xs font-bold uppercase tracking-wider transition-all"
+                      onClick={() => handleNavigate("contact")}
+                      className="px-8 py-4 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200/80 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
                     >
-                      Explore Our capabilities
+                      Get Started
                     </button>
                   </div>
 
-                  {/* Trust metrics */}
-                  <div className="grid grid-cols-3 gap-6 pt-6 border-t border-white/5 max-w-md mx-auto lg:mx-0 text-left">
+                  {/* Trust Signal metrics */}
+                  <div className="grid grid-cols-3 gap-6 pt-8 border-t border-slate-200/80 max-w-md mx-auto lg:mx-0 text-left">
                     <div>
-                      <span className="block text-2xl font-black text-white font-mono">99%</span>
-                      <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">PageSpeed</span>
+                      <span className="block text-2xl font-black text-slate-900 font-mono">99%</span>
+                      <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">Core Web Vitals</span>
                     </div>
                     <div>
-                      <span className="block text-2xl font-black text-indigo-400 font-mono">+310%</span>
-                      <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">SEO Reach</span>
+                      <span className="block text-2xl font-black text-[#FF5722] font-mono">+320%</span>
+                      <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">SEO Visibility</span>
                     </div>
                     <div>
-                      <span className="block text-2xl font-black text-purple-400 font-mono">4.8x</span>
-                      <span className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Ad ROAS</span>
+                      <span className="block text-2xl font-black text-slate-900 font-mono">4.8x</span>
+                      <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">Average ROAS</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Right Side: Interactive Mouse-Controlled 3D Tilt Card Frame */}
-                <div className="lg:col-span-6 relative flex justify-center items-center z-10 py-6">
-                  {/* Outer glowing radial background */}
-                  <div className="absolute w-[400px] h-[400px] bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-full blur-[80px] opacity-70 pointer-events-none" />
-
-                  {/* Mouse interaction tilt canvas */}
-                  <div 
-                    className="relative w-full max-w-md rounded-[32px] cursor-grab active:cursor-grabbing select-none"
-                    onMouseMove={(e) => {
-                      const card = e.currentTarget;
-                      const rect = card.getBoundingClientRect();
-                      const x = e.clientX - rect.left - rect.width / 2;
-                      const y = e.clientY - rect.top - rect.height / 2;
-                      // Maximum 12 degrees tilt
-                      setHeroTilt({ x: -(y / (rect.height / 2)) * 12, y: (x / (rect.width / 2)) * 12 });
-                    }}
-                    onMouseLeave={() => {
-                      setHeroTilt({ x: 0, y: 0 });
-                    }}
-                    style={{
-                      transform: `perspective(1000px) rotateX(${heroTilt.x}deg) rotateY(${heroTilt.y}deg) scale3d(1.02, 1.02, 1.02)`,
-                      transition: "transform 0.15s ease-out",
-                      transformStyle: "preserve-3d"
-                    }}
-                  >
-                    {/* Inner Glassmorphic Frame containing FloatingCyberGlobe */}
-                    <div className="rounded-[32px] overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)]">
-                      <FloatingCyberGlobe />
+                {/* Right: Custom parametric 3D Glass Floating Ring and status widgets */}
+                <div className="lg:col-span-5 relative flex justify-center items-center">
+                  <div className="absolute w-[450px] h-[450px] bg-[#FF5722]/5 rounded-full blur-[100px] pointer-events-none" />
+                  
+                  {/* Floating badges with translateZ offsets */}
+                  <div className="relative w-full flex justify-center items-center">
+                    {/* Floating3DRing acts as an ambient tech backdrop */}
+                    <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+                      <Floating3DRing />
                     </div>
 
-                    {/* Floating 3D Badge 1: PageSpeed Radar */}
-                    <div 
-                      className="absolute -top-4 -right-4 bg-[#030712]/90 backdrop-blur-xl border border-emerald-500/30 px-4 py-2.5 rounded-2xl flex items-center gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-                      style={{ transform: "translateZ(30px)" }}
+                    {/* Main Hero 3D Picture with elegant tilt glass frame */}
+                    <motion.div 
+                      className="relative z-10 w-4/5 aspect-square rounded-[32px] overflow-hidden border border-slate-200/60 shadow-2xl bg-white group"
+                      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
                     >
-                      <div className="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold font-mono">FCP</div>
+                      <img 
+                        src={hero3D} 
+                        alt="Metazivo 3D Hero Illustration" 
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent pointer-events-none" />
+                    </motion.div>
+                    
+                    {/* Floating badge 1 */}
+                    <div className="absolute -top-6 -right-2 z-20 bg-white/95 backdrop-blur-md border border-orange-100 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-[0_10px_30px_rgba(255,87,34,0.1)] animate-bounce duration-3000">
+                      <div className="w-8 h-8 rounded-full bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] text-xs font-bold font-mono">SEO</div>
                       <div>
-                        <div className="text-[10px] text-slate-400 font-mono uppercase tracking-wider">PageSpeed Rank</div>
-                        <div className="text-xs font-black text-emerald-400 font-mono">99 / 100 (Grade A)</div>
+                        <div className="text-[9px] text-slate-500 font-mono uppercase tracking-wider">SEO Optimization</div>
+                        <div className="text-xs font-bold text-slate-900 font-sans">99.2% Score</div>
                       </div>
                     </div>
 
-                    {/* Floating 3D Badge 2: Live conversion tracker */}
-                    <div 
-                      className="absolute -bottom-6 -left-4 bg-[#030712]/90 backdrop-blur-xl border border-blue-500/30 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-                      style={{ transform: "translateZ(45px)" }}
-                    >
-                      <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-ping" />
+                    {/* Floating badge 2 */}
+                    <div className="absolute -bottom-4 -left-2 z-20 bg-white/95 backdrop-blur-md border border-slate-150 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#FF5722] animate-ping" />
                       <div>
-                        <div className="text-[9px] text-slate-400 font-mono uppercase tracking-wider">CMS Activity Feed</div>
-                        <div className="text-xs font-bold text-white font-sans flex items-center gap-1.5">
-                          <span>Lead Optimized Node API</span>
-                          <span className="text-[9px] text-blue-400 font-mono">Hostinger Sync</span>
+                        <div className="text-[9px] text-slate-500 font-mono uppercase tracking-wider">Campaign Tracking</div>
+                        <div className="text-xs font-bold text-slate-900 font-sans">Always Active</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+            {/* 3. INFINITE MARQUEE TICKER */}
+            <div className="w-full bg-slate-50 py-6 border-y border-slate-200/60 relative z-10 overflow-hidden">
+              <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent pointer-events-none z-20" />
+              <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent pointer-events-none z-20" />
+              
+              <div className="flex select-none overflow-hidden">
+                <motion.div 
+                  animate={{ x: [0, -1000] }}
+                  transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
+                  className="flex whitespace-nowrap gap-12 text-sm sm:text-base font-bold text-slate-800 uppercase tracking-[0.15em] shrink-0"
+                >
+                  <span className="flex items-center gap-3">Data-Driven SEO <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Smart Development <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Content Authority <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Scalable Growth <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Data-Driven SEO <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Smart Development <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Content Authority <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Scalable Growth <span className="text-[#FF5722]">✦</span></span>
+                </motion.div>
+                <motion.div 
+                  animate={{ x: [0, -1000] }}
+                  transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
+                  className="flex whitespace-nowrap gap-12 text-sm sm:text-base font-bold text-slate-800 uppercase tracking-[0.15em] shrink-0"
+                  aria-hidden="true"
+                >
+                  <span className="flex items-center gap-3">Data-Driven SEO <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Smart Development <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Content Authority <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Scalable Growth <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Data-Driven SEO <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Smart Development <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Content Authority <span className="text-[#FF5722]">✦</span></span>
+                  <span className="flex items-center gap-3">Scalable Growth <span className="text-[#FF5722]">✦</span></span>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* 2. CORE SERVICES (Asymmetric Bento Grid with 3D Tilt) */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-16 relative z-10" id="core-services">
+              <div className="text-center space-y-4">
+                <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Specializations</span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Our Core Digital Services</h2>
+                <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto font-light">
+                  We design customized growth mechanisms using premium engineering models. No slow pre-built templates, strictly custom code.
+                </p>
+              </div>
+
+              {/* Bento Grid container (4 Core Services 2x2 layout) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                {/* Card 1: WordPress & E-Commerce Web Dev */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <ParallaxBentoCard className="h-full flex flex-col justify-between min-h-[460px] p-8" onClick={() => handleOpenService("website-development")}>
+                    <div className="space-y-6">
+                      <div className="w-12 h-12 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-2xl flex items-center justify-center text-[#FF5722]">
+                        <Code className="w-6 h-6" />
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <span className="text-[10px] font-mono font-bold text-[#FF5722] uppercase tracking-wider block">Sales Machine</span>
+                        <h3 className="text-2xl font-bold text-slate-900 font-sans">WordPress & E-Commerce Development</h3>
+                        <p className="text-sm text-slate-600 leading-relaxed font-light">
+                          Your website is your 24/7 virtual storefront. We design custom WordPress and WooCommerce sites that load instantly, looking breathtakingly professional on every screen. We don't just use standard sluggish templates—we structure the code, secure your platform, and design premium sales checkouts that turn casual clicks into repeat customers.
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500 font-medium">
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+                          <span>Custom Theme Crafting & WooCommerce Optimization</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+                          <span>Guaranteed &lt;1.5s Load Speed & Perfect Mobile Layout</span>
                         </div>
                       </div>
                     </div>
 
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Futuristic 3D Trusted Companies conveyor */}
-            <section className="w-full bg-white/[0.02] backdrop-blur-md py-10 border-y border-white/5 relative z-10 overflow-hidden">
-              <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#020617] to-transparent pointer-events-none z-20" />
-              <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#020617] to-transparent pointer-events-none z-20" />
-              <div className="max-w-7xl mx-auto px-4">
-                <p className="text-center text-[10px] font-mono text-slate-500 uppercase tracking-[0.2em] mb-6">Powering Brands Registered Across Global Deployments</p>
-                <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-16 text-slate-400 text-xs font-mono font-bold tracking-widest uppercase">
-                  {trustedCompanies.map((tc, index) => (
-                    <div key={index} className="flex items-center gap-2 hover:text-slate-200 transition-colors cursor-default">
-                      <span className="text-blue-500 text-sm">✦</span>
-                      <span>{tc}</span>
+                    <div className="mt-8 relative aspect-video w-full rounded-2xl overflow-hidden border border-slate-150 bg-slate-50 flex items-center justify-center">
+                      <img 
+                        src={coding3D} 
+                        alt="3D High-Performance Coding" 
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
+                      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-slate-200 text-[10px] font-mono text-[#FF5722] font-semibold shadow-sm">
+                        CUSTOM DEVELOPMENT ✦ WOOCOMMERCE ACTIVE
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </section>
+                  </ParallaxBentoCard>
+                </motion.div>
 
-            {/* Elegant 3D Bento Grid Section */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 relative z-10" id="section-about-brief">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                {/* Left Side: Editorial Philosophy copy */}
-                <div className="lg:col-span-5 text-center lg:text-left space-y-4">
-                  <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Our Design Philosophy</span>
-                  <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-                    Premium Mechanics. <br className="sm:hidden" /> Zero Bloat. Maximum Speed.
-                  </h2>
-                  <p className="text-slate-300 text-sm font-light leading-relaxed">
-                    Heavy templates load slowly, leak security nodes, and degrade Google PageRank. Metazivo engineers custom, lightning-fast interfaces using tailored rendering modules to ensure high-end organic conversion.
-                  </p>
-                </div>
-                {/* Right Side: High-fidelity GlassmorphicCoreEngine interactive crystal console */}
-                <div className="lg:col-span-7 w-full h-[360px] lg:h-[400px]">
-                  <GlassmorphicCoreEngine />
-                </div>
-              </div>
+                {/* Card 2: SEO & High-Authority Blog Writing */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                >
+                  <ParallaxBentoCard className="h-full flex flex-col justify-between min-h-[460px] p-8" onClick={() => handleOpenService("seo")}>
+                    <div className="space-y-6">
+                      <div className="w-12 h-12 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-2xl flex items-center justify-center text-[#FF5722]">
+                        <Search className="w-6 h-6" />
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <span className="text-[10px] font-mono font-bold text-[#FF5722] uppercase tracking-wider block">Google Domination</span>
+                        <h3 className="text-2xl font-bold text-slate-900 font-sans">SEO & High-Authority Blog Writing</h3>
+                        <p className="text-sm text-slate-600 leading-relaxed font-light">
+                          If your business isn’t on Google’s page 1, you are practically invisible to buyers. We implement advanced SEO algorithms alongside value-first blog content writing. By targeting high-intent buyer keywords, editing metadata, and writing deep-dive articles, we drive thousands of warm, ready-to-buy organic visitors to your site completely free.
+                        </p>
+                      </div>
 
-              {/* Spectacular 3D Bento Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
-                
-                {/* Bento Card 1: Clean Coding (Large/Hero Bento Item) */}
-                <div className="lg:col-span-7 bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/10 hover:border-cyan-500/30 rounded-[32px] p-6 lg:p-8 flex flex-col md:flex-row justify-between gap-6 transition-all duration-300 group hover:shadow-[0_15px_40px_rgba(6,182,212,0.06)] hover:-translate-y-1 relative overflow-hidden">
-                  <div className="flex-1 flex flex-col justify-between space-y-6">
-                    <div className="space-y-3">
-                      <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-widest bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-1 rounded-full w-fit block">React & Node LTS</span>
-                      <h3 className="text-xl font-bold text-white tracking-wide">High-Performance Clean Coding</h3>
-                      <p className="text-xs text-slate-400 leading-relaxed font-light">
-                        We compile static architectures bypassing heavy CMS loops. Absolute type-safety coupled with client-side hydration provides immediate performance metrics.
-                      </p>
+                      <div className="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500 font-medium">
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+                          <span>Keyword Research, SEO Blogs & Meta Optimization</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+                          <span>On-Page, Off-Page and Technical SEO Domination</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-mono text-cyan-400 font-semibold">⚡ Node.js Core API</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
-                      <span className="text-xs font-mono text-slate-500">React 19 Build</span>
-                    </div>
-                  </div>
-                  <div className="w-full md:w-44 lg:w-52 aspect-square relative rounded-2xl overflow-hidden shrink-0 border border-white/10 bg-black/40 flex items-center justify-center">
-                    <img 
-                      src={coding3D} 
-                      alt="3D Code Illustration" 
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  </div>
-                </div>
 
-                {/* Bento Card 2: SEO Visibility */}
-                <div className="lg:col-span-5 bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/10 hover:border-emerald-500/30 rounded-[32px] p-6 lg:p-8 flex flex-col justify-between gap-6 transition-all duration-300 group hover:shadow-[0_15px_40px_rgba(16,185,129,0.06)] hover:-translate-y-1 relative overflow-hidden">
-                  <div className="flex justify-between items-start gap-4">
-                    <div className="space-y-3">
-                      <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full w-fit block">Organic Domination</span>
-                      <h3 className="text-lg font-bold text-white tracking-wide">Deep SEO & Structural Markup</h3>
-                    </div>
-                    <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-white/10 bg-black/40">
+                    <div className="mt-8 relative aspect-video w-full rounded-2xl overflow-hidden border border-slate-150 bg-slate-50 flex items-center justify-center">
                       <img 
                         src={seo3D} 
-                        alt="3D SEO Illustration" 
+                        alt="3D SEO Engine" 
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                        className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" 
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
+                      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-slate-200 text-[10px] font-mono text-[#FF5722] font-semibold shadow-sm">
+                        PAGE 1 RANKINGS ✦ AUTHORITY BLOGS
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-xs text-slate-400 leading-relaxed font-light">
-                    We inject clean JSON-LD metadata nodes automatically, ensuring rapid sitemap crawl rates and high search results rankings.
-                  </p>
-                  <div className="pt-2 border-t border-white/5 flex justify-between items-center text-[10px] text-slate-400 font-mono">
-                    <span>Google Rank index: 100%</span>
-                    <span className="text-emerald-400 font-bold">ACTIVE DEPLOY</span>
-                  </div>
-                </div>
+                  </ParallaxBentoCard>
+                </motion.div>
 
-                {/* Bento Card 3: Conversion Funnels */}
-                <div className="lg:col-span-5 bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/10 hover:border-purple-500/30 rounded-[32px] p-6 lg:p-8 flex flex-col justify-between gap-6 transition-all duration-300 group hover:shadow-[0_15px_40px_rgba(168,85,247,0.06)] hover:-translate-y-1 relative overflow-hidden">
-                  <div className="flex justify-between items-start gap-4">
-                    <div className="space-y-3">
-                      <span className="text-[10px] font-mono font-bold text-purple-400 uppercase tracking-widest bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-full w-fit block">Conversion Matrix</span>
-                      <h3 className="text-lg font-bold text-white tracking-wide">Custom Lead Capturing Funnels</h3>
+                {/* Card 3: Meta Ads & Scaled Lead Generation */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <ParallaxBentoCard className="h-full flex flex-col justify-between min-h-[460px] p-8" onClick={() => handleOpenService("meta-ads-advertising")}>
+                    <div className="space-y-6">
+                      <div className="w-12 h-12 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-2xl flex items-center justify-center text-[#FF5722]">
+                        <ShoppingBag className="w-6 h-6" />
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <span className="text-[10px] font-mono font-bold text-[#FF5722] uppercase tracking-wider block">Acquisition Engine</span>
+                        <h3 className="text-2xl font-bold text-slate-900 font-sans">Meta Ads & Paid Acquisition</h3>
+                        <p className="text-sm text-slate-600 leading-relaxed font-light">
+                          Stop burning budget on 'boost posts' that fail to deliver. We deploy high-converting Meta Ads campaigns across Facebook and Instagram. Our strategies combine hyper-targeted audience pipelines, direct-response ad copy, high-impact creatives, and retargeting flows that bring hot customer leads directly into your pipeline.
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500 font-medium">
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+                          <span>Facebook & Instagram Ads Setup & Custom Funnels</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+                          <span>Targeted Lead Gen Pipelines & High-Converting Copy</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-white/10 bg-black/40">
+
+                    <div className="mt-8 relative aspect-video w-full rounded-2xl overflow-hidden border border-slate-150 bg-slate-50 flex items-center justify-center">
                       <img 
                         src={funnel3D} 
-                        alt="3D Funnel Illustration" 
+                        alt="3D Funnel Optimization" 
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                        className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" 
                       />
-                    </div>
-                  </div>
-                  <p className="text-xs text-slate-400 leading-relaxed font-light">
-                    Beautiful multi-step high friction lead forms structured directly inside fast interactive React modules, maximizing user response thresholds.
-                  </p>
-                  <div className="pt-2 border-t border-white/5 flex justify-between items-center text-[10px] text-slate-400 font-mono">
-                    <span>Conversion spike: +45%</span>
-                    <span className="text-purple-400 font-bold">ROAS OPTIMIZED</span>
-                  </div>
-                </div>
-
-                {/* Bento Card 4: Branding & Strategy */}
-                <div className="lg:col-span-7 bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/10 hover:border-pink-500/30 rounded-[32px] p-6 lg:p-8 flex flex-col md:flex-row justify-between gap-6 transition-all duration-300 group hover:shadow-[0_15px_40px_rgba(236,72,153,0.06)] hover:-translate-y-1 relative overflow-hidden">
-                  <div className="flex-1 flex flex-col justify-between space-y-6">
-                    <div className="space-y-3">
-                      <span className="text-[10px] font-mono font-bold text-pink-400 uppercase tracking-widest bg-pink-500/10 border border-pink-500/20 px-2.5 py-1 rounded-full w-fit block">Luxury Identity</span>
-                      <h3 className="text-xl font-bold text-white tracking-wide">Brand Identity & Digital Assets</h3>
-                      <p className="text-xs text-slate-400 leading-relaxed font-light">
-                        Beautiful graphic guidelines and interactive typography pairings tailored for premium visual positioning. We establish lasting aesthetics.
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-mono text-pink-400 font-semibold">✦ High Contrast Elements</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
-                      <span className="text-xs font-mono text-slate-500">Creative Strategy</span>
-                    </div>
-                  </div>
-                  <div className="w-full md:w-44 lg:w-52 aspect-square relative rounded-2xl overflow-hidden shrink-0 border border-white/10 bg-black/40 flex items-center justify-center">
-                    <img 
-                      src={branding3D} 
-                      alt="3D Branding Illustration" 
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  </div>
-                </div>
-
-              </div>
-            </section>
-
-            {/* Redesigned 3D Services Showcases */}
-            <section className="bg-white/[0.01] backdrop-blur-md py-20 border-y border-white/5 relative z-10" id="section-services">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
-                <div className="text-center space-y-4">
-                  <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Solutions Portfolio</span>
-                  <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Enterprise Scaling Services</h2>
-                  <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto font-light">Discover Metazivo's core specializations designed to capture, nurture, and convert digital traffic.</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {servicesData.map((srv) => {
-                    const iconMap: { [key: string]: any } = { Code, Layout, ShoppingBag, Search, TrendingUp, Palette };
-                    const IconComp = iconMap[srv.icon] || Code;
-                    return (
-                      <div 
-                        key={srv.id} 
-                        className="p-8 bg-white/[0.03] backdrop-blur-xl border border-white/10 hover:border-blue-500/40 rounded-[32px] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_15px_30px_rgba(37,99,235,0.06)] group flex flex-col justify-between" 
-                        id={`service-card-${srv.slug}`}
-                      >
-                        <div className="space-y-6">
-                          <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-blue-400 group-hover:text-blue-300 group-hover:bg-blue-600/10 group-hover:border-blue-500/20 transition-all duration-300">
-                            <IconComp className="w-6 h-6" />
-                          </div>
-                          <h3 className="text-lg font-bold text-white">{srv.title}</h3>
-                          <p className="text-xs text-slate-400 leading-relaxed font-light">{srv.description}</p>
-                        </div>
-                        
-                        <div className="pt-6 mt-6 border-t border-white/5">
-                          <button
-                            onClick={() => handleOpenService(srv.slug)}
-                            className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
-                          >
-                            <span>Detailed Case Studies</span>
-                            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </section>
-
-            {/* Strategic Work Process */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12" id="section-process">
-              <div className="text-center space-y-3">
-                <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Performance Blueprints</span>
-                <h2 className="text-3xl font-extrabold text-white tracking-tight">Our Structured Work Process</h2>
-                <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">We eliminate guesswork. Here is our step-by-step pipeline to scale and protect your company's sales.</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-                {workProcessTimeline.map((wp, idx) => (
-                  <div key={idx} className="relative p-5 bg-white/5 border border-white/10 rounded-xl space-y-3 shadow-md" id={`process-step-${wp.step}`}>
-                    <span className="text-3xl font-extrabold text-blue-400/20 block font-mono">{wp.step}</span>
-                    <h3 className="text-xs font-bold text-white uppercase tracking-wider">{wp.title}</h3>
-                    <p className="text-[11px] text-slate-300 leading-relaxed">{wp.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Portfolio briefing Bento Grid */}
-            <section className="bg-white/5 backdrop-blur-sm py-16 border-y border-white/5" id="section-portfolio-brief">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-                <div className="flex flex-col sm:flex-row justify-between items-end gap-4">
-                  <div>
-                    <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Case Records</span>
-                    <h2 className="text-3xl font-extrabold text-white tracking-tight">Our Proven Works</h2>
-                  </div>
-                  <button onClick={() => handleNavigate("portfolio")} className="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs font-semibold text-slate-300 hover:text-white transition-all shadow-md">
-                    View Complete Case Portfolio
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {portfolioItems.slice(0, 2).map((item) => (
-                    <div key={item.id} className="group relative rounded-[32px] overflow-hidden border border-white/10 bg-white/5 backdrop-blur-md shadow-xl transition-all hover:border-white/20">
-                      <div className="aspect-video w-full overflow-hidden">
-                        <img src={item.image} alt={item.title} referrerPolicy="no-referrer" className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300" />
-                      </div>
-                      <div className="p-5 space-y-2">
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="font-semibold text-blue-400 font-mono">{item.metrics}</span>
-                          <span className="text-slate-400">{item.category}</span>
-                        </div>
-                        <h3 className="text-base font-bold text-white">{item.title}</h3>
-                        <p className="text-xs text-slate-300 leading-relaxed">{item.description}</p>
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
+                      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-slate-200 text-[10px] font-mono text-[#FF5722] font-semibold shadow-sm">
+                        HIGH CONVERTING BLUEPRINTS ✦ ROAS BOOSTER
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </ParallaxBentoCard>
+                </motion.div>
+
+                {/* Card 4: Premium Social Media Management */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                >
+                  <ParallaxBentoCard className="h-full flex flex-col justify-between min-h-[460px] p-8" onClick={() => handleOpenService("social-media-management")}>
+                    <div className="space-y-6">
+                      <div className="w-12 h-12 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-2xl flex items-center justify-center text-[#FF5722]">
+                        <Palette className="w-6 h-6" />
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <span className="text-[10px] font-mono font-bold text-[#FF5722] uppercase tracking-wider block">Community Authority</span>
+                        <h3 className="text-2xl font-bold text-slate-900 font-sans">Social Media Management</h3>
+                        <p className="text-sm text-slate-600 leading-relaxed font-light">
+                          Social media is your digital reputation. We handle complete social media ecosystem care—gorgeous visual post design, high-engagement copywriting, viral video reels, and persistent posting calendars. We build an interactive, high-trust community that makes your business look incredibly professional, trusted, and alive 24/7.
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500 font-medium">
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+                          <span>Creative Brand Design, Grid Layouts & Captions</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+                          <span>Viral Short-Form Video Reels & Active Audience Growth</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 relative aspect-video w-full rounded-2xl overflow-hidden border border-slate-150 bg-slate-50 flex items-center justify-center">
+                      <img 
+                        src={smm3D} 
+                        alt="3D Social Media Management" 
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
+                      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-slate-200 text-[10px] font-mono text-[#FF5722] font-semibold shadow-sm">
+                        BRAND ELEVATED ✦ CONSISTENT VISIBILITY
+                      </div>
+                    </div>
+                  </ParallaxBentoCard>
+                </motion.div>
+
               </div>
             </section>
 
-            {/* Pricing Section */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12" id="section-pricing-brief">
-              <div className="text-center space-y-3">
-                <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Investment Outlines</span>
-                <h2 className="text-3xl font-extrabold text-white tracking-tight">Clear, Actionable Investment Plans</h2>
-                <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">No opaque rates. Select a certified roadmap to scale your brand with Metazivo.</p>
+            {/* 4. SUCCESS METRICS (Cinematic scroll-driven background Parallax) */}
+            <section className="relative w-full py-32 overflow-hidden border-y border-white/10 z-10" id="success-metrics">
+              {/* Parallax background wrapper */}
+              <div className="absolute inset-0 z-0">
+                <div 
+                  className="absolute inset-0 w-full h-[150%] -top-[25%] bg-cover bg-center opacity-15"
+                  style={{ 
+                    backgroundImage: "url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80')",
+                    transform: `translateY(${(scrollY - 1000) * 0.12}px)` 
+                  }}
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0c] via-transparent to-[#0a0a0c]" />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {pricingPlans.map((plan) => (
-                  <div
-                    key={plan.id}
-                    className={`p-6 rounded-[32px] border flex flex-col justify-between backdrop-blur-md transition-all hover:translate-y-[-4px] ${
-                      plan.popular
-                        ? "bg-white/10 border-blue-500/50 shadow-[0_0_25px_rgba(37,99,235,0.15)] relative scale-102"
-                        : "bg-white/5 border-white/10"
-                    }`}
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-12">
+                <motion.div 
+                  className="space-y-4"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-[#FF5722]/10 px-3 py-1 rounded-full">Proven Trajectory</span>
+                  <h2 className="text-4xl font-extrabold text-white tracking-tight">Our Performance in Numbers</h2>
+                  <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto font-light">We validate our custom agency code through absolute metrics.</p>
+                </motion.div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8">
+                  <motion.div 
+                    className="p-8 bg-black/60 backdrop-blur-md rounded-3xl border border-white/10 space-y-2 group hover:border-[#FF5722]/30 transition-colors"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.6 }}
                   >
-                    {plan.popular && (
-                      <span className="absolute top-3 right-4 bg-blue-600 text-white text-[9px] uppercase tracking-widest font-bold px-3 py-1 rounded-full shadow-[0_0_10px_rgba(37,99,235,0.3)]">
-                        Recommended
-                      </span>
-                    )}
-                    <div className="space-y-4">
-                      <h3 className="text-base font-bold text-white">{plan.name}</h3>
-                      <p className="text-xs text-slate-300">{plan.description}</p>
-                      <div className="flex items-baseline gap-1 py-2 border-y border-white/10">
-                        <span className="text-3xl font-bold text-white">{plan.price}</span>
-                        {plan.period !== "one-time" && <span className="text-xs text-slate-500">/{plan.period}</span>}
-                      </div>
-                      <ul className="space-y-2.5 text-xs text-slate-300">
-                        {plan.features.map((feat, idx) => (
-                          <li key={idx} className="flex gap-2 items-center">
-                            <Check className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-                            <span>{feat}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <button
-                      onClick={() => handleNavigate("contact")}
-                      className={`w-full mt-6 py-2.5 rounded-full text-xs font-bold tracking-wide transition-all ${
-                        plan.popular
-                          ? "bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_15px_rgba(37,99,235,0.3)]"
-                          : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10"
-                      }`}
-                    >
-                      {plan.cta}
-                    </button>
-                  </div>
-                ))}
+                    <span className="block text-5xl font-black text-white font-mono tracking-tight">92%</span>
+                    <span className="text-sm font-semibold text-[#FF5722] block">Client Retention & Satisfaction</span>
+                    <p className="text-xs text-slate-500 font-light leading-relaxed">Our partners retain Metazivo on active recurring maintenance contracts indefinitely.</p>
+                  </motion.div>
+
+                  <motion.div 
+                    className="p-8 bg-black/60 backdrop-blur-md rounded-3xl border border-white/10 space-y-2 group hover:border-[#FF5722]/30 transition-colors"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                  >
+                    <span className="block text-5xl font-black text-white font-mono tracking-tight">4.8/5</span>
+                    <span className="text-sm font-semibold text-[#FF5722] block">Public Star Ratings</span>
+                    <p className="text-xs text-slate-500 font-light leading-relaxed">Top tier verification and verified case reviews on Clutch and Google Partner feeds.</p>
+                  </motion.div>
+
+                  <motion.div 
+                    className="p-8 bg-black/60 backdrop-blur-md rounded-3xl border border-white/10 space-y-2 group hover:border-[#FF5722]/30 transition-colors"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                  >
+                    <span className="block text-5xl font-black text-white font-mono tracking-tight">+350%</span>
+                    <span className="text-sm font-semibold text-[#FF5722] block">Organic Keyword Surge</span>
+                    <p className="text-xs text-slate-500 font-light leading-relaxed">Our technical semantic SEO frameworks trigger immediate indexation and climb rankings.</p>
+                  </motion.div>
+                </div>
               </div>
             </section>
 
-            {/* Testimonials */}
-            <section className="bg-white/5 backdrop-blur-sm py-16 border-y border-white/5" id="section-testimonials">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-                <div className="text-center space-y-3">
-                  <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Client Reviews</span>
-                  <h2 className="text-3xl font-extrabold text-white tracking-tight">Endorsed by Top-Tier Brands</h2>
-                </div>
+            {/* 5. DYNAMIC FAQ SECTION */}
+            <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-16 relative z-10" id="faq-engine">
+              <div className="text-center space-y-4">
+                <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Knowledge Hub</span>
+                <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Frequently Asked Inquiries</h2>
+                <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto font-light">
+                  Get details on our SEO processes, custom website build features, and Facebook & Instagram ad blueprints.
+                </p>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {testimonials.map((t) => (
-                    <div key={t.id} className="p-6 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl flex flex-col justify-between shadow-lg">
-                      <p className="text-xs text-slate-300 leading-relaxed italic">"{t.text}"</p>
-                      <div className="flex items-center gap-3 mt-6">
-                        <img src={t.avatar} alt={t.name} referrerPolicy="no-referrer" className="w-9 h-9 rounded-full object-cover border border-white/10" />
-                        <div>
-                          <h4 className="text-xs font-bold text-white">{t.name}</h4>
-                          <span className="text-[10px] text-slate-500 block">{t.role}</span>
+              {/* Interactive Accordion Layout */}
+              <div className="space-y-4">
+                {faqList.map((faq, index) => {
+                  const isOpen = activeFaq === index;
+                  return (
+                    <motion.div 
+                      key={index}
+                      className={`rounded-2xl border transition-all duration-300 overflow-hidden bg-slate-50 ${
+                        isOpen ? "border-[#FF5722] shadow-[0_10px_30px_rgba(255,87,34,0.06)]" : "border-slate-200/60"
+                      }`}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                    >
+                      <button
+                        onClick={() => setActiveFaq(isOpen ? null : index)}
+                        className="w-full px-6 py-5 flex items-center justify-between text-left cursor-pointer focus:outline-none"
+                      >
+                        <span className="text-sm sm:text-base font-bold text-slate-800 hover:text-[#FF5722] transition-colors">
+                          {faq.question}
+                        </span>
+                        <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${
+                          isOpen ? "border-[#FF5722] text-[#FF5722] rotate-45" : "border-slate-200/80 text-slate-500"
+                        }`}>
+                          <Plus className="w-3.5 h-3.5 transition-transform" />
+                        </div>
+                      </button>
+
+                      {/* Smooth slide accordion panel */}
+                      <div 
+                        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                          isOpen ? "max-h-[300px] border-t border-slate-100" : "max-h-0"
+                        }`}
+                      >
+                        <div className="p-6 text-xs sm:text-sm text-slate-600 leading-relaxed font-light">
+                          {faq.answer}
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    </motion.div>
+                  );
+                })}
               </div>
             </section>
 
-            {/* Inbound lead & detailed map Section */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center" id="section-leads-contact">
+            {/* 6. CONVERSION PORTAL / CONTACT */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center border-t border-slate-200/60 relative z-10" id="leads-portal">
               <div className="space-y-6">
-                <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Instant Booking</span>
-                <h2 className="text-3xl font-extrabold text-white tracking-tight">Let's Blueprint Your Next Growth Target</h2>
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  Have questions about custom database configurations, technical SEO, API deployments, or Google Ads scaling parameters? Fill out our brief interactive scope catalog and one of our Principal Engineers will schedule a free 30-minute growth call.
+                <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Free Growth Call</span>
+                <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Let's Design Your Growth Blueprint</h2>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-light">
+                  Have questions about SEO strategies, customized WordPress builds, or Facebook & Instagram ad blueprints? Fill out our form and our team will design your conversion optimization blueprint.
                 </p>
-                <div className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3 font-mono text-xs shadow-md">
+                
+                <div className="p-5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-3 font-mono text-xs">
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Official Email:</span>
-                    <a href={`mailto:${contactInfo?.email || "mai@metazivo.com"}`} className="text-blue-400 hover:underline">{contactInfo?.email || "mai@metazivo.com"}</a>
+                    <span className="text-slate-500">Contact Email:</span>
+                    <a href={`mailto:${displayEmail}`} className="text-[#FF5722] hover:underline font-bold">{displayEmail}</a>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Engineering Hotline:</span>
-                    <a href={contactInfo?.phone ? `tel:${contactInfo.phone.replace(/[^+\d]/g, "")}` : "tel:+923288518557"} className="text-blue-400 hover:underline">{contactInfo?.phone || "+92 328 8518557"}</a>
+                    <span className="text-slate-500">Hotline Number:</span>
+                    <a href={`tel:${displayPhone.replace(/[^+\d]/g, "")}`} className="text-[#FF5722] hover:underline font-bold">{displayPhone}</a>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">HQ Coordinate:</span>
-                    <span className="text-slate-300">{contactInfo?.address || "Islamabad / Lahore, PK"}</span>
+                    <span className="text-slate-500">Coordinate:</span>
+                    <span className="text-slate-700">{contactInfo?.address || "Islamabad / Lahore, PK"}</span>
                   </div>
                 </div>
               </div>
 
-              <div>
+              <div className="p-1 rounded-3xl bg-gradient-to-tr from-orange-100/50 to-orange-50/20 border border-orange-200/50 shadow-xl shadow-orange-500/5">
                 <ContactForm />
               </div>
             </section>
+
           </div>
         )}
 
         {/* VIEW 2: ABOUT PAGE */}
         {currentTab === "about" && (
-          <div id="view-about" className="max-w-4xl mx-auto px-4 py-16 space-y-12 animate-fade-in">
-            <button onClick={() => handleNavigate("home")} className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors">
+          <div id="view-about" className="max-w-4xl mx-auto px-4 py-16 space-y-12 animate-fade-in text-slate-800">
+            <button onClick={() => handleNavigate("home")} className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors cursor-pointer">
               <ArrowLeft className="w-3.5 h-3.5" /> Back to Dashboard
             </button>
             <div className="space-y-4">
-              <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">About Metazivo</span>
-              <h1 className="text-4xl font-extrabold text-white">Full-Service Digital Growth Engineering</h1>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Founded with a vision to eliminate slow page speeds and template bloat from modern e-commerce and business marketing, Metazivo serves clients globally. We are an agency of designers, software engineers, search engine optimizers, and copywriters specializing in high conversion.
+              <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest">About Metazivo</span>
+              <h1 className="text-4xl font-extrabold text-slate-950">Full-Service Digital Growth Engineering</h1>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-light">
+                Founded with a vision to eliminate slow page speeds and template bloat from modern e-commerce and business marketing, Metazivo serves clients globally. We are a specialized agency of designers, developers, search engine optimizers, and copywriters specializing in high conversion.
               </p>
             </div>
 
-            <div className="p-6 bg-white/5 backdrop-blur-md border border-white/10 rounded-[32px] grid grid-cols-1 md:grid-cols-3 gap-6 text-center shadow-lg">
+            <div className="p-6 bg-slate-50 border border-slate-200/80 rounded-[32px] grid grid-cols-1 md:grid-cols-3 gap-6 text-center shadow-sm">
               <div>
-                <span className="block text-3xl font-bold text-white">100%</span>
-                <span className="text-xs text-slate-400 block mt-1">LTS Code Standards</span>
+                <span className="block text-3xl font-black text-slate-900">100%</span>
+                <span className="text-xs text-slate-500 block mt-1">LTS Code Standards</span>
               </div>
               <div>
-                <span className="block text-3xl font-bold text-white">14+</span>
-                <span className="text-xs text-slate-400 block mt-1">Active Global Accounts</span>
+                <span className="block text-3xl font-black text-slate-900">14+</span>
+                <span className="text-xs text-slate-500 block mt-1">Active Global Accounts</span>
               </div>
               <div>
-                <span className="block text-3xl font-bold text-white">0.3s</span>
-                <span className="text-xs text-slate-400 block mt-1">Average Load Speed</span>
+                <span className="block text-3xl font-black text-slate-900">0.3s</span>
+                <span className="text-xs text-slate-500 block mt-1">Average Load Speed</span>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-xl font-bold text-white">Corporate Leadership</h2>
+              <h2 className="text-xl font-bold text-slate-900">Corporate Leadership</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="p-5 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-4 shadow-md">
-                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Mehar Ali Hassan" referrerPolicy="no-referrer" className="w-12 h-12 rounded-full object-cover border border-white/10" />
+                <div className="p-5 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center gap-4 shadow-sm">
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Mehar Ali Hassan" referrerPolicy="no-referrer" className="w-12 h-12 rounded-full object-cover border border-slate-200" />
                   <div>
-                    <h3 className="text-sm font-bold text-white">Mehar Ali Hassan</h3>
-                    <span className="text-[11px] text-blue-400 font-mono">Principal Systems Architect</span>
+                    <h3 className="text-sm font-bold text-slate-900">Mehar Ali Hassan</h3>
+                    <span className="text-[11px] text-[#FF5722] font-mono">Principal Systems Architect</span>
                   </div>
                 </div>
               </div>
@@ -991,21 +1072,21 @@ export default function App() {
 
         {/* VIEW 3: SERVICES LIST PAGE */}
         {currentTab === "services" && (
-          <div id="view-services" className="max-w-5xl mx-auto px-4 py-16 space-y-12 animate-fade-in">
+          <div id="view-services" className="max-w-5xl mx-auto px-4 py-16 space-y-12 animate-fade-in text-slate-800">
             <div className="text-center space-y-4">
-              <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Full Agency Capabilities</span>
-              <h1 className="text-4xl font-extrabold text-white">Enterprise Business Solutions</h1>
-              <p className="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto">We construct pristine, search-optimized web architectures, high conversion funnels, and corporate design standards.</p>
+              <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Full Agency Capabilities</span>
+              <h1 className="text-4xl font-extrabold text-slate-950">Enterprise Business Solutions</h1>
+              <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto">We construct pristine, search-optimized web architectures, high conversion funnels, and corporate design standards.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {servicesData.map((srv) => (
-                <div key={srv.id} className="p-6 bg-white/5 backdrop-blur-md border border-white/10 hover:border-blue-400/50 rounded-[32px] transition-all shadow-lg" id={`services-list-${srv.slug}`}>
-                  <h3 className="text-lg font-bold text-white mb-2">{srv.title}</h3>
-                  <p className="text-xs text-slate-300 leading-relaxed mb-4">{srv.description}</p>
+                <div key={srv.id} className="p-6 bg-white border border-slate-200/70 hover:border-[#FF5722]/30 rounded-[32px] transition-all shadow-sm hover:shadow-md" id={`services-list-${srv.slug}`}>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">{srv.title}</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed mb-4">{srv.description}</p>
                   <button
                     onClick={() => handleOpenService(srv.slug)}
-                    className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-1.5"
+                    className="text-xs font-semibold text-[#FF5722] hover:text-[#FF7043] transition-colors inline-flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>View Process & Benefits</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -1018,24 +1099,60 @@ export default function App() {
 
         {/* VIEW 4: DETAILED INDIVIDUAL SERVICE PAGE */}
         {currentTab === "service-detail" && activeService && (
-          <div id="view-service-detail" className="max-w-4xl mx-auto px-4 py-16 space-y-10 animate-fade-in">
-            <button onClick={() => handleNavigate("services")} className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors">
+          <div id="view-service-detail" className="max-w-4xl mx-auto px-4 py-16 space-y-10 animate-fade-in text-slate-800">
+            <button onClick={() => handleNavigate("services")} className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors cursor-pointer">
               <ArrowLeft className="w-3.5 h-3.5" /> Back to Services
             </button>
 
-            <div className="space-y-4">
-              <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Agency Solutions</span>
-              <h1 className="text-4xl font-extrabold text-white">{activeService.title}</h1>
-              <p className="text-sm text-slate-300 leading-relaxed">{activeService.longDescription}</p>
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest block font-semibold">✦ High-Yield Agency Solution</span>
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">{activeService.title}</h1>
+                <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-light">{activeService.longDescription}</p>
+              </div>
+
+              {/* Instant Conversion Row */}
+              <div className="flex flex-wrap gap-4 items-center pt-2">
+                <a 
+                  href={getWhatsAppLink(activeService.slug)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-xs flex items-center gap-2 shadow-[0_4px_12px_rgba(16,185,129,0.25)] hover:shadow-[0_4px_15px_rgba(16,185,129,0.35)] transition-all cursor-pointer border border-emerald-500/20 active:scale-95"
+                >
+                  <Phone className="w-4 h-4 text-emerald-100" />
+                  <span>Direct WhatsApp Chat (+92 328 8518557)</span>
+                </a>
+                <button 
+                  onClick={() => handleNavigate("contact")}
+                  className="px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl text-xs border border-slate-200 transition-all cursor-pointer"
+                >
+                  Request Customized Blueprint
+                </button>
+              </div>
+            </div>
+
+            {/* Service Detailed Featured Banner */}
+            <div className="relative w-full aspect-[16/7] rounded-[32px] overflow-hidden border border-slate-200/80 shadow-lg bg-slate-100">
+              <img 
+                src={getServiceImage(activeService.slug)} 
+                alt={activeService.title} 
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover opacity-95 hover:scale-[1.01] transition-transform duration-700 ease-out" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-200/80 text-xs font-mono text-[#FF5722] font-semibold flex items-center gap-2 shadow-md">
+                <span className="w-2 h-2 rounded-full bg-[#FF5722] animate-pulse" />
+                <span>ACTIVE PRODUCTION NODE</span>
+              </div>
             </div>
 
             {/* Benefits box */}
-            <div className="p-6 bg-white/5 backdrop-blur-md border border-white/10 rounded-[32px] space-y-4 shadow-lg">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">Primary Optimization Benefits</h3>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+            <div className="p-6 bg-slate-50 border border-slate-200/80 rounded-[32px] space-y-4 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Primary Optimization Benefits</h3>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-600">
                 {activeService.benefits.map((b, idx) => (
                   <li key={idx} className="flex gap-2 items-center">
-                    <Check className="w-3.5 h-3.5 text-blue-400" />
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
                     <span>{b}</span>
                   </li>
                 ))}
@@ -1044,52 +1161,70 @@ export default function App() {
 
             {/* Specific Process Timeline */}
             <div className="space-y-4">
-              <h3 className="text-base font-bold text-white uppercase tracking-wider">Implementation Lifecycle</h3>
+              <h3 className="text-base font-bold text-slate-900 uppercase tracking-wider">Implementation Lifecycle</h3>
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 {activeService.process.map((step, idx) => (
-                  <div key={idx} className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-1.5 shadow-md">
-                    <span className="text-blue-400 text-xs font-mono font-bold">Phase 0{idx + 1}</span>
-                    <h4 className="text-xs font-semibold text-slate-200">{step}</h4>
+                  <div key={idx} className="p-4 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5 shadow-sm">
+                    <span className="text-[#FF5722] text-xs font-mono font-bold">Phase 0{idx + 1}</span>
+                    <h4 className="text-xs font-semibold text-slate-800">{step}</h4>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Quick custom callback action */}
-            <div className="bg-gradient-to-tr from-blue-900/10 to-purple-900/10 p-6 border border-white/10 rounded-[32px] flex flex-col sm:flex-row justify-between items-center gap-4 shadow-xl backdrop-blur-md">
-              <div className="text-center sm:text-left">
-                <h4 className="text-sm font-bold text-white">Need custom implementation?</h4>
-                <p className="text-xs text-slate-400 mt-0.5">Let's plan your exact architecture requirements today.</p>
+            <div className="bg-gradient-to-tr from-slate-50 to-orange-50/20 p-8 border border-slate-200/80 rounded-[32px] flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="text-center md:text-left space-y-2">
+                <span className="text-[10px] font-mono text-emerald-600 font-bold uppercase tracking-widest block">✦ 100% Client-Centric Success</span>
+                <h4 className="text-lg font-bold text-slate-900">Let's scale your business to the absolute next level!</h4>
+                <p className="text-xs text-slate-600 max-w-md leading-relaxed">
+                  Is service se apka business direct grow hoga. Custom WordPress development, ranking factors, aur high-converting campaigns ke zariye apka revenue increase hamari zimmedari hai.
+                </p>
               </div>
-              <button onClick={() => handleNavigate("contact")} className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-xs font-semibold transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)] cursor-pointer">
-                Request Service Blueprint
-              </button>
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                <a 
+                  href={getWhatsAppLink(activeService.slug)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full text-xs font-bold transition-all shadow-[0_4px_10px_rgba(16,185,129,0.25)] flex items-center justify-center gap-2 border border-emerald-500/20 cursor-pointer active:scale-95"
+                >
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>Consult on WhatsApp</span>
+                </a>
+                <button 
+                  onClick={() => handleNavigate("contact")} 
+                  className="w-full sm:w-auto px-6 py-3 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-full text-xs font-semibold transition-all cursor-pointer"
+                >
+                  Request Blueprint
+                </button>
+              </div>
             </div>
           </div>
         )}
 
         {/* VIEW 5: PORTFOLIO LIST PAGE */}
         {currentTab === "portfolio" && (
-          <div id="view-portfolio" className="max-w-5xl mx-auto px-4 py-16 space-y-12 animate-fade-in">
+          <div id="view-portfolio" className="max-w-5xl mx-auto px-4 py-16 space-y-12 animate-fade-in text-slate-800">
             <div className="text-center space-y-4">
-              <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Case Catalog</span>
-              <h1 className="text-4xl font-extrabold text-white">Recent Success Stories</h1>
-              <p className="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto">We systematically design digital performance. Review the actual metrics of completed agency assets.</p>
+              <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Case Catalog</span>
+              <h1 className="text-4xl font-extrabold text-slate-950">Recent Success Stories</h1>
+              <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto font-light">We systematically design digital performance. Review the actual metrics of completed agency assets.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {portfolioItems.map((item) => (
-                <div key={item.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[32px] overflow-hidden shadow-lg">
-                  <div className="aspect-video w-full overflow-hidden">
+                <div key={item.id} className="bg-white border border-slate-200/80 rounded-[32px] overflow-hidden shadow-sm flex flex-col justify-between">
+                  <div className="aspect-video w-full overflow-hidden border-b border-slate-100">
                     <img src={item.image} alt={item.title} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                   </div>
                   <div className="p-5 space-y-3">
                     <div className="flex justify-between items-center text-xs">
-                      <span className="px-2.5 py-0.5 bg-white/5 text-blue-400 border border-white/10 rounded-full font-mono font-semibold">{item.metrics}</span>
-                      <span className="text-slate-400">{item.category}</span>
+                      <span className="px-2.5 py-0.5 bg-orange-50 text-[#FF5722] border border-orange-100 rounded-full font-mono font-bold">{item.metrics}</span>
+                      <span className="text-slate-500">{item.category}</span>
                     </div>
-                    <h3 className="text-base font-bold text-white">{item.title}</h3>
-                    <p className="text-xs text-slate-300 leading-relaxed">{item.description}</p>
+                    <h3 className="text-base font-bold text-slate-900">{item.title}</h3>
+                    <p className="text-xs text-slate-600 leading-relaxed font-light">{item.description}</p>
                   </div>
                 </div>
               ))}
@@ -1099,28 +1234,28 @@ export default function App() {
 
         {/* VIEW 6: BLOG POST INDEX LIST */}
         {currentTab === "blog" && (
-          <div id="view-blog" className="max-w-5xl mx-auto px-4 py-16 space-y-12 animate-fade-in">
+          <div id="view-blog" className="max-w-5xl mx-auto px-4 py-16 space-y-12 animate-fade-in text-slate-800">
             <div className="text-center space-y-4">
-              <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Grow Knowledge</span>
-              <h1 className="text-4xl font-extrabold text-white">SEO, Ads, and Speed Playbooks</h1>
-              <p className="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto">Read specialized tutorials compiled by Mehar Ali Hassan to audit and accelerate organic conversion channels.</p>
+              <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Grow Knowledge</span>
+              <h1 className="text-4xl font-extrabold text-slate-950">SEO, Ads, and Speed Playbooks</h1>
+              <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto font-light">Read specialized tutorials compiled by Mehar Ali Hassan to audit and accelerate organic conversion channels.</p>
             </div>
 
             {/* List active published posts */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {blogs.filter(b => b.status === "published").map((post) => (
-                <div key={post.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[32px] overflow-hidden hover:border-white/20 transition-all flex flex-col justify-between" id={`blog-card-${post.slug}`}>
+                <div key={post.id} className="bg-white border border-slate-200/80 rounded-[32px] overflow-hidden hover:border-[#FF5722]/30 transition-all flex flex-col justify-between shadow-sm" id={`blog-card-${post.slug}`}>
                   <div>
-                    <div className="aspect-video w-full overflow-hidden relative">
+                    <div className="aspect-video w-full overflow-hidden relative border-b border-slate-100">
                       <img src={post.featuredImage} alt={post.title} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                       {post.sticky && (
-                        <span className="absolute top-3 left-3 bg-blue-600 text-white text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full">
+                        <span className="absolute top-3 left-3 bg-[#FF5722] text-white text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full shadow">
                           Sticky Post
                         </span>
                       )}
                     </div>
                     <div className="p-6 space-y-3">
-                      <div className="flex gap-4 items-center text-[11px] text-slate-400">
+                      <div className="flex gap-4 items-center text-[11px] text-slate-500">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3.5 h-3.5" />
                           <span>{new Date(post.publishDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
@@ -1128,17 +1263,17 @@ export default function App() {
                         <span>•</span>
                         <span>{post.readingTime} min read</span>
                       </div>
-                      <h3 className="text-base font-bold text-white hover:text-blue-400 transition-colors cursor-pointer" onClick={() => handleOpenBlog(post.slug)}>
+                      <h3 className="text-base font-bold text-slate-900 hover:text-[#FF5722] transition-colors cursor-pointer" onClick={() => handleOpenBlog(post.slug)}>
                         {post.title}
                       </h3>
-                      <p className="text-xs text-slate-300 leading-relaxed">{post.excerpt}</p>
+                      <p className="text-xs text-slate-600 leading-relaxed font-light">{post.excerpt}</p>
                     </div>
                   </div>
-                  <div className="p-6 pt-0 flex justify-between items-center border-t border-white/10 mt-4">
-                    <span className="text-[10px] text-slate-400 font-mono font-bold uppercase">{post.categories?.[0] || "SEO"}</span>
+                  <div className="p-6 pt-0 flex justify-between items-center border-t border-slate-100 mt-4">
+                    <span className="text-[10px] text-slate-500 font-mono font-bold uppercase">{post.categories?.[0] || "SEO"}</span>
                     <button
                       onClick={() => handleOpenBlog(post.slug)}
-                      className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center gap-1"
+                      className="text-xs font-bold text-[#FF5722] hover:text-[#FF7043] transition-colors inline-flex items-center gap-1 cursor-pointer"
                     >
                       <span>Read Blueprint</span>
                       <ChevronRight className="w-3.5 h-3.5" />
@@ -1152,38 +1287,38 @@ export default function App() {
 
         {/* VIEW 7: SINGLE BLOG DETAIL TYPOGRAPHY VIEW */}
         {currentTab === "blog-detail" && activeBlog && (
-          <article id="view-blog-detail" className="max-w-3xl mx-auto px-4 py-16 space-y-8 animate-fade-in">
-            <button onClick={() => handleNavigate("blog")} className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors">
+          <article id="view-blog-detail" className="max-w-3xl mx-auto px-4 py-16 space-y-8 animate-fade-in text-slate-800">
+            <button onClick={() => handleNavigate("blog")} className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors cursor-pointer">
               <ArrowLeft className="w-3.5 h-3.5" /> Back to Blog List
             </button>
 
             <header className="space-y-4">
-              <div className="flex items-center gap-4 text-xs text-slate-400 font-mono">
+              <div className="flex items-center gap-4 text-xs text-slate-500 font-mono">
                 <span>{activeBlog.categories?.join(" / ")}</span>
                 <span>•</span>
                 <span>{activeBlog.readingTime} Min Read</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight tracking-tight">
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-950 leading-tight tracking-tight">
                 {activeBlog.title}
               </h1>
 
               {/* Author Row */}
-              <div className="flex items-center gap-3 py-3 border-y border-white/10">
-                <img src={activeBlog.author?.avatar} alt={activeBlog.author?.name} referrerPolicy="no-referrer" className="w-10 h-10 rounded-full object-cover border border-white/10" />
+              <div className="flex items-center gap-3 py-3 border-y border-slate-200">
+                <img src={activeBlog.author?.avatar} alt={activeBlog.author?.name} referrerPolicy="no-referrer" className="w-10 h-10 rounded-full object-cover border border-slate-200" />
                 <div>
-                  <span className="block text-xs font-bold text-white">{activeBlog.author?.name}</span>
-                  <span className="text-[10px] text-slate-400 font-mono">Published on {new Date(activeBlog.publishDate).toLocaleDateString()}</span>
+                  <span className="block text-xs font-bold text-slate-900">{activeBlog.author?.name}</span>
+                  <span className="text-[10px] text-slate-500 font-mono font-light">Published on {new Date(activeBlog.publishDate).toLocaleDateString()}</span>
                 </div>
               </div>
             </header>
 
-            <div className="w-full aspect-video rounded-2xl overflow-hidden border border-white/10">
+            <div className="w-full aspect-video rounded-2xl overflow-hidden border border-slate-200">
               <img src={activeBlog.featuredImage} alt={activeBlog.title} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
             </div>
 
             {/* Blog Post Content Body */}
             <div
-              className="prose prose-invert prose-indigo max-w-none text-slate-300 text-sm leading-relaxed space-y-6"
+              className="prose prose-slate max-w-none text-slate-700 text-sm leading-relaxed space-y-6"
               dangerouslySetInnerHTML={{ __html: activeBlog.content }}
             />
 
@@ -1200,30 +1335,30 @@ export default function App() {
 
         {/* VIEW 8: PRICING DETAILED PAGE */}
         {currentTab === "pricing" && (
-          <div id="view-pricing" className="max-w-5xl mx-auto px-4 py-16 space-y-12 animate-fade-in">
+          <div id="view-pricing" className="max-w-5xl mx-auto px-4 py-16 space-y-12 animate-fade-in text-slate-800">
             <div className="text-center space-y-4">
-              <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Corporate Rates</span>
-              <h1 className="text-4xl font-extrabold text-white">Scale With Custom Retainers</h1>
-              <p className="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto">Deploy specialized design, speed hardeners, and advertising budgets tailored directly for your scope.</p>
+              <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Corporate Rates</span>
+              <h1 className="text-4xl font-extrabold text-slate-950">Scale With Custom Retainers</h1>
+              <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto font-light">Deploy specialized design, speed hardeners, and advertising budgets tailored directly for your scope.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {pricingPlans.map((plan) => (
-                <div key={plan.id} className="bg-white/5 border border-white/10 p-6 rounded-[32px] flex flex-col justify-between shadow-lg backdrop-blur-md transition-all hover:translate-y-[-4px]">
+                <div key={plan.id} className="bg-white border border-slate-200/80 p-6 rounded-[32px] flex flex-col justify-between shadow-sm transition-all hover:translate-y-[-4px]">
                   <div className="space-y-4">
-                    <h3 className="text-base font-bold text-white">{plan.name}</h3>
-                    <span className="text-3xl font-extrabold text-blue-400 block">{plan.price}</span>
-                    <p className="text-xs text-slate-300 leading-relaxed">{plan.description}</p>
-                    <ul className="space-y-2.5 pt-4 border-t border-white/10 text-xs text-slate-300">
+                    <h3 className="text-base font-bold text-slate-900">{plan.name}</h3>
+                    <span className="text-3xl font-extrabold text-[#FF5722] block">{plan.price}</span>
+                    <p className="text-xs text-slate-500 leading-relaxed font-light">{plan.description}</p>
+                    <ul className="space-y-2.5 pt-4 border-t border-slate-100 text-xs text-slate-600">
                       {plan.features.map((f, idx) => (
                         <li key={idx} className="flex gap-2 items-center">
-                          <Check className="w-3.5 h-3.5 text-blue-400" />
+                          <Check className="w-3.5 h-3.5 text-[#FF5722]" />
                           <span>{f}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
-                  <button onClick={() => handleNavigate("contact")} className="w-full mt-6 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 rounded-full text-xs font-semibold transition-all">
+                  <button onClick={() => handleNavigate("contact")} className="w-full mt-6 py-2.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-semibold transition-all cursor-pointer shadow-[0_4px_10px_rgba(255,87,34,0.15)]">
                     Request custom quote
                   </button>
                 </div>
@@ -1234,20 +1369,20 @@ export default function App() {
 
         {/* VIEW 9: CONTACT PAGE & CALLBACKS */}
         {currentTab === "contact" && (
-          <div id="view-contact" className="max-w-4xl mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center animate-fade-in">
+          <div id="view-contact" className="max-w-4xl mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center animate-fade-in text-slate-800">
             <div className="space-y-6">
-              <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-widest">Connect with Us</span>
-              <h1 className="text-4xl font-extrabold text-white">Let's Discuss Your Project</h1>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                We design fully responsive speed-hardened portfolios, optimize WordPress theme pipelines, and drive conversion metrics. Call us or send an email directly to set up your principal consultation.
+              <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Connect with Us</span>
+              <h1 className="text-4xl font-extrabold text-slate-950">Let's Discuss Your Project</h1>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-light font-sans">
+                We design fully responsive speed-hardened portfolios, optimize WordPress theme pipelines, and drive conversion metrics. WhatsApp us or send an inquiry directly to set up your principal consultation.
               </p>
-              <div className="space-y-4 font-mono text-xs text-slate-300">
+              <div className="space-y-4 font-mono text-xs text-slate-700 bg-slate-50 border border-slate-200/80 p-5 rounded-2xl">
                 <div className="flex gap-2 items-center">
-                  <Phone className="w-4 h-4 text-blue-400" />
+                  <Phone className="w-4 h-4 text-[#FF5722]" />
                   <span>{contactInfo?.phone || "+92 328 8518557"}</span>
                 </div>
                 <div className="flex gap-2 items-center">
-                  <Mail className="w-4 h-4 text-blue-400" />
+                  <Mail className="w-4 h-4 text-[#FF5722]" />
                   <span>{contactInfo?.email || "mai@metazivo.com"}</span>
                 </div>
               </div>
@@ -1258,18 +1393,18 @@ export default function App() {
             </div>
           </div>
         )}
-                {/* VIEW 10: PRIVACY COMPLIANCE */}
+        {/* VIEW 10: PRIVACY COMPLIANCE */}
         {currentTab === "privacy" && (
-          <div id="view-privacy" className="max-w-3xl mx-auto px-6 py-10 bg-white/5 border border-white/10 rounded-[32px] space-y-6 text-xs text-slate-300 leading-relaxed animate-fade-in font-sans shadow-lg my-16">
-            <h1 className="text-2xl font-bold text-white mb-2">{activeCustomPage?.title || "Privacy Policy & GDPR Compliance"}</h1>
+          <div id="view-privacy" className="max-w-3xl mx-auto px-6 py-10 bg-slate-50 border border-slate-200 rounded-[32px] space-y-6 text-xs text-slate-600 leading-relaxed animate-fade-in font-sans shadow-sm my-16">
+            <h1 className="text-2xl font-bold text-slate-950 mb-2">{activeCustomPage?.title || "Privacy Policy & GDPR Compliance"}</h1>
             {activeCustomPage?.content ? (
-              <div className="prose prose-invert max-w-none text-slate-300 space-y-4" dangerouslySetInnerHTML={{ __html: activeCustomPage.content }} />
+              <div className="prose prose-slate max-w-none text-slate-600 space-y-4" dangerouslySetInnerHTML={{ __html: activeCustomPage.content }} />
             ) : (
               <>
                 <p>At Metazivo Digital Agency, accessible from https://metazivo.com, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Metazivo and how we use it.</p>
-                <h2 className="text-base font-bold text-slate-200 mt-4">1. Data Collection & Cookie Logs</h2>
+                <h2 className="text-base font-bold text-slate-900 mt-4 font-sans">1. Data Collection & Cookie Logs</h2>
                 <p>Like any other website, Metazivo uses 'cookies' to store information including visitors' preferences, and the pages on the website that the visitor accessed or visited. The information is used to optimize the users' experience by customizing our web page content based on visitors' browser type and/or other information.</p>
-                <h2 className="text-base font-bold text-slate-200 mt-4">2. DoubleClick DART Cookies</h2>
+                <h2 className="text-base font-bold text-slate-200 mt-4 font-sans">2. DoubleClick DART Cookies</h2>
                 <p>Google is one of a third-party vendor on our site. It also uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to our site and other sites on the internet.</p>
               </>
             )}
@@ -1278,15 +1413,15 @@ export default function App() {
 
         {/* VIEW 11: TERMS COMPLIANCE */}
         {currentTab === "terms" && (
-          <div id="view-terms" className="max-w-3xl mx-auto px-6 py-10 bg-white/5 border border-white/10 rounded-[32px] space-y-6 text-xs text-slate-300 leading-relaxed animate-fade-in font-sans shadow-lg my-16">
-            <h1 className="text-2xl font-bold text-white mb-2">{activeCustomPage?.title || "Terms & Conditions"}</h1>
+          <div id="view-terms" className="max-w-3xl mx-auto px-6 py-10 bg-slate-50 border border-slate-200 rounded-[32px] space-y-6 text-xs text-slate-600 leading-relaxed animate-fade-in font-sans shadow-sm my-16">
+            <h1 className="text-2xl font-bold text-slate-950 mb-2">{activeCustomPage?.title || "Terms & Conditions"}</h1>
             {activeCustomPage?.content ? (
-              <div className="prose prose-invert max-w-none text-slate-300 space-y-4" dangerouslySetInnerHTML={{ __html: activeCustomPage.content }} />
+              <div className="prose prose-slate max-w-none text-slate-600 space-y-4" dangerouslySetInnerHTML={{ __html: activeCustomPage.content }} />
             ) : (
               <>
                 <p>Welcome to Metazivo! These terms and conditions outline the rules and regulations for the use of Metazivo's Website, located at https://metazivo.com.</p>
                 <p>By accessing this website we assume you accept these terms and conditions. Do not continue to use Metazivo if you do not agree to take all of the terms and conditions stated on this page.</p>
-                <h2 className="text-base font-bold text-slate-200 mt-4">1. Intellectual Property Rights</h2>
+                <h2 className="text-base font-bold text-slate-900 mt-4 font-sans">1. Intellectual Property Rights</h2>
                 <p>Unless otherwise stated, Metazivo and/or its licensors own the intellectual property rights for all material on Metazivo. All intellectual property rights are reserved. You may access this from Metazivo for your own personal use subjected to restrictions set in these terms and conditions.</p>
               </>
             )}
@@ -1295,14 +1430,14 @@ export default function App() {
 
         {/* VIEW 12: CUSTOM DYNAMIC PAGES */}
         {isCustomPage && activeCustomPage && (
-          <div id={`view-${activeCustomPage.slug}`} className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-fade-in min-h-[500px]">
-            <button onClick={() => handleNavigate("home")} className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors">
+          <div id={`view-${activeCustomPage.slug}`} className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-fade-in min-h-[500px] text-slate-800">
+            <button onClick={() => handleNavigate("home")} className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors cursor-pointer">
               <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
             </button>
             <div className="space-y-6">
-              <h1 className="text-4xl font-extrabold text-white tracking-tight">{activeCustomPage.title}</h1>
+              <h1 className="text-4xl font-extrabold text-slate-950 tracking-tight">{activeCustomPage.title}</h1>
               <div 
-                className="prose prose-invert max-w-none text-slate-300 text-sm leading-relaxed space-y-4 font-sans"
+                className="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed space-y-4 font-sans"
                 dangerouslySetInnerHTML={{ __html: activeCustomPage.content }}
               />
             </div>
@@ -2252,6 +2387,33 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Premium Floating WhatsApp Action Button */}
+      <a
+        href={getWhatsAppLink("home")}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-40 flex items-center justify-center bg-[#25D366] text-white p-3.5 rounded-full shadow-[0_4px_16px_rgba(37,211,102,0.4)] hover:shadow-[0_6px_20px_rgba(37,211,102,0.6)] hover:bg-[#20ba5a] transition-all hover:scale-110 active:scale-95 group cursor-pointer"
+        title="Chat with us on WhatsApp"
+        id="whatsapp-floating-button"
+      >
+        {/* Breathing Ring Pulse Effect */}
+        <span className="absolute inset-0 rounded-full bg-[#25D366]/40 animate-ping opacity-75 pointer-events-none group-hover:opacity-0 transition-opacity" />
+        
+        {/* Official Premium SVG WhatsApp Icon */}
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          viewBox="0 0 448 512" 
+          className="w-6 h-6 fill-current relative z-10"
+        >
+          <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+        </svg>
+
+        {/* Premium Tooltip */}
+        <span className="absolute right-16 bg-slate-900 text-white text-[11px] font-medium py-1.5 px-3 rounded-lg shadow-xl opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none whitespace-nowrap border border-slate-800">
+          Chat on WhatsApp
+        </span>
+      </a>
 
     </div>
   );

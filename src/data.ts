@@ -5,125 +5,137 @@
 
 import { AgencyService } from "./types";
 
+// Real-world, highly realistic portfolio stock photo URLs (Not AI-generated)
+const wpMockup = "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&w=800&q=80"; // Skincare boutique products
+const seoMockup = "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80"; // Logistics shipping containers
+const metaAdsMockup = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80"; // Luxury real estate property
+const customReactMockup = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"; // Modern SaaS visual metrics dashboard
+
 export const servicesData: AgencyService[] = [
   {
     id: "srv-webdev",
-    title: "Website Development",
+    title: "High-Performance Website Development",
     slug: "website-development",
     icon: "Code",
-    description: "High-performance, bespoke web architectures engineered for maximum speed, security, and conversion rates.",
-    longDescription: "Our custom website development services leverage cutting-edge tech stacks (React, Node.js, Next.js) to build fluid, high-converting digital architectures. We don't build generic websites; we design responsive digital assets that represent your brand in its premium form, load in less than 500 milliseconds, and turn visitors into loyal paying customers.",
+    description: "Enterprise-grade React & Next.js architectures built for supreme speed, absolute security, and unbeatable conversion rates.",
+    longDescription: "A slow website is silently bleeding your revenue every day. We build bespoke, lightning-fast web applications using premium React and Next.js structures that load in under 500 milliseconds. We discard heavy frameworks and redundant codes, crafting hand-coded responsive masterpieces that render perfectly on every single device. With integrated analytics, ultra-clean UI/UX, and complete SEO-ready layouts, your business gains instant digital superiority, leaving your competitors in the dust.",
     benefits: [
-      "Custom UI/UX designed strictly from scratch",
-      "Perfect Core Web Vitals (95+ Google PageSpeed score)",
-      "Enterprise-grade security and advanced DDOS hardening",
-      "Seamless CMS integration for easy content management"
+      "Bespoke lightweight code written completely from scratch",
+      "Perfect Core Web Vitals (95+ score guaranteed on Google PageSpeed Insights)",
+      "Premium responsive UI/UX designed to guide users directly to action",
+      "Extreme security hardening to make your web app virtually unhackable",
+      "Dynamic interactive panels that capture and retain attention instantly"
     ],
     process: [
-      "Deep Discovery and Wireframing",
-      "Custom Figma UI/UX Design Iteration",
-      "Optimized Front-End and Robust Back-End Coding",
-      "Extensive Device Testing and Launch"
+      "User Journey mapping & Wireframing",
+      "High-Fidelity Custom Figma UI Design",
+      "Clean Optimized Frontend & API Integration",
+      "Security Audit & Public Production Launch"
     ]
   },
   {
     id: "srv-wp",
-    title: "WordPress & WooCommerce Development",
+    title: "WordPress & WooCommerce Sales Engines",
     slug: "wordpress-development",
     icon: "Layout",
-    description: "Premium WordPress architectures and WooCommerce stores with custom lightweight themes.",
-    longDescription: "We engineer lightweight, blazing-fast WordPress and WooCommerce solutions. By discarding bloated page builders and utilizing block-editor-native Gutenberg patterns or custom themes, we ensure your sales funnels and online stores are fast, responsive, and rank at the top of search results.",
+    description: "Ditch bloated templates. Get ultra-fast custom WordPress & WooCommerce stores optimized for continuous sales.",
+    longDescription: "Most WordPress websites are built on heavy templates that crash, load slowly, and repel clients. We construct high-converting, lightweight WordPress and WooCommerce sales engines. By designing custom blocks and discarding bloated plugins, we ensure your sales pipelines and online store products load instantly. Your checkouts are optimized with a frictionless 1-click flow, and your database is configured for absolute speed. This is a robust investment designed to scale your business, rank higher on search engines, and maximize your profits without any maintenance headaches.",
     benefits: [
-      "100% bespoke custom themes – no template bloat",
-      "WooCommerce optimized for lightning-fast checkout flows",
-      "Advanced caching, security configurations, and auto-backups",
-      "Complete visual autonomy with easy WordPress block editor"
+      "100% bespoke custom-coded theme blocks – absolutely zero bulky template code",
+      "WooCommerce checkouts optimized for maximum checkout speed and conversion",
+      "Advanced caching, extreme security setups, and automated hourly cloud backups",
+      "Ultimate admin simplicity – easily update text, images, and blogs in seconds",
+      "Built-in local conversion rate optimization (CRO) widgets"
     ],
     process: [
-      "Structure Design & Database Setup",
-      "Bespoke Gutenberg Theme Crafting",
-      "WooCommerce Cart & Gateways Integration",
-      "Speed Hardening & Launch"
-    ]
-  },
-  {
-    id: "srv-shopify",
-    title: "Shopify Development",
-    slug: "shopify-development",
-    icon: "ShoppingBag",
-    description: "Stunning, conversion-focused Shopify and Shopify Plus e-commerce storefronts.",
-    longDescription: "Scale your retail business with an optimized, lightning-fast Shopify storefront. From custom Liquid theme creation to third-party CRM, ERP, and payment gateway synchronizations, we create digital retail experiences that keep users hooked, boost average order value (AOV), and scale your monthly sales seamlessly.",
-    benefits: [
-      "Liquid-optimized themes engineered for rapid load speeds",
-      "Conversion Rate Optimization (CRO) designed into every product drawer",
-      "Dynamic checkout and cross-sell automated pipelines",
-      "Seamless inventory, fulfillment, and marketing integrations"
-    ],
-    process: [
-      "Store architecture and UX planning",
-      "Custom Shopify theme development",
-      "App integration and custom configurations",
-      "Conversion testing and launch"
+      "Structure Design & Secure Database Provisioning",
+      "Lightweight Custom Theme Development & Testing",
+      "WooCommerce Cart & payment gateways integration",
+      "Extreme speed optimization & security deployment"
     ]
   },
   {
     id: "srv-seo",
-    title: "SEO (Search Engine Optimization)",
+    title: "SEO & Authority Blog Writing Domination",
     slug: "seo",
     icon: "Search",
-    description: "Dominate organic search results, capture high-intent leads, and multiply your business traffic.",
-    longDescription: "SEO at Metazivo is an engineering discipline, not a guessing game. We implement robust, data-driven optimization strategies across Technical SEO, On-Page structure, and authoritative Link Building. We systematically analyze user intent, target high-ROI keywords, and structure your pages to dominate the first page of Google.",
+    description: "Climb to Page 1 of Google, dominate organic keywords, and generate free high-intent buyers 24/7.",
+    longDescription: "Right now, your dream clients are searching on Google for the exact services you offer. If they aren't finding your business, they are buying from your direct competitors. Our Search Engine Optimization (SEO) and Blog Writing service is an engineering discipline designed to flood your website with organic buyer traffic. We perform comprehensive technical audits, deploy JSON-LD schema layouts, and target high-ROI keywords. Our copywriting specialists then craft authoritative, high-value blog clusters with semantic LSI indexing. This creates a compounding marketing asset that builds your brand authority, ranks at the top of Google, and brings you highly-profitable leads indefinitely.",
     benefits: [
-      "Comprehensive search query and competitor analysis",
-      "Complete On-Page content optimization matching Google's guidelines",
-      "High-authority white-hat backlink building campaigns",
-      "Transparent monthly keyword ranking and traffic dashboards"
+      "First-page placement for high-commercial search queries",
+      "Deep semantic topic clusters & highly persuasive SEO articles",
+      "Complete technical On-Page optimization (sitemaps, structured schemas)",
+      "High-authority white-hat backlink acquisition strategies",
+      "Comprehensive monthly performance audits & keyword tracking reports"
     ],
     process: [
-      "Technical Website and Schema Audit",
-      "LSI & High-ROI Keyword Research",
-      "On-Page Optimization and Semantic Editing",
-      "Local SEO and Backlink Outreach Execution"
+      "Technical Website Audit & Competitor Breakdown",
+      "High-Value Commercial Keyword Mapping",
+      "High-Impact Article Writing & Semantic On-Page Editing",
+      "Active Backlink Outreach & continuous ranking boost"
     ]
   },
   {
     id: "srv-meta-ads",
-    title: "Paid Advertising & Meta Ads",
+    title: "Meta Ads (Facebook & Instagram) Acquisition System",
     slug: "meta-ads-advertising",
     icon: "TrendingUp",
-    description: "High-ROI Facebook, Instagram, and Google Ads campaigns designed to flood your pipelines with hot leads.",
-    longDescription: "Stop wasting budgets on random boost campaigns. We build structured, multi-tier paid advertising funnels across Meta and Google platforms. By combining hyper-targeted audience segments, dynamic creative testing, and high-friction instant forms, we turn ad budget into predictable, scalable revenue streams.",
+    description: "High-ROI Facebook & Instagram campaigns, custom funnel tracking, and psychological copies to turn ad spend into pure profit.",
+    longDescription: "Stop wasting money on useless boosting buttons with no returns. We construct systematic, multi-tiered paid advertising funnels across Meta (Facebook & Instagram) and Google. By designing thumb-stopping visual creatives, writing highly persuasive psychological ad copies, and implementing server-side Conversion APIs, we bypass iOS privacy blocks to capture 100% of your customer leads with absolute pixel accuracy. We continuously monitor and split-test target lookalikes and customized retargeting groups to lower your customer acquisition cost while maximizing your Return on Ad Spend (ROAS) to scale your sales to the sky.",
     benefits: [
-      "Hyper-targeted lookalike and custom audience clusters",
-      "High-converting visual assets and psychological ad copy",
-      "Automated multi-channel retargeting funnels",
-      "Granular conversion tracking and real-time ROAS auditing"
+      "Predictable pipeline of ready-to-buy customer leads",
+      "Thumb-stopping graphic ads and highly persuasive ad copies",
+      "Lookalike and Custom Audience clusters to reach the right buyers",
+      "Server-side Meta API setup for 100% pixel tracking precision",
+      "Frictionless instant lead capture forms & conversion-boosting landing pages"
     ],
     process: [
-      "Target Avatar Discovery and Strategy",
-      "Creative Ad Design and Copywriting",
-      "Funnel Setup and Conversion Tracking Test",
-      "Iterative Optimization and Budget Scaling"
+      "Target Avatar Profiling & Competitor Ad Analysis",
+      "Premium Creative Asset Design & Script Writing",
+      "Advanced Pixel & Conversion API setup",
+      "Weekly budget scaling & strategic campaign testing"
+    ]
+  },
+  {
+    id: "srv-smm",
+    title: "Social Media Management & Viral Reels",
+    slug: "social-media-management",
+    icon: "Activity",
+    description: "Aesthetic feed grids, engaging viral reels editing, and daily community algorithms to build high organic follower loyalty.",
+    longDescription: "A dead or boring social media page makes your business look untrustworthy and cheap. We transform your social profiles (Instagram, TikTok, LinkedIn) into active, high-status digital showrooms. We handle the entire creative workflow: designing gorgeous high-fidelity graphic feeds that project premium authority, editing captivating high-retention short-form reels, writing persuasive copy, and implementing strategic interaction algorithms that force social media networks to promote your posts. Focus 100% on your business operations while we build a loyal fan base that actively buys from you.",
+    benefits: [
+      "Cohesive, high-status feed grid design that instantly builds trust",
+      "High-retention viral video reels editing with custom effects and hooks",
+      "Viral storytelling scriptwriting designed to maximize shares and saves",
+      "Daily algorithm interaction to boost organic feed placement and reach",
+      "Complete automated calendar scheduling – zero daily stress for you"
+    ],
+    process: [
+      "Visual Brand Identity & Competitor Feed Audit",
+      "Viral Video Scripting & Multi-media Asset Batching",
+      "Premium Cinematic Editing & Captivating Copywriting",
+      "Strategic Daily Scheduling & active profile warming"
     ]
   },
   {
     id: "srv-branding",
-    title: "Graphic Design & Logo Branding",
+    title: "Graphic Design & Corporate Logo Branding",
     slug: "graphic-design-branding",
     icon: "Palette",
-    description: "Premium, luxury visual assets, logo systems, and complete corporate identity designs.",
-    longDescription: "Your brand is your most valuable asset. We craft clean, minimalist, luxury identities that instantly convey market leadership. From high-end logos and color palettes to complete digital brand guidelines, our graphic designs are engineered to stick in your customers' minds and separate you from competitors.",
+    description: "Premium corporate logos, cohesive color systems, and high-status brand assets that instantly establish market leadership.",
+    longDescription: "Your logo and visual identity are the first things clients see. If your branding looks generic or outdated, you are instantly perceived as low quality. We engineer premium, clean, high-contrast logo systems and complete brand guidelines (custom typography, luxury color palettes, and digital styling sheets). We design outstanding vector assets that embed your company into your customers' minds, projecting ultimate market leadership and enabling you to command premium prices.",
     benefits: [
-      "Distinctive, timeless logo mark systems",
-      "Cohesive brand style guidelines (typography, palettes)",
-      "High-converting print and digital corporate collaterals",
-      "Consistent, luxury styling across all digital assets"
+      "Timeless, custom-drawn vector logos that stand out everywhere",
+      "Full corporate style guide manual (exact fonts, color values, layout rules)",
+      "High-converting print-ready and digital marketing materials",
+      "Stunning cohesive graphics across all social and business assets",
+      "Fully scalable source files delivered in all high-resolution formats"
     ],
     process: [
-      "Brand Philosophy and Research",
-      "Vector Concept Design Iterations",
-      "Palette and Typography Pairing",
-      "Final Vector Delivery & Style Manual"
+      "Brand Philosophy & Visual Competitor Research",
+      "Custom Creative Concept Designing & Iterations",
+      "Color Palette Definition & Typography Matching",
+      "Asset Exporting & Complete Style Guide Delivery"
     ]
   }
 ];
@@ -191,35 +203,35 @@ export const pricingPlans = [
 export const portfolioItems = [
   {
     id: "port-1",
-    title: "Lumina Luxury Living",
-    category: "Website Development & SEO",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
-    metrics: "0.3s Load Time | +312% Organic Leads",
-    description: "A gorgeous, responsive glassmorphism portal built for a premium real estate developer, integrating dynamic SEO sitemaps."
+    title: "Sleek Skincare - WordPress Sales Engine",
+    category: "WordPress & WooCommerce Development",
+    image: wpMockup,
+    metrics: "1.2s Load Time | +240% Sales Volume",
+    description: "Designed a lightweight WooCommerce store from scratch, replacing bloated plugins with custom Gutenberg blocks. Reduced checkout friction to boost direct orders by 240%."
   },
   {
     id: "port-2",
-    title: "Aura Skincare Shop",
-    category: "WooCommerce & Paid Advertising",
-    image: "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=800&q=80",
-    metrics: "4.8x Return on Ad Spend (ROAS)",
-    description: "High-performance online store engineered with ultra-clean checkout drawers and custom Instagram ads."
+    title: "Apex Logistics - Google Ranking Domination",
+    category: "SEO & Authority Blog Content",
+    image: seoMockup,
+    metrics: "#1 Position on Google | +350% Organic Leads",
+    description: "Built semantic LSI content clusters, deployed structural JSON-LD schemas, and resolved crawling errors. Tripled organic monthly inquiries without spending on ads."
   },
   {
     id: "port-3",
-    title: "Apex Logistics Group",
-    category: "Technical SEO & Speed Optimization",
-    image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80",
-    metrics: "Rank #1 for 18 Core Keywords",
-    description: "Complete database overhaul, dynamic canonical linking, and page speed caching that raised Google score from 31 to 99."
+    title: "Lumina Homes - High-Lead Acquisition Funnel",
+    category: "Meta Ads (Facebook & Instagram) Leads",
+    image: metaAdsMockup,
+    metrics: "6.2x Return on Ad Spend (ROAS)",
+    description: "Designed high-converting Lead Instant Forms, server-side Conversion APIs, and hyper-targeted custom audience lookalikes to capture hundreds of qualified buyer leads."
   },
   {
     id: "port-4",
-    title: "Verdant Sustainable Goods",
-    category: "Shopify Custom Liquid Development",
-    image: "https://images.unsplash.com/photo-1546554137-f86b9593a222?auto=format&fit=crop&w=800&q=80",
-    metrics: "+42% Average Order Value (AOV)",
-    description: "Crafted modular Shopify theme utilizing WebP rendering and progressive image loading."
+    title: "Verdant Retail - High-Performance Web App",
+    category: "Custom Web App Development",
+    image: customReactMockup,
+    metrics: "99/100 Core Web Vitals Speed Score",
+    description: "Engineered a stunning, modern React/Next.js SaaS portal with dynamic database caching and glassmorphic designs, resulting in flawless performance across all mobile devices."
   }
 ];
 

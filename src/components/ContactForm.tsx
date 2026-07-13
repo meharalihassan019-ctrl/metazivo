@@ -102,19 +102,19 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
   };
 
   return (
-    <div className="w-full bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[32px] p-6 sm:p-8 shadow-2xl" id="contact-form-container">
+    <div className="w-full bg-white border border-slate-200/80 rounded-[32px] p-6 sm:p-8 shadow-xl shadow-slate-200/40" id="contact-form-container">
       {success ? (
         <div className="text-center py-10" id="contact-success-panel">
-          <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/30 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-            <Check className="w-7 h-7 text-emerald-400" />
+          <div className="w-14 h-14 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_4px_10px_rgba(16,185,129,0.1)]">
+            <Check className="w-7 h-7 text-emerald-500" />
           </div>
-          <h3 className="text-xl font-bold text-white tracking-wide">Inquiry Sent Successfully!</h3>
-          <p className="text-sm text-slate-300 mt-2 max-w-md mx-auto leading-relaxed">
-            Thank you for reaching out to <strong>Metazivo</strong>. One of our Senior Lead Architects will review your inquiry and contact you via email or phone within 24 business hours.
+          <h3 className="text-xl font-bold text-slate-900 tracking-wide">Inquiry Sent Successfully!</h3>
+          <p className="text-sm text-slate-600 mt-2 max-w-md mx-auto leading-relaxed">
+            Thank you for reaching out to <strong>Metazivo</strong>. Our Senior Managers will review your inquiry and contact you via email or WhatsApp within 24 business hours.
           </p>
           <button
             onClick={() => setSuccess(false)}
-            className="mt-6 px-5 py-2.5 text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 rounded-full transition-all"
+            className="mt-6 px-5 py-2.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 rounded-full transition-all cursor-pointer"
           >
             Send Another Message
           </button>
@@ -122,13 +122,13 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4" id="contact-form">
           <div className="text-center sm:text-left mb-4">
-            <h3 className="text-lg font-bold text-white tracking-wide">Grow Your Business Today</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Let us build a customized digital solution for your company.</p>
+            <h3 className="text-lg font-bold text-slate-900 tracking-wide font-sans">Grow Your Business Today</h3>
+            <p className="text-xs text-slate-500 mt-0.5 font-light">Let us build a customized digital solution for your company.</p>
           </div>
 
           {errorMsg && (
-            <div className="flex items-center gap-2 p-3 bg-red-950/40 border border-red-900/50 rounded-lg text-xs text-red-300">
-              <ShieldAlert className="w-4 h-4 shrink-0 text-red-400" />
+            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-700 shadow-sm">
+              <ShieldAlert className="w-4 h-4 shrink-0 text-red-500" />
               <span>{errorMsg}</span>
             </div>
           )}
@@ -136,8 +136,8 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
           {/* Name & Email Group */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="name" className="block text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">
-                Full Name <span className="text-blue-400">*</span>
+              <label htmlFor="name" className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                Full Name <span className="text-[#FF5722]">*</span>
               </label>
               <input
                 type="text"
@@ -146,13 +146,13 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
                 required
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full bg-white/5 border border-white/10 focus:border-blue-400 focus:bg-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none transition-all"
+                className="w-full bg-slate-50 border border-slate-200/80 focus:border-[#FF5722] focus:bg-white rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all shadow-sm"
                 placeholder="Sarah Jenkins"
               />
             </div>
             <div>
-              <label htmlFor="email" className="block text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">
-                Email Address <span className="text-blue-400">*</span>
+              <label htmlFor="email" className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                Email Address <span className="text-[#FF5722]">*</span>
               </label>
               <input
                 type="email"
@@ -161,7 +161,7 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
                 required
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full bg-white/5 border border-white/10 focus:border-blue-400 focus:bg-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none transition-all"
+                className="w-full bg-slate-50 border border-slate-200/80 focus:border-[#FF5722] focus:bg-white rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all shadow-sm"
                 placeholder="sarah@yourfirm.com"
               />
             </div>
@@ -170,7 +170,7 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
           {/* Phone & Service Group */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="phone" className="block text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">
+              <label htmlFor="phone" className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
                 Phone Number
               </label>
               <input
@@ -179,12 +179,12 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                className="w-full bg-white/5 border border-white/10 focus:border-blue-400 focus:bg-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none transition-all"
+                className="w-full bg-slate-50 border border-slate-200/80 focus:border-[#FF5722] focus:bg-white rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all shadow-sm"
                 placeholder="+92 328 8518557"
               />
             </div>
             <div>
-              <label htmlFor="service" className="block text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">
+              <label htmlFor="service" className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
                 Interested Service
               </label>
               <select
@@ -192,10 +192,10 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
                 name="service"
                 value={formData.service}
                 onChange={handleInputChange}
-                className="w-full bg-white/5 border border-white/10 focus:border-blue-400 focus:bg-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none transition-colors"
+                className="w-full bg-slate-50 border border-slate-200/80 focus:border-[#FF5722] focus:bg-white rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none transition-colors shadow-sm"
               >
                 {services.map((srv) => (
-                  <option key={srv} value={srv} className="bg-[#020617] text-white">
+                  <option key={srv} value={srv} className="bg-white text-slate-800">
                     {srv}
                   </option>
                 ))}
@@ -205,8 +205,8 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
 
           {/* Message Area */}
           <div>
-            <label htmlFor="message" className="block text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">
-              Message / Project Scope <span className="text-blue-400">*</span>
+            <label htmlFor="message" className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+              Message / Project Scope <span className="text-[#FF5722]">*</span>
             </label>
             <textarea
               id="message"
@@ -215,17 +215,17 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
               rows={4}
               value={formData.message}
               onChange={handleInputChange}
-              className="w-full bg-white/5 border border-white/10 focus:border-blue-400 focus:bg-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none transition-all"
-              placeholder="Provide context regarding your website redesign, Shopify requirements, current loading issues, or marketing campaign targets."
+              className="w-full bg-slate-50 border border-slate-200/80 focus:border-[#FF5722] focus:bg-white rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all shadow-sm"
+              placeholder="Provide context regarding your WordPress redesign, SEO keyword ranking targets, Meta Ads budget scope, or graphic content request."
             />
           </div>
 
           {/* Anti-spam validation challenge */}
-          <div className="p-3 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between gap-4">
+          <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl flex items-center justify-between gap-4 shadow-sm">
             <div className="flex flex-col">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wide">Shield Anti-Bot Verification</span>
-              <span className="text-xs font-semibold text-slate-200">
-                What is <span className="text-blue-400 text-sm font-mono">{num1} + {num2}</span> ?
+              <span className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold">Shield Anti-Bot Verification</span>
+              <span className="text-xs font-semibold text-slate-700">
+                What is <span className="text-[#FF5722] text-sm font-mono font-bold">{num1} + {num2}</span> ?
               </span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -234,13 +234,13 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
                 value={captchaAnswer}
                 onChange={(e) => setCaptchaAnswer(e.target.value)}
                 required
-                className="w-16 bg-white/5 border border-white/10 focus:border-blue-400 rounded-lg py-1 px-2 text-center text-sm text-white focus:outline-none"
+                className="w-16 bg-white border border-slate-200 focus:border-[#FF5722] rounded-lg py-1 px-2 text-center text-sm text-slate-800 focus:outline-none shadow-inner"
                 placeholder="?"
               />
               <button
                 type="button"
                 onClick={resetCaptcha}
-                className="p-1.5 bg-white/5 border border-white/10 text-slate-300 hover:text-white rounded-lg transition-all"
+                className="p-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200/80 text-slate-600 hover:text-slate-800 rounded-lg transition-all"
                 title="Refresh Math"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
@@ -251,7 +251,7 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-full text-sm font-semibold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3.5 px-6 bg-[#FF5722] hover:bg-[#FF7043] disabled:opacity-50 text-white rounded-full text-sm font-bold uppercase tracking-wider transition-all shadow-[0_4px_15px_rgba(255,87,34,0.3)] flex items-center justify-center gap-2 cursor-pointer"
           >
             {loading ? (
               <>

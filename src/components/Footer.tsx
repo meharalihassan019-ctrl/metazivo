@@ -1,10 +1,5 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React from "react";
-import { Phone, Mail, MapPin, ArrowUp, CheckCircle, Globe } from "lucide-react";
+import React, { useState } from "react";
+import { Phone, Mail, MapPin, ArrowUp, CheckCircle, Globe, Send, Check } from "lucide-react";
 
 interface FooterProps {
   onNavigate: (tab: string) => void;
@@ -13,138 +8,161 @@ interface FooterProps {
 }
 
 export default function Footer({ onNavigate, contactInfo, customPages }: FooterProps) {
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim()) {
+      setSubscribed(true);
+      setEmail("");
+      setTimeout(() => setSubscribed(false), 5000);
+    }
+  };
+
+  const displayPhone = contactInfo?.phone || "+92 328 8518557";
+  const displayEmail = contactInfo?.email || "mai@metazivo.com";
+
   return (
-    <footer className="w-full bg-white/5 backdrop-blur-md border-t border-white/10 text-slate-300 font-sans mt-auto" id="app-footer">
+    <footer className="w-full bg-slate-50 border-t border-slate-200 text-slate-600 font-sans mt-auto" id="app-footer">
       {/* Brand values banner */}
-      <div className="w-full border-b border-white/5 bg-white/5 py-6 px-4">
+      <div className="w-full border-b border-slate-200 bg-slate-100/50 py-6 px-4">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div className="flex flex-col items-center justify-center p-2">
-            <CheckCircle className="w-5 h-5 text-blue-400 mb-1" />
-            <span className="text-sm font-semibold text-white">99+ PageSpeed Rating</span>
+            <CheckCircle className="w-5 h-5 text-[#FF5722] mb-1" />
+            <span className="text-sm font-semibold text-slate-900">99+ PageSpeed Rating</span>
             <span className="text-xs text-slate-500">Core Web Vitals Standard</span>
           </div>
           <div className="flex flex-col items-center justify-center p-2">
-            <CheckCircle className="w-5 h-5 text-blue-400 mb-1" />
-            <span className="text-sm font-semibold text-white">AI-Powered CMS</span>
-            <span className="text-xs text-slate-500">Gemini-integrated dashboard</span>
+            <CheckCircle className="w-5 h-5 text-[#FF5722] mb-1" />
+            <span className="text-sm font-semibold text-slate-900">Custom Dynamic CMS</span>
+            <span className="text-xs text-slate-500">Fully integrated dashboard</span>
           </div>
           <div className="flex flex-col items-center justify-center p-2">
-            <CheckCircle className="w-5 h-5 text-blue-400 mb-1" />
-            <span className="text-sm font-semibold text-white">Zero Bloat Code</span>
-            <span className="text-xs text-slate-500">Node LTS & Clean React</span>
+            <CheckCircle className="w-5 h-5 text-[#FF5722] mb-1" />
+            <span className="text-sm font-semibold text-slate-900">Zero Bloat Code</span>
+            <span className="text-xs text-slate-500">Fast React Performance</span>
           </div>
           <div className="flex flex-col items-center justify-center p-2">
-            <CheckCircle className="w-5 h-5 text-blue-400 mb-1" />
-            <span className="text-sm font-semibold text-white">Hostinger Optimized</span>
+            <CheckCircle className="w-5 h-5 text-[#FF5722] mb-1" />
+            <span className="text-sm font-semibold text-slate-900">Hostinger Optimized</span>
             <span className="text-xs text-slate-500">Instant Deployable Package</span>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
-        {/* Brand identity column */}
-        <div className="flex flex-col gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-12 gap-8">
+        {/* Brand identity column - Span 4 */}
+        <div className="md:col-span-4 flex flex-col gap-4">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate("home")}>
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] text-lg">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#FF5722] to-[#FF8A50] flex items-center justify-center font-bold text-white shadow-[0_4px_10px_rgba(255,87,34,0.3)] text-lg">
               M
             </div>
             <div className="flex flex-col">
-              <span className="text-lg font-bold text-white tracking-wide">Metazivo</span>
-              <span className="text-[9px] text-slate-400 uppercase tracking-widest font-mono -mt-1">Digital Agency</span>
+              <span className="text-lg font-bold text-slate-900 tracking-wide">Metazivo</span>
+              <span className="text-[9px] text-[#FF5722] uppercase tracking-widest font-mono -mt-1">Digital Agency</span>
             </div>
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Metazivo is a full-service, enterprise digital agency crafting ultra-fast web architectures, high-ROI paid ads, and technical SEO platforms to multiply business growth.
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Metazivo is a full-service digital marketing, WordPress development, and SEO agency. We craft high-speed web architectures, technical SEO systems, and optimized blogging portfolios that accelerate conversions.
           </p>
           <div className="flex flex-col gap-2 text-xs">
-            <a href={contactInfo?.phone ? `tel:${contactInfo.phone.replace(/[^+\d]/g, "")}` : "tel:+923288518557"} className="flex items-center gap-2 hover:text-white transition-colors">
-              <Phone className="w-3.5 h-3.5 text-blue-400" />
-              <span>{contactInfo?.phone || "+92 328 8518557"}</span>
+            <a href={`tel:${displayPhone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-2 hover:text-slate-900 transition-colors text-slate-600">
+              <Phone className="w-3.5 h-3.5 text-[#FF5722]" />
+              <span>{displayPhone}</span>
             </a>
-            <a href={`mailto:${contactInfo?.email || "mai@metazivo.com"}`} className="flex items-center gap-2 hover:text-white transition-colors">
-              <Mail className="w-3.5 h-3.5 text-blue-400" />
-              <span>{contactInfo?.email || "mai@metazivo.com"}</span>
+            <a href={`mailto:${displayEmail}`} className="flex items-center gap-2 hover:text-slate-900 transition-colors text-slate-600">
+              <Mail className="w-3.5 h-3.5 text-[#FF5722]" />
+              <span>{displayEmail}</span>
             </a>
-            <div className="flex items-center gap-2 text-slate-400">
-              <MapPin className="w-3.5 h-3.5 text-blue-400" />
+            <div className="flex items-center gap-2 text-slate-500">
+              <MapPin className="w-3.5 h-3.5 text-[#FF5722]" />
               <span>{contactInfo?.address || "Office 402, Metazivo Heights, Lahore, Pakistan"}</span>
             </div>
           </div>
         </div>
 
-        {/* Services shortcut column */}
-        <div>
-          <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Our Services</h3>
-          <ul className="space-y-2 text-xs">
-            <li><button onClick={() => onNavigate("services")} className="hover:text-blue-400 transition-colors">Website Development</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-blue-400 transition-colors">WordPress Themes</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-blue-400 transition-colors">WooCommerce & Shopify</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-blue-400 transition-colors">Technical SEO Audits</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-blue-400 transition-colors">Meta & Google Paid Ads</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-blue-400 transition-colors">Speed Optimization</button></li>
+        {/* Services shortcut column - Span 2 */}
+        <div className="md:col-span-2">
+          <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Services</h3>
+          <ul className="space-y-2 text-xs text-slate-500">
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Website Development</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">WordPress Themes</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">SEO & Auditing</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Paid Ads Campaign</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Content & Blogging</button></li>
           </ul>
         </div>
 
-        {/* Agency Navigation Column */}
-        <div>
-          <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Quick Links</h3>
-          <ul className="space-y-2 text-xs">
-            <li><button onClick={() => onNavigate("home")} className="hover:text-blue-400 transition-colors">Home Dashboard</button></li>
-            <li><button onClick={() => onNavigate("about")} className="hover:text-blue-400 transition-colors">Company About</button></li>
-            <li><button onClick={() => onNavigate("portfolio")} className="hover:text-blue-400 transition-colors">Our Portfolio</button></li>
-            <li><button onClick={() => onNavigate("blog")} className="hover:text-blue-400 transition-colors">Growth Blogging</button></li>
-            <li><button onClick={() => onNavigate("pricing")} className="hover:text-blue-400 transition-colors">Pricing Packages</button></li>
-            <li><button onClick={() => onNavigate("contact")} className="hover:text-blue-400 transition-colors">Request Callback</button></li>
-            {customPages && customPages.filter(p => !p.isSystem).map((p) => (
-              <li key={p.slug}>
-                <button onClick={() => onNavigate(p.slug)} className="hover:text-blue-400 transition-colors text-left">{p.title}</button>
-              </li>
-            ))}
+        {/* Agency Navigation Column - Span 2 */}
+        <div className="md:col-span-2">
+          <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Quick Links</h3>
+          <ul className="space-y-2 text-xs text-slate-500">
+            <li><button onClick={() => onNavigate("home")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Home</button></li>
+            <li><button onClick={() => onNavigate("about")} className="hover:text-[#FF5722] transition-colors cursor-pointer">About</button></li>
+            <li><button onClick={() => onNavigate("portfolio")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Portfolio</button></li>
+            <li><button onClick={() => onNavigate("blog")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Blog CMS</button></li>
+            <li><button onClick={() => onNavigate("contact")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Contact</button></li>
           </ul>
         </div>
 
-        {/* Legal and XML sitemaps column */}
-        <div>
-          <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Compliance & SEO Feeds</h3>
-          <ul className="space-y-2.5 text-xs">
-            <li><button onClick={() => onNavigate("privacy")} className="hover:text-blue-400 transition-colors">Privacy Policy</button></li>
-            <li><button onClick={() => onNavigate("terms")} className="hover:text-blue-400 transition-colors">Terms & Conditions</button></li>
-            <li>
-              <a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/5 hover:bg-white/10 rounded border border-white/10 transition-all">
-                <Globe className="w-3.5 h-3.5 text-blue-400" />
-                <span>XML Sitemap Generator</span>
-              </a>
-            </li>
-            <li>
-              <a href="/rss.xml" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/5 hover:bg-white/10 rounded border border-white/10 transition-all">
-                <Globe className="w-3.5 h-3.5 text-amber-500" />
-                <span>Live Blog RSS Feed</span>
-              </a>
-            </li>
-            <li>
-              <a href="/robots.txt" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/5 hover:bg-white/10 rounded border border-white/10 transition-all text-[10px] font-mono">
-                robots.txt
-              </a>
-            </li>
-          </ul>
+        {/* Newsletter Column - Span 4 */}
+        <div className="md:col-span-4 space-y-4">
+          <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">Stay Ahead</h3>
+          <p className="text-xs text-slate-500 leading-relaxed font-light">
+            Subscribe to our newsletter for exclusive SEO blueprints, high-converting copy strategies, and speed audit guides.
+          </p>
+          <form onSubmit={handleSubscribe} className="relative mt-2">
+            <input
+              type="email"
+              required
+              placeholder="Enter your work email..."
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-white border border-slate-200 rounded-full px-5 py-3 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#FF5722] pr-12 transition-all shadow-sm"
+            />
+            <button
+              type="submit"
+              className="absolute right-1.5 top-1.5 w-9 h-9 rounded-full bg-[#FF5722] hover:bg-[#FF7043] flex items-center justify-center text-white transition-all shadow-[0_4px_10px_rgba(255,87,34,0.3)] cursor-pointer"
+            >
+              {subscribed ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+            </button>
+          </form>
+          {subscribed && (
+            <span className="block text-[11px] text-[#FF5722] font-medium animate-fade-in">
+              ✦ Thank you! You've successfully subscribed to our growth feed.
+            </span>
+          )}
+
+          {/* Compliance feed buttons */}
+          <div className="pt-2 flex flex-wrap gap-2">
+            <a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded border border-slate-200 transition-all text-[10px]">
+              <Globe className="w-3 h-3 text-[#FF5722]" />
+              <span>Sitemap</span>
+            </a>
+            <a href="/rss.xml" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded border border-slate-200 transition-all text-[10px]">
+              <Globe className="w-3 h-3 text-[#FF5722]" />
+              <span>RSS Feed</span>
+            </a>
+          </div>
         </div>
       </div>
 
       {/* Under footer segment */}
-      <div className="w-full bg-[#020617]/50 border-t border-white/5 py-6 px-4">
+      <div className="w-full bg-slate-100 border-t border-slate-200 py-6 px-4">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
           <span>&copy; {new Date().getFullYear()} Metazivo. All Rights Reserved. Designed & Developed for Hostinger Node Hosting.</span>
           <button
             onClick={scrollToTop}
             id="back-to-top"
-            className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:text-white rounded-lg transition-all shadow-md"
+            className="p-2 bg-white hover:bg-slate-50 border border-slate-200 hover:text-slate-800 rounded-lg transition-all shadow-sm cursor-pointer"
             title="Back to Top"
           >
-            <ArrowUp className="w-4 h-4 text-blue-400" />
+            <ArrowUp className="w-4 h-4 text-[#FF5722]" />
           </button>
         </div>
       </div>
