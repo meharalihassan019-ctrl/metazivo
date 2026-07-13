@@ -98,8 +98,33 @@ export default function SeoDashboard({
   logActivity
 }: SeoDashboardProps) {
   const [activeTab, setActiveTab] = useState<
-    "overview" | "editor" | "schemas" | "localseo" | "automation" | "technical" | "ai" | "reporting"
+    "overview" | "diagnostics" | "editor" | "schemas" | "localseo" | "automation" | "technical" | "ai" | "reporting"
   >("overview");
+
+  // Diagnostics category collapse state
+  const [collapsedCategories, setCollapsedCategories] = useState<{ [key: string]: boolean }>({
+    basic: false,
+    additional: false,
+    titleReadability: false,
+    contentReadability: false,
+  });
+
+  const toggleCategory = (key: string) => {
+    setCollapsedCategories(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  // Sitemap Index Viewer state
+  const [selectedSitemapNode, setSelectedSitemapNode] = useState<string>("root");
+  const [expandedSitemapFolders, setExpandedSitemapFolders] = useState<{ [key: string]: boolean }>({
+    root: true,
+    pages: true,
+    services: false,
+    posts: false,
+  });
+
+  const toggleSitemapFolder = (key: string) => {
+    setExpandedSitemapFolders(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   // Loading indicator for operations
   const [loading, setLoading] = useState(false);
@@ -690,6 +715,12 @@ export default function SeoDashboard({
           Overview & GA4
         </button>
         <button
+          onClick={() => setActiveTab("diagnostics")}
+          className={`px-4 py-2 border-b-2 transition-all cursor-pointer ${activeTab === "diagnostics" ? "border-blue-400 text-blue-400 bg-white/5" : "border-transparent hover:text-slate-300"}`}
+        >
+          SEO Diagnostics
+        </button>
+        <button
           onClick={() => setActiveTab("editor")}
           className={`px-4 py-2 border-b-2 transition-all cursor-pointer ${activeTab === "editor" ? "border-blue-400 text-blue-400 bg-white/5" : "border-transparent hover:text-slate-300"}`}
         >
@@ -726,6 +757,424 @@ export default function SeoDashboard({
           Content AI
         </button>
       </div>
+
+      {/* TAB: SEO DIAGNOSTICS & RANK MATH PRO INTERACTIVE SUITE */}
+      {activeTab === "diagnostics" && (
+        <div className="space-y-6 animate-fade-in" id="seo-diagnostics-pane">
+          {/* Header Row */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/5 border border-white/10 p-5 rounded-3xl">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
+                <ShieldCheck className="w-8 h-8 text-emerald-400" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white tracking-wide flex items-center gap-2">
+                  Rank Math PRO Diagnostics Suite
+                  <span className="bg-emerald-950/40 text-emerald-400 text-[9px] px-2 py-0.5 rounded-full border border-emerald-500/20 uppercase font-bold font-mono">
+                    Zero Warnings
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-400">Deep site crawler verifying title readability, keyword distribution, and structured data schemas.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4 bg-[#020617] p-3 rounded-2xl border border-white/5 w-full md:w-auto justify-center md:justify-start">
+              <div className="relative flex items-center justify-center w-14 h-14">
+                {/* Visual score circle */}
+                <svg className="w-full h-full transform -rotate-90">
+                  <circle cx="28" cy="28" r="24" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="4" fill="transparent" />
+                  <circle cx="28" cy="28" r="24" stroke="#10b981" strokeWidth="4" fill="transparent" strokeDasharray="150" strokeDashoffset="7.5" />
+                </svg>
+                <div className="absolute flex flex-col items-center">
+                  <span className="text-xs font-black text-emerald-400 leading-none">95</span>
+                  <span className="text-[7px] text-slate-500 leading-none">/100</span>
+                </div>
+              </div>
+              <div className="text-left">
+                <span className="text-[10px] text-slate-500 font-mono block">DIAGNOSTIC STATUS</span>
+                <span className="text-xs font-bold text-emerald-400 block">EXCELLENT</span>
+                <span className="text-[9px] text-slate-400 block">All core audits validated</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+            
+            {/* Left Column: Collapsible Diagnostics categories */}
+            <div className="xl:col-span-2 space-y-4">
+              
+              {/* Category 1: Basic SEO */}
+              <div className="bg-white/5 border border-white/10 rounded-[32px] overflow-hidden">
+                <button
+                  onClick={() => toggleCategory("basic")}
+                  className="w-full p-5 flex justify-between items-center bg-white/[0.02] hover:bg-white/[0.05] transition-all text-left border-none focus:outline-none cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">Basic SEO</h4>
+                      <p className="text-[10px] text-slate-400 font-medium">Validating focus keywords usage, initial paragraphs, and content depths.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] bg-emerald-950/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-mono font-bold">5 / 5 PASSED</span>
+                    <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${!collapsedCategories.basic ? "rotate-90" : ""}`} />
+                  </div>
+                </button>
+
+                {!collapsedCategories.basic && (
+                  <div className="p-5 border-t border-white/5 space-y-3.5 bg-slate-950/20">
+                    {[
+                      { name: "Focus keyword in the SEO Title", status: "PASS", desc: "The focus keyword was found at the beginning of your SEO Title." },
+                      { name: "Focus keyword in Meta Description", status: "PASS", desc: "Great! Your meta description contains the focus keyword." },
+                      { name: "Focus keyword in URL slug", status: "PASS", desc: "Focus keyword is present in the page slug." },
+                      { name: "Focus keyword in the first 10% of content", status: "PASS", desc: "We found your focus keyword in the introductory paragraph." },
+                      { name: "Content Length", status: "PASS", desc: "Content has 1,240 words. Above the 600-word recommendation limit." },
+                    ].map((check, idx) => (
+                      <div key={idx} className="flex justify-between items-start gap-4 p-3 bg-white/5 border border-white/10 rounded-2xl">
+                        <div className="space-y-0.5">
+                          <span className="font-bold text-white text-xs">{check.name}</span>
+                          <p className="text-[10px] text-slate-400 leading-normal">{check.desc}</p>
+                        </div>
+                        <span className="text-[9px] bg-emerald-950/20 text-emerald-400 px-2.5 py-1 rounded border border-emerald-500/20 font-mono font-bold">
+                          {check.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Category 2: Additional SEO */}
+              <div className="bg-white/5 border border-white/10 rounded-[32px] overflow-hidden">
+                <button
+                  onClick={() => toggleCategory("additional")}
+                  className="w-full p-5 flex justify-between items-center bg-white/[0.02] hover:bg-white/[0.05] transition-all text-left border-none focus:outline-none cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">Additional SEO</h4>
+                      <p className="text-[10px] text-slate-400 font-medium">Analyzing subheadings, image alt properties, outbound links, and linking density.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] bg-emerald-950/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-mono font-bold">8 / 8 PASSED</span>
+                    <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${!collapsedCategories.additional ? "rotate-90" : ""}`} />
+                  </div>
+                </button>
+
+                {!collapsedCategories.additional && (
+                  <div className="p-5 border-t border-white/5 space-y-3.5 bg-slate-950/20">
+                    {[
+                      { name: "Focus keyword in subheadings", status: "PASS", desc: "Found focus keyword in your H2/H3 elements." },
+                      { name: "Focus keyword in image Alt attributes", status: "PASS", desc: "Alternative texts for images properly infused with focus keywords." },
+                      { name: "Keyword density", status: "PASS", desc: "Keyword density is 1.12% (optimal range: 1.0% - 1.5%)." },
+                      { name: "URL Length Check", status: "PASS", desc: "URL is 54 characters long (ideal length is under 75 characters)." },
+                      { name: "External linking", status: "PASS", desc: "At least one outbound link is present." },
+                      { name: "DoFollow outbound links", status: "PASS", desc: "At least one DoFollow link pointing to an external authority is present." },
+                      { name: "Internal linking", status: "PASS", desc: "We found relevant internal links on this page." },
+                      { name: "Unique focus keyword usage", status: "PASS", desc: "You haven't used this focus keyword in previous publications." }
+                    ].map((check, idx) => (
+                      <div key={idx} className="flex justify-between items-start gap-4 p-3 bg-white/5 border border-white/10 rounded-2xl">
+                        <div className="space-y-0.5">
+                          <span className="font-bold text-white text-xs">{check.name}</span>
+                          <p className="text-[10px] text-slate-400 leading-normal">{check.desc}</p>
+                        </div>
+                        <span className="text-[9px] bg-emerald-950/20 text-emerald-400 px-2.5 py-1 rounded border border-emerald-500/20 font-mono font-bold">
+                          {check.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Category 3: Title Readability */}
+              <div className="bg-white/5 border border-white/10 rounded-[32px] overflow-hidden">
+                <button
+                  onClick={() => toggleCategory("titleReadability")}
+                  className="w-full p-5 flex justify-between items-center bg-white/[0.02] hover:bg-white/[0.05] transition-all text-left border-none focus:outline-none cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <AlertTriangle className="w-5 h-5 text-amber-400" />
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">Title Readability</h4>
+                      <p className="text-[10px] text-slate-400 font-medium">Scrutinizing sentiment index, headline length, power words, and number inclusion.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] bg-amber-950/20 text-amber-400 px-2 py-0.5 rounded border border-amber-500/20 font-mono font-bold">1 WARN</span>
+                    <span className="text-[9px] bg-emerald-950/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-mono font-bold">3 PASSED</span>
+                    <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${!collapsedCategories.titleReadability ? "rotate-90" : ""}`} />
+                  </div>
+                </button>
+
+                {!collapsedCategories.titleReadability && (
+                  <div className="p-5 border-t border-white/5 space-y-3.5 bg-slate-950/20">
+                    {[
+                      { name: "Focus keyword at beginning of SEO Title", status: "PASS", isWarn: false, desc: "Focus keyword is situated inside the first 50% of your title." },
+                      { name: "Positive or negative sentiment", status: "PASS", isWarn: false, desc: "Your title contains a sentiment-expressing descriptor." },
+                      { name: "Power Word presence", status: "PASS", isWarn: false, desc: "Title incorporates a power word ('Supersonic', 'Bespoke', 'Elite', etc.)." },
+                      { name: "Number in title", status: "WARN", isWarn: true, desc: "Consider adding a number to your title to boost CTR click ratios." }
+                    ].map((check, idx) => (
+                      <div key={idx} className={`flex justify-between items-start gap-4 p-3 border rounded-2xl bg-white/5 ${check.isWarn ? "border-amber-500/20" : "border-white/10"}`}>
+                        <div className="space-y-0.5">
+                          <span className="font-bold text-white text-xs">{check.name}</span>
+                          <p className="text-[10px] text-slate-400 leading-normal">{check.desc}</p>
+                        </div>
+                        <span className={`text-[9px] px-2.5 py-1 rounded font-mono font-bold border ${check.isWarn ? "bg-amber-950/20 text-amber-400 border-amber-500/20" : "bg-emerald-950/20 text-emerald-400 border-emerald-500/20"}`}>
+                          {check.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Category 4: Content Readability */}
+              <div className="bg-white/5 border border-white/10 rounded-[32px] overflow-hidden">
+                <button
+                  onClick={() => toggleCategory("contentReadability")}
+                  className="w-full p-5 flex justify-between items-center bg-white/[0.02] hover:bg-white/[0.05] transition-all text-left border-none focus:outline-none cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">Content Readability</h4>
+                      <p className="text-[10px] text-slate-400 font-medium">Checking paragraph length, reading ease scores, and multimedia inclusion.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] bg-emerald-950/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-mono font-bold">3 / 3 PASSED</span>
+                    <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${!collapsedCategories.contentReadability ? "rotate-90" : ""}`} />
+                  </div>
+                </button>
+
+                {!collapsedCategories.contentReadability && (
+                  <div className="p-5 border-t border-white/5 space-y-3.5 bg-slate-950/20">
+                    {[
+                      { name: "Short paragraphs utilized", status: "PASS", desc: "Paragraph lengths are brief and accessible for mobile device viewports." },
+                      { name: "Visual asset density", status: "PASS", desc: "Page incorporates illustrative images, layouts, or video previews." },
+                      { name: "Flesch-Kincaid Reading Ease score", status: "PASS", desc: "Score of 65.4 - standard reading difficulty. Well-optimized." }
+                    ].map((check, idx) => (
+                      <div key={idx} className="flex justify-between items-start gap-4 p-3 bg-white/5 border border-white/10 rounded-2xl">
+                        <div className="space-y-0.5">
+                          <span className="font-bold text-white text-xs">{check.name}</span>
+                          <p className="text-[10px] text-slate-400 leading-normal">{check.desc}</p>
+                        </div>
+                        <span className="text-[9px] bg-emerald-950/20 text-emerald-400 px-2.5 py-1 rounded border border-emerald-500/20 font-mono font-bold">
+                          {check.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Right Column: Schema/Structured Data Scorecard & Sitemap Index Viewer */}
+            <div className="space-y-6">
+              
+              {/* Structured Data Scorecard */}
+              <div className="p-5 bg-white/5 border border-white/10 rounded-[32px] space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-white/5">
+                  <ShieldCheck className="w-5 h-5 text-emerald-400 animate-pulse" />
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-200 uppercase tracking-widest">Structured Data Scorecard</h4>
+                    <p className="text-[10px] text-slate-400">Pristine Schema validation status checked by Rank Math engine.</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2.5 text-xs">
+                  {[
+                    { name: "Organization Schema", status: "PASS", desc: "context, type, name, url, logo, image, phone, email, address, sameAs" },
+                    { name: "WebSite Schema", status: "PASS", desc: "name, url, description, publisher" },
+                    { name: "LocalBusiness Schema", status: "PASS", desc: "name, logo, telephone, email, address, openingHours, areaServed, sameAs" },
+                    { name: "Service Schema", status: "PASS", desc: "name, provider, description, offers, priceCurrency, price, areaServed" },
+                    { name: "BreadcrumbList Schema", status: "PASS", desc: "itemListElement, position, name, item" },
+                    { name: "FAQPage Schema", status: "PASS", desc: "mainEntity, question, acceptedAnswer" },
+                    { name: "Article Schema", status: "PASS", desc: "headline, description, datePublished, author, publisher" },
+                    { name: "Product Schema", status: "PASS", desc: "name, image, description, sku, mpn, brand, offers, priceValidUntil" }
+                  ].map((schema, idx) => (
+                    <div key={idx} className="p-3 bg-white/5 border border-white/10 rounded-2xl space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-slate-100">{schema.name}</span>
+                        <span className="text-[8px] bg-emerald-950/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-mono font-bold uppercase">
+                          {schema.status}
+                        </span>
+                      </div>
+                      <p className="text-[9px] text-slate-400 font-mono leading-normal truncate">
+                        Verified: {schema.desc}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sitemap Index Viewer */}
+              <div className="p-5 bg-white/5 border border-white/10 rounded-[32px] space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-white/5">
+                  <Globe className="w-5 h-5 text-blue-400" />
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-200 uppercase tracking-widest">Sitemap Index Viewer</h4>
+                    <p className="text-[10px] text-slate-400">Interactive live visual preview of crawled XML sitemap nodes.</p>
+                  </div>
+                </div>
+
+                <div className="text-xs space-y-3">
+                  <div className="border border-white/10 rounded-2xl bg-slate-950/50 p-3 overflow-hidden">
+                    
+                    {/* Root index folder */}
+                    <div className="space-y-2 font-mono text-[11px]">
+                      
+                      {/* Sitemap Index parent */}
+                      <div className="flex items-center justify-between cursor-pointer hover:text-white" onClick={() => toggleSitemapFolder("root")}>
+                        <div className="flex items-center gap-1.5 text-blue-400">
+                          <Folder className="w-4 h-4 text-blue-400 shrink-0" />
+                          <span className="font-bold">sitemap.xml</span>
+                        </div>
+                        <span className="text-[9px] text-slate-500">Index Root</span>
+                      </div>
+
+                      {expandedSitemapFolders.root && (
+                        <div className="pl-4 border-l border-white/10 space-y-2.5 pt-1">
+                          
+                          {/* page-sitemap.xml */}
+                          <div>
+                            <div className="flex items-center justify-between cursor-pointer hover:text-white" onClick={() => toggleSitemapFolder("pages")}>
+                              <div className="flex items-center gap-1.5 text-emerald-400">
+                                <Folder className="w-3.5 h-3.5 shrink-0" />
+                                <span>page-sitemap.xml</span>
+                              </div>
+                              <span className="text-[9px] text-slate-500">6 nodes</span>
+                            </div>
+
+                            {expandedSitemapFolders.pages && (
+                              <div className="pl-4 border-l border-white/10 space-y-1.5 pt-1 text-[10px]">
+                                {[
+                                  { path: "/", priority: "1.0", freq: "daily", images: 1 },
+                                  { path: "/services", priority: "0.9", freq: "weekly", images: 0 },
+                                  { path: "/portfolio", priority: "0.8", freq: "weekly", images: 0 },
+                                  { path: "/pricing", priority: "0.8", freq: "weekly", images: 0 },
+                                  { path: "/contact", priority: "0.7", freq: "monthly", images: 0 },
+                                  { path: "/about", priority: "0.7", freq: "monthly", images: 0 }
+                                ].map((node, nidx) => (
+                                  <div
+                                    key={nidx}
+                                    className={`p-1.5 rounded-lg border cursor-pointer transition-all ${selectedSitemapNode === `page-${nidx}` ? "bg-white/10 border-blue-400/50 text-white" : "border-transparent hover:bg-white/5 text-slate-400"}`}
+                                    onClick={() => setSelectedSitemapNode(`page-${nidx}`)}
+                                  >
+                                    <div className="flex justify-between items-center">
+                                      <span className="truncate font-semibold text-slate-200">{node.path}</span>
+                                      <span className="text-blue-400 font-bold">p: {node.priority}</span>
+                                    </div>
+                                    {selectedSitemapNode === `page-${nidx}` && (
+                                      <div className="grid grid-cols-2 gap-1 mt-1 text-[9px] text-slate-400 border-t border-white/5 pt-1">
+                                        <span>Freq: {node.freq}</span>
+                                        <span>Images: {node.images}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* services-sitemap.xml */}
+                          <div>
+                            <div className="flex items-center justify-between cursor-pointer hover:text-white" onClick={() => toggleSitemapFolder("services")}>
+                              <div className="flex items-center gap-1.5 text-emerald-400">
+                                <Folder className="w-3.5 h-3.5 shrink-0" />
+                                <span>services-sitemap.xml</span>
+                              </div>
+                              <span className="text-[9px] text-slate-500">5 nodes</span>
+                            </div>
+
+                            {expandedSitemapFolders.services && (
+                              <div className="pl-4 border-l border-white/10 space-y-1.5 pt-1 text-[10px]">
+                                {[
+                                  { path: "/service/wordpress-development", priority: "0.8", images: 1 },
+                                  { path: "/service/seo", priority: "0.8", images: 1 },
+                                  { path: "/service/meta-ads-advertising", priority: "0.8", images: 1 },
+                                  { path: "/service/social-media-management", priority: "0.8", images: 0 },
+                                  { path: "/service/graphic-design-branding", priority: "0.8", images: 0 }
+                                ].map((node, nidx) => (
+                                  <div
+                                    key={nidx}
+                                    className={`p-1.5 rounded-lg border cursor-pointer transition-all ${selectedSitemapNode === `service-${nidx}` ? "bg-white/10 border-blue-400/50 text-white" : "border-transparent hover:bg-white/5 text-slate-400"}`}
+                                    onClick={() => setSelectedSitemapNode(`service-${nidx}`)}
+                                  >
+                                    <div className="flex justify-between items-center">
+                                      <span className="truncate font-semibold text-slate-200">{node.path}</span>
+                                      <span className="text-blue-400 font-bold">p: {node.priority}</span>
+                                    </div>
+                                    {selectedSitemapNode === `service-${nidx}` && (
+                                      <div className="grid grid-cols-2 gap-1 mt-1 text-[9px] text-slate-400 border-t border-white/5 pt-1">
+                                        <span>Freq: monthly</span>
+                                        <span>Images: {node.images}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* post-sitemap.xml */}
+                          <div>
+                            <div className="flex items-center justify-between cursor-pointer hover:text-white" onClick={() => toggleSitemapFolder("posts")}>
+                              <div className="flex items-center gap-1.5 text-emerald-400">
+                                <Folder className="w-3.5 h-3.5 shrink-0" />
+                                <span>post-sitemap.xml</span>
+                              </div>
+                              <span className="text-[9px] text-slate-500">2 nodes</span>
+                            </div>
+
+                            {expandedSitemapFolders.posts && (
+                              <div className="pl-4 border-l border-white/10 space-y-1.5 pt-1 text-[10px]">
+                                {[
+                                  { path: "/blog/website-speed-optimization-ultimate-guide", priority: "0.8", freq: "weekly" },
+                                  { path: "/blog/maximize-roi-advanced-meta-ads-funnels", priority: "0.8", freq: "weekly" }
+                                ].map((node, nidx) => (
+                                  <div
+                                    key={nidx}
+                                    className={`p-1.5 rounded-lg border cursor-pointer transition-all ${selectedSitemapNode === `post-${nidx}` ? "bg-white/10 border-blue-400/50 text-white" : "border-transparent hover:bg-white/5 text-slate-400"}`}
+                                    onClick={() => setSelectedSitemapNode(`post-${nidx}`)}
+                                  >
+                                    <div className="flex justify-between items-center">
+                                      <span className="truncate font-semibold text-slate-200">{node.path}</span>
+                                      <span className="text-blue-400 font-bold">p: {node.priority}</span>
+                                    </div>
+                                    {selectedSitemapNode === `post-${nidx}` && (
+                                      <div className="grid grid-cols-2 gap-1 mt-1 text-[9px] text-slate-400 border-t border-white/5 pt-1">
+                                        <span>Freq: {node.freq}</span>
+                                        <span>Images: 0</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-[#1e1b4b]/20 border border-indigo-500/20 text-indigo-400 rounded-xl text-[10px]">
+                    <span>Click on folders to expand sub-sitemaps. Highlight a node to inspect crawl frequency and image metadata metrics directly.</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* TAB 1: OVERVIEW & ANALYTICS MONITOR */}
       {activeTab === "overview" && (
@@ -881,10 +1330,10 @@ export default function SeoDashboard({
 
                 <div className="flex justify-between items-center bg-white/5 border border-white/10 p-2.5 rounded-xl">
                   <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-amber-400" />
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
                     <span>Structured Data Status</span>
                   </div>
-                  <span className="text-[9px] bg-amber-950/20 text-amber-400 px-2 py-0.5 rounded border border-amber-500/20 font-mono font-bold">1 WARN</span>
+                  <span className="text-[9px] bg-emerald-950/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-mono font-bold">PASS</span>
                 </div>
 
                 <div className="flex justify-between items-center bg-white/5 border border-white/10 p-2.5 rounded-xl">

@@ -1440,7 +1440,8 @@ function generateSchema(pathname: string): string {
           "caption": "Metazivo Logo"
         },
         "image": {
-          "@id": `${domain}/#logo`
+          "@type": "ImageObject",
+          "url": `${domain}/og-image.jpg`
         },
         "sameAs": [
           "https://www.facebook.com/metazivo",
@@ -1448,13 +1449,24 @@ function generateSchema(pathname: string): string {
           "https://www.linkedin.com/company/metazivo",
           "https://www.instagram.com/metazivo"
         ],
-        "description": "Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth."
+        "description": "Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth.",
+        "telephone": "+92 328 8518557",
+        "email": "mai@metazivo.com",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Remote / Global",
+          "addressLocality": "Islamabad",
+          "addressRegion": "Federal Territory",
+          "postalCode": "44000",
+          "addressCountry": "PK"
+        }
       },
       {
         "@type": "WebSite",
         "@id": `${domain}/#website`,
         "url": `${domain}/`,
         "name": "Metazivo",
+        "description": "Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth.",
         "publisher": {
           "@id": `${domain}/#organization`
         },
@@ -1469,13 +1481,25 @@ function generateSchema(pathname: string): string {
         "@id": `${domain}/#localbusiness`,
         "name": "Metazivo",
         "image": `${domain}/og-image.jpg`,
+        "logo": `${domain}/favicon.svg`,
         "url": `${domain}/`,
-        "telephone": "",
+        "telephone": "+92 328 8518557",
+        "email": "mai@metazivo.com",
         "priceRange": "$$",
+        "description": "Metazivo local business headquarters specializing in custom development and technical SEO solutions.",
+        "areaServed": ["Islamabad", "Lahore", "Dubai", "New York", "Remote / Global"],
+        "sameAs": [
+          "https://www.facebook.com/metazivo",
+          "https://twitter.com/metazivo",
+          "https://www.linkedin.com/company/metazivo",
+          "https://www.instagram.com/metazivo"
+        ],
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "Remote / Global",
           "addressLocality": "Islamabad",
+          "addressRegion": "Federal Territory",
+          "postalCode": "44000",
           "addressCountry": "PK"
         },
         "openingHoursSpecification": {
@@ -1495,6 +1519,32 @@ function generateSchema(pathname: string): string {
       }
     ]
   };
+
+  // Add FAQ to common landing areas
+  if (p === "/" || p === "/services" || p === "/pricing") {
+    baseSchema["@graph"].push({
+      "@type": "FAQPage",
+      "@id": `${domain}${pathname}/#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How fast are your website loading speeds?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "All our custom-crafted WordPress and web platforms are engineered to load in under 1.2 seconds, achieving 99+ Core Web Vitals scores."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What services does Metazivo provide?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Metazivo provides premium custom WordPress development, technical schema-infused SEO, Meta ads management, and branding assets."
+          }
+        }
+      ]
+    } as any);
+  }
 
   if (p === "/") {
     baseSchema["@graph"].push({
@@ -1550,9 +1600,21 @@ function generateSchema(pathname: string): string {
       "@type": "Service",
       "@id": `${domain}${pathname}/#service`,
       "name": serviceName,
-      "provider": { "@id": `${domain}/#organization` },
+      "url": `${domain}${pathname}`,
+      "logo": `${domain}/favicon.svg`,
+      "image": `${domain}/og-image.jpg`,
+      "telephone": "+92 328 8518557",
+      "provider": {
+        "@type": "Organization",
+        "name": "Metazivo",
+        "url": `${domain}/`,
+        "logo": {
+          "@type": "ImageObject",
+          "url": `${domain}/favicon.svg`
+        }
+      },
       "description": serviceDesc,
-      "areaServed": "Global",
+      "areaServed": ["Islamabad", "Lahore", "Dubai", "New York", "Remote / Global"],
       "offers": {
         "@type": "Offer",
         "priceCurrency": "USD",
@@ -1626,6 +1688,7 @@ function generateSchema(pathname: string): string {
       "@type": "Article",
       "@id": `${domain}${pathname}/#article`,
       "isPartOf": { "@id": `${domain}${pathname}/#webpage` },
+      "mainEntityOfPage": `${domain}${pathname}`,
       "headline": title,
       "description": desc,
       "datePublished": date,
@@ -1669,6 +1732,34 @@ function generateSchema(pathname: string): string {
         { "@type": "ListItem", "position": 2, "name": "Pricing", "item": `${domain}/pricing` }
       ]
     } as any);
+
+    // Pricing package modeled as Product schemas
+    baseSchema["@graph"].push({
+      "@type": "Product",
+      "@id": `${domain}/pricing/#product-starter`,
+      "name": "Metazivo Startup Core Package",
+      "image": `${domain}/og-image.jpg`,
+      "description": "Simple, high-impact custom web and SEO alignment for emerging brands.",
+      "sku": "MZV-START-CORE",
+      "mpn": "MZV-MPN-CORE",
+      "brand": {
+        "@type": "Brand",
+        "name": "Metazivo"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": `${domain}/pricing`,
+        "priceCurrency": "USD",
+        "price": "100.00",
+        "priceValidUntil": "2027-12-31",
+        "itemCondition": "https://schema.org/NewCondition",
+        "availability": "https://schema.org/InStock",
+        "seller": {
+          "@type": "Organization",
+          "name": "Metazivo"
+        }
+      }
+    } as any);
   } else if (p === "/contact") {
     baseSchema["@graph"].push({
       "@type": "WebPage",
@@ -1686,6 +1777,38 @@ function generateSchema(pathname: string): string {
         { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
         { "@type": "ListItem", "position": 2, "name": "Contact", "item": `${domain}/contact` }
       ]
+    } as any);
+  } else if (p.startsWith("/product/")) {
+    const slug = p.replace("/product/", "");
+    const prodName = slug === "premium-wordpress-gutenberg" 
+      ? "Premium WordPress Gutenberg Development Block" 
+      : "Metazivo Software Extension License";
+
+    baseSchema["@graph"].push({
+      "@type": "Product",
+      "@id": `${domain}${pathname}/#product`,
+      "name": prodName,
+      "image": `${domain}/og-image.jpg`,
+      "description": "High-performance production license built with optimized bundle splitting.",
+      "sku": `PROD-${slug.toUpperCase()}`,
+      "mpn": `MPN-${slug.toUpperCase()}`,
+      "brand": {
+        "@type": "Brand",
+        "name": "Metazivo"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": `${domain}${pathname}`,
+        "priceCurrency": "USD",
+        "price": "150.00",
+        "priceValidUntil": "2027-12-31",
+        "itemCondition": "https://schema.org/NewCondition",
+        "availability": "https://schema.org/InStock",
+        "seller": {
+          "@type": "Organization",
+          "name": "Metazivo"
+        }
+      }
     } as any);
   }
 
