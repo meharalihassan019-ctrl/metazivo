@@ -18,34 +18,34 @@ const customReactMockup = "https://images.unsplash.com/photo-1551288049-bebda4e3
 
 export const servicesData: AgencyService[] = [
   {
-    id: "srv-webdev",
-    title: "High-Performance Website Development",
-    slug: "website-development",
-    icon: "Code",
-    description: "Enterprise-grade React & Next.js architectures built for supreme speed, absolute security, and unbeatable conversion rates.",
-    longDescription: "A slow website is silently bleeding your revenue every day. We build bespoke, lightning-fast web applications using premium React and Next.js structures that load in under 500 milliseconds. We discard heavy frameworks and redundant codes, crafting hand-coded responsive masterpieces that render perfectly on every single device. With integrated analytics, ultra-clean UI/UX, and complete SEO-ready layouts, your business gains instant digital superiority, leaving your competitors in the dust.",
+    id: "srv-aimobile",
+    title: "AI Mobile Apps",
+    slug: "ai-mobile-apps",
+    icon: "Cpu",
+    description: "Intelligent mobile applications embedded with server-side LLMs, Gemini AI features, real-time voice, and smart triggers.",
+    longDescription: "Artificial Intelligence is redefining the software landscape. We build next-generation AI Mobile Applications that embed advanced machine learning models, natural language processing, and real-time computer vision. Powered by server-side Gemini, OpenAI, or custom local models, our AI apps offer super-fast smart recommendations, automatic content generation, advanced search capabilities, and personalized conversational layers. Stand out in the app stores with a highly optimized, future-proof AI application.",
     benefits: [
-      "Bespoke lightweight code written completely from scratch",
-      "Perfect Core Web Vitals (95+ score guaranteed on Google PageSpeed Insights)",
-      "Premium responsive UI/UX designed to guide users directly to action",
-      "Extreme security hardening to make your web app virtually unhackable",
-      "Dynamic interactive panels that capture and retain attention instantly"
+      "Custom AI models and Gemini API integrations secure from client-side leaks",
+      "Interactive smart agents capable of natural dialogue and task automation",
+      "High-speed voice-to-text, real-time translations, and computer vision features",
+      "Staggering visual designs paired with super-fast database caching",
+      "Complete metrics reporting to monitor API costs and user engagement"
     ],
     process: [
-      "User Journey mapping & Wireframing",
-      "High-Fidelity Custom Figma UI Design",
-      "Clean Optimized Frontend & API Integration",
-      "Security Audit & Public Production Launch"
+      "AI Capabilities Blueprint & Architecture Design",
+      "Prompt Engineering & Server-Side LLM Integration",
+      "Cross-Platform UI/UX Frontend Engineering",
+      "Performance Tuning & Cloud Ingress Cost Safeguards"
     ],
     startingPrice: "From $449",
     deliverables: [
-      "Custom React/Next.js Code",
-      "Google PageSpeed 95+ Hardening",
-      "Frictionless Responsive Layouts",
-      "Integrated Web Analytics"
+      "Cross-Platform Flutter/React Native Builds",
+      "Server-Side Gemini/OpenAI API Proxies",
+      "Real-Time AI Voice & Translation Engines",
+      "Secure User State Persistence"
     ],
-    seoTitle: "High-Performance Website Development | Metazivo",
-    seoDescription: "Bespoke React & Next.js website architectures built for supreme speed, perfect Core Web Vitals, and premium conversion optimization."
+    seoTitle: "AI Mobile App Development | Metazivo",
+    seoDescription: "Next-gen intelligent AI mobile applications starting from $449. Advanced Gemini AI integration, voice assistants, and natural language models on mobile."
   },
   {
     id: "srv-wp",
@@ -78,6 +78,36 @@ export const servicesData: AgencyService[] = [
     seoDescription: "Bespoke high-converting WordPress & WooCommerce development optimized for continuous speed, conversions, and security."
   },
   {
+    id: "srv-mobileapp",
+    title: "Mobile Application Development",
+    slug: "mobile-app-development",
+    icon: "Smartphone",
+    description: "Bespoke native-performance iOS & Android applications built with modern cross-platform Flutter/React Native frameworks.",
+    longDescription: "A premium mobile app is the ultimate touchpoint for modern client engagement. We build native-performance iOS and Android applications written with clean, maintainable Flutter or React Native structures. We discard slow web-views and heavy runtimes, designing gorgeous responsive views that run at 120 FPS. Integrated with secure local storage, push notification servers, real-time sync, and robust security, we submit your apps directly to the stores ready to scale.",
+    benefits: [
+      "High-performance native iOS & Android applications written from scratch",
+      "Fully integrated push notifications, biometrics, and secure offline storage",
+      "Fluid animations and responsive screens matching custom Figma designs",
+      "Complete App Store and Google Play Store deployment guidelines",
+      "Seamless integration with custom REST APIs and cloud databases"
+    ],
+    process: [
+      "Mobile Wireframing & Interactive UI/UX Design",
+      "Native-Performance Frontend & API Integration",
+      "Rigorous Cross-Device Testing & Performance Tuning",
+      "App Store & Google Play Store Submission"
+    ],
+    startingPrice: "From $449",
+    deliverables: [
+      "Native iOS & Android Builds",
+      "App Store Publishing Support",
+      "Push Notification Systems",
+      "Biometrics & Local Storage Integrations"
+    ],
+    seoTitle: "Mobile Application Development Services | Metazivo",
+    seoDescription: "Expert iOS & Android app development starting from $449. Custom Flutter & React Native mobile app development with push notifications and API integration."
+  },
+  {
     id: "srv-seo",
     title: "SEO & Authority Blog Writing Domination",
     slug: "seo",
@@ -106,6 +136,36 @@ export const servicesData: AgencyService[] = [
     ],
     seoTitle: "SEO & Authority Blog Writing Domination | Metazivo",
     seoDescription: "Climb to Page 1 of Google, dominate organic keywords, and generate free high-intent buyers 24/7 with expert SEO solutions."
+  },
+  {
+    id: "srv-webdev",
+    title: "High-Performance Website Development",
+    slug: "website-development",
+    icon: "Code",
+    description: "Enterprise-grade React & Next.js architectures built for supreme speed, absolute security, and unbeatable conversion rates.",
+    longDescription: "A slow website is silently bleeding your revenue every day. We build bespoke, lightning-fast web applications using premium React and Next.js structures that load in under 500 milliseconds. We discard heavy frameworks and redundant codes, crafting hand-coded responsive masterpieces that render perfectly on every single device. With integrated analytics, ultra-clean UI/UX, and complete SEO-ready layouts, your business gains instant digital superiority, leaving your competitors in the dust.",
+    benefits: [
+      "Bespoke lightweight code written completely from scratch",
+      "Perfect Core Web Vitals (95+ score guaranteed on Google PageSpeed Insights)",
+      "Premium responsive UI/UX designed to guide users directly to action",
+      "Extreme security hardening to make your web app virtually unhackable",
+      "Dynamic interactive panels that capture and retain attention instantly"
+    ],
+    process: [
+      "User Journey mapping & Wireframing",
+      "High-Fidelity Custom Figma UI Design",
+      "Clean Optimized Frontend & API Integration",
+      "Security Audit & Public Production Launch"
+    ],
+    startingPrice: "From $449",
+    deliverables: [
+      "Custom React/Next.js Code",
+      "Google PageSpeed 95+ Hardening",
+      "Frictionless Responsive Layouts",
+      "Integrated Web Analytics"
+    ],
+    seoTitle: "High-Performance Website Development | Metazivo",
+    seoDescription: "Bespoke React & Next.js website architectures built for supreme speed, perfect Core Web Vitals, and premium conversion optimization."
   },
   {
     id: "srv-meta-ads",
@@ -225,66 +285,6 @@ export const servicesData: AgencyService[] = [
     ],
     seoTitle: "Video Editing & Production Services | Metazivo",
     seoDescription: "Professional video editing starting from $15. Premium high-retention Facebook, Reels, TikTok, and corporate video production with sound FX."
-  },
-  {
-    id: "srv-mobileapp",
-    title: "Mobile Application Development",
-    slug: "mobile-app-development",
-    icon: "Smartphone",
-    description: "Bespoke native-performance iOS & Android applications built with modern cross-platform Flutter/React Native frameworks.",
-    longDescription: "A premium mobile app is the ultimate touchpoint for modern client engagement. We build native-performance iOS and Android applications written with clean, maintainable Flutter or React Native structures. We discard slow web-views and heavy runtimes, designing gorgeous responsive views that run at 120 FPS. Integrated with secure local storage, push notification servers, real-time sync, and robust security, we submit your apps directly to the stores ready to scale.",
-    benefits: [
-      "High-performance native iOS & Android applications written from scratch",
-      "Fully integrated push notifications, biometrics, and secure offline storage",
-      "Fluid animations and responsive screens matching custom Figma designs",
-      "Complete App Store and Google Play Store deployment guidelines",
-      "Seamless integration with custom REST APIs and cloud databases"
-    ],
-    process: [
-      "Mobile Wireframing & Interactive UI/UX Design",
-      "Native-Performance Frontend & API Integration",
-      "Rigorous Cross-Device Testing & Performance Tuning",
-      "App Store & Google Play Store Submission"
-    ],
-    startingPrice: "From $449",
-    deliverables: [
-      "Native iOS & Android Builds",
-      "App Store Publishing Support",
-      "Push Notification Systems",
-      "Biometrics & Local Storage Integrations"
-    ],
-    seoTitle: "Mobile Application Development Services | Metazivo",
-    seoDescription: "Expert iOS & Android app development starting from $449. Custom Flutter & React Native mobile app development with push notifications and API integration."
-  },
-  {
-    id: "srv-aimobile",
-    title: "AI Mobile Apps",
-    slug: "ai-mobile-apps",
-    icon: "Cpu",
-    description: "Intelligent mobile applications embedded with server-side LLMs, Gemini AI features, real-time voice, and smart triggers.",
-    longDescription: "Artificial Intelligence is redefining the software landscape. We build next-generation AI Mobile Applications that embed advanced machine learning models, natural language processing, and real-time computer vision. Powered by server-side Gemini, OpenAI, or custom local models, our AI apps offer super-fast smart recommendations, automatic content generation, advanced search capabilities, and personalized conversational layers. Stand out in the app stores with a highly optimized, future-proof AI application.",
-    benefits: [
-      "Custom AI models and Gemini API integrations secure from client-side leaks",
-      "Interactive smart agents capable of natural dialogue and task automation",
-      "High-speed voice-to-text, real-time translations, and computer vision features",
-      "Staggering visual designs paired with super-fast database caching",
-      "Complete metrics reporting to monitor API costs and user engagement"
-    ],
-    process: [
-      "AI Capabilities Blueprint & Architecture Design",
-      "Prompt Engineering & Server-Side LLM Integration",
-      "Cross-Platform UI/UX Frontend Engineering",
-      "Performance Tuning & Cloud Ingress Cost Safeguards"
-    ],
-    startingPrice: "From $449",
-    deliverables: [
-      "Cross-Platform Flutter/React Native Builds",
-      "Server-Side Gemini/OpenAI API Proxies",
-      "Real-Time AI Voice & Translation Engines",
-      "Secure User State Persistence"
-    ],
-    seoTitle: "AI Mobile App Development | Metazivo",
-    seoDescription: "Next-gen intelligent AI mobile applications starting from $449. Advanced Gemini AI integration, voice assistants, and natural language models on mobile."
   },
   {
     id: "srv-saas",

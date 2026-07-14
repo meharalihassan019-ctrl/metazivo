@@ -2125,7 +2125,7 @@ function injectSEOAndPrerender(html: string, pathname: string): string {
 // -----------------------------------------------------------------------------
 async function initializeServer() {
   const distPath = path.join(process.cwd(), "dist");
-  const isProd = process.env.NODE_ENV === "production" || fs.existsSync(distPath);
+  const isProd = process.env.NODE_ENV === "production";
 
   // Serve robots.txt explicitly with correct headers globally
   app.get("/robots.txt", (req, res) => {
