@@ -31,7 +31,16 @@ export const servicesData: AgencyService[] = [
       "High-Fidelity Custom Figma UI Design",
       "Clean Optimized Frontend & API Integration",
       "Security Audit & Public Production Launch"
-    ]
+    ],
+    startingPrice: "From $449",
+    deliverables: [
+      "Custom React/Next.js Code",
+      "Google PageSpeed 95+ Hardening",
+      "Frictionless Responsive Layouts",
+      "Integrated Web Analytics"
+    ],
+    seoTitle: "High-Performance Website Development | Metazivo",
+    seoDescription: "Bespoke React & Next.js website architectures built for supreme speed, perfect Core Web Vitals, and premium conversion optimization."
   },
   {
     id: "srv-wp",
@@ -52,7 +61,16 @@ export const servicesData: AgencyService[] = [
       "Lightweight Custom Theme Development & Testing",
       "WooCommerce Cart & payment gateways integration",
       "Extreme speed optimization & security deployment"
-    ]
+    ],
+    startingPrice: "From $150",
+    deliverables: [
+      "Custom Theme & Gutenberg Blocks",
+      "WooCommerce Integration",
+      "1-Click Frictionless Checkout",
+      "Hourly Cloud Backups"
+    ],
+    seoTitle: "WordPress & WooCommerce Sales Engines | Metazivo",
+    seoDescription: "Bespoke high-converting WordPress & WooCommerce development optimized for continuous speed, conversions, and security."
   },
   {
     id: "srv-seo",
@@ -73,7 +91,16 @@ export const servicesData: AgencyService[] = [
       "High-Value Commercial Keyword Mapping",
       "High-Impact Article Writing & Semantic On-Page Editing",
       "Active Backlink Outreach & continuous ranking boost"
-    ]
+    ],
+    startingPrice: "From $120",
+    deliverables: [
+      "Technical SEO On-Page Audits",
+      "Topic Clusters & Keyword Mapping",
+      "High-Converting Blog Copywriting",
+      "White-Hat Backlink Outreach"
+    ],
+    seoTitle: "SEO & Authority Blog Writing Domination | Metazivo",
+    seoDescription: "Climb to Page 1 of Google, dominate organic keywords, and generate free high-intent buyers 24/7 with expert SEO solutions."
   },
   {
     id: "srv-meta-ads",
@@ -94,7 +121,16 @@ export const servicesData: AgencyService[] = [
       "Premium Creative Asset Design & Script Writing",
       "Advanced Pixel & Conversion API setup",
       "Weekly budget scaling & strategic campaign testing"
-    ]
+    ],
+    startingPrice: "From $120",
+    deliverables: [
+      "Ad Campaign Funnel Design",
+      "High-ROI Creative Asset Layouts",
+      "Copywriting & Direct-Response Hooks",
+      "CAPI Server-Side Tracking"
+    ],
+    seoTitle: "Meta Ads (Facebook & Instagram) Acquisition System | Metazivo",
+    seoDescription: "High-ROI Facebook & Instagram campaigns, custom funnel tracking, and psychological copies to turn ad spend into pure profit."
   },
   {
     id: "srv-smm",
@@ -115,7 +151,16 @@ export const servicesData: AgencyService[] = [
       "Viral Video Scripting & Multi-media Asset Batching",
       "Premium Cinematic Editing & Captivating Copywriting",
       "Strategic Daily Scheduling & active profile warming"
-    ]
+    ],
+    startingPrice: "From $100",
+    deliverables: [
+      "Aesthetic Page Layouts & Grids",
+      "Viral Short-Form Scriptwriting",
+      "Dynamic Caption Copywriting",
+      "Persistent Interaction Algorithms"
+    ],
+    seoTitle: "Social Media Management & Viral Reels | Metazivo",
+    seoDescription: "Aesthetic feed grids, engaging viral reels editing, and daily community algorithms to build high organic follower loyalty."
   },
   {
     id: "srv-branding",
@@ -136,7 +181,165 @@ export const servicesData: AgencyService[] = [
       "Custom Creative Concept Designing & Iterations",
       "Color Palette Definition & Typography Matching",
       "Asset Exporting & Complete Style Guide Delivery"
-    ]
+    ],
+    startingPrice: "From $80",
+    deliverables: [
+      "Bespoke Vector Logo Design",
+      "Complete Brand Guidelines Manual",
+      "Corporate Visual Style Sheets",
+      "All Scalable High-Res Source Files"
+    ],
+    seoTitle: "Graphic Design & Corporate Logo Branding | Metazivo",
+    seoDescription: "Premium corporate logos, cohesive color systems, and high-status brand assets that instantly establish market leadership."
+  },
+  {
+    id: "srv-video",
+    title: "Video Editing & Production",
+    slug: "video-editing",
+    icon: "Video",
+    description: "Professional high-retention video editing and post-production structured with dynamic pacing, motion graphics, and sound design to make your content look exceptionally professional.",
+    longDescription: "Video is the ultimate medium of influence and trust. Low-quality video with poor audio, flat editing, or sluggish pacing repels potential clients. We elevate your brand value with expert post-production video editing. We specialize in high-retention short-form reels, TikToks, and Facebook video ads formatted with dynamic captions, cinematic sound effects, seamless transitions, and professional color grading that hook attention in the first 3 seconds.",
+    benefits: [
+      "Dynamic auto-captions and custom motion graphic animations styled for your brand",
+      "High-retention narrative pacing structured to maximize watch time and viral scores",
+      "Cinematic color grading and custom sound design (SFX) that project luxury quality",
+      "Multi-platform optimization for YouTube, Instagram Reels, TikTok, and web players",
+      "Engaging hooks and seamless zoom effects that eliminate audience boredom"
+    ],
+    process: [
+      "Footage Storyboarding & Audience Hook Concepting",
+      "High-Retention Assembly, Dynamic Zooming & Multi-Cam Syncing",
+      "Sound Design, Audio Clean-up & Background Beat Layering",
+      "Cinematic Color Grading, Subtitles, & Motion Graphic Exports"
+    ],
+    startingPrice: "From $15",
+    deliverables: [
+      "Instagram Reels & TikToks",
+      "Facebook Videos",
+      "Facebook & Instagram Video Ads"
+    ],
+    seoTitle: "Video Editing & Production Services | Metazivo",
+    seoDescription: "Professional video editing starting from $15. Premium high-retention Facebook, Reels, TikTok, and corporate video production with sound FX."
+  },
+  {
+    id: "srv-mobileapp",
+    title: "Mobile Application Development",
+    slug: "mobile-app-development",
+    icon: "Smartphone",
+    description: "Bespoke native-performance iOS & Android applications built with modern cross-platform Flutter/React Native frameworks.",
+    longDescription: "A premium mobile app is the ultimate touchpoint for modern client engagement. We build native-performance iOS and Android applications written with clean, maintainable Flutter or React Native structures. We discard slow web-views and heavy runtimes, designing gorgeous responsive views that run at 120 FPS. Integrated with secure local storage, push notification servers, real-time sync, and robust security, we submit your apps directly to the stores ready to scale.",
+    benefits: [
+      "High-performance native iOS & Android applications written from scratch",
+      "Fully integrated push notifications, biometrics, and secure offline storage",
+      "Fluid animations and responsive screens matching custom Figma designs",
+      "Complete App Store and Google Play Store deployment guidelines",
+      "Seamless integration with custom REST APIs and cloud databases"
+    ],
+    process: [
+      "Mobile Wireframing & Interactive UI/UX Design",
+      "Native-Performance Frontend & API Integration",
+      "Rigorous Cross-Device Testing & Performance Tuning",
+      "App Store & Google Play Store Submission"
+    ],
+    startingPrice: "From $449",
+    deliverables: [
+      "Native iOS & Android Builds",
+      "App Store Publishing Support",
+      "Push Notification Systems",
+      "Biometrics & Local Storage Integrations"
+    ],
+    seoTitle: "Mobile Application Development Services | Metazivo",
+    seoDescription: "Expert iOS & Android app development starting from $449. Custom Flutter & React Native mobile app development with push notifications and API integration."
+  },
+  {
+    id: "srv-aimobile",
+    title: "AI Mobile Apps",
+    slug: "ai-mobile-apps",
+    icon: "Cpu",
+    description: "Intelligent mobile applications embedded with server-side LLMs, Gemini AI features, real-time voice, and smart triggers.",
+    longDescription: "Artificial Intelligence is redefining the software landscape. We build next-generation AI Mobile Applications that embed advanced machine learning models, natural language processing, and real-time computer vision. Powered by server-side Gemini, OpenAI, or custom local models, our AI apps offer super-fast smart recommendations, automatic content generation, advanced search capabilities, and personalized conversational layers. Stand out in the app stores with a highly optimized, future-proof AI application.",
+    benefits: [
+      "Custom AI models and Gemini API integrations secure from client-side leaks",
+      "Interactive smart agents capable of natural dialogue and task automation",
+      "High-speed voice-to-text, real-time translations, and computer vision features",
+      "Staggering visual designs paired with super-fast database caching",
+      "Complete metrics reporting to monitor API costs and user engagement"
+    ],
+    process: [
+      "AI Capabilities Blueprint & Architecture Design",
+      "Prompt Engineering & Server-Side LLM Integration",
+      "Cross-Platform UI/UX Frontend Engineering",
+      "Performance Tuning & Cloud Ingress Cost Safeguards"
+    ],
+    startingPrice: "From $449",
+    deliverables: [
+      "Cross-Platform Flutter/React Native Builds",
+      "Server-Side Gemini/OpenAI API Proxies",
+      "Real-Time AI Voice & Translation Engines",
+      "Secure User State Persistence"
+    ],
+    seoTitle: "AI Mobile App Development | Metazivo",
+    seoDescription: "Next-gen intelligent AI mobile applications starting from $449. Advanced Gemini AI integration, voice assistants, and natural language models on mobile."
+  },
+  {
+    id: "srv-saas",
+    title: "SaaS Applications",
+    slug: "saas-applications",
+    icon: "Cloud",
+    description: "Highly scalable Multi-Tenant Software-as-a-Service systems built with subscription billings, secure roles, and dynamic dashboards.",
+    longDescription: "Building a SaaS requires absolute security, database performance, and clean subscription lifecycles. We engineer bespoke SaaS platforms using full-stack React and Node/Express architectures. We integrate robust multi-tenant architectures, granular user permissions, secure JWT authentication, and automated billing engines like Stripe or PayPal. Complete with beautiful administrative dashboards, dynamic charts, CSV exports, and email verification systems, we provide the ultimate foundation to launch your subscription-based software product and secure recurring revenue.",
+    benefits: [
+      "Multi-tenant database structures supporting secure isolated user workspaces",
+      "Full Stripe billing suite integration supporting trials, coupons, and tiered plans",
+      "Responsive analytical boards with dynamic Recharts and clean metrics",
+      "Granular RBAC (Role-Based Access Control) security systems",
+      "99.9% uptime guaranteed architecture prepared for rapid user scale"
+    ],
+    process: [
+      "SaaS Database Modeling & Secure API Architecture",
+      "High-Status Interactive Dashboard Frontend Design",
+      "Stripe Subscription & Authentication Integration",
+      "Automated Backups & Production Load Testing"
+    ],
+    startingPrice: "From $449",
+    deliverables: [
+      "Multi-Tenant Full-Stack Architectures",
+      "Secure JWT / OAuth Authentication",
+      "Stripe Subscription Checkout Integration",
+      "Aesthetic Administrative Dashboards"
+    ],
+    seoTitle: "SaaS Application Development | Metazivo",
+    seoDescription: "Bespoke SaaS platform development starting from $449. Secure full-stack SaaS apps with Stripe subscriptions, user permissions, and admin panels."
+  },
+  {
+    id: "srv-chatbots",
+    title: "Chatbots",
+    slug: "chatbots",
+    icon: "MessageSquare",
+    description: "Automated customer support & sales chatbots powered by Gemini to answer leads and capture sales 24/7.",
+    longDescription: "Never miss a lead or customer inquiry again. We build automated sales and customer support Chatbots that engage with your website visitors in real-time. Powered by custom-trained Gemini LLM contexts, these chatbots answer complex product questions, book consultative calls, gather lead contact information, and resolve support tickets instantly. Fully customized to match your brand's voice and integrated directly with your CRM, slack, or emails, these agents work 24/7/365 to qualify buyers and increase conversions.",
+    benefits: [
+      "Advanced AI model trained specifically on your company documents and FAQ",
+      "Dynamic instant call booking and automated lead qualification pipelines",
+      "Multilingual support translating queries automatically in real-time",
+      "Seamless handover to live human support agents when requested",
+      "Complete analytical logs to monitor user satisfaction and chat success"
+    ],
+    process: [
+      "Knowledge Base Structuring & Brand Voice Configuration",
+      "Custom Conversational Flow Design & Tool Integrations",
+      "Widget Embedded Deployment & Cross-Browser Styling",
+      "Dialogue Quality Assurance & Continual Model Tuning"
+    ],
+    startingPrice: "From $449",
+    deliverables: [
+      "Trained Gemini LLM Conversational Agents",
+      "Live Web Chat Integrations",
+      "Automatic Contact Captures & CRM Hooks",
+      "Multilingual Real-Time Translations"
+    ],
+    seoTitle: "AI Chatbot & Conversational Agent Integration | Metazivo",
+    seoDescription: "Custom AI chatbots starting from $449. Automated customer support and sales chat systems powered by Gemini for 24/7 conversion growth."
   }
 ];
 
@@ -160,6 +363,25 @@ export const pricingPlans = [
     popular: false
   },
   {
+    id: "plan-video",
+    name: "Professional Video & Reels",
+    price: "$120",
+    period: "month",
+    description: "Perfect for creators and brands looking to dominate short-form media with professional, high-retention video content.",
+    features: [
+      "12x Premium Edited Reels / TikToks per month",
+      "Engaging Auto-Captions with Custom Brand Styling",
+      "Professional Sound Design (SFX) & Beat Syncing",
+      "Cinematic Color Grading & Audio Enhancement",
+      "Complete raw footage trimming & clean transitions",
+      "YouTube Shorts & IG Reels multi-formatting",
+      "24-48 hour rapid turnaround guarantee",
+      "Includes 1 custom animated visual intro/outro"
+    ],
+    cta: "Start Video Domination",
+    popular: false
+  },
+  {
     id: "plan-growth",
     name: "Business Growth",
     price: "$199",
@@ -173,11 +395,31 @@ export const pricingPlans = [
       "Advanced Schema.org JSON-LD Markup",
       "95+ Google PageSpeed Guarantee",
       "Premium WebP Image Compression pipeline",
+      "8x Professional Short-form Videos (Reels/TikToks) with Sound FX",
       "Bi-Weekly Strategy & Reporting Calls",
       "24/7 Priority Support & Maintenance"
     ],
     cta: "Scale My Business",
     popular: true
+  },
+  {
+    id: "plan-dev",
+    name: "App & SaaS Development",
+    price: "$449",
+    period: "starting",
+    description: "Bespoke high-performance mobile apps, multi-tenant SaaS platforms, custom AI systems, and automated chatbots.",
+    features: [
+      "Custom Flutter/React Native Mobile App or SaaS",
+      "Custom AI Integration (Gemini, Voice, Prompts)",
+      "Automated Support Chatbots & CRM Integrations",
+      "Stripe Subscription Engine & User Accounts System",
+      "Administrative Analytical Dashboard (Charts, Tables)",
+      "High-Performance Database Setup (SQL or Firestore)",
+      "App Store & Play Store Deployment Guidelines",
+      "3 Months Dedicated Support & Security Auditing"
+    ],
+    cta: "Start My Custom App",
+    popular: false
   },
   {
     id: "plan-enterprise",
@@ -191,6 +433,7 @@ export const pricingPlans = [
       "Omnichannel Ads (Meta + Google + LinkedIn)",
       "Advanced content analysis & automatic XML feeds",
       "Unlimited SEO optimization & high-quality Backlinks",
+      "Complete Omnichannel Video Production & Post-Production (Unlimited)",
       "Dedicated Project Account Director",
       "99.9% Server SLA & Backup Strategy",
       "Custom Database Migrations support"

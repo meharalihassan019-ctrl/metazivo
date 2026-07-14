@@ -1502,6 +1502,7 @@ function generateSchema(pathname: string): string {
           "postalCode": "44000",
           "addressCountry": "PK"
         },
+        "openingHours": "Mo-Su 00:00-23:59",
         "openingHoursSpecification": {
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": [
@@ -1515,6 +1516,11 @@ function generateSchema(pathname: string): string {
           ],
           "opens": "00:00",
           "closes": "23:59"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "33.6844",
+          "longitude": "73.0479"
         }
       }
     ]
@@ -1578,22 +1584,52 @@ function generateSchema(pathname: string): string {
     const slug = p.replace("/service/", "");
     let serviceName = "Bespoke Digital Service";
     let serviceDesc = "Metazivo high-performance digital marketing and engineering services.";
+    let servicePrice = "100.00";
 
-    if (slug === "wordpress-development" || slug === "website-development") {
+    if (slug === "wordpress-development") {
       serviceName = "WordPress & WooCommerce Sales Engines";
       serviceDesc = "Performance-engineered portals custom-crafted to load in under 1.2 seconds and convert traffic into sales.";
+      servicePrice = "150.00";
+    } else if (slug === "website-development") {
+      serviceName = "High-Performance Website Development";
+      serviceDesc = "Enterprise-grade React & Next.js architectures built for supreme speed, absolute security, and unbeatable conversion rates.";
+      servicePrice = "449.00";
     } else if (slug === "seo") {
       serviceName = "Technical SEO & Authority Blog Dominance";
       serviceDesc = "Advanced structured data, schema markup, semantic keyword clusters, and expert blog writing to capture maximum Google rank authority.";
+      servicePrice = "120.00";
     } else if (slug === "meta-ads-advertising") {
       serviceName = "Meta Ads & Dynamic Funnels";
       serviceDesc = "Three-tier paid acquisition setups (TOFU, MOFU, BOFU) combined with psychologically optimized copywriting to scale average ROAS.";
+      servicePrice = "120.00";
     } else if (slug === "social-media-management") {
       serviceName = "Social Media Management & Viral Reels";
       serviceDesc = "Organic brand storytelling, corporate content workflows, and professional short-form video post-production.";
+      servicePrice = "100.00";
     } else if (slug === "graphic-design-branding") {
       serviceName = "Graphic Design & Corporate Logo Branding";
       serviceDesc = "We create beautiful logo systems, color standards, custom vector illustration directions, and high-fidelity wireframes.";
+      servicePrice = "80.00";
+    } else if (slug === "video-editing") {
+      serviceName = "Video Editing & Production";
+      serviceDesc = "Professional high-retention video editing and post-production structured with dynamic pacing, motion graphics, and sound design to make your content look exceptionally professional.";
+      servicePrice = "15.00";
+    } else if (slug === "mobile-app-development") {
+      serviceName = "Mobile Application Development";
+      serviceDesc = "Bespoke native-performance iOS & Android applications built with modern cross-platform Flutter/React Native frameworks.";
+      servicePrice = "449.00";
+    } else if (slug === "ai-mobile-apps") {
+      serviceName = "AI Mobile Apps";
+      serviceDesc = "Intelligent mobile applications embedded with server-side LLMs, Gemini AI features, real-time voice, and smart triggers.";
+      servicePrice = "449.00";
+    } else if (slug === "saas-applications") {
+      serviceName = "SaaS Applications";
+      serviceDesc = "Highly scalable Multi-Tenant Software-as-a-Service systems built with subscription billings, secure roles, and dynamic dashboards.";
+      servicePrice = "449.00";
+    } else if (slug === "chatbots") {
+      serviceName = "Chatbots";
+      serviceDesc = "Automated customer support & sales chatbots powered by Gemini to answer leads and capture sales 24/7.";
+      servicePrice = "449.00";
     }
 
     baseSchema["@graph"].push({
@@ -1618,7 +1654,7 @@ function generateSchema(pathname: string): string {
       "offers": {
         "@type": "Offer",
         "priceCurrency": "USD",
-        "price": "100.00",
+        "price": servicePrice,
         "eligibleRegion": "Global"
       }
     } as any);

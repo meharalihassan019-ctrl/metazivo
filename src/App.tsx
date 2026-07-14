@@ -36,6 +36,11 @@ import {
   RefreshCw,
   Folder,
   Eye,
+  Video,
+  Smartphone,
+  Cpu,
+  Cloud,
+  MessageSquare,
   Image as ImageIcon
 } from "lucide-react";
 import Header from "./components/Header";
@@ -66,6 +71,36 @@ const funnel3D = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto
 const branding3D = "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=800&q=80"; // Creative graphic designer workspace sketch with tablets
 const smm3D = "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80"; // Modern smartphones displaying organic feed layouts
 const metaAds3D = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80"; // Workspace team planning conversion campaigns
+const videoEditing3D = "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80"; // Cinematic video editing timeline mockup
+
+const ServiceIcon = ({ name, className = "w-6 h-6" }: { name: string; className?: string }) => {
+  switch (name) {
+    case "Code":
+      return <Code className={className} />;
+    case "Layout":
+      return <Layout className={className} />;
+    case "Search":
+      return <Search className={className} />;
+    case "TrendingUp":
+      return <TrendingUp className={className} />;
+    case "Activity":
+      return <Activity className={className} />;
+    case "Palette":
+      return <Palette className={className} />;
+    case "Video":
+      return <Video className={className} />;
+    case "Smartphone":
+      return <Smartphone className={className} />;
+    case "Cpu":
+      return <Cpu className={className} />;
+    case "Cloud":
+      return <Cloud className={className} />;
+    case "MessageSquare":
+      return <MessageSquare className={className} />;
+    default:
+      return <Code className={className} />;
+  }
+};
 
 const getServiceImage = (slug: string) => {
   switch (slug) {
@@ -80,6 +115,16 @@ const getServiceImage = (slug: string) => {
       return smm3D;
     case "graphic-design-branding":
       return branding3D;
+    case "video-editing":
+      return videoEditing3D;
+    case "mobile-app-development":
+      return "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=800&q=80";
+    case "ai-mobile-apps":
+      return "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80";
+    case "saas-applications":
+      return "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80";
+    case "chatbots":
+      return "https://images.unsplash.com/photo-1531747118685-ca8fa6e08806?auto=format&fit=crop&w=800&q=80";
     default:
       return funnel3D;
   }
@@ -132,6 +177,16 @@ export default function App() {
       text = "Hi! I am interested in your High-Performance Website Development service. Let's discuss my custom React/Next.js requirements.";
     } else if (slug === "graphic-design-branding") {
       text = "Hi! I am interested in your Graphic Design & Corporate Logo Branding service. Let's discuss crafting a premium identity.";
+    } else if (slug === "video-editing") {
+      text = "Hi! I am interested in your Video Editing & Short-Form Production service. Let's discuss how we can make my brand/content look highly professional.";
+    } else if (slug === "mobile-app-development") {
+      text = "Hi! I am interested in your Mobile Application Development service. Let's discuss my iOS & Android app project.";
+    } else if (slug === "ai-mobile-apps") {
+      text = "Hi! I am interested in your AI Mobile Apps service. Let's discuss embedding Gemini AI capabilities into my mobile application.";
+    } else if (slug === "saas-applications") {
+      text = "Hi! I am interested in your SaaS Applications development service. Let's discuss building my custom SaaS product.";
+    } else if (slug === "chatbots") {
+      text = "Hi! I am interested in your Custom Chatbots service. Let's discuss building a Gemini-powered automated lead agent for my website.";
     }
     
     return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
@@ -921,6 +976,77 @@ export default function App() {
               </div>
             </section>
 
+            {/* 2.2 EXPANDED SPECIALIZED SERVICES GRID */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12 relative z-10 animate-fade-in" id="expanded-services">
+              <div className="text-center space-y-4 max-w-2xl mx-auto">
+                <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Expanded Capabilities</span>
+                <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight">Specialized Full-Stack & Mobile Capabilities</h3>
+                <p className="text-xs sm:text-sm text-slate-600 font-light">
+                  From custom native applications to intelligent chatbots and high-retention video systems, we deliver elite-tier custom creations.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {servicesData.filter(srv => !["seo", "meta-ads-advertising", "social-media-management"].includes(srv.slug)).map((srv, idx) => (
+                  <motion.div
+                    key={srv.id}
+                    className="p-6 bg-white border border-slate-200/85 hover:border-[#FF5722]/30 rounded-[32px] transition-all duration-300 shadow-sm hover:shadow-md flex flex-col justify-between group relative"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: idx * 0.05 }}
+                    id={`homepage-expanded-service-${srv.slug}`}
+                  >
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="w-10 h-10 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-xl flex items-center justify-center text-[#FF5722]">
+                          <ServiceIcon name={srv.icon} className="w-5 h-5" />
+                        </div>
+                        {srv.startingPrice && (
+                          <span className="text-xs font-mono font-bold text-[#FF5722] bg-[#FF5722]/5 border border-[#FF5722]/10 px-2.5 py-1 rounded-full">
+                            {srv.startingPrice}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <h4 className="text-base font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors">
+                          {srv.title}
+                        </h4>
+                        <p className="text-xs text-slate-500 leading-relaxed font-light">
+                          {srv.description}
+                        </p>
+                      </div>
+
+                      {srv.deliverables && srv.deliverables.length > 0 && (
+                        <div className="pt-3 border-t border-slate-100 space-y-1.5">
+                          <span className="text-[10px] uppercase font-mono font-bold text-slate-400 block tracking-wider">Key Deliverables</span>
+                          <div className="grid grid-cols-1 gap-1">
+                            {srv.deliverables.slice(0, 3).map((del, dIdx) => (
+                              <div key={dIdx} className="flex items-center gap-1.5 text-[11px] text-slate-600 font-medium">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+                                <span>{del}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <button
+                        onClick={() => handleOpenService(srv.slug)}
+                        className="text-xs font-semibold text-[#FF5722] hover:text-[#FF7043] transition-all inline-flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>View Process & Benefits</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+
             {/* 2.5 WHY CHOOSE METAZIVO (Bespoke vs Standard Templates) */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10" id="why-choose-us">
               <div className="bg-slate-50 border border-slate-200/80 rounded-[40px] p-8 sm:p-12 lg:p-16 space-y-12 shadow-sm">
@@ -1553,13 +1679,13 @@ export default function App() {
               <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto font-light">Deploy specialized design, speed hardeners, and advertising budgets tailored directly for your scope.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
               {pricingPlans.map((plan) => (
-                <div key={plan.id} className="bg-white border border-slate-200/80 p-6 rounded-[32px] flex flex-col justify-between shadow-sm transition-all hover:translate-y-[-4px]">
+                <div key={plan.id} className="bg-white border border-slate-200/80 p-6 rounded-[32px] flex flex-col justify-between shadow-sm transition-all hover:translate-y-[-4px] hover:border-[#FF5722]/20">
                   <div className="space-y-4">
                     <h3 className="text-base font-bold text-slate-900">{plan.name}</h3>
                     <span className="text-3xl font-extrabold text-[#FF5722] block">{plan.price}</span>
-                    <p className="text-xs text-slate-500 leading-relaxed font-light">{plan.description}</p>
+                    <p className="text-xs text-slate-500 leading-relaxed font-light min-h-[48px]">{plan.description}</p>
                     <ul className="space-y-2.5 pt-4 border-t border-slate-100 text-xs text-slate-600">
                       {plan.features.map((f, idx) => (
                         <li key={idx} className="flex gap-2 items-center">
@@ -1570,7 +1696,7 @@ export default function App() {
                     </ul>
                   </div>
                   <button onClick={() => handleNavigate("contact")} className="w-full mt-6 py-2.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-semibold transition-all cursor-pointer shadow-[0_4px_10px_rgba(255,87,34,0.15)]">
-                    Request custom quote
+                    {plan.cta || "Request custom quote"}
                   </button>
                 </div>
               ))}

@@ -94,7 +94,10 @@ export default function Footer({ onNavigate, contactInfo, customPages }: FooterP
             <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">WordPress Themes</button></li>
             <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">SEO & Auditing</button></li>
             <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Paid Ads Campaign</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Content & Blogging</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Video Editing & Production</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Mobile App Development</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">AI Mobile Apps & SaaS</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Chatbots Integration</button></li>
           </ul>
         </div>
 

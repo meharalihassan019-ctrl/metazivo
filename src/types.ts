@@ -117,6 +117,10 @@ export interface AgencyService {
   longDescription: string;
   benefits: string[];
   process: string[];
+  startingPrice?: string;
+  deliverables?: string[];
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 export interface ContactInfo {
