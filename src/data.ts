@@ -5,6 +5,11 @@
 
 import { AgencyService } from "./types";
 
+// Import locally generated custom portfolio images
+import obdevMockup from "./assets/images/obdev_mockup_1784019582597.jpg";
+import salamsMockup from "./assets/images/salams_mockup_1784019604656.jpg";
+import opvgMockup from "./assets/images/opvg_mockup_1784019625348.jpg";
+
 // Real-world, highly realistic portfolio stock photo URLs (Not AI-generated)
 const wpMockup = "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&w=800&q=80"; // Skincare boutique products
 const seoMockup = "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80"; // Logistics shipping containers
@@ -475,6 +480,33 @@ export const portfolioItems = [
     image: customReactMockup,
     metrics: "99/100 Core Web Vitals Speed Score",
     description: "Engineered a stunning, modern React/Next.js SaaS portal with dynamic database caching and glassmorphic designs, resulting in flawless performance across all mobile devices."
+  },
+  {
+    id: "port-5",
+    title: "Salams Muslim Marriage - Global Matrimony App",
+    category: "Mobile Application Development",
+    image: salamsMockup,
+    metrics: "4M+ Successful Matches | 120 FPS Flutter Engine",
+    description: "Optimized and scaled the global Muslim matchmaking experience. Deployed premium high-performance card swipe mechanics, localized matching, secure real-time chats, and custom user search layouts in Flutter.",
+    playStoreUrl: "https://apps.apple.com/us/app/salams-halal-muslim-marriage/id965359176"
+  },
+  {
+    id: "port-6",
+    title: "Orange Beam (OB Dev) - High-Tech Project Sync",
+    category: "Mobile Application Development",
+    image: obdevMockup,
+    metrics: "100% Offline Workflow Sync | Custom REST API",
+    description: "Built a native-performance Flutter tracking workspace for building and construction management. Captures real-time project metrics, daily schedules, site reporting logs, and secure offline-first local cache.",
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.orangebeam.obdev"
+  },
+  {
+    id: "port-7",
+    title: "OPVG Family - Global Volunteer Community App",
+    category: "Mobile Application Development",
+    image: opvgMockup,
+    metrics: "50K+ Active Volunteers | Perfect Play Store Rating",
+    description: "Designed a clean, intuitive cross-platform community app for the Overseas Pakistani Voters Group. Features dynamic voter registry verification tools, volunteer forums, and automated push notices.",
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.family.opvgfamily"
   }
 ];
 
