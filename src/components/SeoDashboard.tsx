@@ -1089,17 +1089,23 @@ export default function SeoDashboard({
                                 <Folder className="w-3.5 h-3.5 shrink-0" />
                                 <span>services-sitemap.xml</span>
                               </div>
-                              <span className="text-[9px] text-slate-500">5 nodes</span>
+                              <span className="text-[9px] text-slate-500">11 nodes</span>
                             </div>
 
                             {expandedSitemapFolders.services && (
                               <div className="pl-4 border-l border-white/10 space-y-1.5 pt-1 text-[10px]">
                                 {[
                                   { path: "/service/wordpress-development", priority: "0.8", images: 1 },
+                                  { path: "/service/website-development", priority: "0.8", images: 1 },
                                   { path: "/service/seo", priority: "0.8", images: 1 },
                                   { path: "/service/meta-ads-advertising", priority: "0.8", images: 1 },
                                   { path: "/service/social-media-management", priority: "0.8", images: 0 },
-                                  { path: "/service/graphic-design-branding", priority: "0.8", images: 0 }
+                                  { path: "/service/graphic-design-branding", priority: "0.8", images: 0 },
+                                  { path: "/service/video-editing", priority: "0.8", images: 1 },
+                                  { path: "/service/mobile-app-development", priority: "0.8", images: 1 },
+                                  { path: "/service/ai-mobile-apps", priority: "0.8", images: 1 },
+                                  { path: "/service/saas-applications", priority: "0.8", images: 1 },
+                                  { path: "/service/chatbots", priority: "0.8", images: 1 }
                                 ].map((node, nidx) => (
                                   <div
                                     key={nidx}

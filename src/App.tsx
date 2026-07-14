@@ -764,284 +764,79 @@ export default function App() {
               </div>
             </div>
 
-            {/* 2. CORE SERVICES (Asymmetric Bento Grid with 3D Tilt) */}
+            {/* 2. CORE SERVICES (Unified High-Performance Services Grid) */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-16 relative z-10" id="core-services">
               <div className="text-center space-y-4">
-                <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Specializations</span>
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Our Core Digital Services</h2>
-                <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto font-light">
+                <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full font-sans">Our Capabilities</span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-sans">Professional Digital Services</h2>
+                <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto font-light font-sans">
                   We design customized growth mechanisms using premium engineering models. No slow pre-built templates, strictly custom code.
                 </p>
               </div>
 
-              {/* Bento Grid container (4 Core Services 2x2 layout) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                
-                {/* Card 1: WordPress & E-Commerce Web Dev */}
-                <motion.div 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.6 }}
-                >
-                  <ParallaxBentoCard className="h-full flex flex-col justify-between min-h-[460px] p-8" onClick={() => handleOpenService("website-development")}>
-                    <div className="space-y-6">
-                      <div className="w-12 h-12 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-2xl flex items-center justify-center text-[#FF5722]">
-                        <Code className="w-6 h-6" />
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <span className="text-[10px] font-mono font-bold text-[#FF5722] uppercase tracking-wider block">Sales Machine</span>
-                        <h3 className="text-2xl font-bold text-slate-900 font-sans">WordPress & E-Commerce Development</h3>
-                        <p className="text-sm text-slate-600 leading-relaxed font-light">
-                          Your website is your 24/7 virtual storefront. We design custom WordPress and WooCommerce sites that load instantly, looking breathtakingly professional on every screen. We don't just use standard sluggish templates—we structure the code, secure your platform, and design premium sales checkouts that turn casual clicks into repeat customers.
-                        </p>
-                      </div>
-
-                      <div className="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500 font-medium">
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
-                          <span>Custom Theme Crafting & WooCommerce Optimization</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
-                          <span>Guaranteed &lt;1.5s Load Speed & Perfect Mobile Layout</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-8 relative aspect-video w-full rounded-2xl overflow-hidden border border-slate-150 bg-slate-50 flex items-center justify-center">
-                      <img 
-                        src={coding3D} 
-                        alt="3D High-Performance Coding" 
-                        referrerPolicy="no-referrer"
-                        loading="lazy"
-                        className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
-                      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-slate-200 text-[10px] font-mono text-[#FF5722] font-semibold shadow-sm">
-                        CUSTOM DEVELOPMENT ✦ WOOCOMMERCE ACTIVE
-                      </div>
-                    </div>
-                  </ParallaxBentoCard>
-                </motion.div>
-
-                {/* Card 2: SEO & High-Authority Blog Writing */}
-                <motion.div 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                >
-                  <ParallaxBentoCard className="h-full flex flex-col justify-between min-h-[460px] p-8" onClick={() => handleOpenService("seo")}>
-                    <div className="space-y-6">
-                      <div className="w-12 h-12 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-2xl flex items-center justify-center text-[#FF5722]">
-                        <Search className="w-6 h-6" />
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <span className="text-[10px] font-mono font-bold text-[#FF5722] uppercase tracking-wider block">Google Domination</span>
-                        <h3 className="text-2xl font-bold text-slate-900 font-sans">SEO & High-Authority Blog Writing</h3>
-                        <p className="text-sm text-slate-600 leading-relaxed font-light">
-                          If your business isn’t on Google’s page 1, you are practically invisible to buyers. We implement advanced SEO algorithms alongside value-first blog content writing. By targeting high-intent buyer keywords, editing metadata, and writing deep-dive articles, we drive thousands of warm, ready-to-buy organic visitors to your site completely free.
-                        </p>
-                      </div>
-
-                      <div className="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500 font-medium">
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
-                          <span>Keyword Research, SEO Blogs & Meta Optimization</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
-                          <span>On-Page, Off-Page and Technical SEO Domination</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-8 relative aspect-video w-full rounded-2xl overflow-hidden border border-slate-150 bg-slate-50 flex items-center justify-center">
-                      <img 
-                        src={seo3D} 
-                        alt="3D SEO Engine" 
-                        referrerPolicy="no-referrer"
-                        loading="lazy"
-                        className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
-                      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-slate-200 text-[10px] font-mono text-[#FF5722] font-semibold shadow-sm">
-                        PAGE 1 RANKINGS ✦ AUTHORITY BLOGS
-                      </div>
-                    </div>
-                  </ParallaxBentoCard>
-                </motion.div>
-
-                {/* Card 3: Meta Ads & Scaled Lead Generation */}
-                <motion.div 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.6 }}
-                >
-                  <ParallaxBentoCard className="h-full flex flex-col justify-between min-h-[460px] p-8" onClick={() => handleOpenService("meta-ads-advertising")}>
-                    <div className="space-y-6">
-                      <div className="w-12 h-12 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-2xl flex items-center justify-center text-[#FF5722]">
-                        <ShoppingBag className="w-6 h-6" />
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <span className="text-[10px] font-mono font-bold text-[#FF5722] uppercase tracking-wider block">Acquisition Engine</span>
-                        <h3 className="text-2xl font-bold text-slate-900 font-sans">Meta Ads & Paid Acquisition</h3>
-                        <p className="text-sm text-slate-600 leading-relaxed font-light">
-                          Stop burning budget on 'boost posts' that fail to deliver. We deploy high-converting Meta Ads campaigns across Facebook and Instagram. Our strategies combine hyper-targeted audience pipelines, direct-response ad copy, high-impact creatives, and retargeting flows that bring hot customer leads directly into your pipeline.
-                        </p>
-                      </div>
-
-                      <div className="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500 font-medium">
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
-                          <span>Facebook & Instagram Ads Setup & Custom Funnels</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
-                          <span>Targeted Lead Gen Pipelines & High-Converting Copy</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-8 relative aspect-video w-full rounded-2xl overflow-hidden border border-slate-150 bg-slate-50 flex items-center justify-center">
-                      <img 
-                        src={funnel3D} 
-                        alt="3D Funnel Optimization" 
-                        referrerPolicy="no-referrer"
-                        loading="lazy"
-                        className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
-                      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-slate-200 text-[10px] font-mono text-[#FF5722] font-semibold shadow-sm">
-                        HIGH CONVERTING BLUEPRINTS ✦ ROAS BOOSTER
-                      </div>
-                    </div>
-                  </ParallaxBentoCard>
-                </motion.div>
-
-                {/* Card 4: Premium Social Media Management */}
-                <motion.div 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                >
-                  <ParallaxBentoCard className="h-full flex flex-col justify-between min-h-[460px] p-8" onClick={() => handleOpenService("social-media-management")}>
-                    <div className="space-y-6">
-                      <div className="w-12 h-12 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-2xl flex items-center justify-center text-[#FF5722]">
-                        <Palette className="w-6 h-6" />
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <span className="text-[10px] font-mono font-bold text-[#FF5722] uppercase tracking-wider block">Community Authority</span>
-                        <h3 className="text-2xl font-bold text-slate-900 font-sans">Social Media Management</h3>
-                        <p className="text-sm text-slate-600 leading-relaxed font-light">
-                          Social media is your digital reputation. We handle complete social media ecosystem care—gorgeous visual post design, high-engagement copywriting, viral video reels, and persistent posting calendars. We build an interactive, high-trust community that makes your business look incredibly professional, trusted, and alive 24/7.
-                        </p>
-                      </div>
-
-                      <div className="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500 font-medium">
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
-                          <span>Creative Brand Design, Grid Layouts & Captions</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
-                          <span>Viral Short-Form Video Reels & Active Audience Growth</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-8 relative aspect-video w-full rounded-2xl overflow-hidden border border-slate-150 bg-slate-50 flex items-center justify-center">
-                      <img 
-                        src={smm3D} 
-                        alt="3D Social Media Management" 
-                        referrerPolicy="no-referrer"
-                        loading="lazy"
-                        className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
-                      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-slate-200 text-[10px] font-mono text-[#FF5722] font-semibold shadow-sm">
-                        BRAND ELEVATED ✦ CONSISTENT VISIBILITY
-                      </div>
-                    </div>
-                  </ParallaxBentoCard>
-                </motion.div>
-
-              </div>
-            </section>
-
-            {/* 2.2 EXPANDED SPECIALIZED SERVICES GRID */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12 relative z-10 animate-fade-in" id="expanded-services">
-              <div className="text-center space-y-4 max-w-2xl mx-auto">
-                <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Expanded Capabilities</span>
-                <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight">Specialized Full-Stack & Mobile Capabilities</h3>
-                <p className="text-xs sm:text-sm text-slate-600 font-light">
-                  From custom native applications to intelligent chatbots and high-retention video systems, we deliver elite-tier custom creations.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {servicesData.filter(srv => !["seo", "meta-ads-advertising", "social-media-management"].includes(srv.slug)).map((srv, idx) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {servicesData.map((srv, idx) => (
                   <motion.div
                     key={srv.id}
-                    className="p-6 bg-white border border-slate-200/85 hover:border-[#FF5722]/30 rounded-[32px] transition-all duration-300 shadow-sm hover:shadow-md flex flex-col justify-between group relative"
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: idx * 0.05 }}
-                    id={`homepage-expanded-service-${srv.slug}`}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.5, delay: (idx % 3) * 0.05 }}
+                    id={`homepage-service-${srv.slug}`}
                   >
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="w-10 h-10 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-xl flex items-center justify-center text-[#FF5722]">
-                          <ServiceIcon name={srv.icon} className="w-5 h-5" />
+                    <ParallaxBentoCard 
+                      className="h-full flex flex-col justify-between p-7 bg-white border border-slate-200/85 hover:border-[#FF5722]/30 rounded-[32px] transition-all duration-300 shadow-sm hover:shadow-md group cursor-pointer"
+                      onClick={() => handleOpenService(srv.slug)}
+                    >
+                      <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                          <div className="w-12 h-12 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-2xl flex items-center justify-center text-[#FF5722]">
+                            <ServiceIcon name={srv.icon} className="w-6 h-6" />
+                          </div>
+                          {srv.startingPrice && (
+                            <span className="text-xs font-mono font-bold text-[#FF5722] bg-[#FF5722]/5 border border-[#FF5722]/10 px-3 py-1 rounded-full">
+                              {srv.startingPrice}
+                            </span>
+                          )}
                         </div>
-                        {srv.startingPrice && (
-                          <span className="text-xs font-mono font-bold text-[#FF5722] bg-[#FF5722]/5 border border-[#FF5722]/10 px-2.5 py-1 rounded-full">
-                            {srv.startingPrice}
-                          </span>
+
+                        <div className="space-y-3">
+                          <h3 className="text-xl font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors font-sans">
+                            {srv.title}
+                          </h3>
+                          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-light line-clamp-4 font-sans">
+                            {srv.description}
+                          </p>
+                        </div>
+
+                        {srv.deliverables && srv.deliverables.length > 0 && (
+                          <div className="pt-4 border-t border-slate-100 space-y-2">
+                            <span className="text-[10px] uppercase tracking-wider font-mono font-bold text-slate-400 block">Key Deliverables</span>
+                            <div className="grid grid-cols-1 gap-1.5">
+                              {srv.deliverables.slice(0, 3).map((del, dIdx) => (
+                                <div key={dIdx} className="flex items-center gap-2 text-xs text-slate-600 font-medium font-sans">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+                                  <span>{del}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         )}
                       </div>
 
-                      <div className="space-y-2">
-                        <h4 className="text-base font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors">
-                          {srv.title}
-                        </h4>
-                        <p className="text-xs text-slate-500 leading-relaxed font-light">
-                          {srv.description}
-                        </p>
+                      <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenService(srv.slug);
+                          }}
+                          className="text-xs font-semibold text-[#FF5722] hover:text-[#FF7043] transition-colors inline-flex items-center gap-1.5 cursor-pointer font-sans"
+                        >
+                          <span>Explore Service Detail</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
                       </div>
-
-                      {srv.deliverables && srv.deliverables.length > 0 && (
-                        <div className="pt-3 border-t border-slate-100 space-y-1.5">
-                          <span className="text-[10px] uppercase font-mono font-bold text-slate-400 block tracking-wider">Key Deliverables</span>
-                          <div className="grid grid-cols-1 gap-1">
-                            {srv.deliverables.slice(0, 3).map((del, dIdx) => (
-                              <div key={dIdx} className="flex items-center gap-1.5 text-[11px] text-slate-600 font-medium">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
-                                <span>{del}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
-                      <button
-                        onClick={() => handleOpenService(srv.slug)}
-                        className="text-xs font-semibold text-[#FF5722] hover:text-[#FF7043] transition-all inline-flex items-center gap-1 cursor-pointer"
-                      >
-                        <span>View Process & Benefits</span>
-                        <ArrowRight className="w-3 h-3" />
-                      </button>
-                    </div>
+                    </ParallaxBentoCard>
                   </motion.div>
                 ))}
               </div>

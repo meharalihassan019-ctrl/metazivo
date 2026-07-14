@@ -973,6 +973,11 @@ function getPageSEOAndContent(pathname: string): PageMetadata {
           <h2>Our Core High-Performance Services</h2>
           <div class="service-grid">
             <article>
+              <h3>High-Performance Website Development</h3>
+              <p>Enterprise-grade React & Next.js architectures built for supreme speed, absolute security, and unbeatable conversion rates.</p>
+              <a href="/service/website-development">Explore Service Detail</a>
+            </article>
+            <article>
               <h3>WordPress & WooCommerce Sales Engines</h3>
               <p>Bespoke WordPress performance portals engineered from scratch with zero template bloat, securing supersonic page speed and high transaction counts.</p>
               <a href="/service/wordpress-development">Explore Service Detail</a>
@@ -991,6 +996,36 @@ function getPageSEOAndContent(pathname: string): PageMetadata {
               <h3>Social Media Management & Viral Reels</h3>
               <p>Organic brand storytelling, corporate content workflows, and professional short-form video post-production.</p>
               <a href="/service/social-media-management">Explore Service Detail</a>
+            </article>
+            <article>
+              <h3>Graphic Design & Corporate Logo Branding</h3>
+              <p>Premium corporate logos, cohesive color systems, and high-status brand assets that instantly establish market leadership.</p>
+              <a href="/service/graphic-design-branding">Explore Service Detail</a>
+            </article>
+            <article>
+              <h3>Video Editing & Production</h3>
+              <p>Professional high-retention video editing and post-production structured with dynamic pacing, motion graphics, and sound design.</p>
+              <a href="/service/video-editing">Explore Service Detail</a>
+            </article>
+            <article>
+              <h3>Mobile Application Development</h3>
+              <p>Bespoke native-performance iOS & Android applications built with modern cross-platform Flutter/React Native frameworks.</p>
+              <a href="/service/mobile-app-development">Explore Service Detail</a>
+            </article>
+            <article>
+              <h3>AI Mobile Apps</h3>
+              <p>Intelligent mobile applications embedded with server-side LLMs, Gemini AI features, real-time voice, and smart triggers.</p>
+              <a href="/service/ai-mobile-apps">Explore Service Detail</a>
+            </article>
+            <article>
+              <h3>SaaS Applications</h3>
+              <p>Highly scalable Multi-Tenant Software-as-a-Service systems built with subscription billings, secure roles, and dynamic dashboards.</p>
+              <a href="/service/saas-applications">Explore Service Detail</a>
+            </article>
+            <article>
+              <h3>Chatbots</h3>
+              <p>Automated customer support & sales chatbots powered by Gemini to answer leads and capture sales 24/7.</p>
+              <a href="/service/chatbots">Explore Service Detail</a>
             </article>
           </div>
         </section>
@@ -1046,6 +1081,12 @@ function getPageSEOAndContent(pathname: string): PageMetadata {
             <p>We discard slow page builders. We write clean code to ensure outstanding loading speed, absolute backend security, and advanced SEO indexability.</p>
             
             <article>
+              <h2>High-Performance Website Development</h2>
+              <p>Enterprise-grade React & Next.js architectures built for supreme speed, absolute security, and unbeatable conversion rates.</p>
+              <a href="/service/website-development">Learn More</a>
+            </article>
+
+            <article>
               <h2>WordPress & WooCommerce Sales Engines</h2>
               <p>Performance-engineered portals custom-crafted to load in under 1.2 seconds and convert traffic into sales.</p>
               <a href="/service/wordpress-development">Learn More</a>
@@ -1067,6 +1108,42 @@ function getPageSEOAndContent(pathname: string): PageMetadata {
               <h2>Social Media Management & Viral Reels</h2>
               <p>Full content calendar creation, organic branding, and vertical short-form editing to build reliable buyer trust.</p>
               <a href="/service/social-media-management">Learn More</a>
+            </article>
+
+            <article>
+              <h2>Graphic Design & Corporate Logo Branding</h2>
+              <p>Premium corporate logos, cohesive color systems, and high-status brand assets that instantly establish market leadership.</p>
+              <a href="/service/graphic-design-branding">Learn More</a>
+            </article>
+
+            <article>
+              <h2>Video Editing & Production</h2>
+              <p>Professional high-retention video editing and post-production structured with dynamic pacing, motion graphics, and sound design.</p>
+              <a href="/service/video-editing">Learn More</a>
+            </article>
+
+            <article>
+              <h2>Mobile Application Development</h2>
+              <p>Bespoke native-performance iOS & Android applications built with modern cross-platform Flutter/React Native frameworks.</p>
+              <a href="/service/mobile-app-development">Learn More</a>
+            </article>
+
+            <article>
+              <h2>AI Mobile Apps</h2>
+              <p>Intelligent mobile applications embedded with server-side LLMs, Gemini AI features, real-time voice, and smart triggers.</p>
+              <a href="/service/ai-mobile-apps">Learn More</a>
+            </article>
+
+            <article>
+              <h2>SaaS Applications</h2>
+              <p>Highly scalable Multi-Tenant Software-as-a-Service systems built with subscription billings, secure roles, and dynamic dashboards.</p>
+              <a href="/service/saas-applications">Learn More</a>
+            </article>
+
+            <article>
+              <h2>Chatbots</h2>
+              <p>Automated customer support & sales chatbots powered by Gemini to answer leads and capture sales 24/7.</p>
+              <a href="/service/chatbots">Learn More</a>
             </article>
           </section>
         </main>
@@ -1353,6 +1430,106 @@ function getPageSEOAndContent(pathname: string): PageMetadata {
               <h2>Modern High-Status Visual Guidelines Driving Brand Recall</h2>
               <p>We create beautiful logo systems, color standards, custom vector illustration directions, and high-fidelity wireframes that reinforce your company's market-leader status.</p>
               <a href="/contact">Start Brand Identity Audit</a>
+            </section>
+          </main>
+        `
+      };
+    }
+    if (slug === "video-editing") {
+      return {
+        title: "Professional Video Editing & Production | Metazivo",
+        description: "Elevate your brand with premium high-retention video editing starting from $15. Expert post-production for Instagram Reels, TikToks, Facebook Videos, and Video Ads.",
+        keywords: "video editing, vertical reels editor, instagram ads, tiktok post-production",
+        ogTitle: "Professional Video Editing & Production | Metazivo",
+        ogDescription: "Elevate your brand with premium high-retention video editing starting from $15. Expert post-production for Instagram Reels, TikToks, Facebook Videos, and Video Ads.",
+        url: `https://metazivo.com${pathname}`,
+        html: `
+          <main>
+            <section>
+              <h1>Video Editing & Production</h1>
+              <h2>Maximize Retention with Elite Post-Production & Sound Design</h2>
+              <p>We specialize in highly engaging, viral short-form video reels, TikToks, Facebook video ads, and corporate edits. Our service includes dynamic custom auto-captions, cinematic sound effects (SFX), seamless transitions, and professional color grading.</p>
+              <a href="/contact">Start Video Project</a>
+            </section>
+          </main>
+        `
+      };
+    }
+    if (slug === "mobile-app-development") {
+      return {
+        title: "Bespoke Mobile Application Development | Metazivo",
+        description: "Elite native-performance iOS and Android app development starting from $449. Built with advanced Flutter or React Native frameworks.",
+        keywords: "mobile app development, flutter developer, react native apps, custom ios android app",
+        ogTitle: "Bespoke Mobile Application Development | Metazivo",
+        ogDescription: "Elite native-performance iOS and Android app development starting from $449. Built with advanced Flutter or React Native frameworks.",
+        url: `https://metazivo.com${pathname}`,
+        html: `
+          <main>
+            <section>
+              <h1>Mobile Application Development</h1>
+              <h2>High-Performance Native Applications for iOS and Android</h2>
+              <p>We design and engineer beautiful, high-performance mobile applications with fluid gesture controls, offline local persistence, server-side data synchronization, and absolute app-store deployment support.</p>
+              <a href="/contact">Build My Mobile App</a>
+            </section>
+          </main>
+        `
+      };
+    }
+    if (slug === "ai-mobile-apps") {
+      return {
+        title: "Intelligent AI Mobile Apps | Metazivo",
+        description: "Innovative mobile applications embedded with server-side LLMs, Gemini AI features, real-time voice, and smart triggers, starting from $449.",
+        keywords: "ai mobile apps, gemini developer, generative ai app, smart mobile applications",
+        ogTitle: "Intelligent AI Mobile Apps | Metazivo",
+        ogDescription: "Innovative mobile applications embedded with server-side LLMs, Gemini AI features, real-time voice, and smart triggers, starting from $449.",
+        url: `https://metazivo.com${pathname}`,
+        html: `
+          <main>
+            <section>
+              <h1>AI Mobile Apps</h1>
+              <h2>Next-Gen Intelligence Embedded Directly in Your Native Apps</h2>
+              <p>Harness the power of server-side Gemini AI. We integrate voice synthesizers, real-time context-aware chats, automated image processing, and intelligent workflow automation into mobile applications.</p>
+              <a href="/contact">Build AI Mobile App</a>
+            </section>
+          </main>
+        `
+      };
+    }
+    if (slug === "saas-applications") {
+      return {
+        title: "Custom SaaS Application Development | Metazivo",
+        description: "Highly scalable, multi-tenant Software-as-a-Service portals built with Stripe subscription billing, secure analytical dashboards, and robust databases, starting from $449.",
+        keywords: "saas development, custom software as a service, stripe integration, multi tenant app",
+        ogTitle: "Custom SaaS Application Development | Metazivo",
+        ogDescription: "Highly scalable, multi-tenant Software-as-a-Service portals built with Stripe subscription billing, secure analytical dashboards, and robust databases, starting from $449.",
+        url: `https://metazivo.com${pathname}`,
+        html: `
+          <main>
+            <section>
+              <h1>SaaS Applications</h1>
+              <h2>Scale Your Product with a High-Performance SaaS Portal</h2>
+              <p>We build secure, multi-tenant cloud software systems featuring interactive analytical charts, robust administrative panels, automated subscription billing engines, and high-performance relational or non-relational database architectures.</p>
+              <a href="/contact">Launch My SaaS Platform</a>
+            </section>
+          </main>
+        `
+      };
+    }
+    if (slug === "chatbots") {
+      return {
+        title: "Gemini AI Chatbots & Support Integration | Metazivo",
+        description: "Automated customer support and sales chatbot systems powered by server-side Gemini to capture and qualify leads 24/7, starting from $449.",
+        keywords: "ai chatbots, customer support bot, gemini chat assistant, lead conversion bot",
+        ogTitle: "Gemini AI Chatbots & Support Integration | Metazivo",
+        ogDescription: "Automated customer support and sales chatbot systems powered by server-side Gemini to capture and qualify leads 24/7, starting from $449.",
+        url: `https://metazivo.com${pathname}`,
+        html: `
+          <main>
+            <section>
+              <h1>AI Chatbots</h1>
+              <h2>Automate Customer Success and Qualify Leads 24/7</h2>
+              <p>Convert your website visitors into qualified buyer leads. We design and connect conversational AI assistants that understand context, access your product manuals, and schedule sales calls automatically.</p>
+              <a href="/contact">Connect AI Chatbot</a>
             </section>
           </main>
         `
@@ -2051,6 +2228,46 @@ Sitemap: https://metazivo.com/sitemap.xml`);
   </url>
   <url>
     <loc>https://metazivo.com/service/graphic-design-branding</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/service/website-development</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://metazivo.com/custom_react_portfolio_mockup_1783857396760.jpg</image:loc>
+      <image:title>Metazivo Website Development Performance Dashboard</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://metazivo.com/service/video-editing</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/service/mobile-app-development</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/service/ai-mobile-apps</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/service/saas-applications</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metazivo.com/service/chatbots</loc>
     <lastmod>2026-07-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
