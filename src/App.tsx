@@ -63,6 +63,9 @@ import { servicesData, pricingPlans, portfolioItems, workProcessTimeline, faqLis
 import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary, ContactInfo, CustomPage } from "./types";
 import { motion, AnimatePresence } from "motion/react";
 import Preloader from "./components/Preloader";
+import ThreeDTiltCard from "./components/ThreeDTiltCard";
+import MagneticButton from "./components/MagneticButton";
+import { ScrollReveal, StaggerReveal, TextReveal } from "./components/ScrollReveal";
 
 // Premium real stock photo URLs (Not AI-generated)
 const hero3D = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"; // Collaborative teamwork real office meeting
@@ -137,13 +140,23 @@ export default function App() {
   const [appIsLoading, setAppIsLoading] = useState(true);
   const [scrollY, setScrollY] = useState(0);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [prefersReduced, setPrefersReduced] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReduced(mediaQuery.matches);
+    const listener = (e: MediaQueryListEvent) => setPrefersReduced(e.matches);
+    mediaQuery.addEventListener("change", listener);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      mediaQuery.removeEventListener("change", listener);
+    };
   }, []);
 
   const [heroTilt, setHeroTilt] = useState({ x: 0, y: 0 });
@@ -603,132 +616,192 @@ export default function App() {
 
       {/* Main page router viewport */}
       <main className="flex-grow relative z-10">
-        
-        {/* VIEW 1: HOME PAGE */}
-        {currentTab === "home" && (
-          <div id="view-home" className="pb-24 bg-white text-slate-800 relative overflow-hidden font-sans">
-            
-            {/* Cinematic Parallax Background Layers */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-              {/* Slower scrolling back grid */}
-              <div 
-                className="absolute inset-0 opacity-[0.06] bg-[radial-gradient(#FF5722_1.5px,transparent_1.5px)] [background-size:24px_24px]"
-                style={{ transform: `translateY(${scrollY * 0.15}px)` }}
-              />
-              {/* Slower scrolling ambient orange orbs */}
-              <div 
-                className="absolute top-20 left-10 w-[500px] h-[500px] rounded-full bg-[#FF5722]/3 blur-[120px]"
-                style={{ transform: `translateY(${scrollY * 0.08}px)` }}
-              />
-              <div 
-                className="absolute top-1/2 right-10 w-[600px] h-[600px] rounded-full bg-[#FF5722]/2 blur-[140px]"
-                style={{ transform: `translateY(${scrollY * -0.05}px)` }}
-              />
-            </div>
+        <AnimatePresence mode="wait">
+          
+          {/* VIEW 1: HOME PAGE */}
+          {currentTab === "home" && (
+            <motion.div
+              key="home"
+              initial={prefersReduced ? {} : { opacity: 0, filter: "blur(8px)", y: 15 }}
+              animate={prefersReduced ? {} : { opacity: 1, filter: "blur(0px)", y: 0 }}
+              exit={prefersReduced ? {} : { opacity: 0, filter: "blur(8px)", y: -15 }}
+              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              id="view-home"
+              className="pb-24 bg-white text-slate-800 relative overflow-hidden font-sans"
+            >
+              
+              {/* Cinematic Parallax Background Layers */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                {/* Slower scrolling back grid */}
+                <div 
+                  className="absolute inset-0 opacity-[0.06] bg-[radial-gradient(#FF5722_1.5px,transparent_1.5px)] [background-size:24px_24px]"
+                  style={{ transform: `translateY(${scrollY * 0.15}px)` }}
+                />
+                {/* Slower scrolling ambient orange orbs */}
+                <div 
+                  className="absolute top-20 left-10 w-[500px] h-[500px] rounded-full bg-[#FF5722]/3 blur-[120px]"
+                  style={{ transform: `translateY(${scrollY * 0.08}px)` }}
+                />
+                <div 
+                  className="absolute top-1/2 right-10 w-[600px] h-[600px] rounded-full bg-[#FF5722]/2 blur-[140px]"
+                  style={{ transform: `translateY(${scrollY * -0.05}px)` }}
+                />
+              </div>
 
-            {/* 1. HERO SECTION */}
-            <section className="relative pt-24 pb-20 px-4 sm:px-6 lg:px-8 z-10" id="hero-showcase">
-              <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                
-                {/* Left: Cinematic Content */}
-                <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-100 rounded-full text-xs text-[#FF5722] font-mono tracking-wider uppercase shadow-sm">
-                    <span className="w-2 h-2 rounded-full bg-[#FF5722] animate-ping" />
-                    <span>Premium Digital Agency</span>
-                  </div>
-
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-slate-900">
-                    We Build <br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF5722] via-[#FF7043] to-[#FF8A50]">
-                      Digital Experiences
-                    </span> <br />
-                    That Drive Growth.
-                  </h1>
-
-                  <p className="text-slate-600 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                    Metazivo is a premier full-service engineering agency specializing in high-converting <strong className="text-slate-900 font-semibold">SEO Algorithms</strong>, <strong className="text-slate-900 font-semibold">Website Development</strong>, and authoritative <strong className="text-slate-900 font-semibold">Content Strategy</strong>.
-                  </p>
-
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-                    <button
-                      onClick={() => {
-                        const target = document.getElementById("core-services");
-                        target?.scrollIntoView({ behavior: "smooth" });
-                      }}
-                      className="group relative px-8 py-4 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-[0_4px_20px_rgba(255,87,34,0.35)] hover:shadow-[0_6px_25px_rgba(255,87,34,0.5)] flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <span>Discover More</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                    <button
-                      onClick={() => handleNavigate("contact")}
-                      className="px-8 py-4 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200/80 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
-                    >
-                      Get Started
-                    </button>
-                  </div>
-
-                  {/* Trust Signal metrics */}
-                  <div className="grid grid-cols-3 gap-6 pt-8 border-t border-slate-200/80 max-w-md mx-auto lg:mx-0 text-left">
-                    <div>
-                      <span className="block text-2xl font-black text-slate-900 font-mono">99%</span>
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">Core Web Vitals</span>
-                    </div>
-                    <div>
-                      <span className="block text-2xl font-black text-[#FF5722] font-mono">+320%</span>
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">SEO Visibility</span>
-                    </div>
-                    <div>
-                      <span className="block text-2xl font-black text-slate-900 font-mono">4.8x</span>
-                      <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">Average ROAS</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right: Custom parametric 3D Glass Floating Ring and status widgets */}
-                <div className="lg:col-span-5 relative flex justify-center items-center">
-                  <div className="absolute w-[450px] h-[450px] bg-[#FF5722]/5 rounded-full blur-[100px] pointer-events-none" />
+              {/* 1. HERO SECTION */}
+              <section className="relative pt-24 pb-20 px-4 sm:px-6 lg:px-8 z-10" id="hero-showcase">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                   
-                  {/* Floating badges with translateZ offsets */}
-                  <div className="relative w-full flex justify-center items-center">
-                    {/* Floating3DRing acts as an ambient tech backdrop */}
-                    <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-                      <Floating3DRing />
+                  {/* Left: Cinematic Content */}
+                  <ScrollReveal className="lg:col-span-7 space-y-8 text-center lg:text-left">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-100 rounded-full text-xs text-[#FF5722] font-mono tracking-wider uppercase shadow-sm">
+                      <span className="w-2 h-2 rounded-full bg-[#FF5722] animate-ping" />
+                      <span>Premium Digital Agency</span>
                     </div>
 
-                    {/* Main Hero 3D Picture with elegant tilt glass frame */}
-                    <motion.div 
-                      className="relative z-10 w-4/5 aspect-square rounded-[32px] overflow-hidden border border-slate-200/60 shadow-2xl bg-white group"
-                      initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      transition={{ duration: 0.8, delay: 0.2 }}
-                    >
-                      <img 
-                        src={hero3D} 
-                        alt="Metazivo 3D Hero Illustration" 
-                        referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent pointer-events-none" />
-                    </motion.div>
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-slate-900">
+                      We Build <br />
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF5722] via-[#FF7043] to-[#FF8A50]">
+                        Digital Experiences
+                      </span> <br />
+                      That Drive Growth.
+                    </h1>
+
+                    <p className="text-slate-600 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
+                      Metazivo is a premier full-service engineering agency specializing in high-converting <strong className="text-slate-900 font-semibold">SEO Algorithms</strong>, <strong className="text-slate-900 font-semibold">Website Development</strong>, and authoritative <strong className="text-slate-900 font-semibold">Content Strategy</strong>.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                      <MagneticButton
+                        onClick={() => {
+                          const target = document.getElementById("core-services");
+                          target?.scrollIntoView({ behavior: "smooth" });
+                        }}
+                        className="group px-8 py-4 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-[0_4px_20px_rgba(255,87,34,0.35)] hover:shadow-[0_6px_25px_rgba(255,87,34,0.5)] flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <span>Discover More</span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </MagneticButton>
+                      <MagneticButton
+                        onClick={() => handleNavigate("contact")}
+                        className="px-8 py-4 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200/80 rounded-full text-xs font-bold uppercase tracking-wider cursor-pointer"
+                      >
+                        Get Started
+                      </MagneticButton>
+                    </div>
+
+                    {/* Trust Signal metrics */}
+                    <div className="grid grid-cols-3 gap-6 pt-8 border-t border-slate-200/80 max-w-md mx-auto lg:mx-0 text-left">
+                      <div>
+                        <span className="block text-2xl font-black text-slate-900 font-mono">99%</span>
+                        <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">Core Web Vitals</span>
+                      </div>
+                      <div>
+                        <span className="block text-2xl font-black text-[#FF5722] font-mono">+320%</span>
+                        <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">SEO Visibility</span>
+                      </div>
+                      <div>
+                        <span className="block text-2xl font-black text-slate-900 font-mono">4.8x</span>
+                        <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">Average ROAS</span>
+                      </div>
+                    </div>
+                  </ScrollReveal>
+
+                  {/* Right: Custom parametric 3D Glass Floating Ring and status widgets */}
+                  <div 
+                    className="lg:col-span-5 relative flex justify-center items-center"
+                    onMouseMove={(e) => {
+                      if (prefersReduced) return;
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = (e.clientX - rect.left) / rect.width - 0.5; // -0.5 to 0.5
+                      const y = (e.clientY - rect.top) / rect.height - 0.5; // -0.5 to 0.5
+                      setHeroTilt({ x, y });
+                    }}
+                    onMouseLeave={() => {
+                      setHeroTilt({ x: 0, y: 0 });
+                    }}
+                  >
+                    <div className="absolute w-[450px] h-[450px] bg-[#FF5722]/5 rounded-full blur-[100px] pointer-events-none" />
                     
-                    {/* Floating badge 1 */}
-                    <div className="absolute -top-6 -right-2 z-20 bg-white/95 backdrop-blur-md border border-orange-100 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-[0_10px_30px_rgba(255,87,34,0.1)] animate-bounce duration-3000">
-                      <div className="w-8 h-8 rounded-full bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] text-xs font-bold font-mono">SEO</div>
-                      <div>
-                        <div className="text-[9px] text-slate-500 font-mono uppercase tracking-wider">SEO Optimization</div>
-                        <div className="text-xs font-bold text-slate-900 font-sans">99.2% Score</div>
+                    {/* Floating badges with translateZ offsets */}
+                    <div className="relative w-full flex justify-center items-center">
+                      {/* Floating3DRing acts as an ambient tech backdrop */}
+                      <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+                        <Floating3DRing />
                       </div>
-                    </div>
 
-                    {/* Floating badge 2 */}
-                    <div className="absolute -bottom-4 -left-2 z-20 bg-white/95 backdrop-blur-md border border-slate-150 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#FF5722] animate-ping" />
-                      <div>
-                        <div className="text-[9px] text-slate-500 font-mono uppercase tracking-wider">Campaign Tracking</div>
-                        <div className="text-xs font-bold text-slate-900 font-sans">Always Active</div>
-                      </div>
-                    </div>
+                      {/* Main Hero 3D Picture with elegant tilt glass frame */}
+                      <motion.div 
+                        className="relative z-10 w-4/5 aspect-square rounded-[32px] overflow-hidden border border-slate-200/60 shadow-2xl bg-white group"
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                        style={prefersReduced ? {} : {
+                          rotateX: heroTilt.y * -25,
+                          rotateY: heroTilt.x * 25,
+                          transformStyle: "preserve-3d",
+                          perspective: 1000
+                        }}
+                      >
+                        <img 
+                          src={hero3D} 
+                          alt="Metazivo 3D Hero Illustration" 
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent pointer-events-none" />
+                      </motion.div>
+                      
+                      {/* Floating badge 1 */}
+                      <motion.div 
+                        className="absolute -top-6 -right-2 z-20 bg-white/95 backdrop-blur-md border border-orange-100 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-[0_10px_30px_rgba(255,87,34,0.1)]"
+                        style={prefersReduced ? {} : {
+                          x: heroTilt.x * 45,
+                          y: heroTilt.y * 45
+                        }}
+                        animate={prefersReduced ? {} : {
+                          y: [0, -8, 0]
+                        }}
+                        transition={{
+                          y: {
+                            duration: 5,
+                            repeat: Infinity,
+                            ease: [0.445, 0.05, 0.55, 0.95]
+                          }
+                        }}
+                      >
+                        <div className="w-8 h-8 rounded-full bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] text-xs font-bold font-mono">SEO</div>
+                        <div>
+                          <div className="text-[9px] text-slate-500 font-mono uppercase tracking-wider">SEO Optimization</div>
+                          <div className="text-xs font-bold text-slate-900 font-sans">99.2% Score</div>
+                        </div>
+                      </motion.div>
+
+                      {/* Floating badge 2 */}
+                      <motion.div 
+                        className="absolute -bottom-4 -left-2 z-20 bg-white/95 backdrop-blur-md border border-slate-150 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
+                        style={prefersReduced ? {} : {
+                          x: heroTilt.x * -35,
+                          y: heroTilt.y * -35
+                        }}
+                        animate={prefersReduced ? {} : {
+                          y: [0, 8, 0]
+                        }}
+                        transition={{
+                          y: {
+                            duration: 7,
+                            repeat: Infinity,
+                            ease: [0.445, 0.05, 0.55, 0.95],
+                            delay: 0.5
+                          }
+                        }}
+                      >
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#FF5722] animate-ping" />
+                        <div>
+                          <div className="text-[9px] text-slate-500 font-mono uppercase tracking-wider">Campaign Tracking</div>
+                          <div className="text-xs font-bold text-slate-900 font-sans">Always Active</div>
+                        </div>
+                      </motion.div>
                   </div>
                 </div>
 
@@ -783,72 +856,73 @@ export default function App() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {servicesData.map((srv, idx) => (
-                  <motion.div
+              <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {servicesData.map((srv) => (
+                  <div
                     key={srv.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.5, delay: (idx % 3) * 0.05 }}
                     id={`homepage-service-${srv.slug}`}
+                    className="h-full"
+                    onClick={() => handleOpenService(srv.slug)}
                   >
-                    <ParallaxBentoCard 
+                    <ThreeDTiltCard 
                       className="h-full flex flex-col justify-between p-7 bg-white border border-slate-200/85 hover:border-[#FF5722]/30 rounded-[32px] transition-all duration-300 shadow-sm hover:shadow-md group cursor-pointer"
-                      onClick={() => handleOpenService(srv.slug)}
+                      glowColor="rgba(255, 87, 34, 0.12)"
+                      tiltMaxAngle={8}
                     >
-                      <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                          <div className="w-12 h-12 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-2xl flex items-center justify-center text-[#FF5722]">
-                            <ServiceIcon name={srv.icon} className="w-6 h-6" />
+                      <div className="space-y-6 h-full flex flex-col justify-between">
+                        <div className="space-y-6">
+                          <div className="flex items-center justify-between">
+                            <div className="w-12 h-12 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-2xl flex items-center justify-center text-[#FF5722]">
+                              <ServiceIcon name={srv.icon} className="w-6 h-6" />
+                            </div>
+                            {srv.startingPrice && (
+                              <span className="text-xs font-mono font-bold text-[#FF5722] bg-[#FF5722]/5 border border-[#FF5722]/10 px-3 py-1 rounded-full">
+                                {srv.startingPrice}
+                              </span>
+                            )}
                           </div>
-                          {srv.startingPrice && (
-                            <span className="text-xs font-mono font-bold text-[#FF5722] bg-[#FF5722]/5 border border-[#FF5722]/10 px-3 py-1 rounded-full">
-                              {srv.startingPrice}
-                            </span>
+
+                          <div className="space-y-3">
+                            <h3 className="text-xl font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors font-sans">
+                              {srv.title}
+                            </h3>
+                            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-light line-clamp-4 font-sans">
+                              {srv.description}
+                            </p>
+                          </div>
+
+                          {srv.deliverables && srv.deliverables.length > 0 && (
+                            <div className="pt-4 border-t border-slate-100 space-y-2">
+                              <span className="text-[10px] uppercase tracking-wider font-mono font-bold text-slate-400 block">Key Deliverables</span>
+                              <div className="grid grid-cols-1 gap-1.5">
+                                {srv.deliverables.slice(0, 3).map((del, dIdx) => (
+                                  <div key={dIdx} className="flex items-center gap-2 text-xs text-slate-600 font-medium font-sans">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+                                    <span>{del}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           )}
                         </div>
 
-                        <div className="space-y-3">
-                          <h3 className="text-xl font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors font-sans">
-                            {srv.title}
-                          </h3>
-                          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-light line-clamp-4 font-sans">
-                            {srv.description}
-                          </p>
+                        <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenService(srv.slug);
+                            }}
+                            className="text-xs font-semibold text-[#FF5722] hover:text-[#FF7043] transition-colors inline-flex items-center gap-1.5 cursor-pointer font-sans"
+                          >
+                            <span>Explore Service Detail</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </button>
                         </div>
-
-                        {srv.deliverables && srv.deliverables.length > 0 && (
-                          <div className="pt-4 border-t border-slate-100 space-y-2">
-                            <span className="text-[10px] uppercase tracking-wider font-mono font-bold text-slate-400 block">Key Deliverables</span>
-                            <div className="grid grid-cols-1 gap-1.5">
-                              {srv.deliverables.slice(0, 3).map((del, dIdx) => (
-                                <div key={dIdx} className="flex items-center gap-2 text-xs text-slate-600 font-medium font-sans">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
-                                  <span>{del}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
                       </div>
-
-                      <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenService(srv.slug);
-                          }}
-                          className="text-xs font-semibold text-[#FF5722] hover:text-[#FF7043] transition-colors inline-flex items-center gap-1.5 cursor-pointer font-sans"
-                        >
-                          <span>Explore Service Detail</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </ParallaxBentoCard>
-                  </motion.div>
+                    </ThreeDTiltCard>
+                  </div>
                 ))}
-              </div>
+              </StaggerReveal>
             </section>
 
             {/* 2.5 WHY CHOOSE METAZIVO (Bespoke vs Standard Templates) */}
@@ -862,70 +936,86 @@ export default function App() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+                <StaggerReveal className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
                   {/* Slow Templates Card */}
-                  <div className="bg-white border border-slate-150 p-8 rounded-3xl space-y-6 shadow-sm">
-                    <div className="flex items-center gap-3 text-red-500">
-                      <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
-                        <ShieldAlert className="w-5 h-5" />
+                  <div className="h-full">
+                    <ThreeDTiltCard 
+                      className="h-full bg-white border border-slate-150 p-8 rounded-[32px] space-y-6 shadow-sm flex flex-col justify-between"
+                      glowColor="rgba(239, 68, 68, 0.08)"
+                      tiltMaxAngle={6}
+                    >
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-3 text-red-500">
+                          <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                            <ShieldAlert className="w-5 h-5" />
+                          </div>
+                          <h4 className="text-lg font-extrabold text-slate-900">Standard Sluggish Templates</h4>
+                        </div>
+                        <p className="text-xs text-slate-500 font-light leading-relaxed">
+                          Most generic agencies use pre-designed themes with heavy visual builders (Elementor, Divi) and redundant scripts that bloat your backend.
+                        </p>
+                        <ul className="space-y-3 text-xs text-slate-600">
+                          <li className="flex items-start gap-2">
+                            <span className="text-red-500 font-bold mt-0.5 font-mono">✕</span>
+                            <span><strong>Poor Load Speed:</strong> Long rendering times exceeding 4.5 seconds cause over 50% of your mobile traffic to bounce.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-red-500 font-bold mt-0.5 font-mono">✕</span>
+                            <span><strong>Severe Security Risks:</strong> Over-reliance on random third-party plugins opens up vulnerable entry paths for hackers.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-red-500 font-bold mt-0.5 font-mono">✕</span>
+                            <span><strong>Cookie-Cutter Aesthetics:</strong> Your website looks exactly like thousands of other websites, failing to project brand status.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-red-500 font-bold mt-0.5 font-mono">✕</span>
+                            <span><strong>Flawed On-Page SEO:</strong> No optimized sitemap, dynamic meta tags, or clean markup structure, making it hard to rank.</span>
+                          </li>
+                        </ul>
                       </div>
-                      <h4 className="text-lg font-extrabold text-slate-900">Standard Sluggish Templates</h4>
-                    </div>
-                    <p className="text-xs text-slate-500 font-light leading-relaxed">
-                      Most generic agencies use pre-designed themes with heavy visual builders (Elementor, Divi) and redundant scripts that bloat your backend.
-                    </p>
-                    <ul className="space-y-3 text-xs text-slate-600">
-                      <li className="flex items-start gap-2">
-                        <span className="text-red-500 font-bold mt-0.5 font-mono">✕</span>
-                        <span><strong>Poor Load Speed:</strong> Long rendering times exceeding 4.5 seconds cause over 50% of your mobile traffic to bounce.</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-red-500 font-bold mt-0.5 font-mono">✕</span>
-                        <span><strong>Severe Security Risks:</strong> Over-reliance on random third-party plugins opens up vulnerable entry paths for hackers.</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-red-500 font-bold mt-0.5 font-mono">✕</span>
-                        <span><strong>Cookie-Cutter Aesthetics:</strong> Your website looks exactly like thousands of other websites, failing to project brand status.</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-red-500 font-bold mt-0.5 font-mono">✕</span>
-                        <span><strong>Flawed On-Page SEO:</strong> No optimized sitemap, dynamic meta tags, or clean markup structure, making it hard to rank.</span>
-                      </li>
-                    </ul>
+                    </ThreeDTiltCard>
                   </div>
 
                   {/* Metazivo Custom Card */}
-                  <div className="bg-[#0a0a0c] text-white p-8 rounded-3xl space-y-6 shadow-xl relative overflow-hidden border border-[#FF5722]/10">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF5722]/10 rounded-full blur-2xl pointer-events-none" />
-                    <div className="flex items-center gap-3 text-[#FF5722]">
-                      <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center">
-                        <ShieldCheck className="w-5 h-5 text-[#FF5722]" />
+                  <div className="h-full">
+                    <ThreeDTiltCard 
+                      className="h-full bg-[#0a0a0c] text-white p-8 rounded-[32px] space-y-6 shadow-xl relative overflow-hidden border border-[#FF5722]/10 flex flex-col justify-between"
+                      glowColor="rgba(255, 87, 34, 0.16)"
+                      tiltMaxAngle={7}
+                    >
+                      <div className="space-y-6 relative z-10">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF5722]/10 rounded-full blur-2xl pointer-events-none" />
+                        <div className="flex items-center gap-3 text-[#FF5722]">
+                          <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center">
+                            <ShieldCheck className="w-5 h-5 text-[#FF5722]" />
+                          </div>
+                          <h4 className="text-lg font-extrabold text-white">Metazivo Bespoke Engineering</h4>
+                        </div>
+                        <p className="text-xs text-slate-400 font-light leading-relaxed">
+                          We discard pre-built template noise. We write clean, semantic code from scratch to ensure outstanding speed, design supremacy, and secure architectures.
+                        </p>
+                        <ul className="space-y-3 text-xs text-slate-300">
+                          <li className="flex items-start gap-2">
+                            <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
+                            <span><strong>Supersonic Speed:</strong> Rendered in under 1.2 seconds, getting 100% PageSpeed Core Web Vitals score.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
+                            <span><strong>Bulletproof Security:</strong> Custom-tailored core files with automated daily cloud updates and zero dangerous plugins.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
+                            <span><strong>Elite Custom Brand Design:</strong> Tailored specifically to your visual guideline to engage buyers.</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
+                            <span><strong>Advanced Built-In SEO Engine:</strong> Integrated microdata schemas, fully optimized structures, and responsive tag architectures.</span>
+                          </li>
+                        </ul>
                       </div>
-                      <h4 className="text-lg font-extrabold text-white">Metazivo Bespoke Engineering</h4>
-                    </div>
-                    <p className="text-xs text-slate-400 font-light leading-relaxed">
-                      We discard pre-built template noise. We write clean, semantic code from scratch to ensure outstanding speed, design supremacy, and secure architectures.
-                    </p>
-                    <ul className="space-y-3 text-xs text-slate-300">
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
-                        <span><strong>Supersonic Speed:</strong> Rendered in under 1.2 seconds, getting 100% PageSpeed Core Web Vitals score.</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
-                        <span><strong>Bulletproof Security:</strong> Custom-tailored core files with automated daily cloud updates and zero dangerous plugins.</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
-                        <span><strong>Elite Custom Brand Design:</strong> Tailored specifically to your visual guideline to engage buyers.</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
-                        <span><strong>Advanced Built-In SEO Engine:</strong> Integrated microdata schemas, fully optimized structures, and responsive tag architectures.</span>
-                      </li>
-                    </ul>
+                    </ThreeDTiltCard>
                   </div>
-                </div>
+                </StaggerReveal>
               </div>
             </section>
 
@@ -939,51 +1029,75 @@ export default function App() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
+              <StaggerReveal className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
                 {/* Card 1: Professional Service */}
-                <div className="p-6 bg-white border border-slate-200/80 rounded-2xl space-y-4 shadow-sm hover:border-[#FF5722]/30 transition-all group">
-                  <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] group-hover:scale-110 transition-transform">
-                    <User className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-sm font-bold text-slate-900">Professional Service</h3>
-                  <p className="text-xs text-slate-500 font-light leading-relaxed">
-                    Dedicated expert team ensuring flawless execution of your web projects.
-                  </p>
+                <div className="h-full">
+                  <ThreeDTiltCard 
+                    className="p-6 bg-white border border-slate-200/80 rounded-2xl space-y-4 shadow-sm hover:border-[#FF5722]/30 transition-all group cursor-pointer h-full"
+                    glowColor="rgba(255, 87, 34, 0.06)"
+                    tiltMaxAngle={6}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] group-hover:scale-110 transition-transform">
+                      <User className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-900">Professional Service</h3>
+                    <p className="text-xs text-slate-500 font-light leading-relaxed">
+                      Dedicated expert team ensuring flawless execution of your web projects.
+                    </p>
+                  </ThreeDTiltCard>
                 </div>
 
                 {/* Card 2: Transparent Communication */}
-                <div className="p-6 bg-white border border-slate-200/80 rounded-2xl space-y-4 shadow-sm hover:border-[#FF5722]/30 transition-all group">
-                  <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] group-hover:scale-110 transition-transform">
-                    <MessageSquare className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-sm font-bold text-slate-900">Transparent Communication</h3>
-                  <p className="text-xs text-slate-500 font-light leading-relaxed">
-                    Regular updates, detailed reporting, and absolute clarity at every step.
-                  </p>
+                <div className="h-full">
+                  <ThreeDTiltCard 
+                    className="p-6 bg-white border border-slate-200/80 rounded-2xl space-y-4 shadow-sm hover:border-[#FF5722]/30 transition-all group cursor-pointer h-full"
+                    glowColor="rgba(255, 87, 34, 0.06)"
+                    tiltMaxAngle={6}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] group-hover:scale-110 transition-transform">
+                      <MessageSquare className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-900">Transparent Communication</h3>
+                    <p className="text-xs text-slate-500 font-light leading-relaxed">
+                      Regular updates, detailed reporting, and absolute clarity at every step.
+                    </p>
+                  </ThreeDTiltCard>
                 </div>
 
                 {/* Card 3: No Empty Promises */}
-                <div className="p-6 bg-white border border-slate-200/80 rounded-2xl space-y-4 shadow-sm hover:border-[#FF5722]/30 transition-all group">
-                  <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] group-hover:scale-110 transition-transform">
-                    <TrendingUp className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-sm font-bold text-slate-900">No Empty Promises</h3>
-                  <p className="text-xs text-slate-500 font-light leading-relaxed">
-                    Real metrics, sustainable growth, and honest consultation.
-                  </p>
+                <div className="h-full">
+                  <ThreeDTiltCard 
+                    className="p-6 bg-white border border-slate-200/80 rounded-2xl space-y-4 shadow-sm hover:border-[#FF5722]/30 transition-all group cursor-pointer h-full"
+                    glowColor="rgba(255, 87, 34, 0.06)"
+                    tiltMaxAngle={6}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] group-hover:scale-110 transition-transform">
+                      <TrendingUp className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-900">No Empty Promises</h3>
+                    <p className="text-xs text-slate-500 font-light leading-relaxed">
+                      Real metrics, sustainable growth, and honest consultation.
+                    </p>
+                  </ThreeDTiltCard>
                 </div>
 
                 {/* Card 4: On-Time Delivery */}
-                <div className="p-6 bg-white border border-slate-200/80 rounded-2xl space-y-4 shadow-sm hover:border-[#FF5722]/30 transition-all group">
-                  <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] group-hover:scale-110 transition-transform">
-                    <Calendar className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-sm font-bold text-slate-900">On-Time Delivery</h3>
-                  <p className="text-xs text-slate-500 font-light leading-relaxed">
-                    Strictly respecting deadlines and launching within planned timelines.
-                  </p>
+                <div className="h-full">
+                  <ThreeDTiltCard 
+                    className="p-6 bg-white border border-slate-200/80 rounded-2xl space-y-4 shadow-sm hover:border-[#FF5722]/30 transition-all group cursor-pointer h-full"
+                    glowColor="rgba(255, 87, 34, 0.06)"
+                    tiltMaxAngle={6}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] group-hover:scale-110 transition-transform">
+                      <Calendar className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-900">On-Time Delivery</h3>
+                    <p className="text-xs text-slate-500 font-light leading-relaxed">
+                      Strictly respecting deadlines and launching within planned timelines.
+                    </p>
+                  </ThreeDTiltCard>
                 </div>
-              </div>
+              </StaggerReveal>
             </section>
 
             {/* 2.7 OUR STRATEGIC PROCESS BLUEPRINT */}
@@ -996,74 +1110,106 @@ export default function App() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-6 pt-4 relative">
-                {/* Horizontal progress lines for desktop */}
-                <div className="hidden md:block absolute top-[44px] left-12 right-12 h-0.5 bg-slate-200/80 z-0" />
+              <div className="relative">
+                {/* Horizontal progress lines for desktop (placed outside staggered container to sit behind correctly) */}
+                <div className="hidden md:block absolute top-[44px] left-12 right-12 h-0.5 bg-slate-200/80 z-0 pointer-events-none" />
 
-                {/* Step 1 */}
-                <div className="bg-white border border-slate-150 p-6 rounded-2xl relative z-10 shadow-sm flex flex-col justify-between">
-                  <div className="space-y-4">
-                    <span className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-800 font-mono border border-slate-200">01</span>
-                    <h4 className="text-sm font-bold text-slate-900">Technical Audit</h4>
-                    <p className="text-[11px] text-slate-500 font-light leading-relaxed">
-                      We dissect your current performance, study competitor backlinks, and map out high-value commercial keyword opportunities.
-                    </p>
+                <StaggerReveal className="grid grid-cols-1 md:grid-cols-5 gap-6 pt-4 relative z-10">
+                  {/* Step 1 */}
+                  <div className="h-full">
+                    <ThreeDTiltCard 
+                      className="bg-white border border-slate-150 p-6 rounded-2xl relative z-10 shadow-sm flex flex-col justify-between h-full cursor-pointer"
+                      glowColor="rgba(255, 87, 34, 0.05)"
+                      tiltMaxAngle={8}
+                    >
+                      <div className="space-y-4">
+                        <span className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-800 font-mono border border-slate-200">01</span>
+                        <h4 className="text-sm font-bold text-slate-900">Technical Audit</h4>
+                        <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                          We dissect your current performance, study competitor backlinks, and map out high-value commercial keyword opportunities.
+                        </p>
+                      </div>
+                    </ThreeDTiltCard>
                   </div>
-                </div>
 
-                {/* Step 2 */}
-                <div className="bg-white border border-slate-150 p-6 rounded-2xl relative z-10 shadow-sm flex flex-col justify-between">
-                  <div className="space-y-4">
-                    <span className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-800 font-mono border border-slate-200">02</span>
-                    <h4 className="text-sm font-bold text-slate-900">Figma UI Blueprint</h4>
-                    <p className="text-[11px] text-slate-500 font-light leading-relaxed">
-                      Our graphic designers craft custom responsive wireframes and cohesive modern styles ensuring flawless user conversions.
-                    </p>
+                  {/* Step 2 */}
+                  <div className="h-full">
+                    <ThreeDTiltCard 
+                      className="bg-white border border-slate-150 p-6 rounded-2xl relative z-10 shadow-sm flex flex-col justify-between h-full cursor-pointer"
+                      glowColor="rgba(255, 87, 34, 0.05)"
+                      tiltMaxAngle={8}
+                    >
+                      <div className="space-y-4">
+                        <span className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-800 font-mono border border-slate-200">02</span>
+                        <h4 className="text-sm font-bold text-slate-900">Figma UI Blueprint</h4>
+                        <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                          Our graphic designers craft custom responsive wireframes and cohesive modern styles ensuring flawless user conversions.
+                        </p>
+                      </div>
+                    </ThreeDTiltCard>
                   </div>
-                </div>
 
-                {/* Step 3 */}
-                <div className="bg-white border border-slate-150 p-6 rounded-2xl relative z-10 shadow-sm flex flex-col justify-between">
-                  <div className="space-y-4">
-                    <span className="w-10 h-10 rounded-full bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-xs font-black text-[#FF5722] font-mono">03</span>
-                    <h4 className="text-sm font-bold text-slate-900">Lightning Dev</h4>
-                    <p className="text-[11px] text-slate-500 font-light leading-relaxed">
-                      We hand-code clean web components or custom blocks. This guarantees a supersonic speed layout and absolute security.
-                    </p>
+                  {/* Step 3 */}
+                  <div className="h-full">
+                    <ThreeDTiltCard 
+                      className="bg-white border border-slate-150 p-6 rounded-2xl relative z-10 shadow-sm flex flex-col justify-between h-full cursor-pointer"
+                      glowColor="rgba(255, 87, 34, 0.08)"
+                      tiltMaxAngle={8}
+                    >
+                      <div className="space-y-4">
+                        <span className="w-10 h-10 rounded-full bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-xs font-black text-[#FF5722] font-mono">03</span>
+                        <h4 className="text-sm font-bold text-slate-900">Lightning Dev</h4>
+                        <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                          We hand-code clean web components or custom blocks. This guarantees a supersonic speed layout and absolute security.
+                        </p>
+                      </div>
+                    </ThreeDTiltCard>
                   </div>
-                </div>
 
-                {/* Step 4 */}
-                <div className="bg-white border border-slate-150 p-6 rounded-2xl relative z-10 shadow-sm flex flex-col justify-between">
-                  <div className="space-y-4">
-                    <span className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-800 font-mono border border-slate-200">04</span>
-                    <h4 className="text-sm font-bold text-slate-900">Conversion Funnels</h4>
-                    <p className="text-[11px] text-slate-500 font-light leading-relaxed">
-                      We launch hyper-targeted Meta ad structures alongside persuasive psychological copy, routing buyers directly to your service.
-                    </p>
+                  {/* Step 4 */}
+                  <div className="h-full">
+                    <ThreeDTiltCard 
+                      className="bg-white border border-slate-150 p-6 rounded-2xl relative z-10 shadow-sm flex flex-col justify-between h-full cursor-pointer"
+                      glowColor="rgba(255, 87, 34, 0.05)"
+                      tiltMaxAngle={8}
+                    >
+                      <div className="space-y-4">
+                        <span className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-800 font-mono border border-slate-200">04</span>
+                        <h4 className="text-sm font-bold text-slate-900">Conversion Funnels</h4>
+                        <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                          We launch hyper-targeted Meta ad structures alongside persuasive psychological copy, routing buyers directly to your service.
+                        </p>
+                      </div>
+                    </ThreeDTiltCard>
                   </div>
-                </div>
 
-                {/* Step 5 */}
-                <div className="bg-[#0a0a0c] text-white p-6 rounded-2xl relative z-10 shadow-lg flex flex-col justify-between border border-[#FF5722]/20">
-                  <div className="space-y-4">
-                    <span className="w-10 h-10 rounded-full bg-[#FF5722] flex items-center justify-center text-xs font-black text-white font-mono">05</span>
-                    <h4 className="text-sm font-bold text-white">Active Scaling</h4>
-                    <p className="text-[11px] text-slate-400 font-light leading-relaxed">
-                      Through weekly blogging authority articles, Google map rankings boost, and continuous budget scaling, we secure your market leader status.
-                    </p>
+                  {/* Step 5 */}
+                  <div className="h-full">
+                    <ThreeDTiltCard 
+                      className="bg-[#0a0a0c] text-white p-6 rounded-2xl relative z-10 shadow-lg flex flex-col justify-between border border-[#FF5722]/20 h-full cursor-pointer"
+                      glowColor="rgba(255, 87, 34, 0.16)"
+                      tiltMaxAngle={8}
+                    >
+                      <div className="space-y-4">
+                        <span className="w-10 h-10 rounded-full bg-[#FF5722] flex items-center justify-center text-xs font-black text-white font-mono">05</span>
+                        <h4 className="text-sm font-bold text-white">Active Scaling</h4>
+                        <p className="text-[11px] text-slate-400 font-light leading-relaxed">
+                          Through weekly blogging authority articles, Google map rankings boost, and continuous budget scaling, we secure your market leader status.
+                        </p>
+                      </div>
+                    </ThreeDTiltCard>
                   </div>
-                </div>
+                </StaggerReveal>
               </div>
 
-              <div className="flex justify-center pt-2">
-                <button
+              <div className="flex justify-center pt-8">
+                <MagneticButton
                   onClick={() => handleNavigate("contact")}
-                  className="px-8 py-3.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-[0_4px_15px_rgba(255,87,34,0.25)] flex items-center gap-2 cursor-pointer"
+                  className="px-8 py-3.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-[0_4px_15px_rgba(255,87,34,0.25)] flex items-center gap-2 cursor-pointer"
                 >
                   <span>Build My Blueprint Now</span>
                   <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                </MagneticButton>
               </div>
             </section>
 
@@ -1095,43 +1241,49 @@ export default function App() {
                   <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto font-light">We validate our custom agency code through absolute metrics.</p>
                 </motion.div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8">
-                  <motion.div 
-                    className="p-8 bg-black/60 backdrop-blur-md rounded-3xl border border-white/10 space-y-2 group hover:border-[#FF5722]/30 transition-colors"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    <span className="block text-5xl font-black text-white font-mono tracking-tight">92%</span>
-                    <span className="text-sm font-semibold text-[#FF5722] block">Client Retention & Satisfaction</span>
-                    <p className="text-xs text-slate-500 font-light leading-relaxed">Our partners retain Metazivo on active recurring maintenance contracts indefinitely.</p>
-                  </motion.div>
+                <StaggerReveal className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8">
+                  <div className="h-full">
+                    <ThreeDTiltCard 
+                      className="p-8 bg-black/60 backdrop-blur-md rounded-[32px] border border-white/10 space-y-2 group hover:border-[#FF5722]/30 transition-colors h-full flex flex-col justify-between cursor-pointer"
+                      glowColor="rgba(255, 87, 34, 0.18)"
+                      tiltMaxAngle={6}
+                    >
+                      <div>
+                        <span className="block text-5xl font-black text-white font-mono tracking-tight">92%</span>
+                        <span className="text-sm font-semibold text-[#FF5722] block mt-2">Client Retention & Satisfaction</span>
+                      </div>
+                      <p className="text-xs text-slate-400 font-light leading-relaxed mt-4">Our partners retain Metazivo on active recurring maintenance contracts indefinitely.</p>
+                    </ThreeDTiltCard>
+                  </div>
 
-                  <motion.div 
-                    className="p-8 bg-black/60 backdrop-blur-md rounded-3xl border border-white/10 space-y-2 group hover:border-[#FF5722]/30 transition-colors"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
-                  >
-                    <span className="block text-5xl font-black text-white font-mono tracking-tight">4.8/5</span>
-                    <span className="text-sm font-semibold text-[#FF5722] block">Public Star Ratings</span>
-                    <p className="text-xs text-slate-500 font-light leading-relaxed">Top tier verification and verified case reviews on Clutch and Google Partner feeds.</p>
-                  </motion.div>
+                  <div className="h-full">
+                    <ThreeDTiltCard 
+                      className="p-8 bg-black/60 backdrop-blur-md rounded-[32px] border border-white/10 space-y-2 group hover:border-[#FF5722]/30 transition-colors h-full flex flex-col justify-between cursor-pointer"
+                      glowColor="rgba(255, 87, 34, 0.18)"
+                      tiltMaxAngle={6}
+                    >
+                      <div>
+                        <span className="block text-5xl font-black text-white font-mono tracking-tight">4.8/5</span>
+                        <span className="text-sm font-semibold text-[#FF5722] block mt-2">Public Star Ratings</span>
+                      </div>
+                      <p className="text-xs text-slate-400 font-light leading-relaxed mt-4">Top tier verification and verified case reviews on Clutch and Google Partner feeds.</p>
+                    </ThreeDTiltCard>
+                  </div>
 
-                  <motion.div 
-                    className="p-8 bg-black/60 backdrop-blur-md rounded-3xl border border-white/10 space-y-2 group hover:border-[#FF5722]/30 transition-colors"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                  >
-                    <span className="block text-5xl font-black text-white font-mono tracking-tight">+350%</span>
-                    <span className="text-sm font-semibold text-[#FF5722] block">Organic Keyword Surge</span>
-                    <p className="text-xs text-slate-500 font-light leading-relaxed">Our technical semantic SEO frameworks trigger immediate indexation and climb rankings.</p>
-                  </motion.div>
-                </div>
+                  <div className="h-full">
+                    <ThreeDTiltCard 
+                      className="p-8 bg-black/60 backdrop-blur-md rounded-[32px] border border-white/10 space-y-2 group hover:border-[#FF5722]/30 transition-colors h-full flex flex-col justify-between cursor-pointer"
+                      glowColor="rgba(255, 87, 34, 0.18)"
+                      tiltMaxAngle={6}
+                    >
+                      <div>
+                        <span className="block text-5xl font-black text-white font-mono tracking-tight">+350%</span>
+                        <span className="text-sm font-semibold text-[#FF5722] block mt-2">Organic Keyword Surge</span>
+                      </div>
+                      <p className="text-xs text-slate-400 font-light leading-relaxed mt-4">Our technical semantic SEO frameworks trigger immediate indexation and climb rankings.</p>
+                    </ThreeDTiltCard>
+                  </div>
+                </StaggerReveal>
               </div>
             </section>
 
@@ -1220,7 +1372,7 @@ export default function App() {
               </div>
             </section>
 
-          </div>
+          </motion.div>
         )}
 
         {/* VIEW 2: ABOUT PAGE */}
@@ -1714,6 +1866,7 @@ export default function App() {
           </div>
         )}
 
+        </AnimatePresence>
       </main>
 
       {/* FOOTER SECTION */}
