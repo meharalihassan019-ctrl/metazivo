@@ -920,6 +920,63 @@ export default function App() {
               </div>
             </section>
 
+            {/* 2.6 TRUSTED PARTNER (Trust Cards Section) */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12 relative z-10" id="trust-blueprint">
+              <div className="text-center space-y-4 max-w-2xl mx-auto">
+                <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Guaranteed Reliability</span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Trusted by businesses looking for reliable digital growth</h2>
+                <p className="text-xs sm:text-sm text-slate-600 font-light">
+                  We stand by real metrics and professional accountability. No gimmicks, just exceptional digital engineering and strategic support.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
+                {/* Card 1: Professional Service */}
+                <div className="p-6 bg-white border border-slate-200/80 rounded-2xl space-y-4 shadow-sm hover:border-[#FF5722]/30 transition-all group">
+                  <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] group-hover:scale-110 transition-transform">
+                    <User className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-900">Professional Service</h3>
+                  <p className="text-xs text-slate-500 font-light leading-relaxed">
+                    Dedicated expert team ensuring flawless execution of your web projects.
+                  </p>
+                </div>
+
+                {/* Card 2: Transparent Communication */}
+                <div className="p-6 bg-white border border-slate-200/80 rounded-2xl space-y-4 shadow-sm hover:border-[#FF5722]/30 transition-all group">
+                  <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] group-hover:scale-110 transition-transform">
+                    <MessageSquare className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-900">Transparent Communication</h3>
+                  <p className="text-xs text-slate-500 font-light leading-relaxed">
+                    Regular updates, detailed reporting, and absolute clarity at every step.
+                  </p>
+                </div>
+
+                {/* Card 3: No Empty Promises */}
+                <div className="p-6 bg-white border border-slate-200/80 rounded-2xl space-y-4 shadow-sm hover:border-[#FF5722]/30 transition-all group">
+                  <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] group-hover:scale-110 transition-transform">
+                    <TrendingUp className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-900">No Empty Promises</h3>
+                  <p className="text-xs text-slate-500 font-light leading-relaxed">
+                    Real metrics, sustainable growth, and honest consultation.
+                  </p>
+                </div>
+
+                {/* Card 4: On-Time Delivery */}
+                <div className="p-6 bg-white border border-slate-200/80 rounded-2xl space-y-4 shadow-sm hover:border-[#FF5722]/30 transition-all group">
+                  <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] group-hover:scale-110 transition-transform">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-900">On-Time Delivery</h3>
+                  <p className="text-xs text-slate-500 font-light leading-relaxed">
+                    Strictly respecting deadlines and launching within planned timelines.
+                  </p>
+                </div>
+              </div>
+            </section>
+
             {/* 2.7 OUR STRATEGIC PROCESS BLUEPRINT */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16 relative z-10" id="strategic-process">
               <div className="text-center space-y-4 max-w-2xl mx-auto">
@@ -1144,7 +1201,7 @@ export default function App() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Coordinate:</span>
-                    <span className="text-slate-700">{contactInfo?.address || "Islamabad / Lahore, PK"}</span>
+                    <span className="text-slate-700">{contactInfo?.address || "Pakistan"}</span>
                   </div>
                 </div>
               </div>
@@ -1187,13 +1244,70 @@ export default function App() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900">Corporate Leadership</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="p-5 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center gap-4 shadow-sm">
-                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Mehar Ali Hassan" referrerPolicy="no-referrer" className="w-12 h-12 rounded-full object-cover border border-slate-200" />
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900">Mehar Ali Hassan</h3>
-                    <span className="text-[11px] text-[#FF5722] font-mono">Principal Systems Architect</span>
+              <h2 className="text-xl font-bold text-slate-900">Our Specialist Departments</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* 1. WordPress Department */}
+                <div className="p-6 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-4 shadow-sm flex flex-col justify-between hover:border-[#FF5722]/30 transition-all">
+                  <div className="space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722]">
+                      <Code className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-900">WordPress Department</h3>
+                    <p className="text-xs text-slate-500 font-light leading-relaxed">
+                      Expert WordPress and WooCommerce Developers.
+                    </p>
+                  </div>
+                </div>
+
+                {/* 2. SEO Department */}
+                <div className="p-6 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-4 shadow-sm flex flex-col justify-between hover:border-[#FF5722]/30 transition-all">
+                  <div className="space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722]">
+                      <Search className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-900">SEO Department</h3>
+                    <p className="text-xs text-slate-500 font-light leading-relaxed">
+                      SEO Audits, Technical SEO, Keywords.
+                    </p>
+                  </div>
+                </div>
+
+                {/* 3. Paid Ads Department */}
+                <div className="p-6 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-4 shadow-sm flex flex-col justify-between hover:border-[#FF5722]/30 transition-all">
+                  <div className="space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722]">
+                      <TrendingUp className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-900">Paid Ads Department</h3>
+                    <p className="text-xs text-slate-500 font-light leading-relaxed">
+                      Google Ads, Meta Ads.
+                    </p>
+                  </div>
+                </div>
+
+                {/* 4. Creative Department */}
+                <div className="p-6 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-4 shadow-sm flex flex-col justify-between hover:border-[#FF5722]/30 transition-all">
+                  <div className="space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722]">
+                      <Palette className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-900">Creative Department</h3>
+                    <p className="text-xs text-slate-500 font-light leading-relaxed">
+                      Video Editors, Graphic Designers.
+                    </p>
+                  </div>
+                </div>
+
+                {/* 5. Support Department */}
+                <div className="p-6 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-4 shadow-sm flex flex-col justify-between hover:border-[#FF5722]/30 transition-all md:col-span-2 lg:col-span-1">
+                  <div className="space-y-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722]">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-900">Support Department</h3>
+                    <p className="text-xs text-slate-500 font-light leading-relaxed">
+                      Active Support, Edits, Website Maintenance.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -2478,7 +2592,7 @@ export default function App() {
                               <input
                                 type="text"
                                 name="address"
-                                defaultValue={contactInfo?.address || "Islamabad / Lahore, PK"}
+                                defaultValue={contactInfo?.address || "Pakistan"}
                                 className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-white focus:outline-none w-full"
                                 required
                               />

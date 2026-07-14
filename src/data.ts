@@ -563,27 +563,35 @@ export const faqList = [
 
 export const testimonials = [
   {
-    id: "test-1",
-    name: "Clara Vance",
-    role: "Marketing Director at Lumina Health",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80",
-    text: "Metazivo completely transformed our slow, bloated website into a lead generation machine. Our load time dropped from 4.8 seconds to 0.3 seconds, and our organic search leads have tripled in under three months!",
+    id: "trust-1",
+    name: "Professional Service",
+    role: "Dedicated expert team ensuring flawless execution of your web projects.",
+    avatar: "",
+    text: "Dedicated expert team ensuring flawless execution of your web projects.",
     rating: 5
   },
   {
-    id: "test-2",
-    name: "Junaid Sheikh",
-    role: "Founder, Khan & Co.",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-    text: "The WordPress-style CMS they built is spectacular. I can generate blog posts, run instant SEO scoring, compress images, and use the Gemini AI Assistant directly from the dashboard. Best investment we've ever made.",
+    id: "trust-2",
+    name: "Transparent Communication",
+    role: "Regular updates, detailed reporting, and absolute clarity at every step.",
+    avatar: "",
+    text: "Regular updates, detailed reporting, and absolute clarity at every step.",
     rating: 5
   },
   {
-    id: "test-3",
-    name: "Marcus Lin",
-    role: "Head of Growth, Apex Retail",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
-    text: "Their Paid Ads strategy coupled with optimized landing pages doubled our Shopify sales. We hit a 4.8x ROAS and scaled our monthly budget without any drop in conversions. These guys are true digital architects.",
+    id: "trust-3",
+    name: "No Empty Promises",
+    role: "Real metrics, sustainable growth, and honest consultation.",
+    avatar: "",
+    text: "Real metrics, sustainable growth, and honest consultation.",
+    rating: 5
+  },
+  {
+    id: "trust-4",
+    name: "On-Time Delivery",
+    role: "Strictly respecting deadlines and launching within planned timelines.",
+    avatar: "",
+    text: "Strictly respecting deadlines and launching within planned timelines.",
     rating: 5
   }
 ];

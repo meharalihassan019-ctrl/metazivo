@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Phone, Mail, MapPin, ArrowUp, CheckCircle, Globe, Send, Check } from "lucide-react";
+import { Phone, Mail, MapPin, ArrowUp, CheckCircle, Globe, Send, Check, Facebook, Instagram, Linkedin } from "lucide-react";
 
 interface FooterProps {
   onNavigate: (tab: string) => void;
@@ -26,6 +26,7 @@ export default function Footer({ onNavigate, contactInfo, customPages }: FooterP
 
   const displayPhone = contactInfo?.phone || "+92 328 8518557";
   const displayEmail = contactInfo?.email || "mai@metazivo.com";
+  const displayLocation = "Pakistan";
 
   return (
     <footer className="w-full bg-slate-50 border-t border-slate-200 text-slate-600 font-sans mt-auto" id="app-footer">
@@ -68,36 +69,47 @@ export default function Footer({ onNavigate, contactInfo, customPages }: FooterP
             </div>
           </div>
           <p className="text-xs text-slate-500 leading-relaxed">
-            Metazivo is a full-service digital marketing, WordPress development, and SEO agency. We craft high-speed web architectures, technical SEO systems, and optimized blogging portfolios that accelerate conversions.
+            Helping businesses grow through professional websites SEO and digital marketing.
           </p>
           <div className="flex flex-col gap-2 text-xs">
             <a href={`tel:${displayPhone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-2 hover:text-slate-900 transition-colors text-slate-600">
               <Phone className="w-3.5 h-3.5 text-[#FF5722]" />
-              <span>{displayPhone}</span>
+              <span>Email: {displayEmail}</span>
             </a>
             <a href={`mailto:${displayEmail}`} className="flex items-center gap-2 hover:text-slate-900 transition-colors text-slate-600">
               <Mail className="w-3.5 h-3.5 text-[#FF5722]" />
-              <span>{displayEmail}</span>
+              <span>Phone: {displayPhone}</span>
             </a>
             <div className="flex items-center gap-2 text-slate-500">
               <MapPin className="w-3.5 h-3.5 text-[#FF5722]" />
-              <span>{contactInfo?.address || "Office 402, Metazivo Heights, Lahore, Pakistan"}</span>
+              <span>Location: {displayLocation}</span>
             </div>
+          </div>
+
+          {/* Social Icons requested */}
+          <div className="flex items-center gap-3 pt-2">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#FF5722] hover:text-white flex items-center justify-center text-slate-600 transition-colors shadow-sm" title="Facebook">
+              <Facebook className="w-4 h-4" />
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#FF5722] hover:text-white flex items-center justify-center text-slate-600 transition-colors shadow-sm" title="Instagram">
+              <Instagram className="w-4 h-4" />
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#FF5722] hover:text-white flex items-center justify-center text-slate-600 transition-colors shadow-sm" title="LinkedIn">
+              <Linkedin className="w-4 h-4" />
+            </a>
           </div>
         </div>
 
-        {/* Services shortcut column - Span 2 */}
-        <div className="md:col-span-2">
+        {/* Services shortcut column - Span 3 */}
+        <div className="md:col-span-3">
           <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Services</h3>
           <ul className="space-y-2 text-xs text-slate-500">
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Website Development</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">WordPress Themes</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">SEO & Auditing</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Paid Ads Campaign</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Video Editing & Production</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Mobile App Development</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">AI Mobile Apps & SaaS</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Chatbots Integration</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">WordPress Development</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">SEO</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Meta Ads</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Google Ads</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">WooCommerce</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Website Maintenance</button></li>
           </ul>
         </div>
 
@@ -105,16 +117,16 @@ export default function Footer({ onNavigate, contactInfo, customPages }: FooterP
         <div className="md:col-span-2">
           <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Quick Links</h3>
           <ul className="space-y-2 text-xs text-slate-500">
-            <li><button onClick={() => onNavigate("home")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Home</button></li>
-            <li><button onClick={() => onNavigate("about")} className="hover:text-[#FF5722] transition-colors cursor-pointer">About</button></li>
-            <li><button onClick={() => onNavigate("portfolio")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Portfolio</button></li>
-            <li><button onClick={() => onNavigate("blog")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Blog CMS</button></li>
-            <li><button onClick={() => onNavigate("contact")} className="hover:text-[#FF5722] transition-colors cursor-pointer">Contact</button></li>
+            <li><button onClick={() => onNavigate("home")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Home</button></li>
+            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Services</button></li>
+            <li><button onClick={() => onNavigate("about")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">About</button></li>
+            <li><button onClick={() => onNavigate("blog")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Blog</button></li>
+            <li><button onClick={() => onNavigate("contact")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Contact</button></li>
           </ul>
         </div>
 
-        {/* Newsletter Column - Span 4 */}
-        <div className="md:col-span-4 space-y-4">
+        {/* Newsletter Column - Span 3 */}
+        <div className="md:col-span-3 space-y-4">
           <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">Stay Ahead</h3>
           <p className="text-xs text-slate-500 leading-relaxed font-light">
             Subscribe to our newsletter for exclusive SEO blueprints, high-converting copy strategies, and speed audit guides.
@@ -158,7 +170,7 @@ export default function Footer({ onNavigate, contactInfo, customPages }: FooterP
       {/* Under footer segment */}
       <div className="w-full bg-slate-100 border-t border-slate-200 py-6 px-4">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
-          <span>&copy; {new Date().getFullYear()} Metazivo. All Rights Reserved. Designed & Developed for Hostinger Node Hosting.</span>
+          <span>© 2026 Metazivo. All Rights Reserved.</span>
           <button
             onClick={scrollToTop}
             id="back-to-top"
