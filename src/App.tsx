@@ -61,7 +61,7 @@ import ParallaxBentoCard from "./components/ParallaxBentoCard";
 import CustomCursor from "./components/CustomCursor";
 import { servicesData, pricingPlans, portfolioItems, workProcessTimeline, faqList, testimonials, trustedCompanies } from "./data";
 import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary, ContactInfo, CustomPage } from "./types";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import Preloader from "./components/Preloader";
 import ThreeDTiltCard from "./components/ThreeDTiltCard";
 import MagneticButton from "./components/MagneticButton";
@@ -138,23 +138,23 @@ export default function App() {
   // Navigation Routing States
   const [currentTab, setCurrentTab] = useState<string>("home"); // home, about, services, portfolio, blog, pricing, contact, privacy, terms, service-detail, blog-detail
   const [appIsLoading, setAppIsLoading] = useState(true);
-  const [scrollY, setScrollY] = useState(0);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [prefersReduced, setPrefersReduced] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
+  // Smooth hardware-accelerated parallax transforms using Framer Motion's rendering loop (0 react re-renders!)
+  const { scrollY } = useScroll();
+  const yGrid = useTransform(scrollY, [0, 2000], [0, 300]);
+  const yOrb1 = useTransform(scrollY, [0, 2000], [0, 160]);
+  const yOrb2 = useTransform(scrollY, [0, 2000], [0, -100]);
+  const yMetrics = useTransform(scrollY, [0, 3000], [-120, 240]);
 
+  useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReduced(mediaQuery.matches);
     const listener = (e: MediaQueryListEvent) => setPrefersReduced(e.matches);
     mediaQuery.addEventListener("change", listener);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
       mediaQuery.removeEventListener("change", listener);
     };
   }, []);
@@ -633,18 +633,18 @@ export default function App() {
               {/* Cinematic Parallax Background Layers */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
                 {/* Slower scrolling back grid */}
-                <div 
+                <motion.div 
                   className="absolute inset-0 opacity-[0.06] bg-[radial-gradient(#FF5722_1.5px,transparent_1.5px)] [background-size:24px_24px]"
-                  style={{ transform: `translateY(${scrollY * 0.15}px)` }}
+                  style={{ y: yGrid }}
                 />
                 {/* Slower scrolling ambient orange orbs */}
-                <div 
+                <motion.div 
                   className="absolute top-20 left-10 w-[500px] h-[500px] rounded-full bg-[#FF5722]/3 blur-[120px]"
-                  style={{ transform: `translateY(${scrollY * 0.08}px)` }}
+                  style={{ y: yOrb1 }}
                 />
-                <div 
+                <motion.div 
                   className="absolute top-1/2 right-10 w-[600px] h-[600px] rounded-full bg-[#FF5722]/2 blur-[140px]"
-                  style={{ transform: `translateY(${scrollY * -0.05}px)` }}
+                  style={{ y: yOrb2 }}
                 />
               </div>
 
@@ -1217,11 +1217,11 @@ export default function App() {
             <section className="relative w-full py-32 overflow-hidden border-y border-white/10 z-10" id="success-metrics">
               {/* Parallax background wrapper */}
               <div className="absolute inset-0 z-0">
-                <div 
+                <motion.div 
                   className="absolute inset-0 w-full h-[150%] -top-[25%] bg-cover bg-center opacity-15"
                   style={{ 
                     backgroundImage: "url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80')",
-                    transform: `translateY(${(scrollY - 1000) * 0.12}px)` 
+                    y: yMetrics 
                   }}
                   referrerPolicy="no-referrer"
                 />

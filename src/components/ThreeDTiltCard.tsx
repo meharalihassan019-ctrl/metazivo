@@ -31,6 +31,17 @@ export default function ThreeDTiltCard({
   const springRotateX = useSpring(rotateX, springConfig);
   const springRotateY = useSpring(rotateY, springConfig);
 
+  // Unconditionally declared useTransform hooks at the top level
+  const bgGlowGradient = useTransform(
+    [glowX, glowY],
+    ([x, y]) => `radial-gradient(400px circle at ${x}px ${y}px, ${glowColor}, transparent 80%)`
+  );
+
+  const borderGlowGradient = useTransform(
+    [glowX, glowY],
+    ([x, y]) => `radial-gradient(180px circle at ${x}px ${y}px, rgba(255, 87, 34, 0.45), transparent 70%)`
+  );
+
   // Detect system prefers-reduced-motion setting
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -103,10 +114,7 @@ export default function ThreeDTiltCard({
         <motion.div
           className="absolute inset-0 pointer-events-none rounded-3xl z-10 mix-blend-screen"
           style={{
-            background: useTransform(
-              [glowX, glowY],
-              ([x, y]) => `radial-gradient(400px circle at ${x}px ${y}px, ${glowColor}, transparent 80%)`
-            )
+            background: bgGlowGradient
           }}
         />
       )}
@@ -116,10 +124,7 @@ export default function ThreeDTiltCard({
         <motion.div
           className="absolute -inset-[1px] pointer-events-none rounded-3xl z-0"
           style={{
-            background: useTransform(
-              [glowX, glowY],
-              ([x, y]) => `radial-gradient(180px circle at ${x}px ${y}px, rgba(255, 87, 34, 0.45), transparent 70%)`
-            )
+            background: borderGlowGradient
           }}
         />
       )}

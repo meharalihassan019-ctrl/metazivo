@@ -17,17 +17,6 @@ export default function Floating3DRing() {
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
   const isHovered = useRef(false);
 
-  // Track scroll position for subtle parallax speed changes
-  const [scrollOffset, setScrollOffset] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollOffset(window.scrollY);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   // Set canvas size
   useEffect(() => {
     const handleResize = () => {
@@ -130,8 +119,9 @@ export default function Floating3DRing() {
       const floatOffset = Math.sin(Date.now() * 0.0018) * 14;
 
       // Mouse tracking inertia
+      const scrollY = typeof window !== "undefined" ? window.scrollY : 0;
       const targetAngleX = 0.5 + (isHovered.current ? mouse.y * 0.4 : 0);
-      const targetAngleY = 0.6 + (isHovered.current ? mouse.x * 0.5 : 0) + (scrollOffset * 0.0005);
+      const targetAngleY = 0.6 + (isHovered.current ? mouse.x * 0.5 : 0) + (scrollY * 0.0005);
 
       angleX += (targetAngleX - angleX) * 0.08;
       angleY += (targetAngleY - angleY) * 0.08;
@@ -244,7 +234,7 @@ export default function Floating3DRing() {
 
     render();
     return () => cancelAnimationFrame(animationId);
-  }, [mouse, scrollOffset]);
+  }, [mouse]);
 
   return (
     <div
