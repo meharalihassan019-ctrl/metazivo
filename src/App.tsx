@@ -61,7 +61,8 @@ import ParallaxBentoCard from "./components/ParallaxBentoCard";
 import CustomCursor from "./components/CustomCursor";
 import { servicesData, pricingPlans, portfolioItems, workProcessTimeline, faqList, testimonials, trustedCompanies } from "./data";
 import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary, ContactInfo, CustomPage } from "./types";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
+import Preloader from "./components/Preloader";
 
 // Premium real stock photo URLs (Not AI-generated)
 const hero3D = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"; // Collaborative teamwork real office meeting
@@ -133,6 +134,7 @@ const getServiceImage = (slug: string) => {
 export default function App() {
   // Navigation Routing States
   const [currentTab, setCurrentTab] = useState<string>("home"); // home, about, services, portfolio, blog, pricing, contact, privacy, terms, service-detail, blog-detail
+  const [appIsLoading, setAppIsLoading] = useState(true);
   const [scrollY, setScrollY] = useState(0);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
@@ -572,7 +574,14 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-[#FF5722]/20 selection:text-[#FF5722] relative overflow-hidden">
+    <>
+      <AnimatePresence mode="wait">
+        {appIsLoading && (
+          <Preloader onComplete={() => setAppIsLoading(false)} />
+        )}
+      </AnimatePresence>
+
+      <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-[#FF5722]/20 selection:text-[#FF5722] relative overflow-hidden">
       
       {/* Interactive premium custom mouse cursor */}
       <CustomCursor />
@@ -2715,5 +2724,6 @@ export default function App() {
       </a>
 
     </div>
+    </>
   );
 }
