@@ -65,6 +65,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import Preloader from "./components/Preloader";
 import ThreeDTiltCard from "./components/ThreeDTiltCard";
 import MagneticButton from "./components/MagneticButton";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { ScrollReveal, StaggerReveal, TextReveal } from "./components/ScrollReveal";
 
 // Premium real stock photo URLs (Not AI-generated)
@@ -539,7 +540,7 @@ export default function App() {
   // -----------------------------------------------------------------------------
   // CONTACT LEAD CMS HANDLERS
   // -----------------------------------------------------------------------------
-  const handleUpdateLeadStatus = async (id: string, status: 'read' | 'replied' | 'archived', notes?: string) => {
+  const handleUpdateLeadStatus = async (id: string, status: 'unread' | 'read' | 'replied' | 'archived', notes?: string) => {
     try {
       const res = await fetch(`/api/leads/${id}`, {
         method: "PUT",
@@ -727,7 +728,9 @@ export default function App() {
                     <div className="relative w-full flex justify-center items-center">
                       {/* Floating3DRing acts as an ambient tech backdrop */}
                       <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-                        <Floating3DRing />
+                        <ErrorBoundary fallbackName="3D Floating Ring">
+                          <Floating3DRing />
+                        </ErrorBoundary>
                       </div>
 
                       {/* Main Hero 3D Picture with elegant tilt glass frame */}
@@ -1223,7 +1226,6 @@ export default function App() {
                     backgroundImage: "url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80')",
                     y: yMetrics 
                   }}
-                  referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0c] via-transparent to-[#0a0a0c]" />
               </div>

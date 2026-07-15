@@ -1,0 +1,12 @@
+{
+  "name": "Metazivo",
+  "description": "Metazivo builds custom high-performance websites, optimized WordPress stores, Shopify websites, and runs advanced Meta and Google Ads campaigns.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
