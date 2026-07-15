@@ -5,12 +5,10 @@
 
 import { AgencyService } from "./types";
 
-// Import locally generated custom portfolio images
-import obdevMockup from "./assets/images/obdev_mockup_1784019582597.jpg";
-import salamsMockup from "./assets/images/salams_mockup_1784019604656.jpg";
-import opvgMockup from "./assets/images/opvg_mockup_1784019625348.jpg";
-
 // Real-world, highly realistic portfolio stock photo URLs (Not AI-generated)
+const obdevMockup = "https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=800&q=80"; // Construction planning & metrics
+const salamsMockup = "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=800&q=80"; // Wedding couple for matrimony
+const opvgMockup = "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=800&q=80"; // Community volunteers collaborating
 const wpMockup = "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&w=800&q=80"; // Skincare boutique products
 const seoMockup = "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80"; // Logistics shipping containers
 const metaAdsMockup = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80"; // Luxury real estate property
