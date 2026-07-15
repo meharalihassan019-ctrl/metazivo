@@ -878,11 +878,6 @@ export default function App() {
                             <div className="w-12 h-12 bg-[#FF5722]/10 border border-[#FF5722]/20 rounded-2xl flex items-center justify-center text-[#FF5722]">
                               <ServiceIcon name={srv.icon} className="w-6 h-6" />
                             </div>
-                            {srv.startingPrice && (
-                              <span className="text-xs font-mono font-bold text-[#FF5722] bg-[#FF5722]/5 border border-[#FF5722]/10 px-3 py-1 rounded-full">
-                                {srv.startingPrice}
-                              </span>
-                            )}
                           </div>
 
                           <div className="space-y-3">
