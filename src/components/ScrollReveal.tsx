@@ -36,7 +36,7 @@ export function ScrollReveal({
     <motion.div
       initial={{ opacity: 0, y: 25 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-10%" }}
+      viewport={{ once: true, margin: "-80px" }}
       transition={{
         duration,
         delay,
@@ -109,7 +109,7 @@ export function StaggerReveal({
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-10%" }}
+      viewport={{ once: true, margin: "-80px" }}
       className={className}
     >
       {React.Children.map(children, (child) => {
