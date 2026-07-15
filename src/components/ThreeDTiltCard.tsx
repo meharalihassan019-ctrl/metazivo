@@ -109,26 +109,6 @@ export default function ThreeDTiltCard({
       className={`relative rounded-3xl transition-shadow duration-300 ${className}`}
       style={cardStyle}
     >
-      {/* 3D Glass overlay glow follow cursor effect */}
-      {!prefersReduced && isHovered && (
-        <motion.div
-          className="absolute inset-0 pointer-events-none rounded-3xl z-10 mix-blend-screen"
-          style={{
-            background: bgGlowGradient
-          }}
-        />
-      )}
-
-      {/* Subtle border outline glow */}
-      {!prefersReduced && isHovered && (
-        <motion.div
-          className="absolute -inset-[1px] pointer-events-none rounded-3xl z-0"
-          style={{
-            background: borderGlowGradient
-          }}
-        />
-      )}
-
       {/* Main card content rendering container */}
       <div className="relative z-1 w-full h-full" style={prefersReduced ? {} : { transform: "translateZ(10px)" }}>
         {children}

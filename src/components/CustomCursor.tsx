@@ -113,9 +113,7 @@ export default function CustomCursor() {
           backgroundColor: isHovered 
             ? "rgba(255, 87, 34, 0.15)" 
             : "rgba(255, 87, 34, 0.03)",
-          boxShadow: isHovered 
-            ? "0 0 15px rgba(255, 87, 34, 0.35)" 
-            : "0 0 5px rgba(255, 87, 34, 0.1)",
+          boxShadow: "none",
         }}
         animate={{
           scale: isHovered ? 1.6 : 1,
@@ -136,7 +134,7 @@ export default function CustomCursor() {
           translateX: "-50%",
           translateY: "-50%",
           backgroundColor: "#FF5722",
-          boxShadow: "0 0 8px rgba(255, 87, 34, 0.6)",
+          boxShadow: "none",
         }}
         animate={{
           scale: isHovered ? 0.75 : 1,
