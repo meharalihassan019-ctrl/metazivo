@@ -10,6 +10,7 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 import compression from "compression";
+import crypto from "crypto";
 
 dotenv.config();
 
@@ -220,7 +221,11 @@ function loadDb() {
       return defaultDb;
     }
     const raw = fs.readFileSync(DB_FILE, "utf-8");
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if (!parsed.tags) {
+      parsed.tags = [];
+    }
+    return parsed;
   } catch (err) {
     console.error("Failed to read local DB, using default", err);
     return defaultDb;
@@ -303,6 +308,109 @@ app.get("/api/analytics", (req, res) => {
     viewsHistory: db.viewsHistory,
     leadsByService
   });
+});
+
+// Tag Manager Endpoints
+app.get("/api/tags", (req, res) => {
+  db = loadDb();
+  const tagsMap = new Map<string, number>();
+  
+  // Initialize from db.tags
+  if (Array.isArray(db.tags)) {
+    db.tags.forEach((t: string) => {
+      if (t) tagsMap.set(t, 0);
+    });
+  }
+
+  // Aggregate from posts
+  if (Array.isArray(db.posts)) {
+    db.posts.forEach((post: any) => {
+      if (Array.isArray(post.tags)) {
+        post.tags.forEach((t: string) => {
+          if (t) {
+            tagsMap.set(t, (tagsMap.get(t) || 0) + 1);
+          }
+        });
+      }
+    });
+  }
+
+  const result = Array.from(tagsMap.entries()).map(([name, count]) => ({
+    name,
+    count
+  }));
+
+  res.json(result);
+});
+
+app.post("/api/tags", (req, res) => {
+  db = loadDb();
+  const name = (req.body.name || "").trim();
+  if (!name) {
+    return res.status(400).json({ error: "Tag name cannot be empty" });
+  }
+
+  if (!db.tags) db.tags = [];
+  if (!db.tags.includes(name)) {
+    db.tags.push(name);
+    saveDb(db);
+  }
+  res.status(201).json({ success: true, name });
+});
+
+app.put("/api/tags/:oldName", (req, res) => {
+  db = loadDb();
+  const oldName = req.params.oldName;
+  const newName = (req.body.name || "").trim();
+
+  if (!newName) {
+    return res.status(400).json({ error: "New tag name cannot be empty" });
+  }
+
+  // Update in top level db.tags list
+  if (Array.isArray(db.tags)) {
+    const idx = db.tags.indexOf(oldName);
+    if (idx !== -1) {
+      db.tags[idx] = newName;
+    } else if (!db.tags.includes(newName)) {
+      db.tags.push(newName);
+    }
+  }
+
+  // Update in all posts
+  if (Array.isArray(db.posts)) {
+    db.posts.forEach((post: any) => {
+      if (Array.isArray(post.tags)) {
+        post.tags = post.tags.map((t: string) => t === oldName ? newName : t);
+        post.tags = Array.from(new Set(post.tags));
+      }
+    });
+  }
+
+  saveDb(db);
+  res.json({ success: true });
+});
+
+app.delete("/api/tags/:name", (req, res) => {
+  db = loadDb();
+  const name = req.params.name;
+
+  // Remove from top level db.tags list
+  if (Array.isArray(db.tags)) {
+    db.tags = db.tags.filter((t: string) => t !== name);
+  }
+
+  // Remove from all posts
+  if (Array.isArray(db.posts)) {
+    db.posts.forEach((post: any) => {
+      if (Array.isArray(post.tags)) {
+        post.tags = post.tags.filter((t: string) => t !== name);
+      }
+    });
+  }
+
+  saveDb(db);
+  res.json({ success: true });
 });
 
 // Blog Endpoints
@@ -518,7 +626,683 @@ app.get("/api/leads/export/csv", (req, res) => {
   res.status(200).send(csvHeaders + csvRows);
 });
 
+// -----------------------------------------------------------------------------
+// GOOGLE SEARCH CONSOLE & GA4 REAL-TIME ANALYTICS INTEGRATION
+// -----------------------------------------------------------------------------
+
+const TOKEN_ENCRYPTION_KEY = process.env.TOKEN_ENCRYPTION_KEY || "metazivo-analytics-secure-key-32";
+const IV_LENGTH = 16;
+
+function encryptToken(text: string): string {
+  try {
+    const iv = crypto.randomBytes(IV_LENGTH);
+    const cipher = crypto.createCipheriv(
+      "aes-256-cbc",
+      Buffer.from(TOKEN_ENCRYPTION_KEY.padEnd(32, "0").substring(0, 32)),
+      iv
+    );
+    let encrypted = cipher.update(text);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return iv.toString("hex") + ":" + encrypted.toString("hex");
+  } catch (err) {
+    console.error("Encryption failed:", err);
+    return text;
+  }
+}
+
+function decryptToken(text: string): string {
+  try {
+    const textParts = text.split(":");
+    const iv = Buffer.from(textParts.shift() || "", "hex");
+    const encryptedText = Buffer.from(textParts.join(":"), "hex");
+    const decipher = crypto.createDecipheriv(
+      "aes-256-cbc",
+      Buffer.from(TOKEN_ENCRYPTION_KEY.padEnd(32, "0").substring(0, 32)),
+      iv
+    );
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+  } catch (err) {
+    console.error("Decryption failed:", err);
+    return text;
+  }
+}
+
+// Automatic background token refresher
+async function getGoogleAccessToken(): Promise<string> {
+  const currentDb = loadDb();
+  if (!currentDb.googleOAuth || !currentDb.googleOAuth.refreshToken) {
+    throw new Error("Google Account is not connected. Please connect via OAuth.");
+  }
+
+  const { accessToken, refreshToken, expiryDate } = currentDb.googleOAuth;
+  const decryptedAccessToken = decryptToken(accessToken);
+  const decryptedRefreshToken = decryptToken(refreshToken);
+
+  // If token is expired or expires in < 60s, refresh it automatically
+  if (!expiryDate || expiryDate - Date.now() < 60000) {
+    console.log("Google Access Token expired or expiring soon. Refreshing...");
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
+    if (!clientId || !clientSecret) {
+      throw new Error("GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables are not configured in AI Studio.");
+    }
+
+    const response = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: decryptedRefreshToken,
+        grant_type: "refresh_token"
+      })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Failed to refresh Google Token:", errText);
+      throw new Error("Failed to refresh Google credentials: " + errText);
+    }
+
+    const data = await response.json();
+    const newAccessToken = data.access_token;
+    const newExpiry = Date.now() + (data.expires_in * 1000);
+
+    currentDb.googleOAuth.accessToken = encryptToken(newAccessToken);
+    currentDb.googleOAuth.expiryDate = newExpiry;
+    saveDb(currentDb);
+
+    return newAccessToken;
+  }
+
+  return decryptedAccessToken;
+}
+
+// 1. Google Auth Redirect Initiator URL
+app.get("/api/auth/google/url", (req, res) => {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  if (!clientId) {
+    return res.status(400).json({ error: "GOOGLE_CLIENT_ID is not configured in AI Studio environments." });
+  }
+
+  const redirectUri = (req.query.redirect_uri as string) || (process.env.APP_URL ? `${process.env.APP_URL.replace(/\/$/, "")}/api/auth/google/callback` : `${req.protocol}://${req.get("host")}/api/auth/google/callback`);
+
+  const scopes = [
+    "https://www.googleapis.com/auth/webmasters.readonly",
+    "https://www.googleapis.com/auth/analytics.readonly",
+    "https://www.googleapis.com/auth/userinfo.email"
+  ];
+
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    response_type: "code",
+    scope: scopes.join(" "),
+    access_type: "offline",
+    prompt: "consent"
+  });
+
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  res.json({ url: authUrl });
+});
+
+// 2. OAuth Callback Handler
+app.get(["/api/auth/google/callback", "/api/auth/google/callback/"], async (req, res) => {
+  const { code } = req.query;
+  if (!code) {
+    return res.status(400).send("Authorization code is missing from OAuth request.");
+  }
+
+  try {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    if (!clientId || !clientSecret) {
+      return res.status(500).send("GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is missing.");
+    }
+
+    const redirectUri = process.env.APP_URL ? `${process.env.APP_URL.replace(/\/$/, "")}/api/auth/google/callback` : `${req.protocol}://${req.get("host")}/api/auth/google/callback`;
+
+    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        code: code as string,
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: redirectUri,
+        grant_type: "authorization_code"
+      })
+    });
+
+    if (!tokenResponse.ok) {
+      const errText = await tokenResponse.text();
+      return res.status(500).send("Failed to exchange auth code for tokens: " + errText);
+    }
+
+    const tokenData = await tokenResponse.json();
+    const accessToken = tokenData.access_token;
+    const refreshToken = tokenData.refresh_token; // Received only on initial prompt="consent"
+    const expiresIn = tokenData.expires_in;
+    const expiryDate = Date.now() + (expiresIn * 1000);
+
+    // Fetch user email for display
+    let userEmail = "Connected User";
+    try {
+      const emailRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      if (emailRes.ok) {
+        const emailData = await emailRes.json();
+        userEmail = emailData.email || userEmail;
+      }
+    } catch (e) {
+      console.warn("Failed to retrieve profile email:", e);
+    }
+
+    db = loadDb();
+    db.googleOAuth = {
+      accessToken: encryptToken(accessToken),
+      refreshToken: refreshToken ? encryptToken(refreshToken) : (db.googleOAuth?.refreshToken || ""),
+      expiryDate,
+      email: userEmail,
+      searchConsoleSite: db.googleOAuth?.searchConsoleSite || "",
+      ga4PropertyId: db.googleOAuth?.ga4PropertyId || ""
+    };
+    saveDb(db);
+
+    // Standard cross-origin iframe popup closer with postMessage communication
+    res.send(`
+      <html>
+        <head>
+          <title>Metazivo Google OAuth Successful</title>
+          <style>
+            body { font-family: sans-serif; background: #020617; color: white; text-align: center; padding: 50px; }
+            h2 { color: #60a5fa; }
+            p { color: #94a3b8; }
+          </style>
+        </head>
+        <body>
+          <h2>Google Account Synced Successfully!</h2>
+          <p>Please wait... this window will close automatically.</p>
+          <script>
+            try {
+              if (window.opener) {
+                window.opener.postMessage({ type: 'OAUTH_AUTH_SUCCESS' }, '*');
+                window.close();
+              } else {
+                window.location.href = '/';
+              }
+            } catch (err) {
+              console.error(err);
+              window.close();
+            }
+          </script>
+        </body>
+      </html>
+    `);
+  } catch (err: any) {
+    console.error("Google Auth Callback exchange error:", err);
+    res.status(500).send("Authentication callback error: " + err.message);
+  }
+});
+
+// 3. Connection Status
+app.get("/api/auth/google/status", (req, res) => {
+  db = loadDb();
+  const oauth = db.googleOAuth;
+  if (!oauth || !oauth.refreshToken) {
+    return res.json({ connected: false });
+  }
+
+  res.json({
+    connected: true,
+    email: oauth.email || "Connected",
+    searchConsoleSite: oauth.searchConsoleSite || "",
+    ga4PropertyId: oauth.ga4PropertyId || ""
+  });
+});
+
+// 4. Disconnect Google OAuth Credentials
+app.post("/api/auth/google/disconnect", (req, res) => {
+  db = loadDb();
+  db.googleOAuth = null;
+  saveDb(db);
+  res.json({ success: true });
+});
+
+// 5. Fetch verified Search Console sites and GA4 properties
+app.get("/api/analytics/google/sites-and-properties", async (req, res) => {
+  try {
+    const accessToken = await getGoogleAccessToken();
+
+    // Fetch Search Console Verified Sites
+    const gscResponse = await fetch("https://www.googleapis.com/webmasters/v3/sites", {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    const gscData = gscResponse.ok ? await gscResponse.json() : { siteEntry: [] };
+    const sites = (gscData.siteEntry || []).map((site: any) => site.siteUrl);
+
+    // Fetch GA4 Properties
+    const gaResponse = await fetch("https://analyticsadmin.googleapis.com/v1alpha/accountSummaries", {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    const gaData = gaResponse.ok ? await gaResponse.json() : { accountSummaries: [] };
+    
+    const properties: { id: string; displayName: string }[] = [];
+    if (gaData.accountSummaries) {
+      for (const account of gaData.accountSummaries) {
+        if (account.propertySummaries) {
+          for (const prop of account.propertySummaries) {
+            if (prop.propertyType === "PROPERTY_TYPE_GA4") {
+              properties.push({
+                id: prop.property, // Format: properties/123456
+                displayName: `${prop.displayName} (${account.displayName})`
+              });
+            }
+          }
+        }
+      }
+    }
+
+    res.json({ sites, properties });
+  } catch (err: any) {
+    console.error("Failed to query site/properties catalogs:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 6. Select active property target nodes
+app.post("/api/analytics/google/select-property", (req, res) => {
+  const { siteUrl, ga4PropertyId } = req.body;
+  db = loadDb();
+  if (!db.googleOAuth) {
+    return res.status(400).json({ error: "Google account not connected." });
+  }
+
+  db.googleOAuth.searchConsoleSite = siteUrl || "";
+  db.googleOAuth.ga4PropertyId = ga4PropertyId || "";
+  saveDb(db);
+
+  res.json({ success: true, searchConsoleSite: siteUrl, ga4PropertyId });
+});
+
+// 7. Core report query pipeline (aggregates Search Console & GA4 reports)
+app.get("/api/analytics/google/data", async (req, res) => {
+  db = loadDb();
+  if (!db.googleOAuth || !db.googleOAuth.refreshToken) {
+    return res.status(400).json({ error: "Google Account is not connected." });
+  }
+
+  const siteUrl = db.googleOAuth.searchConsoleSite;
+  const propertyId = db.googleOAuth.ga4PropertyId; // properties/XXXXXX
+  const period = (req.query.period as string) || "7d";
+
+  let days = 7;
+  if (period === "30d") days = 30;
+  if (period === "90d") days = 90;
+
+  // Search Console has a 2-3 day data ingestion lag, so query from (days+2) ago until 2 days ago
+  const sDateGSC = new Date(Date.now() - (days + 3) * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+  const eDateGSC = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
+  // GA4 has near real-time queries, so query from (days) ago until yesterday
+  const sDateGA = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+  const eDateGA = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
+  try {
+    const accessToken = await getGoogleAccessToken();
+
+    // ---- A. GOOGLE SEARCH CONSOLE DATA AGGREGATION ----
+    let gscPerformanceChart: any[] = [];
+    let gscTotalClicks = 0;
+    let gscTotalImpressions = 0;
+    let gscAverageCtr = 0;
+    let gscAveragePosition = 0;
+    let queries: any[] = [];
+    let pages: any[] = [];
+    let countries: any[] = [];
+    let devices: any[] = [];
+    let sitemapList: any[] = [];
+
+    if (siteUrl) {
+      const gscSiteUrlEscaped = encodeURIComponent(siteUrl);
+
+      // 1. Chart stats (Clicks & Impressions by Date)
+      const chartRes = await fetch(`https://www.googleapis.com/webmasters/v3/sites/${gscSiteUrlEscaped}/searchAnalytics/query`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          startDate: sDateGSC,
+          endDate: eDateGSC,
+          dimensions: ["date"],
+          rowLimit: 1000
+        })
+      });
+
+      if (chartRes.ok) {
+        const chartData = await chartRes.json();
+        gscPerformanceChart = (chartData.rows || []).map((row: any) => {
+          const rawDate = row.keys[0]; // YYYY-MM-DD
+          const parsed = new Date(rawDate);
+          const dateStr = parsed.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+          return {
+            date: dateStr,
+            clicks: row.clicks || 0,
+            impressions: row.impressions || 0,
+            ctr: row.ctr ? `${(row.ctr * 100).toFixed(1)}%` : "0%",
+            position: row.position ? parseFloat(row.position.toFixed(1)) : 0
+          };
+        });
+
+        // Totals/Averages
+        gscTotalClicks = (chartData.rows || []).reduce((sum: number, r: any) => sum + (r.clicks || 0), 0);
+        gscTotalImpressions = (chartData.rows || []).reduce((sum: number, r: any) => sum + (r.impressions || 0), 0);
+        const ctrSum = (chartData.rows || []).reduce((sum: number, r: any) => sum + (r.ctr || 0), 0);
+        gscAverageCtr = chartData.rows && chartData.rows.length > 0 ? (ctrSum / chartData.rows.length) * 100 : 0;
+        const posSum = (chartData.rows || []).reduce((sum: number, r: any) => sum + (r.position || 0), 0);
+        gscAveragePosition = chartData.rows && chartData.rows.length > 0 ? posSum / chartData.rows.length : 0;
+      } else {
+        console.warn("GSC Chart query failed:", await chartRes.text());
+      }
+
+      // 2. Top Queries
+      const qRes = await fetch(`https://www.googleapis.com/webmasters/v3/sites/${gscSiteUrlEscaped}/searchAnalytics/query`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          startDate: sDateGSC,
+          endDate: eDateGSC,
+          dimensions: ["query"],
+          rowLimit: 10
+        })
+      });
+      if (qRes.ok) {
+        const qData = await qRes.json();
+        queries = (qData.rows || []).map((row: any) => ({
+          keyword: row.keys[0],
+          clicks: row.clicks || 0,
+          impressions: row.impressions || 0,
+          ctr: row.ctr ? `${(row.ctr * 100).toFixed(1)}%` : "0%",
+          position: row.position ? parseFloat(row.position.toFixed(1)) : 0
+        }));
+      }
+
+      // 3. Top Pages
+      const pRes = await fetch(`https://www.googleapis.com/webmasters/v3/sites/${gscSiteUrlEscaped}/searchAnalytics/query`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          startDate: sDateGSC,
+          endDate: eDateGSC,
+          dimensions: ["page"],
+          rowLimit: 10
+        })
+      });
+      if (pRes.ok) {
+        const pData = await pRes.json();
+        pages = (pData.rows || []).map((row: any) => ({
+          path: row.keys[0].replace(/^https?:\/\/[^\/]+/, "") || "/",
+          clicks: row.clicks || 0,
+          impressions: row.impressions || 0,
+          ctr: row.ctr ? `${(row.ctr * 100).toFixed(1)}%` : "0%",
+          position: row.position ? parseFloat(row.position.toFixed(1)) : 0
+        }));
+      }
+
+      // 4. Sitemap status
+      const smRes = await fetch(`https://www.googleapis.com/webmasters/v3/sites/${gscSiteUrlEscaped}/sitemaps`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      if (smRes.ok) {
+        const smData = await smRes.json();
+        sitemapList = (smData.sitemap || []).map((sm: any) => ({
+          path: sm.path.replace(/^https?:\/\/[^\/]+/, "") || "/sitemap.xml",
+          lastSubmitted: sm.lastSubmitted || "",
+          lastDownloaded: sm.lastDownloaded || "",
+          isPending: sm.isPending || false,
+          errors: sm.errors || 0,
+          warnings: sm.warnings || 0,
+          indexed: sm.contents?.[0]?.indexed || 0,
+          submitted: sm.contents?.[0]?.submitted || 0
+        }));
+      }
+    }
+
+    // ---- B. GOOGLE ANALYTICS 4 REPORT PIPELINE ----
+    let ga4ChartData: any[] = [];
+    let ga4TotalUsers = 0;
+    let ga4TotalSessions = 0;
+    let ga4BounceRate = 0;
+    let ga4SessionDuration = 0;
+    let gaSources: any[] = [];
+    let gaDemographics: any[] = [];
+    let gaDevices: any[] = [];
+
+    if (propertyId) {
+      // 1. Chart stats (Daily Active Users & Sessions)
+      const reportRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/${propertyId}:runReport`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          dateRanges: [{ startDate: sDateGA, endDate: eDateGA }],
+          dimensions: [{ name: "date" }],
+          metrics: [
+            { name: "activeUsers" },
+            { name: "sessions" },
+            { name: "bounceRate" },
+            { name: "averageSessionDuration" }
+          ]
+        })
+      });
+
+      if (reportRes.ok) {
+        const reportData = await reportRes.json();
+        const rows = reportData.rows || [];
+
+        // Parse metrics for overall aggregates
+        let totalBounceWeight = 0;
+        let totalDurationWeight = 0;
+
+        ga4ChartData = rows.map((row: any) => {
+          const rawDate = row.dimensionValues[0].value; // YYYYMMDD
+          const year = rawDate.substring(0, 4);
+          const month = rawDate.substring(4, 6);
+          const day = rawDate.substring(6, 8);
+          const dateStr = new Date(`${year}-${month}-${day}`).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+          const activeUsers = parseInt(row.metricValues[0].value) || 0;
+          const sessions = parseInt(row.metricValues[1].value) || 0;
+          const bounceRate = parseFloat(row.metricValues[2].value) || 0;
+          const sessionDuration = parseFloat(row.metricValues[3].value) || 0;
+
+          ga4TotalUsers += activeUsers;
+          ga4TotalSessions += sessions;
+          totalBounceWeight += bounceRate * sessions;
+          totalDurationWeight += sessionDuration * sessions;
+
+          return {
+            date: dateStr,
+            users: activeUsers,
+            sessions: sessions
+          };
+        }).sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+        ga4BounceRate = ga4TotalSessions > 0 ? parseFloat((totalBounceWeight / ga4TotalSessions * 100).toFixed(1)) : 0;
+        ga4SessionDuration = ga4TotalSessions > 0 ? Math.round(totalDurationWeight / ga4TotalSessions) : 0;
+      } else {
+        console.warn("GA4 Core Report failed:", await reportRes.text());
+      }
+
+      // 2. Traffic Sources
+      const srcRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/${propertyId}:runReport`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          dateRanges: [{ startDate: sDateGA, endDate: eDateGA }],
+          dimensions: [{ name: "sessionSourceMedium" }],
+          metrics: [{ name: "sessions" }],
+          rowLimit: 10
+        })
+      });
+      if (srcRes.ok) {
+        const srcData = await srcRes.json();
+        gaSources = (srcData.rows || []).map((row: any) => ({
+          source: row.dimensionValues[0].value,
+          sessions: parseInt(row.metricValues[0].value) || 0
+        }));
+      }
+
+      // 3. Demographics Countries
+      const demoRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/${propertyId}:runReport`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          dateRanges: [{ startDate: sDateGA, endDate: eDateGA }],
+          dimensions: [{ name: "country" }],
+          metrics: [{ name: "activeUsers" }],
+          rowLimit: 10
+        })
+      });
+      if (demoRes.ok) {
+        const demoData = await demoRes.json();
+        gaDemographics = (demoData.rows || []).map((row: any) => ({
+          country: row.dimensionValues[0].value,
+          users: parseInt(row.metricValues[0].value) || 0
+        }));
+      }
+
+      // 4. Device Categories
+      const devRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/${propertyId}:runReport`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          dateRanges: [{ startDate: sDateGA, endDate: eDateGA }],
+          dimensions: [{ name: "deviceCategory" }],
+          metrics: [{ name: "activeUsers" }],
+          rowLimit: 5
+        })
+      });
+      if (devRes.ok) {
+        const devData = await devRes.json();
+        gaDevices = (devData.rows || []).map((row: any) => ({
+          device: row.dimensionValues[0].value,
+          users: parseInt(row.metricValues[0].value) || 0
+        }));
+      }
+    }
+
+    // Match chart arrays by Date seamlessly
+    const aggregatedPerformanceChart: any[] = [];
+    const allDates = Array.from(new Set([
+      ...gscPerformanceChart.map(p => p.date),
+      ...ga4ChartData.map(c => c.date)
+    ]));
+
+    for (const d of allDates) {
+      const gsc = gscPerformanceChart.find(p => p.date === d) || { clicks: 0, impressions: 0, ctr: "0%", position: 0 };
+      const ga = ga4ChartData.find(c => c.date === d) || { users: 0, sessions: 0 };
+      aggregatedPerformanceChart.push({
+        date: d,
+        clicks: gsc.clicks,
+        impressions: gsc.impressions,
+        ctr: gsc.ctr,
+        position: gsc.position,
+        users: ga.users,
+        sessions: ga.sessions
+      });
+    }
+
+    res.json({
+      gsc: {
+        siteUrl,
+        totalClicks: gscTotalClicks,
+        totalImpressions: gscTotalImpressions,
+        averageCtr: parseFloat(gscAverageCtr.toFixed(1)),
+        averagePosition: parseFloat(gscAveragePosition.toFixed(1)),
+        queries,
+        pages,
+        sitemaps: sitemapList
+      },
+      ga4: {
+        propertyId,
+        totalUsers: ga4TotalUsers,
+        totalSessions: ga4TotalSessions,
+        bounceRate: ga4BounceRate,
+        sessionDuration: ga4SessionDuration,
+        sources: gaSources,
+        countries: gaDemographics,
+        devices: gaDevices
+      },
+      chartData: aggregatedPerformanceChart
+    });
+  } catch (err: any) {
+    console.error("Failed to fetch aggregate Google SEO analytics:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 8. GA4 Real-time active users endpoint
+app.get("/api/analytics/google/realtime", async (req, res) => {
+  db = loadDb();
+  if (!db.googleOAuth || !db.googleOAuth.ga4PropertyId) {
+    return res.json({ activeUsers: 0 });
+  }
+
+  try {
+    const accessToken = await getGoogleAccessToken();
+    const propertyId = db.googleOAuth.ga4PropertyId;
+
+    const rtResponse = await fetch(`https://analyticsdata.googleapis.com/v1beta/${propertyId}:runRealtimeReport`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        metrics: [{ name: "activeUsers" }]
+      })
+    });
+
+    if (rtResponse.ok) {
+      const rtData = await rtResponse.json();
+      const activeUsers = parseInt(rtData.rows?.[0]?.metricValues?.[0]?.value) || 0;
+      return res.json({ activeUsers });
+    } else {
+      console.warn("GA4 Realtime query failed:", await rtResponse.text());
+      return res.json({ activeUsers: 0 });
+    }
+  } catch (err) {
+    console.warn("Could not query GA4 real-time users:", err);
+    res.json({ activeUsers: 0 });
+  }
+});
+
 // Contact Settings Endpoints
+
 app.get("/api/contact", (req, res) => {
   db = loadDb();
   if (!db.contact) {

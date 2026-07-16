@@ -41,6 +41,7 @@ import {
   Cpu,
   Cloud,
   MessageSquare,
+  Tag,
   Image as ImageIcon
 } from "lucide-react";
 import Header from "./components/Header";
@@ -166,6 +167,7 @@ export default function App() {
 
   // Server data states
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [tags, setTags] = useState<{ name: string; count: number }[]>([]);
   const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>([]);
   const [leads, setLeads] = useState<ContactEnquiry[]>([]);
   const [redirects, setRedirects] = useState<RedirectRule[]>([]);
@@ -219,7 +221,7 @@ export default function App() {
   const [authError, setAuthError] = useState("");
 
   // CMS active editing tab
-  const [activeAdminSubTab, setActiveAdminSubTab] = useState<"analytics" | "blogs" | "media" | "leads" | "redirects" | "settings" | "pages" | "seo">("analytics");
+  const [activeAdminSubTab, setActiveAdminSubTab] = useState<"analytics" | "blogs" | "tags" | "media" | "leads" | "redirects" | "settings" | "pages" | "seo">("analytics");
 
 
   // Post Editor Workspaces
@@ -227,11 +229,18 @@ export default function App() {
   const [editingPost, setEditingPost] = useState<Partial<BlogPost>>({});
   const [showMediaSelectorForEditor, setShowMediaSelectorForEditor] = useState<((url: string) => void) | null>(null);
 
+  // Tag Management Workspace States
+  const [newTagName, setNewTagName] = useState("");
+  const [renamingTag, setRenamingTag] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const [tagError, setTagError] = useState("");
+
   // Load Initial Full-Stack API Data
   const loadAllData = async () => {
     try {
-      const [blogsRes, mediaRes, leadsRes, redirectsRes, analyticsRes, pagesRes, contactRes] = await Promise.all([
+      const [blogsRes, tagsRes, mediaRes, leadsRes, redirectsRes, analyticsRes, pagesRes, contactRes] = await Promise.all([
         fetch("/api/posts"),
+        fetch("/api/tags"),
         fetch("/api/media"),
         fetch("/api/leads"),
         fetch("/api/redirects"),
@@ -241,6 +250,7 @@ export default function App() {
       ]);
 
       if (blogsRes.ok) setBlogs(await blogsRes.json());
+      if (tagsRes.ok) setTags(await tagsRes.json());
       if (mediaRes.ok) setMediaAssets(await mediaRes.json());
       if (leadsRes.ok) setLeads(await leadsRes.json());
       if (redirectsRes.ok) setRedirects(await redirectsRes.json());
@@ -501,6 +511,88 @@ export default function App() {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  // -----------------------------------------------------------------------------
+  // TAG CMS HANDLERS
+  // -----------------------------------------------------------------------------
+  const handleCreateTag = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = newTagName.trim();
+    if (!name) {
+      setTagError("Tag name cannot be empty");
+      return;
+    }
+    try {
+      const res = await fetch("/api/tags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+      });
+      if (res.ok) {
+        setNewTagName("");
+        setTagError("");
+        await loadAllData();
+        logActivity(`Created tag: "${name}"`);
+      } else {
+        const errData = await res.json();
+        setTagError(errData.error || "Failed to create tag");
+      }
+    } catch (err) {
+      setTagError("Network error while creating tag");
+    }
+  };
+
+  const handleRenameTag = async (oldName: string) => {
+    const newName = renameValue.trim();
+    if (!newName) {
+      setTagError("New tag name cannot be empty");
+      return;
+    }
+    if (newName === oldName) {
+      setRenamingTag(null);
+      return;
+    }
+    try {
+      const res = await fetch(`/api/tags/${encodeURIComponent(oldName)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newName })
+      });
+      if (res.ok) {
+        setRenamingTag(null);
+        setRenameValue("");
+        setTagError("");
+        await loadAllData();
+        logActivity(`Renamed tag "${oldName}" to "${newName}"`);
+      } else {
+        const errData = await res.json();
+        setTagError(errData.error || "Failed to rename tag");
+      }
+    } catch (err) {
+      setTagError("Network error while renaming tag");
+    }
+  };
+
+  const handleDeleteTag = async (name: string) => {
+    if (!window.confirm(`Are you sure you want to delete tag "${name}"? This will remove it from all associated blog posts.`)) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/tags/${encodeURIComponent(name)}`, {
+        method: "DELETE"
+      });
+      if (res.ok) {
+        setTagError("");
+        await loadAllData();
+        logActivity(`Deleted tag: "${name}"`);
+      } else {
+        const errData = await res.json();
+        setTagError(errData.error || "Failed to delete tag");
+      }
+    } catch (err) {
+      setTagError("Network error while deleting tag");
     }
   };
 
@@ -2056,6 +2148,13 @@ export default function App() {
                       <span>Blog Manager</span>
                     </button>
                     <button
+                      onClick={() => { setActiveAdminSubTab("tags"); setIsEditingPost(false); }}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeAdminSubTab === "tags" ? "bg-white/10 text-blue-400 border border-white/10" : "text-slate-400 hover:text-white"}`}
+                    >
+                      <Tag className="w-3.5 h-3.5 text-blue-400" />
+                      <span>Tags Manager</span>
+                    </button>
+                    <button
                       onClick={() => { setActiveAdminSubTab("media"); setIsEditingPost(false); }}
                       className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl ${activeAdminSubTab === "media" ? "bg-white/10 text-blue-400 border border-white/10" : "text-slate-400 hover:text-white"}`}
                     >
@@ -2367,6 +2466,49 @@ export default function App() {
                                 </div>
                               </div>
 
+                              <div className="bg-white/5 border border-white/10 rounded-[20px] p-4 space-y-3">
+                                <div>
+                                  <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5 font-sans">Article Tags</label>
+                                  <input
+                                    type="text"
+                                    value={editingPost.tags?.join(", ") || ""}
+                                    onChange={(e) => setEditingPost((prev) => ({ ...prev, tags: e.target.value.split(",").map(t => t.trim()).filter(Boolean) }))}
+                                    className="w-full bg-slate-950/40 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-400"
+                                    placeholder="e.g. Performance, Core Web Vitals, Web Dev"
+                                  />
+                                </div>
+                                {tags.length > 0 && (
+                                  <div className="space-y-1">
+                                    <span className="text-[10px] text-slate-400 font-semibold block">Click to append popular tags:</span>
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {tags.map((t) => {
+                                        const isSelected = editingPost.tags?.includes(t.name);
+                                        return (
+                                          <button
+                                            key={t.name}
+                                            type="button"
+                                            onClick={() => {
+                                              const currentTags = editingPost.tags || [];
+                                              const newTags = isSelected
+                                                ? currentTags.filter((tag) => tag !== t.name)
+                                                : [...currentTags, t.name];
+                                              setEditingPost((prev) => ({ ...prev, tags: newTags }));
+                                            }}
+                                            className={`text-[10px] font-mono px-2.5 py-1 rounded-full border transition-all cursor-pointer ${
+                                              isSelected
+                                                ? "bg-blue-600/20 text-blue-400 border-blue-500/40 font-bold scale-[1.02]"
+                                                : "bg-white/5 text-slate-400 border-white/5 hover:text-slate-200"
+                                            }`}
+                                          >
+                                            {t.name} {t.count > 0 && `(${t.count})`}
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+
                               <div>
                                 <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5 font-sans">Article Body (Gutenberg Split)</label>
                                 <WordEditor
@@ -2443,6 +2585,167 @@ export default function App() {
                           </div>
                         </div>
                       )}
+                    </div>
+                  )}
+
+                  {/* SUB PANEL FOR TAGS MANAGER */}
+                  {activeAdminSubTab === "tags" && (
+                    <div className="space-y-6 animate-fade-in" id="tags-manager-panel">
+                      <div className="pb-4 border-b border-white/10 flex justify-between items-center">
+                        <div>
+                          <h2 className="text-xl font-bold text-white tracking-wide flex items-center gap-2">
+                            <Tag className="w-5 h-5 text-blue-400 animate-pulse" /> CMS Tags Manager
+                          </h2>
+                          <p className="text-xs text-slate-400">Create, rename, delete, and view search-indexing metadata tags used across your articles.</p>
+                        </div>
+                      </div>
+
+                      {tagError && (
+                        <div className="bg-red-950/20 border border-red-500/20 text-red-400 text-xs px-4 py-2.5 rounded-xl animate-fade-in">
+                          {tagError}
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                        {/* Column 1: Add New Tag */}
+                        <div className="bg-white/5 border border-white/10 rounded-[28px] p-5 space-y-4">
+                          <div>
+                            <h3 className="text-sm font-bold text-white mb-1">Add New Tag</h3>
+                            <p className="text-[11px] text-slate-400 leading-relaxed">Create a reusable tag to organize and boost the SEO of your articles.</p>
+                          </div>
+                          
+                          <form onSubmit={handleCreateTag} className="space-y-3">
+                            <div>
+                              <label className="block text-[10px] text-slate-400 uppercase tracking-widest font-semibold mb-1">Tag Name</label>
+                              <input
+                                type="text"
+                                value={newTagName}
+                                onChange={(e) => setNewTagName(e.target.value)}
+                                placeholder="e.g. Core Web Vitals"
+                                className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 font-medium"
+                              />
+                            </div>
+                            <button
+                              type="submit"
+                              className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-[0_0_15px_rgba(37,99,235,0.2)]"
+                            >
+                              Create Tag
+                            </button>
+                          </form>
+                        </div>
+
+                        {/* Column 2 & 3: Active Tags List */}
+                        <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[32px] overflow-hidden shadow-lg p-5 space-y-4">
+                          <div>
+                            <h3 className="text-sm font-bold text-white mb-1">Active Tag Directory</h3>
+                            <p className="text-[11px] text-slate-400">Manage all tags globally. Renaming a tag will update all associated articles automatically.</p>
+                          </div>
+
+                          {tags.length === 0 ? (
+                            <div className="text-center py-12 text-slate-500 text-xs italic">
+                              No tags found in the database. Add your first tag to get started!
+                            </div>
+                          ) : (
+                            <div className="border border-white/10 rounded-2xl overflow-hidden bg-slate-950/20">
+                              <table className="w-full text-left text-xs text-slate-300">
+                                <thead className="bg-white/5 text-slate-200 uppercase tracking-wider font-mono text-[9px] border-b border-white/10">
+                                  <tr>
+                                    <th className="p-3">Tag Name</th>
+                                    <th className="p-3 text-center">Articles Count</th>
+                                    <th className="p-3">Associated Articles</th>
+                                    <th className="p-3 text-right">Actions</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {tags.map((t) => {
+                                    const isRenaming = renamingTag === t.name;
+                                    const taggedPosts = blogs.filter(b => b.tags?.includes(t.name));
+
+                                    return (
+                                      <tr key={t.name} className="border-b border-white/5 hover:bg-white/10">
+                                        <td className="p-3 font-medium text-white">
+                                          {isRenaming ? (
+                                            <div className="flex items-center gap-1.5">
+                                              <input
+                                                type="text"
+                                                value={renameValue}
+                                                onChange={(e) => setRenameValue(e.target.value)}
+                                                className="bg-slate-950 border border-white/10 text-xs rounded px-2 py-1 text-white focus:outline-none focus:border-blue-400 font-medium"
+                                                autoFocus
+                                              />
+                                              <button
+                                                onClick={() => handleRenameTag(t.name)}
+                                                className="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-bold cursor-pointer"
+                                              >
+                                                Save
+                                              </button>
+                                              <button
+                                                onClick={() => setRenamingTag(null)}
+                                                className="px-2 py-1 bg-white/5 hover:bg-white/10 text-slate-300 rounded text-[10px] cursor-pointer"
+                                              >
+                                                Cancel
+                                              </button>
+                                            </div>
+                                          ) : (
+                                            <div className="flex items-center gap-1.5">
+                                              <span className="bg-blue-950/20 text-blue-400 border border-blue-500/20 px-2.5 py-0.5 rounded-full text-[10px] font-mono">
+                                                {t.name}
+                                              </span>
+                                            </div>
+                                          )}
+                                        </td>
+                                        <td className="p-3 text-center font-mono font-bold text-slate-300">
+                                          {t.count}
+                                        </td>
+                                        <td className="p-3">
+                                          {taggedPosts.length === 0 ? (
+                                            <span className="text-[10px] text-slate-500 italic">None</span>
+                                          ) : (
+                                            <div className="flex flex-wrap gap-1 max-w-[240px]">
+                                              {taggedPosts.map(post => (
+                                                <span
+                                                  key={post.id}
+                                                  className="bg-white/5 text-[9px] text-slate-400 px-1.5 py-0.5 rounded border border-white/5 truncate max-w-[110px]"
+                                                  title={post.title}
+                                                >
+                                                  {post.title}
+                                                </span>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </td>
+                                        <td className="p-3 text-right">
+                                          <div className="flex justify-end gap-2">
+                                            {!isRenaming && (
+                                              <button
+                                                onClick={() => {
+                                                  setRenamingTag(t.name);
+                                                  setRenameValue(t.name);
+                                                }}
+                                                className="p-1 text-slate-400 hover:text-blue-400 rounded-full hover:bg-white/5 cursor-pointer"
+                                                title="Rename Tag"
+                                              >
+                                                <Edit2 className="w-3.5 h-3.5" />
+                                              </button>
+                                            )}
+                                            <button
+                                              onClick={() => handleDeleteTag(t.name)}
+                                              className="p-1 text-slate-500 hover:text-red-400 rounded-full hover:bg-white/5 cursor-pointer"
+                                              title="Delete Tag"
+                                            >
+                                              <Trash2 className="w-3.5 h-3.5" />
+                                            </button>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
 

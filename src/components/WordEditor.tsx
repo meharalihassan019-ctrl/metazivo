@@ -345,13 +345,53 @@ export default function WordEditor({ value, onChange, mediaAssets, onOpenMediaSe
   const [mode, setMode] = useState<"visual" | "html" | "preview">("visual");
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [sidebarTab, setSidebarTab] = useState<"block" | "document">("block");
+  const [sidebarTab, setSidebarTab] = useState<"block" | "document" | "templates">("block");
   const [isInserterOpen, setIsInserterOpen] = useState(false);
   const [inserterQuery, setInserterQuery] = useState("");
 
   // Autosave simulation state
   const [lastSaved, setLastSaved] = useState<string>("Draft matches system database state.");
   const [isAutosaving, setIsAutosaving] = useState(false);
+
+  // Drag and drop state
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+
+  // Reusable Blocks & Templates State
+  const [templateName, setTemplateName] = useState("");
+  const [reusableBlocks, setReusableBlocks] = useState<{ id: string; name: string; blocks: Block[] }[]>([
+    {
+      id: "tpl-1",
+      name: "🚀 Standard Product Offer CTA",
+      blocks: [
+        {
+          id: "inner-tpl-cta",
+          type: "cta",
+          attributes: {
+            title: "Connect with CMS Architects today",
+            subtitle: "Boost conversions and speed optimization benchmarks instantly.",
+            buttonText: "Schedule Free Speed Audit",
+            buttonUrl: "/contact"
+          }
+        }
+      ]
+    },
+    {
+      id: "tpl-2",
+      name: "❔ Dynamic FAQ Accordion Block",
+      blocks: [
+        {
+          id: "inner-tpl-faq",
+          type: "faq",
+          attributes: {
+            items: [
+              { question: "Is the optimization process automated?", answer: "No, our specialists manually refactor template architectures to compile native clean routes." },
+              { question: "Do you support custom database layers?", answer: "Yes, we integrate PostgreSQL, Cloud Spanner, and secure Redis cache wrappers." }
+            ]
+          }
+        }
+      ]
+    }
+  ]);
 
   // Document Fields State (WordPress Taxonomy & Rank Math integration)
   const [postTitle, setPostTitle] = useState("Unleashing Lightning Fast Mobile Frameworks");
@@ -364,6 +404,107 @@ export default function WordEditor({ value, onChange, mediaAssets, onOpenMediaSe
   const [tags, setTags] = useState<string[]>(["flutter", "speed", "ux"]);
   const [newTagName, setNewTagName] = useState("");
   const [focusKeyword, setFocusKeyword] = useState("speed optimization");
+
+  // Keyboard Shortcuts Handler
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Escape: Deselect selected block
+      if (e.key === "Escape") {
+        setSelectedBlockId(null);
+      }
+
+      // Save draft shortcut: Ctrl + S
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        setIsAutosaving(true);
+        setTimeout(() => {
+          setIsAutosaving(false);
+          setLastSaved(`Saved draft manually at ${new Date().toLocaleTimeString()}`);
+        }, 800);
+      }
+
+      // Undo shortcut: Ctrl + Z
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z" && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+      }
+
+      // Redo shortcut: Ctrl + Y or Ctrl + Shift + Z
+      if (
+        ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") ||
+        ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "z")
+      ) {
+        e.preventDefault();
+        handleRedo();
+      }
+
+      // Duplicate block: Ctrl + D
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "d" && selectedBlockId) {
+        e.preventDefault();
+        const activeIdx = blocks.findIndex((b) => b.id === selectedBlockId);
+        if (activeIdx !== -1) {
+          duplicateBlock(activeIdx);
+        }
+      }
+
+      // Delete block: Delete or backspace (prevent during active input editing)
+      if ((e.key === "Delete" || (e.key === "Backspace" && e.shiftKey)) && selectedBlockId) {
+        const activeEl = document.activeElement;
+        const isEditingText =
+          activeEl &&
+          (activeEl.tagName === "INPUT" ||
+            activeEl.tagName === "TEXTAREA" ||
+            activeEl.getAttribute("contenteditable") === "true");
+        if (!isEditingText) {
+          e.preventDefault();
+          deleteBlock(selectedBlockId);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedBlockId, blocks, historyIndex, history]);
+
+  // Drag and drop drop-reorder handler
+  const handleBlockDrop = (targetIndex: number) => {
+    if (draggingIndex === null || draggingIndex === targetIndex) return;
+    const newBlocks = [...blocks];
+    const draggedBlock = newBlocks[draggingIndex];
+    newBlocks.splice(draggingIndex, 1);
+    newBlocks.splice(targetIndex, 0, draggedBlock);
+    updateBlocksState(newBlocks);
+    setDraggingIndex(null);
+  };
+
+  const handleSaveAsReusable = () => {
+    if (!selectedBlockId) return;
+    const blockToSave = blocks.find((b) => b.id === selectedBlockId);
+    if (!blockToSave) return;
+    const name = templateName.trim() || `Reusable ${blockToSave.type.toUpperCase()} Block`;
+    const newTpl = {
+      id: `tpl-${Date.now()}`,
+      name,
+      blocks: [JSON.parse(JSON.stringify(blockToSave))]
+    };
+    setReusableBlocks([...reusableBlocks, newTpl]);
+    setTemplateName("");
+  };
+
+  const handleInsertTemplate = (tpl: typeof reusableBlocks[0]) => {
+    const clonedBlocks = tpl.blocks.map((b) => ({
+      ...b,
+      id: Math.random().toString(36).substr(2, 9)
+    }));
+    const selectedIdx = selectedBlockId ? blocks.findIndex((b) => b.id === selectedBlockId) : -1;
+    const newBlocks = [...blocks];
+    if (selectedIdx !== -1) {
+      newBlocks.splice(selectedIdx + 1, 0, ...clonedBlocks);
+    } else {
+      newBlocks.push(...clonedBlocks);
+    }
+    updateBlocksState(newBlocks);
+  };
 
   // Sync external props with local block representation safely
   useEffect(() => {
@@ -803,7 +944,24 @@ export default function WordEditor({ value, onChange, mediaAssets, onOpenMediaSe
                       e.stopPropagation();
                       setSelectedBlockId(block.id);
                     }}
-                    className={`relative rounded-2xl transition-all group p-3 ${
+                    draggable={!block.isLocked}
+                    onDragStart={(e) => {
+                      setDraggingIndex(idx);
+                      e.dataTransfer.effectAllowed = "move";
+                    }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      handleBlockDrop(idx);
+                    }}
+                    onDragEnd={() => {
+                      setDraggingIndex(null);
+                    }}
+                    className={`relative rounded-2xl transition-all group p-3 cursor-grab active:cursor-grabbing ${
+                      draggingIndex === idx ? "opacity-30 border-dashed border-cyan-500 bg-cyan-500/5" : ""
+                    } ${
                       isSelected 
                         ? "bg-slate-900/60 border-2 border-cyan-500 ring-2 ring-cyan-500/10 shadow-lg" 
                         : "border-2 border-transparent hover:border-slate-800/80"
@@ -1453,7 +1611,7 @@ export default function WordEditor({ value, onChange, mediaAssets, onOpenMediaSe
           <div className="w-80 bg-slate-950 border-l border-slate-800 flex flex-col z-10 animate-in slide-in-from-right duration-200">
             
             {/* Sidebar headers */}
-            <div className="grid grid-cols-2 text-center border-b border-slate-800 text-xs font-bold bg-slate-900/40">
+            <div className="grid grid-cols-3 text-center border-b border-slate-800 text-[10px] font-bold bg-slate-900/40">
               <button
                 type="button"
                 onClick={() => setSidebarTab("block")}
@@ -1467,6 +1625,13 @@ export default function WordEditor({ value, onChange, mediaAssets, onOpenMediaSe
                 className={`py-3 ${sidebarTab === "document" ? "border-b-2 border-[#FF5722] text-[#FF5722]" : "text-slate-400 hover:text-slate-200"}`}
               >
                 Document Info
+              </button>
+              <button
+                type="button"
+                onClick={() => setSidebarTab("templates")}
+                className={`py-3 ${sidebarTab === "templates" ? "border-b-2 border-[#FF5722] text-[#FF5722]" : "text-slate-400 hover:text-slate-200"}`}
+              >
+                Templates & Keys
               </button>
             </div>
 
@@ -1746,6 +1911,108 @@ export default function WordEditor({ value, onChange, mediaAssets, onOpenMediaSe
                           </div>
                         </div>
                       ))}
+                    </div>
+                  </div>
+
+                </div>
+              )}
+
+              {sidebarTab === "templates" && (
+                <div className="space-y-5 text-xs text-slate-300 animate-in fade-in duration-150">
+                  
+                  {/* Reusable templates generator */}
+                  <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-3 space-y-3">
+                    <span className="text-[10px] text-slate-500 font-mono block uppercase tracking-wider font-bold">Reusable Template Builder</span>
+                    {selectedBlockId ? (
+                      <div className="space-y-2">
+                        <p className="text-[10px] text-slate-400">Save the selected active block on the visual canvas as a reusable template to inject anywhere.</p>
+                        <div className="flex gap-1.5">
+                          <input
+                            type="text"
+                            value={templateName}
+                            onChange={(e) => setTemplateName(e.target.value)}
+                            placeholder="Template custom name"
+                            className="w-full bg-slate-950 border border-slate-800 text-[11px] rounded-lg px-2 py-1.5 focus:outline-none"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleSaveAsReusable}
+                            className="px-2.5 py-1.5 bg-[#FF5722] hover:bg-orange-600 text-white rounded-lg text-[10px] font-bold shrink-0 transition-colors"
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-[10px] text-slate-500 leading-relaxed italic">Click any block inside the central visual canvas to enable saving it as a reusable template.</p>
+                    )}
+                  </div>
+
+                  {/* Reusable templates listing */}
+                  <div className="space-y-2.5">
+                    <span className="text-[10px] text-slate-500 font-mono block uppercase tracking-widest font-bold">Reusable Templates Library</span>
+                    {reusableBlocks.length === 0 ? (
+                      <p className="text-[10px] text-slate-500 italic">No custom templates created yet.</p>
+                    ) : (
+                      <div className="space-y-1.5">
+                        {reusableBlocks.map((tpl) => (
+                          <div key={tpl.id} className="bg-slate-900/60 border border-slate-850 rounded-xl p-2.5 flex items-center justify-between gap-2 group/tpl">
+                            <div className="overflow-hidden">
+                              <span className="font-bold text-slate-100 block truncate text-[11px]">{tpl.name}</span>
+                              <span className="text-[9px] text-slate-400 font-mono">Blocks: {tpl.blocks.length}</span>
+                            </div>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => handleInsertTemplate(tpl)}
+                                className="px-2 py-1 bg-cyan-900/60 hover:bg-cyan-800 text-cyan-300 hover:text-white rounded-lg text-[9px] font-bold font-mono transition-colors"
+                                title="Insert this template below active selection"
+                              >
+                                Insert
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setReusableBlocks(reusableBlocks.filter(t => t.id !== tpl.id))}
+                                className="p-1 text-slate-500 hover:text-red-400 rounded-md transition-colors"
+                                title="Delete Template"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* WordPress style Keyboard Shortcuts Cheatsheet */}
+                  <div className="bg-slate-900/30 border border-slate-850/60 rounded-xl p-3.5 space-y-3">
+                    <span className="text-[10px] text-slate-500 font-mono block uppercase tracking-widest font-bold">Gutenberg Shortcuts Cheat Sheet</span>
+                    <div className="space-y-2 font-mono text-[10px]">
+                      <div className="flex justify-between items-center py-1 border-b border-slate-900">
+                        <span className="text-slate-400">Save Draft</span>
+                        <kbd className="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-200">Ctrl + S</kbd>
+                      </div>
+                      <div className="flex justify-between items-center py-1 border-b border-slate-900">
+                        <span className="text-slate-400">Undo Change</span>
+                        <kbd className="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-200">Ctrl + Z</kbd>
+                      </div>
+                      <div className="flex justify-between items-center py-1 border-b border-slate-900">
+                        <span className="text-slate-400">Redo Change</span>
+                        <kbd className="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-200">Ctrl + Y</kbd>
+                      </div>
+                      <div className="flex justify-between items-center py-1 border-b border-slate-900">
+                        <span className="text-slate-400">Duplicate Block</span>
+                        <kbd className="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-200">Ctrl + D</kbd>
+                      </div>
+                      <div className="flex justify-between items-center py-1 border-b border-slate-900">
+                        <span className="text-slate-400">Delete Block</span>
+                        <kbd className="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-200">Shift + Backspace</kbd>
+                      </div>
+                      <div className="flex justify-between items-center py-1">
+                        <span className="text-slate-400">Deselect Block</span>
+                        <kbd className="bg-slate-950 border border-slate-800 px-1.5 py-0.5 rounded text-slate-200">Esc</kbd>
+                      </div>
                     </div>
                   </div>
 
