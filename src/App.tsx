@@ -291,6 +291,11 @@ export default function App() {
       setCurrentTab("privacy");
     } else if (path === "/terms" || path === "/terms/") {
       setCurrentTab("terms");
+    } else {
+      const slug = path.replace(/^\/+/, "").replace(/\/+$/, "");
+      if (slug) {
+        setCurrentTab(slug);
+      }
     }
   };
 

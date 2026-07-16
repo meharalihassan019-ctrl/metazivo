@@ -1476,14 +1476,21 @@ app.get("/sitemap.xml", (req, res) => {
   const baseUrl = "https://metazivo.com";
   const today = new Date().toISOString().split("T")[0];
 
+  res.type("application/xml");
+
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <!-- Core Static Pages -->
   <url>
     <loc>${baseUrl}/</loc>
     <lastmod>${today}</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>${baseUrl}/og-image.jpg</image:loc>
+      <image:title>Metazivo Digital Agency</image:title>
+      <image:caption>Bespoke WordPress Development, Meta Ads &amp; Advanced SEO Agency</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>${baseUrl}/about</loc>
@@ -1506,38 +1513,137 @@ app.get("/sitemap.xml", (req, res) => {
   <url>
     <loc>${baseUrl}/pricing</loc>
     <lastmod>${today}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>${baseUrl}/blog</loc>
     <lastmod>${today}</lastmod>
-    <changefreq>daily</changefreq>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>${baseUrl}/contact</loc>
     <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/privacy</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/terms</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 `;
 
-  // Dynamic Blog Posts
-  db.posts.forEach((post: any) => {
-    if (post.status === "published") {
-      const pDate = post.publishDate ? post.publishDate.split("T")[0] : today;
-      xml += `  <url>
-    <loc>${baseUrl}/blog/${post.slug}</loc>
-    <lastmod>${pDate}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>\n`;
+  // Services Pages
+  const services = [
+    {
+      slug: "ai-mobile-apps",
+      priority: "0.9"
+    },
+    {
+      slug: "wordpress-development",
+      priority: "0.9",
+      img: "wp_portfolio_mockup_1783857299220.jpg",
+      imgTitle: "Metazivo WordPress Development Performance Dashboard"
+    },
+    {
+      slug: "mobile-app-development",
+      priority: "0.9"
+    },
+    {
+      slug: "seo",
+      priority: "0.9",
+      img: "seo_portfolio_mockup_1783857320829.jpg",
+      imgTitle: "Metazivo Technical SEO Keyword Audits"
+    },
+    {
+      slug: "website-development",
+      priority: "0.9",
+      img: "custom_react_portfolio_mockup_1783857396760.jpg",
+      imgTitle: "Metazivo Website Development Performance Dashboard"
+    },
+    {
+      slug: "meta-ads-advertising",
+      priority: "0.9",
+      img: "meta_ads_leads_mockup_1783857339213.jpg",
+      imgTitle: "Metazivo Meta Ads Funnel Setup"
+    },
+    {
+      slug: "social-media-management",
+      priority: "0.9"
+    },
+    {
+      slug: "graphic-design-branding",
+      priority: "0.9"
+    },
+    {
+      slug: "video-editing",
+      priority: "0.9"
+    },
+    {
+      slug: "saas-applications",
+      priority: "0.9"
+    },
+    {
+      slug: "chatbots",
+      priority: "0.9"
     }
+  ];
+
+  services.forEach(srv => {
+    xml += `  <url>
+    <loc>${baseUrl}/service/${srv.slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>${srv.priority}</priority>\n`;
+    if (srv.img) {
+      xml += `    <image:image>
+      <image:loc>${baseUrl}/${srv.img}</image:loc>
+      <image:title>${srv.imgTitle}</image:title>
+    </image:image>\n`;
+    }
+    xml += `  </url>\n`;
   });
 
+  // Dynamic Custom Pages from database
+  const coreSlugs = ["home", "about", "services", "pricing", "privacy", "terms"];
+  if (Array.isArray(db.pages)) {
+    db.pages.forEach((page: any) => {
+      if (page.slug && !coreSlugs.includes(page.slug)) {
+        xml += `  <url>
+    <loc>${baseUrl}/${page.slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>\n`;
+      }
+    });
+  }
+
+  // Dynamic Blog Posts from database
+  if (Array.isArray(db.posts)) {
+    db.posts.forEach((post: any) => {
+      if (post.status === "published" && post.slug) {
+        const pDate = post.publishDate ? post.publishDate.split("T")[0] : today;
+        xml += `  <url>
+    <loc>${baseUrl}/blog/${post.slug}</loc>
+    <lastmod>${pDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>\n`;
+      }
+    });
+  }
+
   xml += `</urlset>`;
-  res.setHeader("Content-Type", "application/xml");
   res.send(xml);
 });
 
@@ -2922,154 +3028,7 @@ Disallow: /api
 Sitemap: https://metazivo.com/sitemap.xml`);
   });
 
-  // Serve sitemap.xml with detailed URLs and Google Image Sitemap namespaces
-  app.get("/sitemap.xml", (req, res) => {
-    res.type("application/xml");
-    res.send(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  <url>
-    <loc>https://metazivo.com/</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-    <image:image>
-      <image:loc>https://metazivo.com/og-image.jpg</image:loc>
-      <image:title>Metazivo Digital Agency</image:title>
-      <image:caption>Bespoke WordPress Development, Meta Ads &amp; Advanced SEO Agency</image:caption>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://metazivo.com/services</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/portfolio</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/blog</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/pricing</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/contact</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/about</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/service/wordpress-development</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://metazivo.com/wp_portfolio_mockup_1783857299220.jpg</image:loc>
-      <image:title>Metazivo WordPress Development Performance Dashboard</image:title>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://metazivo.com/service/seo</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://metazivo.com/seo_portfolio_mockup_1783857320829.jpg</image:loc>
-      <image:title>Metazivo Technical SEO Keyword Audits</image:title>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://metazivo.com/service/meta-ads-advertising</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://metazivo.com/meta_ads_leads_mockup_1783857339213.jpg</image:loc>
-      <image:title>Metazivo Meta Ads Funnel Setup</image:title>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://metazivo.com/service/social-media-management</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/service/graphic-design-branding</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/service/website-development</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://metazivo.com/custom_react_portfolio_mockup_1783857396760.jpg</image:loc>
-      <image:title>Metazivo Website Development Performance Dashboard</image:title>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://metazivo.com/service/video-editing</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/service/mobile-app-development</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/service/ai-mobile-apps</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/service/saas-applications</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/service/chatbots</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/blog/website-speed-optimization-ultimate-guide</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://metazivo.com/blog/maximize-roi-advanced-meta-ads-funnels</loc>
-    <lastmod>2026-07-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-</urlset>`);
-  });
+
 
   if (!isProd) {
     const vite = await createViteServer({
