@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from "react";
-import { Menu, X, Phone, Mail, Globe } from "lucide-react";
+import { Menu, X, Phone, Mail, Globe, ChevronDown, Zap } from "lucide-react";
 
 interface HeaderProps {
   currentTab: string;
@@ -15,6 +15,8 @@ interface HeaderProps {
 
 export default function Header({ currentTab, onNavigate, contactInfo, customPages }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false);
+  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
 
   const defaultNavItems = [
     { label: "Home", tab: "home" },
@@ -22,8 +24,7 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
     { label: "Services", tab: "services" },
     { label: "Portfolio", tab: "portfolio" },
     { label: "Blog", tab: "blog" },
-    { label: "Pricing", tab: "pricing" },
-    { label: "Contact", tab: "contact" }
+    { label: "Pricing", tab: "pricing" }
   ];
 
   const customNavItems = (customPages || [])
@@ -35,6 +36,7 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
   const handleNavClick = (tab: string) => {
     onNavigate(tab);
     setMobileMenuOpen(false);
+    setToolsDropdownOpen(false);
   };
 
   const formattedPhoneLink = contactInfo?.phone ? `tel:${contactInfo.phone.replace(/[^+\d]/g, "")}` : "tel:+923288518557";
@@ -93,6 +95,55 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
               {item.label}
             </button>
           ))}
+
+          {/* Interactive Free Tools Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setToolsDropdownOpen(!toolsDropdownOpen)}
+              onMouseEnter={() => setToolsDropdownOpen(true)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-1 cursor-pointer ${
+                currentTab === "tools/website-speed-test"
+                  ? "bg-[#FF5722] text-white shadow-[0_4px_12px_rgba(255,87,34,0.25)]"
+                  : "text-slate-600 hover:text-[#FF5722] hover:bg-slate-50"
+              }`}
+            >
+              Free Tools <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+            {toolsDropdownOpen && (
+              <div 
+                className="absolute left-0 mt-2 w-56 bg-white border border-slate-200/80 rounded-2xl p-2 shadow-xl z-50 animate-fade-in"
+                onMouseLeave={() => setToolsDropdownOpen(false)}
+              >
+                <button
+                  onClick={() => handleNavClick("tools/website-speed-test")}
+                  className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                    currentTab === "tools/website-speed-test"
+                      ? "bg-[#FF5722]/10 text-[#FF5722]"
+                      : "text-slate-700 hover:text-[#FF5722] hover:bg-slate-50"
+                  }`}
+                >
+                  <Zap className="w-3.5 h-3.5 shrink-0 text-[#FF5722]" />
+                  <div className="flex flex-col">
+                    <span>Website Speed Test</span>
+                    <span className="text-[10px] text-slate-400 font-light mt-0.5">Test Core Web Vitals</span>
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
+
+          <button
+            key="contact"
+            id="nav-link-contact"
+            onClick={() => handleNavClick("contact")}
+            className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+              currentTab === "contact"
+                ? "bg-[#FF5722] text-white shadow-[0_4px_12px_rgba(255,87,34,0.25)]"
+                : "text-slate-600 hover:text-[#FF5722] hover:bg-slate-50"
+            }`}
+          >
+            Contact
+          </button>
         </nav>
 
         {/* Action button & Mobile Toggle */}
@@ -131,6 +182,44 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
               {item.label}
             </button>
           ))}
+
+          {/* Mobile Tools Dropdown */}
+          <div className="space-y-1">
+            <button
+              onClick={() => setMobileToolsOpen(!mobileToolsOpen)}
+              className="w-full text-left px-3 py-2 rounded-md text-sm font-medium flex items-center justify-between text-slate-600 hover:text-[#FF5722] hover:bg-slate-50"
+            >
+              <span>Free Tools</span>
+              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${mobileToolsOpen ? "rotate-180 text-[#FF5722]" : "text-slate-400"}`} />
+            </button>
+            {mobileToolsOpen && (
+              <div className="pl-4 py-1 space-y-1 bg-slate-50/50 rounded-xl">
+                <button
+                  onClick={() => handleNavClick("tools/website-speed-test")}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+                    currentTab === "tools/website-speed-test"
+                      ? "bg-[#FF5722] text-white font-black"
+                      : "text-slate-600 hover:text-[#FF5722]"
+                  }`}
+                >
+                  <Zap className="w-3.5 h-3.5 shrink-0" />
+                  <span>Website Speed Test</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={() => handleNavClick("contact")}
+            className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium block ${
+              currentTab === "contact"
+                ? "bg-[#FF5722] text-white"
+                : "text-slate-600 hover:text-[#FF5722] hover:bg-slate-50"
+            }`}
+          >
+            Contact
+          </button>
+
           <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
             <button
               onClick={() => handleNavClick("contact")}

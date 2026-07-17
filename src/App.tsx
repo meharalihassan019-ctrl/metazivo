@@ -54,6 +54,7 @@ import MediaLibrary from "./components/MediaLibrary";
 import AiAssistant from "./components/AiAssistant";
 import PagesPanel from "./components/PagesPanel";
 import SeoDashboard from "./components/SeoDashboard";
+import WebsiteSpeedTest from "./components/WebsiteSpeedTest";
 import FloatingCyberGlobe from "./components/FloatingCyberGlobe";
 import GlassmorphicCoreEngine from "./components/GlassmorphicCoreEngine";
 import DynamicFloatingGeometry from "./components/DynamicFloatingGeometry";
@@ -291,6 +292,8 @@ export default function App() {
       setCurrentTab("privacy");
     } else if (path === "/terms" || path === "/terms/") {
       setCurrentTab("terms");
+    } else if (path === "/tools/website-speed-test" || path === "/tools/website-speed-test/") {
+      setCurrentTab("tools/website-speed-test");
     } else {
       const slug = path.replace(/^\/+/, "").replace(/\/+$/, "");
       if (slug) {
@@ -360,6 +363,16 @@ export default function App() {
         document.title = activeBlog.seoTitle || `${activeBlog.title} | Metazivo`;
       } else if (currentTab === "service-detail" && activeService) {
         document.title = `${activeService.title} | Metazivo`;
+      } else if (currentTab === "tools/website-speed-test") {
+        document.title = "Free Website Speed Test – Check Your Site's Performance Instantly";
+        
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (!metaDesc) {
+          metaDesc = document.createElement('meta');
+          metaDesc.setAttribute('name', 'description');
+          document.head.appendChild(metaDesc);
+        }
+        metaDesc.setAttribute('content', "Test your website's speed and performance for free. Get instant results and find out what's slowing your site down and hurting your Google ranking.");
       } else {
         const capitalizedTab = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
         document.title = currentTab === "home" ? "Metazivo | Premium Digital Growth Agency" : `${capitalizedTab} | Metazivo`;
@@ -1942,6 +1955,11 @@ export default function App() {
               </>
             )}
           </div>
+        )}
+
+        {/* VIEW: WEBSITE SPEED TEST */}
+        {currentTab === "tools/website-speed-test" && (
+          <WebsiteSpeedTest onNavigate={handleNavigate} />
         )}
 
         {/* VIEW 12: CUSTOM DYNAMIC PAGES */}
