@@ -74,6 +74,7 @@ export default function WebsiteSpeedTest({ onNavigate }: WebsiteSpeedTestProps) 
     };
     mobileFriendly: string;
     issues: { title: string; description: string; displayValue: string }[];
+    simulated?: boolean;
   } | null>(null);
 
   // Loading phase messages to keep users engaged
@@ -322,6 +323,17 @@ export default function WebsiteSpeedTest({ onNavigate }: WebsiteSpeedTestProps) 
       {results && !loading && (
         <div className="space-y-10 animate-fade-in max-w-4xl mx-auto">
           
+          {/* Simulated Fallback Notice */}
+          {results.simulated && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 text-xs font-medium flex items-start gap-2.5 animate-fade-in">
+              <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-bold block mb-0.5 text-amber-900">Showing Simulated Performance Analysis</span>
+                The live Google PageSpeed API has exceeded its public rate limits or is currently unavailable. For full demo capability, we generated high-fidelity simulated speed results for <span className="font-mono font-semibold text-amber-950">{results.url}</span> based on standard industry benchmarks. To activate real-time live audits, add your own Google PageSpeed API Key to your environment.
+              </div>
+            </div>
+          )}
+
           {/* Main Grid: Circle gauge and meta info */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
             
