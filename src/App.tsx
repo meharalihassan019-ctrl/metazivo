@@ -62,7 +62,7 @@ import Floating3DRing from "./components/Floating3DRing";
 import ParallaxBentoCard from "./components/ParallaxBentoCard";
 import CustomCursor from "./components/CustomCursor";
 import { servicesData, pricingPlans, portfolioItems, workProcessTimeline, faqList, testimonials, trustedCompanies } from "./data";
-import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary, ContactInfo, CustomPage } from "./types";
+import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary, ContactInfo, CustomPage, SiteSettings } from "./types";
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import Preloader from "./components/Preloader";
 import ThreeDTiltCard from "./components/ThreeDTiltCard";
@@ -112,8 +112,9 @@ const ServiceIcon = ({ name, className = "w-6 h-6" }: { name: string; className?
 const getServiceImage = (slug: string) => {
   switch (slug) {
     case "website-development":
-    case "wordpress-development":
       return coding3D;
+    case "wordpress-development":
+      return "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80";
     case "seo":
       return seo3D;
     case "meta-ads-advertising":
@@ -127,9 +128,9 @@ const getServiceImage = (slug: string) => {
     case "mobile-app-development":
       return "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=800&q=80";
     case "ai-mobile-apps":
-      return "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80";
+      return "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80";
     case "saas-applications":
-      return "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80";
+      return "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=800&q=80";
     case "chatbots":
       return "https://images.unsplash.com/photo-1531747118685-ca8fa6e08806?auto=format&fit=crop&w=800&q=80";
     default:
@@ -176,6 +177,33 @@ export default function App() {
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [pages, setPages] = useState<CustomPage[]>([]);
   const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
+
+
+  useEffect(() => {
+    if (siteSettings?.customHeadTags) {
+      const container = document.createElement('div');
+      container.innerHTML = siteSettings.customHeadTags;
+      const nodes = Array.from(container.childNodes);
+      const appendedNodes: Node[] = [];
+      
+      nodes.forEach(node => {
+        if (node.nodeType === 1 || node.nodeType === 8) { // Elements or Comments
+          const clonedNode = node.cloneNode(true);
+          document.head.appendChild(clonedNode);
+          appendedNodes.push(clonedNode);
+        }
+      });
+      
+      return () => {
+        appendedNodes.forEach(node => {
+          if (document.head.contains(node)) {
+            document.head.removeChild(node);
+          }
+        });
+      };
+    }
+  }, [siteSettings?.customHeadTags]);
 
   const displayEmail = contactInfo?.email || "mai@metazivo.com";
   const displayPhone = contactInfo?.phone || "+92 328 8518557";
@@ -239,7 +267,7 @@ export default function App() {
   // Load Initial Full-Stack API Data
   const loadAllData = async () => {
     try {
-      const [blogsRes, tagsRes, mediaRes, leadsRes, redirectsRes, analyticsRes, pagesRes, contactRes] = await Promise.all([
+      const [blogsRes, tagsRes, mediaRes, leadsRes, redirectsRes, analyticsRes, pagesRes, contactRes, settingsRes] = await Promise.all([
         fetch("/api/posts"),
         fetch("/api/tags"),
         fetch("/api/media"),
@@ -247,7 +275,8 @@ export default function App() {
         fetch("/api/redirects"),
         fetch("/api/analytics"),
         fetch("/api/pages"),
-        fetch("/api/contact")
+        fetch("/api/contact"),
+        fetch("/api/settings")
       ]);
 
       if (blogsRes.ok) setBlogs(await blogsRes.json());
@@ -258,6 +287,7 @@ export default function App() {
       if (analyticsRes.ok) setAnalytics(await analyticsRes.json());
       if (pagesRes.ok) setPages(await pagesRes.json());
       if (contactRes.ok) setContactInfo(await contactRes.json());
+      if (settingsRes.ok) setSiteSettings(await settingsRes.json());
     } catch (err) {
       console.error("Failed to sync metrics from server node", err);
     }
@@ -362,7 +392,15 @@ export default function App() {
       if (currentTab === "blog-detail" && activeBlog) {
         document.title = activeBlog.seoTitle || `${activeBlog.title} | Metazivo`;
       } else if (currentTab === "service-detail" && activeService) {
-        document.title = `${activeService.title} | Metazivo`;
+        document.title = activeService.seoTitle || `${activeService.title} | Metazivo`;
+        
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (!metaDesc) {
+          metaDesc = document.createElement('meta');
+          metaDesc.setAttribute('name', 'description');
+          document.head.appendChild(metaDesc);
+        }
+        metaDesc.setAttribute('content', activeService.seoDescription || `Maximize your business revenue with Metazivo's professional ${activeService.title} solutions.`);
       } else if (currentTab === "tools/website-speed-test") {
         document.title = "Free Website Speed Test – Check Your Site's Performance Instantly";
         
@@ -1673,6 +1711,44 @@ export default function App() {
               </ul>
             </div>
 
+            {/* Deep-Dive Operational Framework */}
+            {activeService.fullFulfillmentCopy && (
+              <div className="space-y-4">
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Expert Strategy & Framework (Human Crafted)</h3>
+                <div className="p-8 bg-slate-50 border border-slate-200/80 rounded-[32px] space-y-4 shadow-sm relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1.5 h-full bg-[#FF5722]" />
+                  <p className="text-sm text-slate-700 leading-relaxed font-normal whitespace-pre-line">
+                    {activeService.fullFulfillmentCopy}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Real-World E-E-A-T Case Study */}
+            {activeService.caseStudy && (
+              <div className="space-y-4">
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Proven Case Performance (E-E-A-T Verified)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8 bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-[32px] shadow-md border border-slate-800 relative overflow-hidden">
+                  <div className="md:col-span-2 space-y-4 relative z-10">
+                    <span className="text-[10px] font-mono text-orange-400 font-bold uppercase tracking-widest block">✦ Direct Business Outcome</span>
+                    <h4 className="text-lg font-bold text-slate-100">{activeService.caseStudy.title}</h4>
+                    
+                    <div className="space-y-2 text-xs text-slate-300">
+                      <p><strong className="text-slate-200">The Challenge:</strong> {activeService.caseStudy.challenge}</p>
+                      <p><strong className="text-slate-200">Our Solution:</strong> {activeService.caseStudy.solution}</p>
+                      <p><strong className="text-slate-200">The Result:</strong> {activeService.caseStudy.result}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col justify-center items-center p-6 bg-slate-800/40 rounded-2xl border border-slate-700/50 text-center relative z-10">
+                    <span className="text-xs text-slate-400 font-mono">Performance Metric</span>
+                    <span className="text-3xl font-extrabold text-[#FF5722] mt-1">{activeService.caseStudy.metric}</span>
+                    <span className="text-[10px] text-slate-400 mt-2">Verified Growth Output</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Specific Process Timeline */}
             <div className="space-y-4">
               <h3 className="text-base font-bold text-slate-900 uppercase tracking-wider">Implementation Lifecycle</h3>
@@ -1686,6 +1762,26 @@ export default function App() {
               </div>
             </div>
 
+            {/* Frequently Asked Questions (AEO/GEO Optimization) */}
+            {activeService.faqs && activeService.faqs.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Expert Q&A (AEO/GEO Optimized)</h3>
+                <div className="space-y-3">
+                  {activeService.faqs.map((faq, idx) => (
+                    <div key={idx} className="p-5 bg-slate-50 border border-slate-200/80 rounded-2xl shadow-sm space-y-2">
+                      <h4 className="text-xs font-bold text-slate-900 flex items-start gap-2">
+                        <span className="px-1.5 py-0.5 bg-[#FF5722]/10 text-[#FF5722] rounded text-[10px] font-mono">Q</span>
+                        <span>{faq.q}</span>
+                      </h4>
+                      <p className="text-xs text-slate-600 leading-relaxed pl-6">
+                        {faq.a}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Quick custom callback action */}
             <div className="bg-gradient-to-tr from-slate-50 to-orange-50/20 p-8 border border-slate-200/80 rounded-[32px] flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm relative overflow-hidden">
               <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
@@ -1693,7 +1789,7 @@ export default function App() {
                 <span className="text-[10px] font-mono text-emerald-600 font-bold uppercase tracking-widest block">✦ 100% Client-Centric Success</span>
                 <h4 className="text-lg font-bold text-slate-900">Let's scale your business to the absolute next level!</h4>
                 <p className="text-xs text-slate-600 max-w-md leading-relaxed">
-                  Is service se apka business direct grow hoga. Custom WordPress development, ranking factors, aur high-converting campaigns ke zariye apka revenue increase hamari zimmedari hai.
+                  Is service se apka business direct grow hoga. Custom web development, ranking factors, aur high-converting campaigns ke zariye apka revenue increase hamari zimmedari hai.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
@@ -3024,6 +3120,45 @@ export default function App() {
                               Authentication sequences automatically route through 16-bit authenticator nodes, protecting Metazivo's published logs from automated bruteforce campaigns.
                             </p>
                           </div>
+                        </div>
+
+                        <div className="p-5 bg-white/5 border border-white/10 rounded-[32px] space-y-4 shadow-md col-span-1 md:col-span-2">
+                          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-widest">Global &lt;head&gt; Injection (SEO/Analytics)</h3>
+                          <form onSubmit={async (e) => {
+                            e.preventDefault();
+                            try {
+                              const res = await fetch("/api/settings", {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(siteSettings || {})
+                              });
+                              if (res.ok) {
+                                setSiteSettings(await res.json());
+                                alert("Head tags updated successfully!");
+                              } else {
+                                alert("Failed to update head tags.");
+                              }
+                            } catch (error) {
+                              alert("Error updating head tags.");
+                            }
+                          }} className="space-y-4">
+                            <div>
+                              <label className="block text-[10px] text-slate-400 uppercase mb-2 font-mono">Custom Head Tags (e.g., Google Site Verification, Custom CSS)</label>
+                              <textarea
+                                value={siteSettings?.customHeadTags || ""}
+                                onChange={(e) => setSiteSettings(prev => ({ ...(prev || {}), customHeadTags: e.target.value }))}
+                                rows={5}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
+                                placeholder="&lt;meta name=&quot;google-site-verification&quot; content=&quot;...&quot; /&gt;"
+                              />
+                              <p className="text-[10px] text-slate-500 mt-2 font-mono">Warning: Raw HTML will be injected into the &lt;head&gt;. Only use trusted meta/link/script tags.</p>
+                            </div>
+                            <div className="flex justify-end">
+                              <button type="submit" className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors">
+                                Save Settings
+                              </button>
+                            </div>
+                          </form>
                         </div>
 
                         <div className="p-5 bg-white/5 border border-white/10 rounded-[32px] space-y-4 shadow-md col-span-1 md:col-span-2">

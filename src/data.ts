@@ -42,8 +42,26 @@ export const servicesData: AgencyService[] = [
       "Real-Time AI Voice & Translation Engines",
       "Secure User State Persistence"
     ],
-    seoTitle: "AI Mobile App Development | Metazivo",
-    seoDescription: "Next-gen intelligent AI mobile applications starting from $449. Advanced Gemini AI integration, voice assistants, and natural language models on mobile."
+    seoTitle: "AI Mobile App Development Services | Metazivo",
+    seoDescription: "Deploy secure, high-yield custom iOS & Android applications with advanced Gemini AI integrations, natural voice processing, and smart automated triggers.",
+    fullFulfillmentCopy: "In today's digital landscape, a mobile app is no longer just a luxury—it is the direct command center for your client relationships. Standard apps suffer from high uninstall rates because they lack active, personalized utility. By embedding server-side LLMs and real-time Gemini intelligence directly into your app structures, we turn static screens into proactive growth systems. Your clients get real-time advice, automatic voice translations, and conversational interfaces that keep them coming back every single day. Most importantly, we handle all LLM calls on our secure server, preventing your critical API keys from ever leaking to the client side.",
+    caseStudy: {
+      title: "Intelligent Client Engagement System",
+      challenge: "An international e-commerce startup had high cart abandonment rates and poor engagement.",
+      solution: "Built a custom React Native app featuring a Gemini-powered personal shopping assistant and personalized smart notifications.",
+      result: "Cart conversion rate boosted by 142% and daily active users increased by 3.5x.",
+      metric: "+142% Conversion Rate"
+    },
+    faqs: [
+      {
+        q: "How do server-side AI integrations protect my API keys?",
+        a: "We route all requests through secure Express backend proxies. This means your private Gemini API keys never sit on a user's phone, completely preventing unauthorized access and unexpected credit costs."
+      },
+      {
+        q: "Will the app support both iOS and Android platforms?",
+        a: "Yes. We use cross-platform frameworks like Flutter and React Native to deliver perfect native performance on both operating systems from a single, robust codebase."
+      }
+    ]
   },
   {
     id: "srv-wp",
@@ -72,8 +90,26 @@ export const servicesData: AgencyService[] = [
       "1-Click Frictionless Checkout",
       "Hourly Cloud Backups"
     ],
-    seoTitle: "WordPress & WooCommerce Sales Engines | Metazivo",
-    seoDescription: "Bespoke high-converting WordPress & WooCommerce development optimized for continuous speed, conversions, and security."
+    seoTitle: "Custom WordPress & WooCommerce Development | Metazivo",
+    seoDescription: "Boost your e-commerce revenue with ultra-fast custom-coded WordPress blocks, optimized 1-click WooCommerce checkouts, and clean, database-level speed setups.",
+    fullFulfillmentCopy: "Most developers hand you a WordPress site built on pre-made theme builders like Elementor or Divi. While they look fine initially, they load dozens of heavy CSS and JS files in the background. For every second your site takes to load, you lose 20% of your buyers. We build bespoke custom-coded theme blocks directly on the native Gutenberg editor. You get a clean, lightweight dashboard that is easy to edit, and your visitors get an instant page load speed under 1 second. We optimize your WooCommerce checkout down to a single-step flow, removing distractions and forcing conversion rates up.",
+    caseStudy: {
+      title: "Bespoke WooCommerce Sales Acceleration",
+      challenge: "A premium clothing store suffered from a sluggish 6.4-second load time, leading to major client drop-offs.",
+      solution: "Rebuilt the entire store with zero pre-made plugins, utilizing custom Gutenberg block structures and automated media optimizations.",
+      result: "Page speed decreased to 0.8 seconds, and sales immediately shot up by 195% within 30 days.",
+      metric: "0.8s Load Speed"
+    },
+    faqs: [
+      {
+        q: "Will I be able to edit my text and add new products easily without a builder?",
+        a: "Absolutely. We build custom native blocks, meaning you can edit text, swap images, and publish blogs exactly like a Word document, with zero risk of breaking the layout."
+      },
+      {
+        q: "Do you provide WooCommerce setup and payment gateway integration?",
+        a: "Yes. We set up complete WooCommerce configurations, tax parameters, shipping metrics, and integrate reliable Stripe, PayPal, or local credit card processors."
+      }
+    ]
   },
   {
     id: "srv-mobileapp",
@@ -102,8 +138,26 @@ export const servicesData: AgencyService[] = [
       "Push Notification Systems",
       "Biometrics & Local Storage Integrations"
     ],
-    seoTitle: "Mobile Application Development Services | Metazivo",
-    seoDescription: "Expert iOS & Android app development starting from $449. Custom Flutter & React Native mobile app development with push notifications and API integration."
+    seoTitle: "iOS & Android App Development | Flutter & React Native",
+    seoDescription: "High-performance native iOS and Android application development. We build cross-platform apps with 120 FPS performance, offline local caching, and secure API integrations.",
+    fullFulfillmentCopy: "A slow, laggy app is worse than having no app at all. If your screens flicker or transitions stutter, your users will delete it. We write high-efficiency cross-platform applications using Flutter or React Native. This allows us to share 90% of the codebase across iOS and Android while maintaining true native compiling. Your app benefits from hardware-accelerated animations running at a smooth 120 FPS, secure offline database engines, and lightweight background push notification listeners that trigger without draining the user's battery.",
+    caseStudy: {
+      title: "Enterprise Logistics App Redeployment",
+      challenge: "A logistics platform had a legacy app that constantly crashed offline, causing field workers to lose delivery tracking data.",
+      solution: "Developed a robust cross-platform app utilizing reactive offline storage that automatically syncs with the central server upon detecting internet connection.",
+      result: "Completely eliminated tracking data loss and boosted daily operational delivery speed by 42%.",
+      metric: "0% Offline Data Loss"
+    },
+    faqs: [
+      {
+        q: "Can you publish the apps directly to our company's Google Play and Apple App Stores?",
+        a: "Yes. We handle the entire deployment lifecycle, including configuring developer accounts, generating security certificates, optimizing store screenshots, and getting direct store approvals."
+      },
+      {
+        q: "Do you integrate with third-party tracking or customer management tools?",
+        a: "Absolutely. We build custom API connectors to link your app directly with Salesforce, HubSpot, Firebase, custom SQL databases, and custom backends."
+      }
+    ]
   },
   {
     id: "srv-seo",
@@ -111,7 +165,7 @@ export const servicesData: AgencyService[] = [
     slug: "seo",
     icon: "Search",
     description: "Climb to Page 1 of Google, dominate organic keywords, and generate free high-intent buyers 24/7.",
-    longDescription: "Right now, your dream clients are searching on Google for the exact services you offer. If they aren't finding your business, they are buying from your direct competitors. Our Search Engine Optimization (SEO) and Blog Writing service is an engineering discipline designed to flood your website with organic buyer traffic. We perform comprehensive technical audits, deploy JSON-LD schema layouts, and target high-ROI keywords. Our copywriting specialists then craft authoritative, high-value blog clusters with semantic LSI indexing. This creates a compounding marketing asset that builds your brand authority, ranks at the top of Google, and brings you highly-profitable leads indefinitely.",
+    longDescription: "Right now, your dream clients are searching on Google for the exact services you offer. If they aren't finding your website, they are buying from your direct competitors. Our Search Engine Optimization (SEO) and Blog Writing service is an engineering discipline designed to flood your website with organic buyer traffic. We perform comprehensive technical audits, deploy JSON-LD schema layouts, and target high-ROI keywords. Our copywriting specialists then craft authoritative, high-value blog clusters with semantic LSI indexing. This creates a compounding marketing asset that builds your brand authority, ranks at the top of Google, and brings you highly-profitable leads indefinitely.",
     benefits: [
       "First-page placement for high-commercial search queries",
       "Deep semantic topic clusters & highly persuasive SEO articles",
@@ -132,8 +186,26 @@ export const servicesData: AgencyService[] = [
       "High-Converting Blog Copywriting",
       "White-Hat Backlink Outreach"
     ],
-    seoTitle: "SEO & Authority Blog Writing Domination | Metazivo",
-    seoDescription: "Climb to Page 1 of Google, dominate organic keywords, and generate free high-intent buyers 24/7 with expert SEO solutions."
+    seoTitle: "SEO & Authoritative Blog Copywriting Services | Metazivo",
+    seoDescription: "Rank on page 1 of Google, dominate buyer keywords, and establish ultimate E-E-A-T. High-value topic clusters with semantic LSI indexing and custom schema markup.",
+    fullFulfillmentCopy: "Google's search algorithm has changed. Cheap AI-generated content is being heavily penalized. To rank today, your website must project clear Experience, Expertise, Authoritativeness, and Trustworthiness (E-E-A-T). We don't just dump keywords into paragraphs. We design complete topical authority structures, build semantic LSI keyword clusters, and write high-value blogs that satisfy real search intent. Every piece of content is hand-written by industry copywriters, fully optimized with JSON-LD schema schemas, and structured to capture Google's 'People Also Ask' and Answer Engine results.",
+    caseStudy: {
+      title: "B2B Organic Authority Campaign",
+      challenge: "A B2B consultancy was spending $4,500/month on Google Ads with zero organic traffic or compounding leads.",
+      solution: "Implemented a 6-month topical authority strategy, deploying custom Schema markups and 12 high-intent semantic content pieces.",
+      result: "Captured page 1 for 18 high-commercial keywords, generating over 15,000 monthly organic visitors and cutting ad spend in half.",
+      metric: "+15,000 Organic Visitors/mo"
+    },
+    faqs: [
+      {
+        q: "How long does it take to see real ranking improvements from SEO?",
+        a: "While some technical optimizations show results in 2-4 weeks, high-competition keywords usually require 3-6 months of consistent authority building. The upside is that unlike paid ads, organic traffic keeps coming for free forever."
+      },
+      {
+        q: "What is Schema markup and why does it matter for my business?",
+        a: "Schema markup is code that helps search engines understand the exact context of your pages. This enables search engines to display rich snippets, star ratings, and custom price ranges directly on search results, massively boosting click rates."
+      }
+    ]
   },
   {
     id: "srv-webdev",
@@ -162,8 +234,26 @@ export const servicesData: AgencyService[] = [
       "Frictionless Responsive Layouts",
       "Integrated Web Analytics"
     ],
-    seoTitle: "High-Performance Website Development | Metazivo",
-    seoDescription: "Bespoke React & Next.js website architectures built for supreme speed, perfect Core Web Vitals, and premium conversion optimization."
+    seoTitle: "Next.js & React Web Development Agency | Metazivo",
+    seoDescription: "Custom full-stack React & Next.js architectures. Guaranteed 95+ Core Web Vitals score, absolute security, and bespoke high-converting user interfaces.",
+    fullFulfillmentCopy: "Your website is your 24/7 digital office. When someone clicks your link from social media or Google, you have exactly 3 seconds to earn their trust before they bounce. We build ultra-high-speed web platforms using Next.js and React. By utilizing server-side rendering (SSR) and advanced edge caching, we ensure your pages load instantly anywhere in the world. We write every line of code by hand with strict semantic HTML, resulting in a flawless 100/100 PageSpeed score that pleases both your visitors and Google's ranking crawlers.",
+    caseStudy: {
+      title: "Speed & Conversion Re-architecture",
+      challenge: "A digital service company had a legacy website that failed Core Web Vitals, resulting in high advertising bounce rates.",
+      solution: "Migrated the entire design to a custom React architecture with automated next-gen image compression and streamlined script deliveries.",
+      result: "Achieved a 99/100 score on Google PageSpeed Insights and reduced ad bounce rate by 55%.",
+      metric: "99/100 PageSpeed Score"
+    },
+    faqs: [
+      {
+        q: "Why should we choose custom React/Next.js over a basic website builder?",
+        a: "React offers unparalleled performance, unlimited custom design freedom, and complete immunity to the server crashes and security hacks that plague standard CMS tools."
+      },
+      {
+        q: "What is Core Web Vitals, and why does Google care?",
+        a: "Core Web Vitals are speed metrics Google uses to evaluate real user experiences. Websites with poor web vitals are pushed down in search rankings, while fast-loading sites get rewarded with a significant boost in rankings."
+      }
+    ]
   },
   {
     id: "srv-meta-ads",
@@ -192,8 +282,26 @@ export const servicesData: AgencyService[] = [
       "Copywriting & Direct-Response Hooks",
       "CAPI Server-Side Tracking"
     ],
-    seoTitle: "Meta Ads (Facebook & Instagram) Acquisition System | Metazivo",
-    seoDescription: "High-ROI Facebook & Instagram campaigns, custom funnel tracking, and psychological copies to turn ad spend into pure profit."
+    seoTitle: "High-ROI Meta Ads (Facebook & Instagram) Agency | Metazivo",
+    seoDescription: "Systematic paid advertising funnels that convert. Direct-response ad copywriting, high-yield creatives, and pixel-perfect server-side CAPI setups.",
+    fullFulfillmentCopy: "Most businesses lose money on social media ads because they lack a systematic funnel. Simply hitting 'boost post' sends money directly to Meta without tracking actual sales. We construct multi-tiered client acquisition machines. We write direct-response ad copies using proven psychological hooks, design thumb-stopping graphic assets, and deploy advanced server-side Conversion APIs (CAPI). This ensures 100% of your conversion data is tracked accurately, bypassing iOS privacy limits so we can scale your budgets with extreme return on investment.",
+    caseStudy: {
+      title: "Direct-Response E-commerce Scale",
+      challenge: "A premium skincare brand was struggling with rising customer acquisition costs and a poor 1.2x Return on Ad Spend (ROAS).",
+      solution: "Deployed a systematic retargeting funnel with direct-response visual assets and custom CAPI server-side tracking.",
+      result: "Lowered acquisition costs by 45% and boosted ROAS to a stable, profitable 4.8x.",
+      metric: "4.8x Return on Ad Spend"
+    },
+    faqs: [
+      {
+        q: "What makes your Meta Ads strategy different from standard marketing agencies?",
+        a: "We integrate direct-response copywriting with deep technical setups like server-side Conversion APIs. This gives Meta's AI algorithm cleaner data, which naturally drives your lead cost down."
+      },
+      {
+        q: "Do I need a separate budget for advertising spend?",
+        a: "Yes. Our fee is for the strategic creation, design, and management of your funnels. You pay ad budgets directly to Meta based on what you are comfortable investing."
+      }
+    ]
   },
   {
     id: "srv-smm",
@@ -222,8 +330,26 @@ export const servicesData: AgencyService[] = [
       "Dynamic Caption Copywriting",
       "Persistent Interaction Algorithms"
     ],
-    seoTitle: "Social Media Management & Viral Reels | Metazivo",
-    seoDescription: "Aesthetic feed grids, engaging viral reels editing, and daily community algorithms to build high organic follower loyalty."
+    seoTitle: "Social Media Growth & Viral Reels Agency | Metazivo",
+    seoDescription: "Turn passive followers into loyal buyers. We handle aesthetic grid planning, cinematic video editing, viral scriptwriting, and daily algorithm warming.",
+    fullFulfillmentCopy: "A dead or generic social media page tells prospective clients that your business is inactive. In contrast, an active, high-status grid builds immediate authority. We manage your entire organic social presence across Instagram, TikTok, and LinkedIn. We design visually striking premium feeds, edit high-retention short-form video reels with custom animated captions, and write engaging descriptions that drive saves and shares. We run strategic profile-warming interaction routines to make sure the algorithms actively show your content to your target market.",
+    caseStudy: {
+      title: "Real Estate Luxury Branding Domination",
+      challenge: "A premium real estate firm had under 1,000 followers and zero leads coming from their social channels.",
+      solution: "Implemented a high-status organic grid design paired with 3 cinematic reels weekly targeting high-net-worth local buyers.",
+      result: "Grew follower count to 14,000+ in 90 days and closed 3 high-end property deals directly from Instagram inquiries.",
+      metric: "14,000+ Followers in 90 Days"
+    },
+    faqs: [
+      {
+        q: "Do we need to spend hours recording videos or writing captions?",
+        a: "No. We handle 100% of the heavy lifting. We write the scripts, edit your raw footage, write the captions, design the cover templates, and schedule everything for you."
+      },
+      {
+        q: "Can you manage profiles across multiple networks simultaneously?",
+        a: "Yes. Our standard package includes cross-posting across Instagram, TikTok, Facebook, and professional networks like LinkedIn to maximize your brand reach."
+      }
+    ]
   },
   {
     id: "srv-branding",
@@ -252,8 +378,26 @@ export const servicesData: AgencyService[] = [
       "Corporate Visual Style Sheets",
       "All Scalable High-Res Source Files"
     ],
-    seoTitle: "Graphic Design & Corporate Logo Branding | Metazivo",
-    seoDescription: "Premium corporate logos, cohesive color systems, and high-status brand assets that instantly establish market leadership."
+    seoTitle: "Premium Corporate Logo Design & Branding Agency | Metazivo",
+    seoDescription: "Establish market leadership with bespoke corporate vector logos, complete luxury color palettes, custom typography, and official corporate brand style manuals.",
+    fullFulfillmentCopy: "Your visual identity is the literal face of your company. If your logo looks like a free template from Canva, clients will assume your services are cheap. We craft bespoke vector logo systems and full corporate branding manuals that project elite market authority. We research your competitors, select luxury color palettes that convey trust, and choose custom typography that sets you apart. We deliver full, scalable source files alongside complete guidelines so that your branding remains absolutely consistent across physical products, web platforms, and print media.",
+    caseStudy: {
+      title: "Corporate Visual Transformation",
+      challenge: "An engineering consultancy was losing high-ticket contracts to larger firms because their logo looked outdated.",
+      solution: "Crafted a minimalist, modern geometric visual identity and delivered a comprehensive 24-page brand style guide.",
+      result: "Commanded a 35% price increase on consultative proposals and successfully won their first million-dollar corporate contract.",
+      metric: "35% Price Increase Achieved"
+    },
+    faqs: [
+      {
+        q: "What assets are included in the final corporate brand identity package?",
+        a: "You receive your official master vector logo in all formats, alternative layouts, custom color hex systems, typography rules, social media banners, and digital business stationery."
+      },
+      {
+        q: "Who owns the copyright of the final logo designs?",
+        a: "Upon project completion and final payment, 100% intellectual property ownership and commercial copyrights are legally transferred to your organization."
+      }
+    ]
   },
   {
     id: "srv-video",
@@ -281,8 +425,26 @@ export const servicesData: AgencyService[] = [
       "Facebook Videos",
       "Facebook & Instagram Video Ads"
     ],
-    seoTitle: "Video Editing & Production Services | Metazivo",
-    seoDescription: "Professional video editing starting from $15. Premium high-retention Facebook, Reels, TikTok, and corporate video production with sound FX."
+    seoTitle: "Professional Video Editing & Post-Production | Metazivo",
+    seoDescription: "High-retention cinematic video editing. Streamline your content with engaging subtitle animations, custom sound design, dynamic transitions, and pro color grading.",
+    fullFulfillmentCopy: "In the attention economy, your video has precisely 3 seconds to hook a viewer. Flat audio, boring pauses, or generic transitions will cause them to scroll away. We provide elite video post-production that transforms raw files into high-retention cinematic content. We edit out unnecessary filler words, sync footage to professional background scores, apply rich color grading, and add dynamic custom-animated captions. Whether it's a high-impact Facebook ad, a YouTube documentary, or a viral reel, we optimize every frame to maximize watch-time and audience engagement.",
+    caseStudy: {
+      title: "Course Engagement Optimization",
+      challenge: "An online education brand had high video drop-off rates, with users leaving within the first 15 seconds.",
+      solution: "Restructured the course previews with rapid narrative pacing, dynamic zooming, sound effects, and animated text overlays.",
+      result: "Boosted average video watch-time by 210% and increased masterclass signups by 68%.",
+      metric: "210% Watch-Time Boost"
+    },
+    faqs: [
+      {
+        q: "What file formats and resolutions do you deliver?",
+        a: "We deliver fully optimized MP4 files in both horizontal (16:9 for YouTube/Web) and vertical (9:16 for Reels/TikTok/Shorts) formats, rendered in crisp 1080p or 4K resolution."
+      },
+      {
+        q: "What is your turnaround time for a standard video edit?",
+        a: "For short-form content under 60 seconds, we deliver within 24 to 48 hours. Long-form video projects are scheduled individually based on raw footage length and complexity."
+      }
+    ]
   },
   {
     id: "srv-saas",
@@ -311,8 +473,26 @@ export const servicesData: AgencyService[] = [
       "Stripe Subscription Checkout Integration",
       "Aesthetic Administrative Dashboards"
     ],
-    seoTitle: "SaaS Application Development | Metazivo",
-    seoDescription: "Bespoke SaaS platform development starting from $449. Secure full-stack SaaS apps with Stripe subscriptions, user permissions, and admin panels."
+    seoTitle: "SaaS Application Development Agency | Full-Stack React",
+    seoDescription: "Build secure, highly scalable multi-tenant Software-as-a-Service platforms. Stripe subscription checkout integration, RBAC permissions, and custom dashboards.",
+    fullFulfillmentCopy: "Building a SaaS application requires rock-solid backend architecture, absolute data isolation, and smooth billing integrations. We design premium full-stack SaaS platforms with custom Express or Nest.js APIs and responsive React dashboards. We construct robust multi-tenant databases to keep user workspaces perfectly isolated, integrate detailed Role-Based Access Control (RBAC), and deploy Stripe or PayPal billing suites for recurring plans. Complete with dynamic analytical charts and secure JWT authentication, we give you the perfect foundation to launch your digital product.",
+    caseStudy: {
+      title: "Consulting Workflow SaaS Infrastructure",
+      challenge: "A management consultancy wanted to package their proprietary workflow into a subscription software but lacked the technical team.",
+      solution: "Engineered a secure multi-tenant React/Node SaaS platform with tier-based Stripe subscription checkout and an interactive task dashboard.",
+      result: "Successfully launched to 500+ paying beta organizations, generating a steady stream of Monthly Recurring Revenue (MRR).",
+      metric: "Launched to 500+ Organizations"
+    },
+    faqs: [
+      {
+        q: "How do you ensure our SaaS database is secure from unauthorized access?",
+        a: "We enforce strict multi-tenant schema isolation, sanitize all API database queries to prevent SQL injections, encrypt passwords with bcrypt, and implement secure JWT tokens for session verification."
+      },
+      {
+        q: "Can you help migrate our existing clients onto the new SaaS platform?",
+        a: "Yes. We build custom data migration scripts to securely transfer user records, history databases, and custom settings from legacy formats or spreadsheets."
+      }
+    ]
   },
   {
     id: "srv-chatbots",
@@ -341,8 +521,26 @@ export const servicesData: AgencyService[] = [
       "Automatic Contact Captures & CRM Hooks",
       "Multilingual Real-Time Translations"
     ],
-    seoTitle: "AI Chatbot & Conversational Agent Integration | Metazivo",
-    seoDescription: "Custom AI chatbots starting from $449. Automated customer support and sales chat systems powered by Gemini for 24/7 conversion growth."
+    seoTitle: "AI Chatbots & Conversational Agents | Gemini Integration",
+    seoDescription: "Automate customer support and sales. Deploy custom-trained Gemini AI conversational agents that qualify leads, answer FAQs, and book calls 24/7.",
+    fullFulfillmentCopy: "When a potential buyer visits your website, they want immediate answers. If they have to wait hours for an email reply, they will simply go to a competitor. Our custom-trained Gemini AI chatbots act as your smartest 24/7 sales and customer support agents. We feed the AI with your company's documents, price lists, and FAQs, teaching it to speak in your exact brand voice. The chatbot doesn't just chat; it actively qualifies leads, captures contact details, books consultative calls on your calendar, and hands off complex issues to live humans.",
+    caseStudy: {
+      title: "Real-Time AI Sales Assistant",
+      challenge: "A service provider was losing premium evening and weekend leads due to slow response times.",
+      solution: "Deployed a custom-trained Gemini chatbot trained on company service specs and synced directly with their booking calendar.",
+      result: "Captured and pre-qualified 48 additional leads in the first month, increasing booking rates by 73% without extra staffing costs.",
+      metric: "+73% Calendar Bookings"
+    },
+    faqs: [
+      {
+        q: "Will the chatbot give wrong information or make up answers?",
+        a: "No. We apply strict system prompt boundaries and ground the AI model solely on your uploaded knowledge base documents, preventing any 'hallucinations' or off-topic responses."
+      },
+      {
+        q: "Can the chatbot connect to my active CRM tool?",
+        a: "Yes. We integrate the chatbot directly with HubSpot, Salesforce, active Slack channels, WhatsApp Business API, and automated email trigger sequences."
+      }
+    ]
   }
 ];
 

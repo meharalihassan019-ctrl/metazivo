@@ -121,6 +121,15 @@ export interface AgencyService {
   deliverables?: string[];
   seoTitle?: string;
   seoDescription?: string;
+  fullFulfillmentCopy?: string;
+  faqs?: { q: string; a: string }[];
+  caseStudy?: {
+    title: string;
+    challenge: string;
+    solution: string;
+    result: string;
+    metric: string;
+  };
 }
 
 export interface ContactInfo {
@@ -144,3 +153,7 @@ export interface CustomPage {
   seoKeywords: string[];
 }
 
+
+export interface SiteSettings {
+  customHeadTags?: string;
+}

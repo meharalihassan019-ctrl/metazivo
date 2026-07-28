@@ -1335,6 +1335,26 @@ app.put("/api/contact", (req, res) => {
   res.json(db.contact);
 });
 
+app.get("/api/settings", (req, res) => {
+  db = loadDb();
+  if (!db.settings) {
+    db.settings = { customHeadTags: "" };
+    saveDb(db);
+  }
+  res.json(db.settings);
+});
+
+app.put("/api/settings", (req, res) => {
+  db = loadDb();
+  db.settings = {
+    ...db.settings,
+    customHeadTags: req.body.customHeadTags || ""
+  };
+  saveDb(db);
+  res.json(db.settings);
+});
+
+
 // Deterministic simulated PageSpeed scores as an intelligent fallback for quota/limit exhaustion
 function getSimulatedPageSpeed(targetUrl: string, strategy: string) {
   // Simple deterministic hash of the URL

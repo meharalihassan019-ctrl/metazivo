@@ -59,13 +59,59 @@ export default function Footer({ onNavigate, contactInfo, customPages }: FooterP
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-12 gap-8">
         {/* Brand identity column - Span 4 */}
         <div className="md:col-span-4 flex flex-col gap-4">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate("home")}>
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#FF5722] to-[#FF8A50] flex items-center justify-center font-bold text-white shadow-[0_4px_10px_rgba(255,87,34,0.3)] text-lg">
-              M
+          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => onNavigate("home")}>
+            <div className="relative w-10 h-10 flex items-center justify-center transition-all duration-300 group-hover:scale-105">
+              {/* Soft ambient glow behind logo */}
+              <div className="absolute inset-0 bg-[#FF5722]/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              {/* Elegant glass container */}
+              <div className="relative w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center shadow-[0_6px_20px_rgba(255,87,34,0.18)] border border-slate-800/80 overflow-hidden">
+                {/* Inner subtle tech grid/radial highlights */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,87,34,0.35)_0%,transparent_60%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(255,138,80,0.1)_0%,transparent_50%)]" />
+                
+                {/* Sophisticated interlocking 'M' & Performance-Growth custom vector logo */}
+                <svg className="w-5.5 h-5.5 text-white transition-all duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path 
+                    d="M4 17.5L8.5 7.5L12.5 14L16.5 7.5L20 14.5" 
+                    stroke="url(#logo-grad-orange-footer)" 
+                    strokeWidth="2.8" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                  />
+                  <path 
+                    d="M20 14.5V17.5" 
+                    stroke="url(#logo-grad-orange-footer)" 
+                    strokeWidth="2.8" 
+                    strokeLinecap="round" 
+                  />
+                  {/* Visual anchor nodes */}
+                  <circle cx="8.5" cy="7.5" r="1.2" fill="#FFFFFF" />
+                  <circle cx="16.5" cy="7.5" r="1.2" fill="#FFFFFF" />
+                  <circle cx="4" cy="17.5" r="1" fill="#FF5722" />
+                  <circle cx="20" cy="17.5" r="1" fill="#FF8A50" />
+                  
+                  <defs>
+                    <linearGradient id="logo-grad-orange-footer" x1="4" y1="7" x2="20" y2="18" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#FF5722" />
+                      <stop offset="0.6" stopColor="#FF7A45" />
+                      <stop offset="1" stopColor="#FFA726" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
             </div>
+            
             <div className="flex flex-col">
-              <span className="text-lg font-bold text-slate-900 tracking-wide">Metazivo</span>
-              <span className="text-[9px] text-[#FF5722] uppercase tracking-widest font-mono -mt-1">Digital Agency</span>
+              <div className="flex items-center gap-1">
+                <span className="text-xl font-black text-slate-900 tracking-tight font-sans transition-colors group-hover:text-slate-950">
+                  Meta<span className="text-[#FF5722]">zivo</span>
+                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722] self-end mb-1.5 animate-pulse" />
+              </div>
+              <span className="text-[9px] text-[#FF5722] uppercase tracking-[0.25em] font-mono font-bold -mt-1 group-hover:text-slate-900 transition-colors">
+                Growth Engine
+              </span>
             </div>
           </div>
           <p className="text-xs text-slate-500 leading-relaxed">
