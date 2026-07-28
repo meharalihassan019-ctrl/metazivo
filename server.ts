@@ -3231,7 +3231,16 @@ function injectSEOAndPrerender(html: string, pathname: string): string {
     resHtml = resHtml.replace(rootRegex, `<div id="root">${seoData.html}</div>`);
   }
 
+
+  // Custom Head Tags Injection
+  if (db.settings && db.settings.customHeadTags) {
+    resHtml = resHtml.replace("</head>", `
+  ${db.settings.customHeadTags}
+</head>`);
+  }
+
   return resHtml;
+
 }
 
 // -----------------------------------------------------------------------------
