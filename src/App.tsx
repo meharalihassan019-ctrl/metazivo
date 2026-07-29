@@ -2630,6 +2630,22 @@ export default function App() {
                               </div>
 
                               <div>
+                                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5 font-sans">Featured Image</label>
+                                <div className="flex items-center gap-4">
+                                  {editingPost.featuredImage && (
+                                    <img src={editingPost.featuredImage} alt="Featured" className="w-24 h-16 object-cover rounded-lg border border-white/10" referrerPolicy="no-referrer" />
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowMediaSelectorForEditor(() => (url: string) => setEditingPost(prev => ({ ...prev, featuredImage: url })))}
+                                    className="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-xs text-white rounded-xl transition-colors cursor-pointer"
+                                  >
+                                    {editingPost.featuredImage ? "Change Image" : "Select Image"}
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div>
                                 <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5 font-sans">Article Body (Gutenberg Split)</label>
                                 <GutenbergEditor
                                   value={editingPost.content || ""}
