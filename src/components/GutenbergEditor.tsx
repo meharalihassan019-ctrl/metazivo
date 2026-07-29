@@ -199,10 +199,13 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
           padding-left: 1.5rem;
           margin-bottom: 1rem;
         }
-        .tiptap-container .ProseMirror h1 { font-size: 2.25rem; font-weight: 800; margin-top: 2rem; margin-bottom: 1rem; }
-        .tiptap-container .ProseMirror h2 { font-size: 1.875rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; }
-        .tiptap-container .ProseMirror h3 { font-size: 1.5rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; }
-      `}</style>
+        .tiptap-container .ProseMirror h1 { font-size: 2.25rem; font-weight: 800; margin-top: 2rem; margin-bottom: 1rem; color: #f8fafc; }
+        .tiptap-container .ProseMirror h2 { font-size: 1.875rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #f8fafc; }
+        .tiptap-container .ProseMirror h3 { font-size: 1.5rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #f1f5f9; }
+        .tiptap-container .ProseMirror p { color: #cbd5e1; }
+        .tiptap-container .ProseMirror, .tiptap-container .ProseMirror * { color: #cbd5e1; }
+      `}
+      </style>
     </div>
   );
 }
