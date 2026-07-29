@@ -138,7 +138,7 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
     },
     editorProps: {
       attributes: {
-        class: "prose prose-invert prose-blue max-w-none focus:outline-none min-h-[400px] p-6 pb-20 leading-relaxed text-slate-200"
+        class: "max-w-none focus:outline-none min-h-[400px] p-6 pb-20 leading-relaxed text-slate-200"
       }
     }
   });
@@ -202,10 +202,24 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
         .tiptap-container .ProseMirror h1 { font-size: 2.25rem; font-weight: 800; margin-top: 2rem; margin-bottom: 1rem; color: #f8fafc; }
         .tiptap-container .ProseMirror h2 { font-size: 1.875rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #f8fafc; }
         .tiptap-container .ProseMirror h3 { font-size: 1.5rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #f1f5f9; }
-        .tiptap-container .ProseMirror p { color: #cbd5e1; }
-        .tiptap-container .ProseMirror, .tiptap-container .ProseMirror * { color: #cbd5e1; }
-      `}
-      </style>
+        .tiptap-container .ProseMirror p { color: #f8fafc !important; }
+        .tiptap-container .ProseMirror { color: #f8fafc !important; }
+        
+      
+        .tiptap-container .ProseMirror * { color: #e2e8f0 !important; }
+        .tiptap-container .ProseMirror h1, 
+        .tiptap-container .ProseMirror h2, 
+        .tiptap-container .ProseMirror h3, 
+        .tiptap-container .ProseMirror h4, 
+        .tiptap-container .ProseMirror h5, 
+        .tiptap-container .ProseMirror h6, 
+        .tiptap-container .ProseMirror p, 
+        .tiptap-container .ProseMirror li, 
+        .tiptap-container .ProseMirror strong, 
+        .tiptap-container .ProseMirror em {
+          color: #f8fafc !important;
+        }
+      `}</style>
     </div>
   );
 }

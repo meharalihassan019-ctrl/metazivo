@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script>
+      (function() {
+        const originalFetch = window.fetch;
+        try {
+          Object.defineProperty(window, 'fetch', {
+            get: function() { return originalFetch; },
+            set: function(val) {
+              // Ignore attempts to overwrite window.fetch
+              console.warn("Ignored attempt to overwrite window.fetch");
+            },
+            configurable: true,
+            enumerable: true
+          });
+        } catch (e) {
+          console.error("Could not patch window.fetch", e);
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Metazivo | WordPress Development, Meta Ads & Expert SEO Agency</title>
