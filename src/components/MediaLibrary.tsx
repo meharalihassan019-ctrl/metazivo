@@ -11,7 +11,7 @@ interface MediaLibraryProps {
   assets: MediaAsset[];
   onUpload: (assetData: Partial<MediaAsset>) => void;
   onDelete: (id: string) => void;
-  onSelectAsset?: (url: string) => void; // Optional selection trigger
+  onSelectAsset?: (url: string, altText?: string) => void; // Optional selection trigger
 }
 
 export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset }: MediaLibraryProps) {
@@ -98,7 +98,7 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
 
   const handleConfirmSelect = () => {
     if (selectedAsset && onSelectAsset) {
-      onSelectAsset(selectedAsset.url);
+      onSelectAsset(selectedAsset.url, selectedAsset.altText);
     }
   };
 

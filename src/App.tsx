@@ -257,7 +257,7 @@ export default function App() {
   // Post Editor Workspaces
   const [isEditingPost, setIsEditingPost] = useState(false);
   const [editingPost, setEditingPost] = useState<Partial<BlogPost>>({});
-  const [showMediaSelectorForEditor, setShowMediaSelectorForEditor] = useState<((url: string) => void) | null>(null);
+  const [showMediaSelectorForEditor, setShowMediaSelectorForEditor] = useState<((url: string, altText?: string) => void) | null>(null);
 
   // Tag Management Workspace States
   const [newTagName, setNewTagName] = useState("");
@@ -3299,8 +3299,8 @@ export default function App() {
               assets={mediaAssets}
               onUpload={handleUploadAsset}
               onDelete={handleDeleteAsset}
-              onSelectAsset={(url) => {
-                showMediaSelectorForEditor(url);
+              onSelectAsset={(url, altText) => {
+                showMediaSelectorForEditor(url, altText);
                 setShowMediaSelectorForEditor(null);
               }}
             />

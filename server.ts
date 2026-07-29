@@ -508,10 +508,20 @@ app.get("/api/media", (req, res) => {
 
 app.post("/api/media", (req, res) => {
   db = loadDb();
+  
+  if (req.body.id) {
+    const idx = db.media.findIndex((m: any) => m.id === req.body.id);
+    if (idx !== -1) {
+      db.media[idx] = { ...db.media[idx], ...req.body, updatedAt: new Date().toISOString() };
+      saveDb(db);
+      return res.json(db.media[idx]);
+    }
+  }
+
   const newAsset = {
     id: `media-${Date.now()}`,
     name: req.body.name || "uploaded_asset.png",
-    url: req.body.fileData || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80",
+    url: req.body.url || req.body.fileData || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80",
     size: req.body.size || 1024,
     mimeType: req.body.mimeType || "image/png",
     folder: req.body.folder || "general",

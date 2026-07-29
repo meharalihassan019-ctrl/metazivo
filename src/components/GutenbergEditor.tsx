@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useEditor, EditorContent,  } from "@tiptap/react";
+import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Image } from "@tiptap/extension-image";
 import { Table } from "@tiptap/extension-table";
@@ -28,15 +28,16 @@ interface WordEditorProps {
   value: string;
   onChange: (html: string) => void;
   mediaAssets: MediaAsset[];
-  onOpenMediaSelector: (onSelect: (url: string) => void) => void;
+  onOpenMediaSelector: (onSelect: (url: string, altText?: string) => void) => void;
 }
 
 const MenuBar = ({ editor, onOpenMediaSelector }: { editor: any, onOpenMediaSelector: any }) => {
   if (!editor) return null;
 
   const addImage = () => {
-    onOpenMediaSelector((url: string) => {
-      editor.chain().focus().setImage({ src: url }).run();
+    onOpenMediaSelector((url: string, altText?: string) => {
+      const alt = altText || window.prompt("Enter SEO alt text for this image:") || "";
+      editor.chain().focus().setImage({ src: url, alt }).run();
     });
   };
 
@@ -139,6 +140,22 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
     editorProps: {
       attributes: {
         class: "max-w-none focus:outline-none min-h-[400px] p-6 pb-20 leading-relaxed text-slate-200"
+      },
+      handleClick: (view, pos, event) => {
+        if (event.target instanceof HTMLImageElement) {
+          const img = event.target;
+          const currentAlt = img.alt || '';
+          
+          // Small delay to let ProseMirror select the image first
+          setTimeout(() => {
+            const newAlt = window.prompt("Update SEO alt text (or leave empty):", currentAlt);
+            if (newAlt !== null) {
+              editor.commands.updateAttributes('image', { alt: newAlt });
+            }
+          }, 50);
+          return false; // let ProseMirror handle the selection
+        }
+        return false;
       }
     }
   });
@@ -157,10 +174,10 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
   }
 
   return (
-    <div className="flex flex-col bg-slate-950 border border-slate-800 rounded-2xl shadow-xl overflow-hidden tiptap-container">
+    <div className="flex flex-col bg-slate-950 border border-slate-800 rounded-2xl shadow-xl overflow-hidden tiptap-container relative">
       <MenuBar editor={editor} onOpenMediaSelector={onOpenMediaSelector} />
       
-      <div className="flex-1 overflow-y-auto max-h-[800px] scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+      <div className="flex-1 overflow-y-auto max-h-[800px] scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent p-4 relative">
         <EditorContent editor={editor} />
       </div>
       

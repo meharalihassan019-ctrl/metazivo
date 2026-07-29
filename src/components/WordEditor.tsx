@@ -55,7 +55,7 @@ interface WordEditorProps {
   value: string;
   onChange: (html: string) => void;
   mediaAssets: MediaAsset[];
-  onOpenMediaSelector: (onSelect: (url: string) => void) => void;
+  onOpenMediaSelector: (onSelect: (url: string, altText?: string) => void) => void;
 }
 
 interface Block {
@@ -1295,8 +1295,8 @@ export default function WordEditor({ value, onChange, mediaAssets, onOpenMediaSe
                               <button
                                 type="button"
                                 onClick={() => {
-                                  onOpenMediaSelector((url: string) => {
-                                    updateBlockAttributes(block.id, { url, caption: "Metazivo High Speed Asset" });
+                                  onOpenMediaSelector((url: string, altText?: string) => {
+                                    updateBlockAttributes(block.id, { url, caption: altText || "Metazivo High Speed Asset" });
                                   });
                                 }}
                                 className="px-3 py-1.5 bg-[#FF5722] hover:bg-orange-600 text-white rounded-xl text-xs font-bold transition-all"
