@@ -49,6 +49,7 @@ import Footer from "./components/Footer";
 import ContactForm from "./components/ContactForm";
 import SeoScoreAnalyzer from "./components/SeoScoreAnalyzer";
 import WordEditor from "./components/WordEditor";
+import GutenbergEditor from "./components/GutenbergEditor";
 import SchemaEditor from "./components/SchemaEditor";
 import MediaLibrary from "./components/MediaLibrary";
 import AiAssistant from "./components/AiAssistant";
@@ -2630,7 +2631,7 @@ export default function App() {
 
                               <div>
                                 <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5 font-sans">Article Body (Gutenberg Split)</label>
-                                <WordEditor
+                                <GutenbergEditor
                                   value={editingPost.content || ""}
                                   onChange={(html) => setEditingPost((prev) => ({ ...prev, content: html }))}
                                   mediaAssets={mediaAssets}
