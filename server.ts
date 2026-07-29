@@ -3247,7 +3247,12 @@ function injectSEOAndPrerender(html: string, pathname: string): string {
 // VITE DEV SERVER OR STATIC PRODUCTION BUILD ENGINE
 // -----------------------------------------------------------------------------
 async function initializeServer() {
-  const distPath = path.join(process.cwd(), "dist");
+  let distPath = path.join(process.cwd(), "dist");
+  if (process.env.NODE_ENV === "production" && !fs.existsSync(distPath)) {
+    if (fs.existsSync(path.join(process.cwd(), "index.html"))) {
+      distPath = process.cwd();
+    }
+  }
   const isProd = process.env.NODE_ENV === "production";
 
   // Serve robots.txt explicitly with correct headers globally
