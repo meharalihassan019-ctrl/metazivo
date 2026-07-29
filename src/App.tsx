@@ -361,6 +361,13 @@ export default function App() {
   const activeCustomPage = pages.find((p) => p.slug === currentTab);
   const isCustomPage = pages.some((p) => p.slug === currentTab && !p.isSystem);
 
+  useEffect(() => {
+    if (currentTab === "blog-detail" && activeBlog) {
+      fetch(`/api/posts/${activeBlog.id}/view`, { method: "POST" })
+        .catch(console.error);
+    }
+  }, [currentTab, activeBlog?.id]);
+
   // Synchronize SEO Meta Details dynamically on Tab transition
   useEffect(() => {
     const matchedPage = pages.find((p) => p.slug === currentTab);
@@ -499,7 +506,7 @@ export default function App() {
       excerpt: "",
       content: "",
       status: "draft",
-      featuredImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800",
+      featuredImage: "",
       gallery: [],
       readingTime: 3,
       featured: false,
@@ -512,8 +519,8 @@ export default function App() {
       focusKeywords: [],
       canonicalUrl: "",
       robotsMeta: { index: true, follow: true },
-      openGraph: { title: "", description: "", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800" },
-      twitterCard: { cardType: "summary_large_image", title: "", description: "", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800" },
+      openGraph: { title: "", description: "", image: "" },
+      twitterCard: { cardType: "summary_large_image", title: "", description: "", image: "" },
       breadcrumbTitle: "",
       seoScore: 80,
       schemas: []
@@ -1872,14 +1879,16 @@ export default function App() {
               {blogs.filter(b => b.status === "published").map((post) => (
                 <div key={post.id} className="bg-white border border-slate-200/80 rounded-[32px] overflow-hidden hover:border-[#FF5722]/30 transition-all flex flex-col justify-between shadow-sm" id={`blog-card-${post.slug}`}>
                   <div>
-                    <div className="aspect-video w-full overflow-hidden relative border-b border-slate-100">
-                      <img src={post.featuredImage} alt={post.title} referrerPolicy="no-referrer" loading="lazy" className="w-full h-full object-cover" />
-                      {post.sticky && (
-                        <span className="absolute top-3 left-3 bg-[#FF5722] text-white text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full shadow">
-                          Sticky Post
-                        </span>
-                      )}
-                    </div>
+                    {post.featuredImage && (
+                      <div className="aspect-video w-full overflow-hidden relative border-b border-slate-100">
+                        <img src={post.featuredImage} alt={post.title} referrerPolicy="no-referrer" loading="lazy" className="w-full h-full object-cover" />
+                        {post.sticky && (
+                          <span className="absolute top-3 left-3 bg-[#FF5722] text-white text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full shadow">
+                            Sticky Post
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <div className="p-6 space-y-3">
                       <div className="flex gap-4 items-center text-[11px] text-slate-500">
                         <span className="flex items-center gap-1">
@@ -1938,9 +1947,11 @@ export default function App() {
               </div>
             </header>
 
-            <div className="w-full aspect-video rounded-2xl overflow-hidden border border-slate-200">
-              <img src={activeBlog.featuredImage} alt={activeBlog.title} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
-            </div>
+            {activeBlog.featuredImage && (
+              <div className="w-full aspect-video rounded-2xl overflow-hidden border border-slate-200">
+                <img src={activeBlog.featuredImage} alt={activeBlog.title} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+              </div>
+            )}
 
             {/* Blog Post Content Body */}
             <div
@@ -2459,6 +2470,7 @@ export default function App() {
                                 <tr>
                                   <th className="p-4">Post Title</th>
                                   <th className="p-4">Categories</th>
+                                  <th className="p-4">Views</th>
                                   <th className="p-4">SEO Rating</th>
                                   <th className="p-4">Status</th>
                                   <th className="p-4 text-right">Actions</th>
@@ -2474,6 +2486,9 @@ export default function App() {
                                       </div>
                                     </td>
                                     <td className="p-4 font-mono">{post.categories?.join(", ")}</td>
+                                    <td className="p-4 font-mono font-bold text-slate-300">
+                                      {post.views ? post.views.toLocaleString() : 0}
+                                    </td>
                                     <td className="p-4">
                                       <span className={`font-mono font-bold px-2 py-0.5 rounded text-[10px] border ${
                                         post.seoScore >= 90 ? "bg-emerald-950/20 text-emerald-400 border-emerald-500/20" : "bg-amber-950/20 text-amber-400 border-amber-500/20"

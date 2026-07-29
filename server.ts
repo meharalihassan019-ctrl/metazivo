@@ -50,7 +50,7 @@ const defaultDb = {
       content: `<h2>Why Speed is the Absolute Metric for Business Growth</h2><p>In 2026, web performance is no longer just a technical detail. It is a critical business metric. Every 100ms of latency reduction can boost conversions by up to 8%. Users expect websites to load instantaneously, especially on mobile devices under variable 5G/4G connections.</p><h3>1. Leverage Modern Code Splitting</h3><p>Ensure that you compile your frontend code using efficient bundlers like Vite or esbuild. Split your bundle size into smaller chunks so that the browser only downloads the critical scripts needed for the current viewport.</p><p>Using heavy, generic page builders adds massive amounts of unused CSS and JavaScript, which instantly ruins your Core Web Vitals score.</p><h3>2. High-Performance Image Pipelines</h3><p>Always optimize and compress your images. Metazivo specializes in building automatic conversion pipelines that compress static resources into modern formats like <strong>WebP</strong> and <strong>AVIF</strong>, reducing image weights by over 70% without visible loss of fidelity.</p><h3>3. Server-Side Rendering (SSR) and Edge Caching</h3><p>By pre-rendering your application on a fast server-side environment and caching it close to your users via high-performance CDNs (Cloudflare, bunny.net), you completely bypass database queries on initial navigation, dropping your Time to First Byte (TTFB) to under 50ms.</p>`,
       status: "published",
       publishDate: "2026-07-10T12:00:00Z",
-      featuredImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
+      featuredImage: "",
       gallery: [],
       readingTime: 4,
       featured: true,
@@ -71,13 +71,13 @@ const defaultDb = {
       openGraph: {
         title: "Website Speed Optimization Guide (2026)",
         description: "Maximize conversion rates and conquer Google ranking metrics with our complete speed guide.",
-        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80"
+        image: ""
       },
       twitterCard: {
         cardType: "summary_large_image",
         title: "Website Speed Optimization Guide (2026) | Metazivo",
         description: "Transform your website performance and boost Google rankings with our performance blueprint.",
-        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80"
+        image: ""
       },
       breadcrumbTitle: "Speed Optimization Guide",
       seoScore: 98,
@@ -146,7 +146,7 @@ const defaultDb = {
     {
       id: "media-2",
       name: "web_dev_banner.jpg",
-      url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
+      url: "",
       size: 245000,
       mimeType: "image/jpeg",
       folder: "website-development",
@@ -438,7 +438,7 @@ app.post("/api/posts", (req, res) => {
     content: req.body.content || "",
     status: req.body.status || "draft",
     publishDate: req.body.publishDate || new Date().toISOString(),
-    featuredImage: req.body.featuredImage || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
+    featuredImage: req.body.featuredImage || "",
     gallery: req.body.gallery || [],
     readingTime: parseInt(req.body.readingTime) || 3,
     featured: req.body.featured || false,
@@ -491,6 +491,17 @@ app.put("/api/posts/:id", (req, res) => {
 
   saveDb(db);
   res.json(db.posts[index]);
+});
+
+app.post("/api/posts/:id/view", (req, res) => {
+  db = loadDb();
+  const index = db.posts.findIndex((p: any) => p.id === req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ error: "Post not found" });
+  }
+  db.posts[index].views = (db.posts[index].views || 0) + 1;
+  saveDb(db);
+  res.json({ views: db.posts[index].views });
 });
 
 app.delete("/api/posts/:id", (req, res) => {

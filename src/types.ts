@@ -14,6 +14,7 @@ export interface BlogPost {
   featuredImage: string;
   gallery: string[];
   readingTime: number; // minutes
+  views?: number;
   featured: boolean;
   sticky: boolean;
   categories: string[];
