@@ -134,13 +134,13 @@ export default function Footer({ onNavigate, contactInfo, customPages }: FooterP
 
           {/* Social Icons requested */}
           <div className="flex items-center gap-3 pt-2">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#FF5722] hover:text-white flex items-center justify-center text-slate-600 transition-colors shadow-sm" title="Facebook">
+            <a href="https://www.facebook.com/share/1DLnu9iaHK/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#FF5722] hover:text-white flex items-center justify-center text-slate-600 transition-colors shadow-sm" title="Facebook">
               <Facebook className="w-4 h-4" />
             </a>
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#FF5722] hover:text-white flex items-center justify-center text-slate-600 transition-colors shadow-sm" title="Instagram">
               <Instagram className="w-4 h-4" />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#FF5722] hover:text-white flex items-center justify-center text-slate-600 transition-colors shadow-sm" title="LinkedIn">
+            <a href="https://www.linkedin.com/in/ali-hassan-a5011240a" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#FF5722] hover:text-white flex items-center justify-center text-slate-600 transition-colors shadow-sm" title="LinkedIn">
               <Linkedin className="w-4 h-4" />
             </a>
           </div>

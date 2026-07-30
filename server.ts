@@ -1332,9 +1332,9 @@ app.get("/api/contact", (req, res) => {
       email: "mai@metazivo.com",
       address: "Office 402, Metazivo Heights, Lahore, Pakistan",
       whatsapp: "+923288518557",
-      facebook: "https://facebook.com/metazivo",
+      facebook: "https://www.facebook.com/share/1DLnu9iaHK/",
       instagram: "https://instagram.com/metazivo",
-      linkedin: "https://linkedin.com/company/metazivo"
+      linkedin: "https://www.linkedin.com/in/ali-hassan-a5011240a"
     };
     saveDb(db);
   }
@@ -2756,9 +2756,9 @@ function generateSchema(pathname: string): string {
           "url": `${domain}/og-image.jpg`
         },
         "sameAs": [
-          "https://www.facebook.com/metazivo",
+          "https://www.facebook.com/share/1DLnu9iaHK/",
           "https://twitter.com/metazivo",
-          "https://www.linkedin.com/company/metazivo",
+          "https://www.linkedin.com/in/ali-hassan-a5011240a",
           "https://www.instagram.com/metazivo"
         ],
         "description": "Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth.",
@@ -2801,9 +2801,9 @@ function generateSchema(pathname: string): string {
         "description": "Metazivo local business headquarters specializing in custom development and technical SEO solutions.",
         "areaServed": ["Islamabad", "Lahore", "Dubai", "New York", "Remote / Global"],
         "sameAs": [
-          "https://www.facebook.com/metazivo",
+          "https://www.facebook.com/share/1DLnu9iaHK/",
           "https://twitter.com/metazivo",
-          "https://www.linkedin.com/company/metazivo",
+          "https://www.linkedin.com/in/ali-hassan-a5011240a",
           "https://www.instagram.com/metazivo"
         ],
         "address": {

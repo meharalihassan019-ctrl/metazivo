@@ -364,6 +364,12 @@ export default function App() {
   useEffect(() => {
     if (currentTab === "blog-detail" && activeBlog) {
       fetch(`/api/posts/${activeBlog.id}/view`, { method: "POST" })
+        .then(res => res.json())
+        .then(data => {
+          if (data.views) {
+            setBlogs(prev => prev.map(b => b.id === activeBlog.id ? { ...b, views: data.views } : b));
+          }
+        })
         .catch(console.error);
     }
   }, [currentTab, activeBlog?.id]);
@@ -2541,7 +2547,15 @@ export default function App() {
                                 <ArrowLeft className="w-4 h-4" />
                               </button>
                               <div>
-                                <h3 className="text-base font-bold text-white">Post Editor Workspace</h3>
+                                <h3 className="text-base font-bold text-white flex items-center gap-3">
+                                  Post Editor Workspace
+                                  {editingPost.id && (
+                                    <span className="text-xs font-mono bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-md border border-blue-500/30">
+                                      <Eye className="w-3 h-3 inline-block mr-1 mb-0.5" />
+                                      {editingPost.views || 0} Views
+                                    </span>
+                                  )}
+                                </h3>
                                 <p className="text-[11px] text-slate-400">Draft blocks, append schemas, audit keyword weight, and use Gemini assist.</p>
                               </div>
                             </div>

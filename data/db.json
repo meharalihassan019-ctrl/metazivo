@@ -1,0 +1,344 @@
+{
+  "posts": [
+    {
+      "id": "post-1",
+      "title": "Website Speed Optimization: The Ultimate Guide for 2026",
+      "slug": "website-speed-optimization-ultimate-guide",
+      "excerpt": "Learn how to optimize your web applications for lightning-fast load times, lower bounce rates, and higher conversion figures in 2026.",
+      "content": "<h2>Why Speed is the Absolute Metric for Business Growth</h2><p>In 2026, web performance is no longer just a technical detail. It is a critical business metric. Every 100ms of latency reduction can boost conversions by up to 8%. Users expect websites to load instantaneously, especially on mobile devices under variable 5G/4G connections.</p><h3>1. Leverage Modern Code Splitting</h3><p>Ensure that you compile your frontend code using efficient bundlers like Vite or esbuild. Split your bundle size into smaller chunks so that the browser only downloads the critical scripts needed for the current viewport.</p><p>Using heavy, generic page builders adds massive amounts of unused CSS and JavaScript, which instantly ruins your Core Web Vitals score.</p><h3>2. High-Performance Image Pipelines</h3><p>Always optimize and compress your images. Metazivo specializes in building automatic conversion pipelines that compress static resources into modern formats like <strong>WebP</strong> and <strong>AVIF</strong>, reducing image weights by over 70% without visible loss of fidelity.</p><h3>3. Server-Side Rendering (SSR) and Edge Caching</h3><p>By pre-rendering your application on a fast server-side environment and caching it close to your users via high-performance CDNs (Cloudflare, bunny.net), you completely bypass database queries on initial navigation, dropping your Time to First Byte (TTFB) to under 50ms.</p>",
+      "status": "published",
+      "publishDate": "2026-07-10T12:00:00Z",
+      "featuredImage": "",
+      "gallery": [],
+      "readingTime": 4,
+      "featured": true,
+      "sticky": true,
+      "categories": [
+        "Website Speed Optimization",
+        "Website Development"
+      ],
+      "tags": [
+        "Performance",
+        "Core Web Vitals",
+        "Web Dev"
+      ],
+      "author": {
+        "name": "Mehar Ali Hassan",
+        "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+        "role": "Admin"
+      },
+      "seoTitle": "Ultimate Website Speed Optimization Guide (2026) | Metazivo",
+      "seoDescription": "Unlock ultimate loading speeds. Learn code-splitting, WebP compression, and edge caching techniques implemented by Metazivo to achieve 99+ on PageSpeed.",
+      "seoKeywords": [
+        "website speed optimization",
+        "core web vitals",
+        "load speed",
+        "page speed optimization"
+      ],
+      "focusKeywords": [
+        "website speed optimization",
+        "page speed"
+      ],
+      "canonicalUrl": "https://metazivo.com/blog/website-speed-optimization-ultimate-guide",
+      "robotsMeta": {
+        "index": true,
+        "follow": true
+      },
+      "openGraph": {
+        "title": "Website Speed Optimization Guide (2026)",
+        "description": "Maximize conversion rates and conquer Google ranking metrics with our complete speed guide.",
+        "image": ""
+      },
+      "twitterCard": {
+        "cardType": "summary_large_image",
+        "title": "Website Speed Optimization Guide (2026) | Metazivo",
+        "description": "Transform your website performance and boost Google rankings with our performance blueprint.",
+        "image": ""
+      },
+      "breadcrumbTitle": "Speed Optimization Guide",
+      "seoScore": 98,
+      "schemas": [
+        {
+          "id": "schema-1",
+          "type": "BlogPosting",
+          "jsonData": "{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"BlogPosting\",\n  \"headline\": \"Website Speed Optimization: The Ultimate Guide for 2026\",\n  \"description\": \"Unlock ultimate loading speeds.\",\n  \"author\": {\n    \"@type\": \"Person\",\n    \"name\": \"Mehar Ali Hassan\"\n  },\n  \"publisher\": {\n    \"@type\": \"Organization\",\n    \"name\": \"Metazivo\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "id": "post-2",
+      "title": "How to Maximize ROI with Advanced Meta Ads Funnels",
+      "slug": "maximize-roi-advanced-meta-ads-funnels",
+      "excerpt": "Stop wasting money on basic boost posts. Learn the structured funnel architectures that scale digital brand conversions safely.",
+      "content": "<h2>Understanding Meta Advertising Funnels</h2><p>Running successful Meta Campaigns in 2026 requires understanding customer journeys. Too many agencies simply press \"Boost Post\" and pray for results. At Metazivo, we leverage algorithmic precision, lookalike clusters, and dynamic creative feeds to maximize your Return on Ad Spend (ROAS).</p><h3>Phase 1: Top of Funnel (TOFU) – Auditory Broad Reach</h3><p>At the top of the funnel, focus on capturing interest. Introduce your brand via immersive vertical short-form videos (Reels) styled with premium typography. Optimize for video view counts or link click volumes to establish a large custom audience pool.</p><h3>Phase 2: Middle of Funnel (MOFU) – Relatable Proof</h3><p>This is where you show trust. Retarget people who watched over 50% of your TOFU videos or visited your website. Present social proof, customer video testimonials, and high-contrast carousel ads detailing Metazivo's extensive service packages.</p><h3>Phase 3: Bottom of Funnel (BOFU) – High Friction Lead Forms</h3><p>Convert warm prospects. Leverage native Lead Gen forms styled with dynamic pricing and custom questions to verify intent. Combine this with automatic email follow-ups to guarantee instant lead nurture loops.</p>",
+      "status": "published",
+      "publishDate": "2026-07-09T09:15:00Z",
+      "featuredImage": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80",
+      "gallery": [],
+      "readingTime": 5,
+      "featured": false,
+      "sticky": false,
+      "categories": [
+        "Meta Ads",
+        "Paid Advertising"
+      ],
+      "tags": [
+        "Meta Ads",
+        "Facebook Marketing",
+        "ROAS",
+        "Lead Generation"
+      ],
+      "author": {
+        "name": "Mehar Ali Hassan",
+        "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+        "role": "Admin"
+      },
+      "seoTitle": "Advanced Meta Ads Funnel Guide for ROI | Metazivo",
+      "seoDescription": "Discover how Metazivo scales paid advertising budgets. Learn lookalike segmentation, dynamic creative optimization, and custom retargeting setups.",
+      "seoKeywords": [
+        "meta ads",
+        "facebook marketing",
+        "paid ads ROI",
+        "lead funnels"
+      ],
+      "focusKeywords": [
+        "meta ads",
+        "ROI"
+      ],
+      "canonicalUrl": "https://metazivo.com/blog/maximize-roi-advanced-meta-ads-funnels",
+      "robotsMeta": {
+        "index": true,
+        "follow": true
+      },
+      "openGraph": {
+        "title": "Maximize ROI with Meta Ads Funnels",
+        "description": "Learn the high-converting paid ad framework built by Metazivo to convert cold audiences.",
+        "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80"
+      },
+      "twitterCard": {
+        "cardType": "summary_large_image",
+        "title": "Maximize Paid Ads ROAS | Metazivo Funnel Secrets",
+        "description": "Ditch boost buttons. Build robust retargeting loops with our agency-certified tutorial.",
+        "image": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80"
+      },
+      "breadcrumbTitle": "Meta Ads Funnels",
+      "seoScore": 94,
+      "schemas": []
+    }
+  ],
+  "media": [
+    {
+      "id": "media-1",
+      "name": "metazivo_logo.png",
+      "url": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80",
+      "size": 45200,
+      "mimeType": "image/png",
+      "folder": "branding",
+      "altText": "Metazivo Digital Agency Minimalist Premium Brand Identity",
+      "caption": "Metazivo Main Brand Mark",
+      "createdAt": "2026-07-11T00:00:00Z"
+    },
+    {
+      "id": "media-2",
+      "name": "web_dev_banner.jpg",
+      "url": "",
+      "size": 245000,
+      "mimeType": "image/jpeg",
+      "folder": "website-development",
+      "altText": "Modern website performance dashboard displaying speed metrics",
+      "caption": "High Conversion Website Architecture",
+      "createdAt": "2026-07-11T01:30:00Z"
+    },
+    {
+      "id": "media-3",
+      "name": "seo_dashboard.png",
+      "url": "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=800&q=80",
+      "size": 198000,
+      "mimeType": "image/png",
+      "folder": "seo",
+      "altText": "Google Search Console performance analysis graphics",
+      "caption": "Comprehensive Technical SEO Auditing Dashboard",
+      "createdAt": "2026-07-11T02:15:00Z"
+    }
+  ],
+  "leads": [
+    {
+      "id": "lead-1",
+      "name": "Sarah Jenkins",
+      "email": "sarah@luminahealth.com",
+      "phone": "+1 415 882 1930",
+      "service": "Website Redesign & Speed Optimization",
+      "message": "Hello Metazivo, we want to redesign our clinic website. Our current site is extremely slow and has terrible SEO. Please let us know your pricing and timelines.",
+      "status": "unread",
+      "createdAt": "2026-07-11T04:22:15Z",
+      "notes": ""
+    },
+    {
+      "id": "lead-2",
+      "name": "Ahmed Khan",
+      "email": "ahmed@khan-ecom.co",
+      "phone": "+92 300 1234567",
+      "service": "Shopify Development & Meta Ads",
+      "message": "We need an elegant Shopify store for our luxury apparel brand and we are looking for Metazivo to run Facebook and Meta ad campaigns.",
+      "status": "replied",
+      "createdAt": "2026-07-10T15:10:00Z",
+      "notes": "Called him. Shared quotation. Scheduled follow up for next Tuesday."
+    }
+  ],
+  "redirects": [
+    {
+      "id": "redir-1",
+      "fromPath": "/old-services",
+      "toPath": "/services",
+      "statusCode": 301,
+      "createdAt": "2026-07-11T03:00:00Z",
+      "hits": 41
+    }
+  ],
+  "views": 12452,
+  "visitors": 4850,
+  "viewsHistory": [
+    {
+      "date": "Jul 5",
+      "views": 1800,
+      "visitors": 650
+    },
+    {
+      "date": "Jul 6",
+      "views": 2100,
+      "visitors": 780
+    },
+    {
+      "date": "Jul 7",
+      "views": 1950,
+      "visitors": 720
+    },
+    {
+      "date": "Jul 8",
+      "views": 2400,
+      "visitors": 910
+    },
+    {
+      "date": "Jul 9",
+      "views": 2050,
+      "visitors": 820
+    },
+    {
+      "date": "Jul 10",
+      "views": 2900,
+      "visitors": 1100
+    },
+    {
+      "date": "Jul 11",
+      "views": 1250,
+      "visitors": 480
+    },
+    {
+      "date": "Jul 30",
+      "views": 2,
+      "visitors": 1
+    }
+  ],
+  "tags": [],
+  "pages": [
+    {
+      "id": "page-home",
+      "title": "Home",
+      "slug": "home",
+      "content": "<h2>Metazivo Agency Core</h2><p>Our custom-built, optimized landing page architecture.</p>",
+      "isSystem": true,
+      "seoTitle": "Metazivo | Premium Digital Agency for High-Performance Architectures",
+      "seoDescription": "Metazivo builds custom high-performance websites, optimized WordPress stores, Shopify websites, and runs advanced Meta and Google Ads campaigns.",
+      "seoKeywords": [
+        "digital agency",
+        "web development",
+        "SEO",
+        "Shopify",
+        "Meta Ads"
+      ]
+    },
+    {
+      "id": "page-about",
+      "title": "About",
+      "slug": "about",
+      "content": "<h2>We are Metazivo</h2><p>A full-stack engineered agency with global roots.</p>",
+      "isSystem": true,
+      "seoTitle": "About Metazivo | Enterprise Digital Architects",
+      "seoDescription": "Metazivo's history, mission, and technical values designed to scale software operations globally.",
+      "seoKeywords": [
+        "about agency",
+        "metazivo developers",
+        "technical agency team"
+      ]
+    },
+    {
+      "id": "page-services",
+      "title": "Services",
+      "slug": "services",
+      "content": "<h2>Premium Agency Services</h2><p>Explore our engineering capabilities.</p>",
+      "isSystem": true,
+      "seoTitle": "Our Services | Custom Systems & Marketing Funnels | Metazivo",
+      "seoDescription": "Web Development, WordPress Custom Themes, Shopify Stores, Advanced SEO audits, and High-ROI Meta advertising.",
+      "seoKeywords": [
+        "services list",
+        "agency services",
+        "seo development",
+        "shop themes"
+      ]
+    },
+    {
+      "id": "page-pricing",
+      "title": "Pricing",
+      "slug": "pricing",
+      "content": "<h2>Transparent Enterprise Packages</h2><p>Select a budget plan suited to your velocity.</p>",
+      "isSystem": true,
+      "seoTitle": "Pricing Packages & CMS Retainers | Metazivo",
+      "seoDescription": "High-performance services tailored to scale starting at competitive rates. Choose Web development or marketing campaigns.",
+      "seoKeywords": [
+        "agency pricing",
+        "monthly retainer fee",
+        "web design pricing"
+      ]
+    },
+    {
+      "id": "page-privacy",
+      "title": "Privacy Policy",
+      "slug": "privacy",
+      "content": "<h2>Privacy and Cookie Management</h2><p>Your privacy and GDPR security protocol details.</p>",
+      "isSystem": true,
+      "seoTitle": "Privacy Policy & GDPR Compliance | Metazivo",
+      "seoDescription": "Understand cookies, analytical node monitoring, and lead verification data storage policies.",
+      "seoKeywords": [
+        "privacy policies",
+        "cookies terms",
+        "gdpr compliance data"
+      ]
+    },
+    {
+      "id": "page-terms",
+      "title": "Terms & Conditions",
+      "slug": "terms",
+      "content": "<h2>Terms of Service Agreement</h2><p>The rules governing the use of the Metazivo network portal.</p>",
+      "isSystem": true,
+      "seoTitle": "Terms & Conditions Agreement | Metazivo",
+      "seoDescription": "Review intellectual property guidelines, payment gateways terms, and service liabilities.",
+      "seoKeywords": [
+        "terms and services",
+        "user license agreement",
+        "client liability terms"
+      ]
+    }
+  ],
+  "settings": {
+    "customHeadTags": ""
+  },
+  "contact": {
+    "phone": "+92 328 8518557",
+    "email": "mai@metazivo.com",
+    "address": "Office 402, Metazivo Heights, Lahore, Pakistan",
+    "whatsapp": "+923288518557",
+    "facebook": "https://www.facebook.com/share/1DLnu9iaHK/",
+    "instagram": "https://instagram.com/metazivo",
+    "linkedin": "https://www.linkedin.com/in/ali-hassan-a5011240a"
+  }
+}
