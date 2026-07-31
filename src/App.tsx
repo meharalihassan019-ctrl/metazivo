@@ -72,7 +72,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ScrollReveal, StaggerReveal, TextReveal } from "./components/ScrollReveal";
 
 // Premium real stock photo URLs (Not AI-generated)
-const hero3D = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"; // Collaborative teamwork real office meeting
+const hero3D = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"; // Collaborative teamwork real office meeting // Real laptop with SEO analytics dashboard
 const coding3D = "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80"; // Clean IDE lines of code on high-res screen
 const seo3D = "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=800&q=80"; // Laptop displaying charts and SEO dashboards
 const funnel3D = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"; // Professional analytics data visualization charts
@@ -795,6 +795,7 @@ export default function App() {
               
               {/* Cinematic Parallax Background Layers */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=2000&q=80')] bg-cover bg-center opacity-[0.03] mix-blend-multiply" />
                 {/* Slower scrolling back grid */}
                 <motion.div 
                   className="absolute inset-0 opacity-[0.06] bg-[radial-gradient(#FF5722_1.5px,transparent_1.5px)] [background-size:24px_24px]"
@@ -819,19 +820,19 @@ export default function App() {
                   <ScrollReveal className="lg:col-span-7 space-y-8 text-center lg:text-left">
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-100 rounded-full text-xs text-[#FF5722] font-mono tracking-wider uppercase shadow-sm">
                       <span className="w-2 h-2 rounded-full bg-[#FF5722] animate-ping" />
-                      <span>Premium Digital Agency</span>
+                      <span>Top Rated Digital Agency</span>
                     </div>
 
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-slate-900">
-                      We Build <br />
+                      Dominate Search with <br />
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF5722] via-[#FF7043] to-[#FF8A50]">
-                        Digital Experiences
+                        SEO, AEO & GEO
                       </span> <br />
-                      That Drive Growth.
+                      For Unstoppable Growth.
                     </h1>
 
                     <p className="text-slate-600 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                      Metazivo is a premier full-service engineering agency specializing in high-converting <strong className="text-slate-900 font-semibold">SEO Algorithms</strong>, <strong className="text-slate-900 font-semibold">Website Development</strong>, and authoritative <strong className="text-slate-900 font-semibold">Content Strategy</strong>.
+                      Metazivo is a premier digital engineering agency engineered for rapid ranking. We specialize in <strong className="text-slate-900 font-semibold">SEO (Search Engine Optimization)</strong>, <strong className="text-slate-900 font-semibold">AEO (Answer Engine Optimization)</strong>, and <strong className="text-slate-900 font-semibold">GEO (Generative Engine Optimization)</strong> to secure top positions in modern AI-driven search landscapes.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">

@@ -6,6 +6,79 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+
+let firestoreDb;
+try {
+  const firebaseConfig = JSON.parse(fs.readFileSync(path.join(process.cwd(), "firebase-applet-config.json"), "utf-8"));
+  const app = initializeApp(firebaseConfig);
+  firestoreDb = getFirestore(app);
+} catch(e) {
+  console.error("Firebase config not found or invalid", e);
+}
+
+async function syncDbToFirestore(data) {
+  if (!firestoreDb) return;
+  try {
+    // Split into smaller docs to avoid 1MB limit if needed, but for now just saving the whole state in chunks
+    const coreState = { 
+      settings: data.settings, 
+      contact: data.contact, 
+      tags: data.tags, 
+      views: data.views, 
+      visitors: data.visitors, 
+      viewsHistory: data.viewsHistory 
+    };
+    await setDoc(doc(firestoreDb, "system", "core"), coreState);
+    await setDoc(doc(firestoreDb, "system", "posts"), { data: data.posts });
+    await setDoc(doc(firestoreDb, "system", "media"), { data: data.media });
+    await setDoc(doc(firestoreDb, "system", "leads"), { data: data.leads });
+    await setDoc(doc(firestoreDb, "system", "pages"), { data: data.pages });
+    await setDoc(doc(firestoreDb, "system", "redirects"), { data: data.redirects });
+    if (data.googleOAuth) {
+      await setDoc(doc(firestoreDb, "system", "googleOAuth"), data.googleOAuth);
+    }
+  } catch(e) {
+    console.error("Failed to sync to firestore", e);
+  }
+}
+
+async function restoreDbFromFirestore() {
+  if (!firestoreDb) return;
+  try {
+    const coreDoc = await getDoc(doc(firestoreDb, "system", "core"));
+    const postsDoc = await getDoc(doc(firestoreDb, "system", "posts"));
+    const mediaDoc = await getDoc(doc(firestoreDb, "system", "media"));
+    const leadsDoc = await getDoc(doc(firestoreDb, "system", "leads"));
+    const pagesDoc = await getDoc(doc(firestoreDb, "system", "pages"));
+    const redirectsDoc = await getDoc(doc(firestoreDb, "system", "redirects"));
+    const oauthDoc = await getDoc(doc(firestoreDb, "system", "googleOAuth"));
+
+    if (coreDoc.exists()) {
+      const core = coreDoc.data();
+      db.settings = core.settings || {};
+      db.contact = core.contact || {};
+      db.tags = core.tags || [];
+      db.views = core.views || 0;
+      db.visitors = core.visitors || 0;
+      db.viewsHistory = core.viewsHistory || [];
+    }
+    if (postsDoc.exists()) db.posts = postsDoc.data().data || [];
+    if (mediaDoc.exists()) db.media = mediaDoc.data().data || [];
+    if (leadsDoc.exists()) db.leads = leadsDoc.data().data || [];
+    if (pagesDoc.exists()) db.pages = pagesDoc.data().data || [];
+    if (redirectsDoc.exists()) db.redirects = redirectsDoc.data().data || [];
+    if (oauthDoc.exists()) db.googleOAuth = oauthDoc.data() || null;
+
+    // Save back to local cache
+    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+    console.log("Restored DB from Firestore");
+  } catch(e) {
+    console.error("Failed to restore from firestore", e);
+  }
+}
+
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
@@ -41,96 +114,7 @@ if (!fs.existsSync(DATA_DIR)) {
 
 // Default Seed Data
 const defaultDb = {
-  posts: [
-    {
-      id: "post-1",
-      title: "Website Speed Optimization: The Ultimate Guide for 2026",
-      slug: "website-speed-optimization-ultimate-guide",
-      excerpt: "Learn how to optimize your web applications for lightning-fast load times, lower bounce rates, and higher conversion figures in 2026.",
-      content: `<h2>Why Speed is the Absolute Metric for Business Growth</h2><p>In 2026, web performance is no longer just a technical detail. It is a critical business metric. Every 100ms of latency reduction can boost conversions by up to 8%. Users expect websites to load instantaneously, especially on mobile devices under variable 5G/4G connections.</p><h3>1. Leverage Modern Code Splitting</h3><p>Ensure that you compile your frontend code using efficient bundlers like Vite or esbuild. Split your bundle size into smaller chunks so that the browser only downloads the critical scripts needed for the current viewport.</p><p>Using heavy, generic page builders adds massive amounts of unused CSS and JavaScript, which instantly ruins your Core Web Vitals score.</p><h3>2. High-Performance Image Pipelines</h3><p>Always optimize and compress your images. Metazivo specializes in building automatic conversion pipelines that compress static resources into modern formats like <strong>WebP</strong> and <strong>AVIF</strong>, reducing image weights by over 70% without visible loss of fidelity.</p><h3>3. Server-Side Rendering (SSR) and Edge Caching</h3><p>By pre-rendering your application on a fast server-side environment and caching it close to your users via high-performance CDNs (Cloudflare, bunny.net), you completely bypass database queries on initial navigation, dropping your Time to First Byte (TTFB) to under 50ms.</p>`,
-      status: "published",
-      publishDate: "2026-07-10T12:00:00Z",
-      featuredImage: "",
-      gallery: [],
-      readingTime: 4,
-      featured: true,
-      sticky: true,
-      categories: ["Website Speed Optimization", "Website Development"],
-      tags: ["Performance", "Core Web Vitals", "Web Dev"],
-      author: {
-        name: "Mehar Ali Hassan",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
-        role: "Admin"
-      },
-      seoTitle: "Ultimate Website Speed Optimization Guide (2026) | Metazivo",
-      seoDescription: "Unlock ultimate loading speeds. Learn code-splitting, WebP compression, and edge caching techniques implemented by Metazivo to achieve 99+ on PageSpeed.",
-      seoKeywords: ["website speed optimization", "core web vitals", "load speed", "page speed optimization"],
-      focusKeywords: ["website speed optimization", "page speed"],
-      canonicalUrl: "https://metazivo.com/blog/website-speed-optimization-ultimate-guide",
-      robotsMeta: { index: true, follow: true },
-      openGraph: {
-        title: "Website Speed Optimization Guide (2026)",
-        description: "Maximize conversion rates and conquer Google ranking metrics with our complete speed guide.",
-        image: ""
-      },
-      twitterCard: {
-        cardType: "summary_large_image",
-        title: "Website Speed Optimization Guide (2026) | Metazivo",
-        description: "Transform your website performance and boost Google rankings with our performance blueprint.",
-        image: ""
-      },
-      breadcrumbTitle: "Speed Optimization Guide",
-      seoScore: 98,
-      schemas: [
-        {
-          id: "schema-1",
-          type: "BlogPosting",
-          jsonData: `{\n  "@context": "https://schema.org",\n  "@type": "BlogPosting",\n  "headline": "Website Speed Optimization: The Ultimate Guide for 2026",\n  "description": "Unlock ultimate loading speeds.",\n  "author": {\n    "@type": "Person",\n    "name": "Mehar Ali Hassan"\n  },\n  "publisher": {\n    "@type": "Organization",\n    "name": "Metazivo"\n  }\n}`
-        }
-      ]
-    },
-    {
-      id: "post-2",
-      title: "How to Maximize ROI with Advanced Meta Ads Funnels",
-      slug: "maximize-roi-advanced-meta-ads-funnels",
-      excerpt: "Stop wasting money on basic boost posts. Learn the structured funnel architectures that scale digital brand conversions safely.",
-      content: `<h2>Understanding Meta Advertising Funnels</h2><p>Running successful Meta Campaigns in 2026 requires understanding customer journeys. Too many agencies simply press "Boost Post" and pray for results. At Metazivo, we leverage algorithmic precision, lookalike clusters, and dynamic creative feeds to maximize your Return on Ad Spend (ROAS).</p><h3>Phase 1: Top of Funnel (TOFU) – Auditory Broad Reach</h3><p>At the top of the funnel, focus on capturing interest. Introduce your brand via immersive vertical short-form videos (Reels) styled with premium typography. Optimize for video view counts or link click volumes to establish a large custom audience pool.</p><h3>Phase 2: Middle of Funnel (MOFU) – Relatable Proof</h3><p>This is where you show trust. Retarget people who watched over 50% of your TOFU videos or visited your website. Present social proof, customer video testimonials, and high-contrast carousel ads detailing Metazivo's extensive service packages.</p><h3>Phase 3: Bottom of Funnel (BOFU) – High Friction Lead Forms</h3><p>Convert warm prospects. Leverage native Lead Gen forms styled with dynamic pricing and custom questions to verify intent. Combine this with automatic email follow-ups to guarantee instant lead nurture loops.</p>`,
-      status: "published",
-      publishDate: "2026-07-09T09:15:00Z",
-      featuredImage: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80",
-      gallery: [],
-      readingTime: 5,
-      featured: false,
-      sticky: false,
-      categories: ["Meta Ads", "Paid Advertising"],
-      tags: ["Meta Ads", "Facebook Marketing", "ROAS", "Lead Generation"],
-      author: {
-        name: "Mehar Ali Hassan",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
-        role: "Admin"
-      },
-      seoTitle: "Advanced Meta Ads Funnel Guide for ROI | Metazivo",
-      seoDescription: "Discover how Metazivo scales paid advertising budgets. Learn lookalike segmentation, dynamic creative optimization, and custom retargeting setups.",
-      seoKeywords: ["meta ads", "facebook marketing", "paid ads ROI", "lead funnels"],
-      focusKeywords: ["meta ads", "ROI"],
-      canonicalUrl: "https://metazivo.com/blog/maximize-roi-advanced-meta-ads-funnels",
-      robotsMeta: { index: true, follow: true },
-      openGraph: {
-        title: "Maximize ROI with Meta Ads Funnels",
-        description: "Learn the high-converting paid ad framework built by Metazivo to convert cold audiences.",
-        image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80"
-      },
-      twitterCard: {
-        cardType: "summary_large_image",
-        title: "Maximize Paid Ads ROAS | Metazivo Funnel Secrets",
-        description: "Ditch boost buttons. Build robust retargeting loops with our agency-certified tutorial.",
-        image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80"
-      },
-      breadcrumbTitle: "Meta Ads Funnels",
-      seoScore: 94,
-      schemas: []
-    }
-  ],
+  posts: [],
   media: [
     {
       id: "media-1",
@@ -235,6 +219,7 @@ function loadDb() {
 function saveDb(data: any) {
   try {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+    syncDbToFirestore(data); // Sync asynchronously
   } catch (err) {
     console.error("Failed to save local DB", err);
   }
@@ -242,6 +227,7 @@ function saveDb(data: any) {
 
 // Ensure database is populated
 let db = loadDb();
+restoreDbFromFirestore();
 
 // -----------------------------------------------------------------------------
 // AI SEO Assistant Initialization
