@@ -13,7 +13,7 @@ let firestoreDb;
 try {
   const firebaseConfig = JSON.parse(fs.readFileSync(path.join(process.cwd(), "firebase-applet-config.json"), "utf-8"));
   const app = initializeApp(firebaseConfig);
-  firestoreDb = getFirestore(app);
+  firestoreDb = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 } catch(e) {
   console.error("Firebase config not found or invalid", e);
 }
@@ -252,6 +252,30 @@ if (process.env.GEMINI_API_KEY) {
 // -----------------------------------------------------------------------------
 // API ENDPOINTS
 // -----------------------------------------------------------------------------
+
+
+// Chatbot API Endpoint
+app.post("/api/gemini/chat", async (req, res) => {
+  if (!ai) {
+    return res.status(500).json({ error: "Gemini API is not configured on the server." });
+  }
+  try {
+    const { messages } = req.body;
+    
+    const response = await ai.models.generateContent({
+      model: "gemini-3.6-flash",
+      contents: messages,
+      config: {
+        systemInstruction: "You are a helpful AI assistant for Metazivo, a premier digital engineering agency. Provide concise, friendly, and professional answers."
+      }
+    });
+    
+    res.json({ text: response.text });
+  } catch (error) {
+    console.error("Error in /api/gemini/chat:", error);
+    res.status(500).json({ error: "Failed to generate response." });
+  }
+});
 
 // Post view tracking incrementer
 app.post("/api/analytics/hit", (req, res) => {

@@ -2,7 +2,6 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-
 import React, { useState } from "react";
 import { Menu, X, Phone, Mail, Globe, ChevronDown, Zap } from "lucide-react";
 
@@ -45,69 +44,17 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm" id="app-header">
-      {/* Top micro header with phone and email */}
-      <div className="w-full bg-slate-50 border-b border-slate-100 py-1.5 px-4 hidden sm:block">
-        <div className="max-w-7xl mx-auto flex justify-between items-center text-xs text-slate-600 font-sans">
-          <div className="flex items-center gap-4">
-            <a href={formattedPhoneLink} className="flex items-center gap-1.5 hover:text-[#FF5722] transition-colors font-medium">
-              <Phone className="w-3.5 h-3.5 text-[#FF5722]" />
-              <span>{displayPhone}</span>
-            </a>
-            <a href={`mailto:${displayEmail}`} className="flex items-center gap-1.5 hover:text-[#FF5722] transition-colors font-medium">
-              <Mail className="w-3.5 h-3.5 text-[#FF5722]" />
-              <span>{displayEmail}</span>
-            </a>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1 text-slate-400 font-medium">
-              <Globe className="w-3 h-3 text-[#FF5722]" /> Premium Agency Network
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Navigation Row */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
-        {/* Brand logo */}
-        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => onNavigate("home")} id="brand-logo">
-          <div className="relative w-10 h-10 flex items-center justify-center transition-all duration-300 group-hover:scale-105">
-            {/* Soft ambient glow behind logo */}
-            <div className="absolute inset-0 bg-[#FF5722]/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            
-            {/* Elegant glass container */}
-            <div className="relative w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center shadow-[0_6px_20px_rgba(255,87,34,0.18)] border border-slate-800/80 overflow-hidden">
-              {/* Inner subtle tech grid/radial highlights */}
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,87,34,0.35)_0%,transparent_60%)]" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(255,138,80,0.1)_0%,transparent_50%)]" />
-              
-              {/* Sophisticated interlocking 'M' & Performance-Growth custom vector logo */}
-              <svg className="w-5.5 h-5.5 text-white transition-all duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path 
-                  d="M4 17.5L8.5 7.5L12.5 14L16.5 7.5L20 14.5" 
-                  stroke="url(#logo-grad-orange)" 
-                  strokeWidth="2.8" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                />
-                <path 
-                  d="M20 14.5V17.5" 
-                  stroke="url(#logo-grad-orange)" 
-                  strokeWidth="2.8" 
-                  strokeLinecap="round" 
-                />
-                {/* Visual anchor nodes */}
-                <circle cx="8.5" cy="7.5" r="1.2" fill="#FFFFFF" />
-                <circle cx="16.5" cy="7.5" r="1.2" fill="#FFFFFF" />
-                <circle cx="4" cy="17.5" r="1" fill="#FF5722" />
-                <circle cx="20" cy="17.5" r="1" fill="#FF8A50" />
-                
-                <defs>
-                  <linearGradient id="logo-grad-orange" x1="4" y1="7" x2="20" y2="18" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#FF5722" />
-                    <stop offset="0.6" stopColor="#FF7A45" />
-                    <stop offset="1" stopColor="#FFA726" />
-                  </linearGradient>
-                </defs>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex justify-between items-center">
+        {/* Brand Logo */}
+        <div 
+          onClick={() => handleNavClick("home")} 
+          className="flex items-center gap-3 cursor-pointer group"
+          id="brand-logo"
+        >
+          <div className="relative w-9 h-9 flex items-center justify-center">
+            <div className="w-full h-full bg-[#FF5722]/10 rounded-[11px] flex items-center justify-center border border-[#FF5722]/20 shadow-sm">
+              <svg className="w-5 h-5 text-[#FF5722]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
           </div>
@@ -132,7 +79,7 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
               key={item.tab}
               id={`nav-link-${item.tab}`}
               onClick={() => handleNavClick(item.tab)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer ${
                 currentTab === item.tab
                   ? "bg-[#FF5722] text-white shadow-[0_4px_12px_rgba(255,87,34,0.25)]"
                   : "text-slate-600 hover:text-[#FF5722] hover:bg-slate-50"
@@ -162,7 +109,7 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
               >
                 <button
                   onClick={() => handleNavClick("tools/website-speed-test")}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                  className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                     currentTab === "tools/website-speed-test"
                       ? "bg-[#FF5722]/10 text-[#FF5722]"
                       : "text-slate-700 hover:text-[#FF5722] hover:bg-slate-50"
@@ -177,12 +124,11 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
               </div>
             )}
           </div>
-
           <button
             key="contact"
             id="nav-link-contact"
             onClick={() => handleNavClick("contact")}
-            className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+            className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer ${
               currentTab === "contact"
                 ? "bg-[#FF5722] text-white shadow-[0_4px_12px_rgba(255,87,34,0.25)]"
                 : "text-slate-600 hover:text-[#FF5722] hover:bg-slate-50"
@@ -200,7 +146,6 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
           >
             Get a Quote
           </button>
-
           {/* Mobile menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -228,7 +173,6 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
               {item.label}
             </button>
           ))}
-
           {/* Mobile Tools Dropdown */}
           <div className="space-y-1">
             <button
@@ -254,7 +198,6 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
               </div>
             )}
           </div>
-
           <button
             onClick={() => handleNavClick("contact")}
             className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium block ${
@@ -265,7 +208,6 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
           >
             Contact
           </button>
-
           <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
             <button
               onClick={() => handleNavClick("contact")}

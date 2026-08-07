@@ -872,6 +872,7 @@ export default function App() {
                   </ScrollReveal>
 
                   {/* Right: Custom parametric 3D Glass Floating Ring and status widgets */}
+                                    {/* Right: Custom parametric 3D Glass Floating Ring and status widgets */}
                   <div 
                     className="lg:col-span-5 relative flex justify-center items-center"
                     onMouseMove={(e) => {
@@ -968,10 +969,9 @@ export default function App() {
                           <div className="text-xs font-bold text-slate-900 font-sans">Always Active</div>
                         </div>
                       </motion.div>
+                    </div>
                   </div>
-                </div>
-
-              </div>
+                  </div>
             </section>
 
             {/* 3. INFINITE MARQUEE TICKER */}

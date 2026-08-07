@@ -32,6 +32,7 @@
     "@tiptap/pm": "^3.29.2",
     "@tiptap/react": "^3.29.2",
     "@tiptap/starter-kit": "^3.29.2",
+    "@types/three": "^0.185.4",
     "@vitejs/plugin-react": "^5.0.4",
     "autoprefixer": "^10.4.21",
     "compression": "^1.8.1",
@@ -45,6 +46,7 @@
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
     "tailwindcss": "^4.1.14",
+    "three": "^0.185.1",
     "typescript": "~5.8.2",
     "vite": "^6.2.3"
   },

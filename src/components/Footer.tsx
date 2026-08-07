@@ -1,230 +1,108 @@
-import React, { useState } from "react";
-import { Phone, Mail, MapPin, ArrowUp, CheckCircle, Globe, Send, Check, Facebook, Instagram, Linkedin } from "lucide-react";
+import React from "react";
 
 interface FooterProps {
   onNavigate: (tab: string) => void;
-  contactInfo?: { phone: string; email: string; address: string };
-  customPages?: { title: string; slug: string; isSystem: boolean }[];
+  contactInfo?: { phone: string; email: string; address?: string };
+  socialLinks?: { type: string; url: string }[]; customPages?: any[];
 }
 
-export default function Footer({ onNavigate, contactInfo, customPages }: FooterProps) {
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
+export default function Footer({ onNavigate, contactInfo, socialLinks }: FooterProps) {
+  const currentYear = new Date().getFullYear();
 
-  const scrollToTop = () => {
+  const handleNavClick = (tab: string) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) {
-      setSubscribed(true);
-      setEmail("");
-      setTimeout(() => setSubscribed(false), 5000);
-    }
+    onNavigate(tab);
   };
 
   const displayPhone = contactInfo?.phone || "+92 328 8518557";
   const displayEmail = contactInfo?.email || "mai@metazivo.com";
-  const displayLocation = "Pakistan";
+  const formattedPhoneLink = `tel:${displayPhone.replace(/[^+\d]/g, "")}`;
 
   return (
-    <footer className="w-full bg-slate-50 border-t border-slate-200 text-slate-600 font-sans mt-auto" id="app-footer">
-      {/* Brand values banner */}
-      <div className="w-full border-b border-slate-200 bg-slate-100/50 py-6 px-4">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <div className="flex flex-col items-center justify-center p-2">
-            <CheckCircle className="w-5 h-5 text-[#FF5722] mb-1" />
-            <span className="text-sm font-semibold text-slate-900">99+ PageSpeed Rating</span>
-            <span className="text-xs text-slate-500">Core Web Vitals Standard</span>
-          </div>
-          <div className="flex flex-col items-center justify-center p-2">
-            <CheckCircle className="w-5 h-5 text-[#FF5722] mb-1" />
-            <span className="text-sm font-semibold text-slate-900">Custom Dynamic CMS</span>
-            <span className="text-xs text-slate-500">Fully integrated dashboard</span>
-          </div>
-          <div className="flex flex-col items-center justify-center p-2">
-            <CheckCircle className="w-5 h-5 text-[#FF5722] mb-1" />
-            <span className="text-sm font-semibold text-slate-900">Zero Bloat Code</span>
-            <span className="text-xs text-slate-500">Fast React Performance</span>
-          </div>
-          <div className="flex flex-col items-center justify-center p-2">
-            <CheckCircle className="w-5 h-5 text-[#FF5722] mb-1" />
-            <span className="text-sm font-semibold text-slate-900">Hostinger Optimized</span>
-            <span className="text-xs text-slate-500">Instant Deployable Package</span>
-          </div>
-        </div>
-      </div>
+    <footer className="bg-slate-900 border-t border-slate-800 py-16 relative overflow-hidden selection:bg-[#FF5722]/30 selection:text-white">
+      {/* Decorative ambient background */}
+      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#FF5722_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-[#FF5722]/10 blur-[120px] rounded-full pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-12 gap-8">
-        {/* Brand identity column - Span 4 */}
-        <div className="md:col-span-4 flex flex-col gap-4">
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => onNavigate("home")}>
-            <div className="relative w-10 h-10 flex items-center justify-center transition-all duration-300 group-hover:scale-105">
-              {/* Soft ambient glow behind logo */}
-              <div className="absolute inset-0 bg-[#FF5722]/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
-              {/* Elegant glass container */}
-              <div className="relative w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center shadow-[0_6px_20px_rgba(255,87,34,0.18)] border border-slate-800/80 overflow-hidden">
-                {/* Inner subtle tech grid/radial highlights */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,87,34,0.35)_0%,transparent_60%)]" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(255,138,80,0.1)_0%,transparent_50%)]" />
-                
-                {/* Sophisticated interlocking 'M' & Performance-Growth custom vector logo */}
-                <svg className="w-5.5 h-5.5 text-white transition-all duration-300 group-hover:scale-110" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path 
-                    d="M4 17.5L8.5 7.5L12.5 14L16.5 7.5L20 14.5" 
-                    stroke="url(#logo-grad-orange-footer)" 
-                    strokeWidth="2.8" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                  />
-                  <path 
-                    d="M20 14.5V17.5" 
-                    stroke="url(#logo-grad-orange-footer)" 
-                    strokeWidth="2.8" 
-                    strokeLinecap="round" 
-                  />
-                  {/* Visual anchor nodes */}
-                  <circle cx="8.5" cy="7.5" r="1.2" fill="#FFFFFF" />
-                  <circle cx="16.5" cy="7.5" r="1.2" fill="#FFFFFF" />
-                  <circle cx="4" cy="17.5" r="1" fill="#FF5722" />
-                  <circle cx="20" cy="17.5" r="1" fill="#FF8A50" />
-                  
-                  <defs>
-                    <linearGradient id="logo-grad-orange-footer" x1="4" y1="7" x2="20" y2="18" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#FF5722" />
-                      <stop offset="0.6" stopColor="#FF7A45" />
-                      <stop offset="1" stopColor="#FFA726" />
-                    </linearGradient>
-                  </defs>
-                </svg>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 sm:gap-8 mb-12">
+          <div className="md:col-span-1 space-y-4">
+            <div 
+              onClick={() => handleNavClick("home")}
+              className="flex items-center gap-3 cursor-pointer group w-fit"
+            >
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <div className="w-full h-full bg-[#FF5722] rounded-[12px] flex items-center justify-center shadow-[0_4px_15px_rgba(255,87,34,0.3)]">
+                  <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
               </div>
-            </div>
-            
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1">
-                <span className="text-xl font-black text-slate-900 tracking-tight font-sans transition-colors group-hover:text-slate-950">
+              <div className="flex flex-col">
+                <span className="text-2xl font-black text-white tracking-tight font-sans transition-colors group-hover:text-slate-200">
                   Meta<span className="text-[#FF5722]">zivo</span>
                 </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722] self-end mb-1.5 animate-pulse" />
               </div>
-              <span className="text-[9px] text-[#FF5722] uppercase tracking-[0.25em] font-mono font-bold -mt-1 group-hover:text-slate-900 transition-colors">
-                Growth Engine
-              </span>
             </div>
+            <p className="text-sm text-slate-400 font-light leading-relaxed max-w-xs mt-4">
+              AI-driven digital infrastructure, advanced SEO architectures, and modern web application development.
+            </p>
           </div>
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Helping businesses grow through professional websites SEO and digital marketing.
+          <div className="md:col-span-1">
+            <h4 className="font-semibold text-white mb-6 uppercase tracking-wider text-xs font-mono flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+              Navigation
+            </h4>
+            <ul className="space-y-3.5">
+              <li><button onClick={() => handleNavClick("home")} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> Home</button></li>
+              <li><button onClick={() => handleNavClick("about")} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> About</button></li>
+              <li><button onClick={() => handleNavClick("services")} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> Services</button></li>
+              <li><button onClick={() => handleNavClick("portfolio")} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> Portfolio</button></li>
+            </ul>
+          </div>
+          <div className="md:col-span-1">
+            <h4 className="font-semibold text-white mb-6 uppercase tracking-wider text-xs font-mono flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+              Resources
+            </h4>
+            <ul className="space-y-3.5">
+              <li><button onClick={() => handleNavClick("blog")} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> Blog</button></li>
+              <li><button onClick={() => handleNavClick("pricing")} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> Pricing</button></li>
+              <li><button onClick={() => handleNavClick("tools/website-speed-test")} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> Free SEO Tools</button></li>
+              <li><button onClick={() => handleNavClick("contact")} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> Contact</button></li>
+            </ul>
+          </div>
+          <div className="md:col-span-1">
+            <h4 className="font-semibold text-white mb-6 uppercase tracking-wider text-xs font-mono flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]" />
+              Contact
+            </h4>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-slate-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <a href={formattedPhoneLink} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors block leading-relaxed">{displayPhone}</a>
+              </li>
+              <li className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-slate-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 6l-10 7L2 6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <a href={`mailto:${displayEmail}`} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors block leading-relaxed">{displayEmail}</a>
+              </li>
+              <li className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-slate-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="10" r="3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <span className="text-slate-400 text-sm leading-relaxed block">
+                  {contactInfo?.address || "Global Operations, Virtual HQ"}
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div className="pt-8 border-t border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-slate-500 text-xs flex items-center gap-2">
+            © {currentYear} Metazivo. All rights reserved. <span className="w-1 h-1 rounded-full bg-slate-700 block" /> <span className="font-mono text-[10px] tracking-widest uppercase">System v4.2</span>
           </p>
-          <div className="flex flex-col gap-2 text-xs">
-            <a href={`tel:${displayPhone.replace(/[^+\d]/g, "")}`} className="flex items-center gap-2 hover:text-slate-900 transition-colors text-slate-600">
-              <Phone className="w-3.5 h-3.5 text-[#FF5722]" />
-              <span>Email: {displayEmail}</span>
-            </a>
-            <a href={`mailto:${displayEmail}`} className="flex items-center gap-2 hover:text-slate-900 transition-colors text-slate-600">
-              <Mail className="w-3.5 h-3.5 text-[#FF5722]" />
-              <span>Phone: {displayPhone}</span>
-            </a>
-            <div className="flex items-center gap-2 text-slate-500">
-              <MapPin className="w-3.5 h-3.5 text-[#FF5722]" />
-              <span>Location: {displayLocation}</span>
-            </div>
+          <div className="flex items-center gap-6">
+            <span className="text-xs text-slate-500 hover:text-[#FF5722] cursor-pointer transition-colors">Privacy Policy</span>
+            <span className="text-xs text-slate-500 hover:text-[#FF5722] cursor-pointer transition-colors">Terms of Service</span>
           </div>
-
-          {/* Social Icons requested */}
-          <div className="flex items-center gap-3 pt-2">
-            <a href="https://www.facebook.com/share/1DLnu9iaHK/" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#FF5722] hover:text-white flex items-center justify-center text-slate-600 transition-colors shadow-sm" title="Facebook">
-              <Facebook className="w-4 h-4" />
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#FF5722] hover:text-white flex items-center justify-center text-slate-600 transition-colors shadow-sm" title="Instagram">
-              <Instagram className="w-4 h-4" />
-            </a>
-            <a href="https://www.linkedin.com/in/ali-hassan-a5011240a" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#FF5722] hover:text-white flex items-center justify-center text-slate-600 transition-colors shadow-sm" title="LinkedIn">
-              <Linkedin className="w-4 h-4" />
-            </a>
-          </div>
-        </div>
-
-        {/* Services shortcut column - Span 3 */}
-        <div className="md:col-span-3">
-          <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Services</h3>
-          <ul className="space-y-2 text-xs text-slate-500">
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">WordPress Development</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">SEO</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Meta Ads</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Google Ads</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">WooCommerce</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Website Maintenance</button></li>
-          </ul>
-        </div>
-
-        {/* Agency Navigation Column - Span 2 */}
-        <div className="md:col-span-2">
-          <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Quick Links</h3>
-          <ul className="space-y-2 text-xs text-slate-500">
-            <li><button onClick={() => onNavigate("home")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Home</button></li>
-            <li><button onClick={() => onNavigate("services")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Services</button></li>
-            <li><button onClick={() => onNavigate("about")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">About</button></li>
-            <li><button onClick={() => onNavigate("blog")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Blog</button></li>
-            <li><button onClick={() => onNavigate("contact")} className="hover:text-[#FF5722] transition-colors cursor-pointer text-left">Contact</button></li>
-          </ul>
-        </div>
-
-        {/* Newsletter Column - Span 3 */}
-        <div className="md:col-span-3 space-y-4">
-          <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">Stay Ahead</h3>
-          <p className="text-xs text-slate-500 leading-relaxed font-light">
-            Subscribe to our newsletter for exclusive SEO blueprints, high-converting copy strategies, and speed audit guides.
-          </p>
-          <form onSubmit={handleSubscribe} className="relative mt-2">
-            <input
-              type="email"
-              required
-              placeholder="Enter your work email..."
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-full px-5 py-3 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#FF5722] pr-12 transition-all shadow-sm"
-            />
-            <button
-              type="submit"
-              className="absolute right-1.5 top-1.5 w-9 h-9 rounded-full bg-[#FF5722] hover:bg-[#FF7043] flex items-center justify-center text-white transition-all shadow-[0_4px_10px_rgba(255,87,34,0.3)] cursor-pointer"
-            >
-              {subscribed ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
-            </button>
-          </form>
-          {subscribed && (
-            <span className="block text-[11px] text-[#FF5722] font-medium animate-fade-in">
-              ✦ Thank you! You've successfully subscribed to our growth feed.
-            </span>
-          )}
-
-          {/* Compliance feed buttons */}
-          <div className="pt-2 flex flex-wrap gap-2">
-            <a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded border border-slate-200 transition-all text-[10px]">
-              <Globe className="w-3 h-3 text-[#FF5722]" />
-              <span>Sitemap</span>
-            </a>
-            <a href="/rss.xml" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded border border-slate-200 transition-all text-[10px]">
-              <Globe className="w-3 h-3 text-[#FF5722]" />
-              <span>RSS Feed</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* Under footer segment */}
-      <div className="w-full bg-slate-100 border-t border-slate-200 py-6 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
-          <span>© 2026 Metazivo. All Rights Reserved.</span>
-          <button
-            onClick={scrollToTop}
-            id="back-to-top"
-            className="p-2 bg-white hover:bg-slate-50 border border-slate-200 hover:text-slate-800 rounded-lg transition-all shadow-sm cursor-pointer"
-            title="Back to Top"
-          >
-            <ArrowUp className="w-4 h-4 text-[#FF5722]" />
-          </button>
         </div>
       </div>
     </footer>
