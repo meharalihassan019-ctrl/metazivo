@@ -1,0 +1,1 @@
+sed -i 's/if (!db.pages) db.pages = \[\];/try { const docRef = doc(firestoreDb, "pages", req.params.id); const d = await getDoc(docRef); if(d.exists()) { const updated = { ...d.data(), ...req.body }; await setDoc(docRef, updated); return res.json(updated); } res.status(404).json({error:"Not found"}); } catch(e) { res.status(500).json({error:"Failed"}); }/g' server.ts

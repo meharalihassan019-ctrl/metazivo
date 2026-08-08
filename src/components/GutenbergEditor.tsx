@@ -37,7 +37,7 @@ const MenuBar = ({ editor, onOpenMediaSelector }: { editor: any, onOpenMediaSele
 
   const addImage = () => {
     onOpenMediaSelector((url: string, altText?: string) => {
-      const alt = altText || window.prompt("Enter SEO alt text for this image:") || "";
+      const alt = altText || "";
       editor.chain().focus().setImage({ src: url, alt }).run();
     });
   };

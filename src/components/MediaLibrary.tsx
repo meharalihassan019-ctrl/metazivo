@@ -41,6 +41,10 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
   }, [assets, selectedAssetId]);
 
   const handleSelectAsset = (asset: MediaAsset) => {
+    if (onSelectAsset) {
+      onSelectAsset(asset.url, asset.altText);
+      return;
+    }
     setSelectedAssetId(asset.id);
     setAltText(asset.altText || "");
     setCaption(asset.caption || "");
@@ -195,8 +199,18 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
                     {asset.name}
                   </div>
                   {selectedAssetId === asset.id && (
-                    <div className="absolute top-2 right-2 p-1 bg-cyan-600 text-white rounded-full">
-                      <Check className="w-3 h-3" />
+                    <div className="absolute inset-0 bg-slate-900/40 flex flex-col items-center justify-center p-2 z-10">
+                      <div className="absolute top-2 right-2 p-1 bg-cyan-600 text-white rounded-full">
+                        <Check className="w-3 h-3" />
+                      </div>
+                      {onSelectAsset && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onSelectAsset(asset.url, asset.altText); }}
+                          className="mt-4 px-4 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-[10px] rounded shadow-lg"
+                        >
+                          INSERT IMAGE
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -205,7 +219,7 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
           )}
         </div>
       </div>
-
+      {/* Right Column: details Panel */}
       {/* Right Column: details Panel */}
       <div className="lg:col-span-1 border-l border-slate-800 bg-slate-950/30 p-4 flex flex-col gap-4 overflow-y-auto max-h-[480px]">
         {selectedAsset ? (
