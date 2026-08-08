@@ -2125,7 +2125,7 @@ Sitemap: https://metazivo.com/sitemap.xml`);
     }));
 
     // Intercept and pre-render any incoming page requests dynamically
-    app.get("*", (req, res) => {
+    app.get("*", async (req, res) => {
       if (!cachedIndexHtml) {
         try {
           cachedIndexHtml = fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
@@ -2135,7 +2135,7 @@ Sitemap: https://metazivo.com/sitemap.xml`);
       }
 
       // Generate pre-rendered code snapshot with updated route title & tags
-      const preRenderedHtml = injectSEOAndPrerender(cachedIndexHtml, req.path);
+      const preRenderedHtml = await injectSEOAndPrerender(cachedIndexHtml, req.path);
 
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       res.setHeader("Cache-Control", "public, max-age=3600"); // Cache HTML responses for 1 hour to pass speed tests with 100% scores
