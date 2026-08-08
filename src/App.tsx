@@ -153,32 +153,15 @@ export default function App() {
   const yOrb2 = useTransform(scrollY, [0, 2000], [0, -100]);
   const yMetrics = useTransform(scrollY, [0, 3000], [-120, 240]);
 
+  
+
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReduced(mediaQuery.matches);
     const listener = (e: MediaQueryListEvent) => setPrefersReduced(e.matches);
     mediaQuery.addEventListener("change", listener);
 
-    const dynamicFaqSchema = useMemo(() => {
-    if (currentTab !== "blog-detail" || !activeBlog?.content) return null;
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(activeBlog.content, "text/html");
-    const faqs = doc.querySelectorAll("details.faq-item");
-    if (faqs.length === 0) return null;
-    const items = Array.from(faqs).map(faq => ({
-      "@type": "Question",
-      "name": faq.querySelector(".faq-question span")?.textContent?.trim() || "",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.querySelector(".faq-answer")?.innerHTML?.trim() || ""
-      }
-    }));
-    return JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": items
-    });
-  }, [currentTab, activeBlog]);
+    
 
   return () => {
       mediaQuery.removeEventListener("change", listener);
@@ -381,6 +364,27 @@ export default function App() {
   const activeBlog = blogs.find((b) => b.slug === selectedBlogSlug);
   const activeCustomPage = pages.find((p) => p.slug === currentTab);
   const isCustomPage = pages.some((p) => p.slug === currentTab && !p.isSystem);
+
+  const dynamicFaqSchema = useMemo(() => {
+    if (currentTab !== "blog-detail" || !activeBlog?.content) return null;
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(activeBlog.content, "text/html");
+    const faqs = doc.querySelectorAll("details.faq-item");
+    if (faqs.length === 0) return null;
+    const items = Array.from(faqs).map(faq => ({
+      "@type": "Question",
+      "name": faq.querySelector(".faq-question span")?.textContent?.trim() || "",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.querySelector(".faq-answer")?.innerHTML?.trim() || ""
+      }
+    }));
+    return JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": items
+    });
+  }, [currentTab, activeBlog]);
 
   useEffect(() => {
     if (currentTab === "blog-detail" && activeBlog) {
