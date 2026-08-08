@@ -2,74 +2,74 @@
   "posts": [],
   "media": [
     {
-      "name": "metazivo_logo.png",
-      "mimeType": "image/png",
-      "createdAt": "2026-07-11T00:00:00Z",
-      "url": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80",
       "size": 45200,
-      "caption": "Metazivo Main Brand Mark",
-      "id": "media-1",
+      "createdAt": "2026-07-11T00:00:00Z",
+      "mimeType": "image/png",
+      "url": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80",
+      "altText": "Metazivo Digital Agency Minimalist Premium Brand Identity",
       "folder": "branding",
-      "altText": "Metazivo Digital Agency Minimalist Premium Brand Identity"
+      "name": "metazivo_logo.png",
+      "id": "media-1",
+      "caption": "Metazivo Main Brand Mark"
     },
     {
       "caption": "High Conversion Website Architecture",
       "createdAt": "2026-07-11T01:30:00Z",
-      "name": "web_dev_banner.jpg",
-      "altText": "Modern website performance dashboard displaying speed metrics",
-      "id": "media-2",
-      "folder": "website-development",
       "size": 245000,
+      "url": "",
+      "id": "media-2",
       "mimeType": "image/jpeg",
-      "url": ""
+      "altText": "Modern website performance dashboard displaying speed metrics",
+      "name": "web_dev_banner.jpg",
+      "folder": "website-development"
     },
     {
-      "name": "seo_dashboard.png",
       "caption": "Comprehensive Technical SEO Auditing Dashboard",
-      "mimeType": "image/png",
-      "url": "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=800&q=80",
-      "altText": "Google Search Console performance analysis graphics",
       "size": 198000,
-      "createdAt": "2026-07-11T02:15:00Z",
       "id": "media-3",
+      "altText": "Google Search Console performance analysis graphics",
+      "mimeType": "image/png",
+      "createdAt": "2026-07-11T02:15:00Z",
+      "url": "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=800&q=80",
+      "name": "seo_dashboard.png",
       "folder": "seo"
     }
   ],
   "leads": [
     {
       "id": "lead-1",
+      "createdAt": "2026-07-11T04:22:15Z",
       "email": "sarah@luminahealth.com",
-      "status": "unread",
-      "notes": "",
+      "service": "Website Redesign & Speed Optimization",
       "message": "Hello Metazivo, we want to redesign our clinic website. Our current site is extremely slow and has terrible SEO. Please let us know your pricing and timelines.",
       "phone": "+1 415 882 1930",
-      "createdAt": "2026-07-11T04:22:15Z",
+      "notes": "",
       "name": "Sarah Jenkins",
-      "service": "Website Redesign & Speed Optimization"
+      "status": "unread"
     },
     {
-      "status": "replied",
       "createdAt": "2026-07-10T15:10:00Z",
-      "phone": "+92 300 1234567",
-      "message": "We need an elegant Shopify store for our luxury apparel brand and we are looking for Metazivo to run Facebook and Meta ad campaigns.",
-      "email": "ahmed@khan-ecom.co",
-      "service": "Shopify Development & Meta Ads",
-      "name": "Ahmed Khan",
+      "status": "replied",
       "notes": "Called him. Shared quotation. Scheduled follow up for next Tuesday.",
-      "id": "lead-2"
+      "name": "Ahmed Khan",
+      "phone": "+92 300 1234567",
+      "email": "ahmed@khan-ecom.co",
+      "id": "lead-2",
+      "message": "We need an elegant Shopify store for our luxury apparel brand and we are looking for Metazivo to run Facebook and Meta ad campaigns.",
+      "service": "Shopify Development & Meta Ads"
     }
   ],
   "redirects": [
     {
-      "hits": 41,
+      "id": "redir-1",
+      "fromPath": "/old-services",
       "createdAt": "2026-07-11T03:00:00Z",
       "toPath": "/services",
-      "fromPath": "/old-services",
-      "id": "redir-1",
+      "hits": 41,
       "statusCode": 301
     }
   ],
-  "views": 12463,
+  "views": 12475,
   "visitors": 4850,
   "viewsHistory": [
     {
@@ -78,24 +78,24 @@
       "visitors": 650
     },
     {
-      "date": "Jul 6",
+      "views": 2100,
       "visitors": 780,
-      "views": 2100
+      "date": "Jul 6"
     },
     {
-      "visitors": 720,
       "views": 1950,
-      "date": "Jul 7"
+      "date": "Jul 7",
+      "visitors": 720
     },
     {
-      "date": "Jul 8",
       "visitors": 910,
+      "date": "Jul 8",
       "views": 2400
     },
     {
-      "date": "Jul 9",
       "views": 2050,
-      "visitors": 820
+      "visitors": 820,
+      "date": "Jul 9"
     },
     {
       "date": "Jul 10",
@@ -103,126 +103,131 @@
       "visitors": 1100
     },
     {
-      "date": "Jul 11",
+      "visitors": 480,
       "views": 1250,
-      "visitors": 480
+      "date": "Jul 11"
     },
     {
       "date": "Jul 30",
-      "visitors": 1,
-      "views": 2
+      "views": 2,
+      "visitors": 1
     },
     {
-      "date": "Jul 31",
       "visitors": 1,
-      "views": 8
+      "views": 8,
+      "date": "Jul 31"
     },
     {
-      "views": 3,
       "visitors": 1,
+      "views": 6,
       "date": "Aug 7"
+    },
+    {
+      "visitors": 1,
+      "date": "Aug 8",
+      "views": 9
     }
   ],
   "tags": [],
   "pages": [
     {
-      "isSystem": true,
+      "content": "<h2>Metazivo Agency Core</h2><p>Our custom-built, optimized landing page architecture.</p>",
+      "seoTitle": "Metazivo | Premium Digital Agency for High-Performance Architectures",
       "slug": "home",
       "id": "page-home",
+      "seoDescription": "Metazivo builds custom high-performance websites, optimized WordPress stores, Shopify websites, and runs advanced Meta and Google Ads campaigns.",
       "title": "Home",
-      "seoTitle": "Metazivo | Premium Digital Agency for High-Performance Architectures",
-      "content": "<h2>Metazivo Agency Core</h2><p>Our custom-built, optimized landing page architecture.</p>",
+      "isSystem": true,
       "seoKeywords": [
         "digital agency",
         "web development",
         "SEO",
         "Shopify",
         "Meta Ads"
-      ],
-      "seoDescription": "Metazivo builds custom high-performance websites, optimized WordPress stores, Shopify websites, and runs advanced Meta and Google Ads campaigns."
+      ]
     },
     {
       "title": "About",
-      "seoDescription": "Metazivo's history, mission, and technical values designed to scale software operations globally.",
+      "id": "page-about",
+      "isSystem": true,
+      "content": "<h2>We are Metazivo</h2><p>A full-stack engineered agency with global roots.</p>",
+      "slug": "about",
       "seoKeywords": [
         "about agency",
         "metazivo developers",
         "technical agency team"
       ],
-      "slug": "about",
-      "isSystem": true,
-      "content": "<h2>We are Metazivo</h2><p>A full-stack engineered agency with global roots.</p>",
-      "id": "page-about",
-      "seoTitle": "About Metazivo | Enterprise Digital Architects"
+      "seoTitle": "About Metazivo | Enterprise Digital Architects",
+      "seoDescription": "Metazivo's history, mission, and technical values designed to scale software operations globally."
     },
     {
-      "seoTitle": "Our Services | Custom Systems & Marketing Funnels | Metazivo",
       "seoDescription": "Web Development, WordPress Custom Themes, Shopify Stores, Advanced SEO audits, and High-ROI Meta advertising.",
-      "title": "Services",
+      "seoTitle": "Our Services | Custom Systems & Marketing Funnels | Metazivo",
       "content": "<h2>Premium Agency Services</h2><p>Explore our engineering capabilities.</p>",
-      "isSystem": true,
       "seoKeywords": [
         "services list",
         "agency services",
         "seo development",
         "shop themes"
       ],
-      "slug": "services",
-      "id": "page-services"
+      "title": "Services",
+      "isSystem": true,
+      "id": "page-services",
+      "slug": "services"
     },
     {
-      "slug": "pricing",
-      "seoDescription": "High-performance services tailored to scale starting at competitive rates. Choose Web development or marketing campaigns.",
-      "seoTitle": "Pricing Packages & CMS Retainers | Metazivo",
+      "title": "Pricing",
+      "content": "<h2>Transparent Enterprise Packages</h2><p>Select a budget plan suited to your velocity.</p>",
       "seoKeywords": [
         "agency pricing",
         "monthly retainer fee",
         "web design pricing"
       ],
-      "isSystem": true,
-      "content": "<h2>Transparent Enterprise Packages</h2><p>Select a budget plan suited to your velocity.</p>",
+      "seoTitle": "Pricing Packages & CMS Retainers | Metazivo",
+      "seoDescription": "High-performance services tailored to scale starting at competitive rates. Choose Web development or marketing campaigns.",
+      "slug": "pricing",
       "id": "page-pricing",
-      "title": "Pricing"
+      "isSystem": true
     },
     {
-      "isSystem": true,
-      "id": "page-privacy",
       "seoDescription": "Understand cookies, analytical node monitoring, and lead verification data storage policies.",
       "seoTitle": "Privacy Policy & GDPR Compliance | Metazivo",
+      "id": "page-privacy",
       "content": "<h2>Privacy and Cookie Management</h2><p>Your privacy and GDPR security protocol details.</p>",
+      "slug": "privacy",
+      "isSystem": true,
       "title": "Privacy Policy",
       "seoKeywords": [
         "privacy policies",
         "cookies terms",
         "gdpr compliance data"
-      ],
-      "slug": "privacy"
+      ]
     },
     {
-      "seoDescription": "Review intellectual property guidelines, payment gateways terms, and service liabilities.",
-      "seoTitle": "Terms & Conditions Agreement | Metazivo",
-      "slug": "terms",
-      "content": "<h2>Terms of Service Agreement</h2><p>The rules governing the use of the Metazivo network portal.</p>",
-      "isSystem": true,
+      "title": "Terms & Conditions",
       "id": "page-terms",
+      "seoTitle": "Terms & Conditions Agreement | Metazivo",
+      "seoDescription": "Review intellectual property guidelines, payment gateways terms, and service liabilities.",
       "seoKeywords": [
         "terms and services",
         "user license agreement",
         "client liability terms"
       ],
-      "title": "Terms & Conditions"
+      "content": "<h2>Terms of Service Agreement</h2><p>The rules governing the use of the Metazivo network portal.</p>",
+      "isSystem": true,
+      "slug": "terms"
     }
   ],
   "settings": {
     "customHeadTags": ""
   },
   "contact": {
-    "phone": "+92 328 8518557",
     "email": "mai@metazivo.com",
-    "address": "Office 402, Metazivo Heights, Lahore, Pakistan",
+    "instagram": "https://instagram.com/metazivo",
     "whatsapp": "+923288518557",
+    "phone": "+92 328 8518557",
     "linkedin": "https://www.linkedin.com/in/ali-hassan-a5011240a",
-    "facebook": "https://www.facebook.com/share/1DLnu9iaHK/",
-    "instagram": "https://instagram.com/metazivo"
+    "address": "Office 402, Metazivo Heights, Lahore, Pakistan",
+    "facebook": "https://www.facebook.com/share/1DLnu9iaHK/"
   }
 }

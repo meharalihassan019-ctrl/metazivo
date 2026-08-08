@@ -97,7 +97,7 @@ export default function Footer({ onNavigate, contactInfo, socialLinks }: FooterP
         </div>
         <div className="pt-8 border-t border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-slate-500 text-xs flex items-center gap-2">
-            © {currentYear} Metazivo. All rights reserved. <span className="w-1 h-1 rounded-full bg-slate-700 block" /> <span className="font-mono text-[10px] tracking-widest uppercase">System v4.2</span>
+            © {currentYear} Metazivo. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <span className="text-xs text-slate-500 hover:text-[#FF5722] cursor-pointer transition-colors">Privacy Policy</span>
