@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+      (function() {
+        const originalFetch = window.fetch;
+        try {
+          Object.defineProperty(window, 'fetch', {
+            get: function() { return originalFetch; },
+            set: function(val) {
+              // Ignore attempts to overwrite window.fetch
+              console.warn("Ignored attempt to overwrite window.fetch");
+            },
+            configurable: true,
+            enumerable: true
+          });
+        } catch (e) {
+          console.error("Could not patch window.fetch", e);
+        }
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Metazivo | WordPress Development, Meta Ads & Expert SEO Agency</title>
+    <meta name="description" content="Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth." />
+    <meta name="keywords" content="SEO agency, WordPress developer, Meta ads expert, social media marketing, SEO content writing, Metazivo" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://metazivo.com/" />
+    
+    <!-- Open Graph (OG) Tags for WhatsApp, Facebook, LinkedIn previews -->
+    <meta property="og:title" content="Metazivo | WordPress Development, Meta Ads & Expert SEO Agency" />
+    <meta property="og:description" content="Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://metazivo.com/" />
+    <meta property="og:image" content="https://metazivo.com/og-image.jpg" />
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Metazivo | WordPress Development, Meta Ads & Expert SEO Agency" />
+    <meta name="twitter:description" content="Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth." />
+    <meta name="twitter:image" content="https://metazivo.com/og-image.jpg" />
+    
+    <!-- Favicon / Brand Styling -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <!-- Technical SEO JSON-LD Structured Data Schema Graph -->
+    <script type="application/ld+json" id="metazivo-schema-org">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://metazivo.com/#organization",
+      "name": "Metazivo",
+      "url": "https://metazivo.com/",
+      "logo": {
+        "@type": "ImageObject",
+        "@id": "https://metazivo.com/#logo",
+        "url": "https://metazivo.com/favicon.svg",
+        "contentUrl": "https://metazivo.com/favicon.svg",
+        "caption": "Metazivo Logo"
+      }
+    }
+  ]
+}
+</script>
+    <script type="module" crossorigin src="/assets/index-Cj_DBMxF.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BdxpRuHz.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

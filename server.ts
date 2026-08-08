@@ -2100,9 +2100,15 @@ Sitemap: https://metazivo.com/sitemap.xml`);
       try {
         let template = fs.readFileSync(path.join(process.cwd(), "index.html"), "utf-8");
         template = await vite.transformIndexHtml(req.path, template);
-        const preRenderedHtml = await injectSEOAndPrerender(template, req.path);
-        res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.send(preRenderedHtml);
+        try {
+          const preRenderedHtml = await injectSEOAndPrerender(template, req.path);
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          res.send(preRenderedHtml);
+        } catch (err) {
+          console.error("SSR rendering error in dev mode, falling back to raw index.html:", err);
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          res.send(template);
+        }
       } catch (e) {
         next(e);
       }
@@ -2134,12 +2140,17 @@ Sitemap: https://metazivo.com/sitemap.xml`);
         }
       }
 
-      // Generate pre-rendered code snapshot with updated route title & tags
-      const preRenderedHtml = await injectSEOAndPrerender(cachedIndexHtml, req.path);
-
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      res.setHeader("Cache-Control", "public, max-age=3600"); // Cache HTML responses for 1 hour to pass speed tests with 100% scores
-      res.send(preRenderedHtml);
+      try {
+        // Generate pre-rendered code snapshot with updated route title & tags
+        const preRenderedHtml = await injectSEOAndPrerender(cachedIndexHtml, req.path);
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.setHeader("Cache-Control", "public, max-age=3600");
+        res.send(preRenderedHtml);
+      } catch (err) {
+        console.error("SSR rendering error, falling back to raw index.html:", err);
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.send(cachedIndexHtml);
+      }
     });
   }
 
