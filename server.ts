@@ -2127,7 +2127,7 @@ Sitemap: https://metazivo.com/sitemap.xml`);
       try {
         const rawHtml = fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
         res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.setHeader("Cache-Control", "public, max-age=3600");
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         res.send(rawHtml);
       } catch (err) {
         console.error("Failed to serve index.html:", err);
