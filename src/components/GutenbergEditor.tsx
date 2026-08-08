@@ -20,9 +20,10 @@ import {
   Heading1, Heading2, Heading3, List, ListOrdered, Quote,
   Minus, Undo, Redo, Link as LinkIcon, Image as ImageIcon,
   Youtube as YoutubeIcon, AlignLeft, AlignCenter, AlignRight, AlignJustify,
-  Table as TableIcon, CheckSquare
+  Table as TableIcon, CheckSquare, HelpCircle
 } from "lucide-react";
 import { MediaAsset } from "../types";
+import { FaqBlock, FaqItem, FaqQuestion, FaqAnswer } from "./tiptap-faq";
 
 interface WordEditorProps {
   value: string;
@@ -129,6 +130,7 @@ function SlashMenu({ editor, position, query, onClose, onOpenMediaSelector }: { 
       }
     },
     { id: 'table', label: 'Table', icon: <TableIcon className="w-4 h-4 mr-2" />, action: () => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run() },
+    { id: 'faq', label: 'FAQ Block', icon: <HelpCircle className="w-4 h-4 mr-2" />, action: () => editor.chain().focus().insertFaq().run() },
   ];
 
   const filteredOptions = options.filter(o => o.label.toLowerCase().includes((query || '').toLowerCase()));
@@ -178,6 +180,10 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
       TextStyle,
       Color,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      FaqBlock,
+      FaqItem,
+      FaqQuestion,
+      FaqAnswer,
       Link.configure({ openOnClick: false, HTMLAttributes: { class: "text-blue-400 underline" } }),
       Image.configure({ HTMLAttributes: { class: "max-w-full h-auto rounded-xl my-4 mx-auto" } }),
       Youtube.configure({ HTMLAttributes: { class: "w-full aspect-video rounded-xl my-4" } }),

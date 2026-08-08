@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Code,
   Layout,
@@ -159,7 +159,28 @@ export default function App() {
     const listener = (e: MediaQueryListEvent) => setPrefersReduced(e.matches);
     mediaQuery.addEventListener("change", listener);
 
-    return () => {
+    const dynamicFaqSchema = useMemo(() => {
+    if (currentTab !== "blog-detail" || !activeBlog?.content) return null;
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(activeBlog.content, "text/html");
+    const faqs = doc.querySelectorAll("details.faq-item");
+    if (faqs.length === 0) return null;
+    const items = Array.from(faqs).map(faq => ({
+      "@type": "Question",
+      "name": faq.querySelector(".faq-question span")?.textContent?.trim() || "",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.querySelector(".faq-answer")?.innerHTML?.trim() || ""
+      }
+    }));
+    return JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": items
+    });
+  }, [currentTab, activeBlog]);
+
+  return () => {
       mediaQuery.removeEventListener("change", listener);
     };
   }, []);
@@ -1966,6 +1987,11 @@ export default function App() {
               dangerouslySetInnerHTML={{ __html: activeBlog.content }}
             />
 
+            {/* Dynamic FAQ Schema */}
+            {dynamicFaqSchema && (
+              <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: dynamicFaqSchema }} />
+            )}
+            
             {/* Injected schemas JSON-LD verification block */}
             {activeBlog.schemas?.map((sch) => (
               <script

@@ -1081,7 +1081,18 @@ export default function WordEditor({ value, onChange, mediaAssets, onOpenMediaSe
                       {block.type === "paragraph" && (
                         <textarea
                           value={attrs.content || ""}
-                          onChange={(e) => updateBlockAttributes(block.id, { content: e.target.value })}
+                          onChange={(e) => {
+  const val = e.target.value;
+  updateBlockAttributes(block.id, { content: val });
+  if (val.trim() === "/") {
+    setIsInserterOpen(true);
+    setInserterQuery("");
+    setTimeout(() => {
+      const searchInput = document.querySelector(".inserter-search") || document.querySelector("input[placeholder*='Search']");
+      if (searchInput) (searchInput as HTMLInputElement).focus();
+    }, 100);
+  }
+}}
                           placeholder="Type paragraph content copy here..."
                           className="w-full bg-transparent text-slate-300 font-sans text-sm focus:outline-none border-none leading-relaxed resize-none h-auto"
                           rows={Math.max(1, (attrs.content || "").split("\n").length)}
