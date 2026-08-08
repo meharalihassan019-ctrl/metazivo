@@ -2100,15 +2100,8 @@ Sitemap: https://metazivo.com/sitemap.xml`);
       try {
         let template = fs.readFileSync(path.join(process.cwd(), "index.html"), "utf-8");
         template = await vite.transformIndexHtml(req.path, template);
-        try {
-          const preRenderedHtml = await injectSEOAndPrerender(template, req.path);
-          res.setHeader("Content-Type", "text/html; charset=utf-8");
-          res.send(preRenderedHtml);
-        } catch (err) {
-          console.error("SSR rendering error in dev mode, falling back to raw index.html:", err);
-          res.setHeader("Content-Type", "text/html; charset=utf-8");
-          res.send(template);
-        }
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.send(template);
       } catch (e) {
         next(e);
       }
@@ -2121,7 +2114,6 @@ Sitemap: https://metazivo.com/sitemap.xml`);
     } catch (e) {
       console.error("Could not pre-load index.html from dist folder", e);
     }
-
     // Serve static files with 1 year cache headers (ignoring index.html which is served dynamically)
     app.use(express.static(distPath, {
       index: false,
@@ -2131,25 +2123,15 @@ Sitemap: https://metazivo.com/sitemap.xml`);
     }));
 
     // Intercept and pre-render any incoming page requests dynamically
-    app.get("*", async (req, res) => {
-      if (!cachedIndexHtml) {
-        try {
-          cachedIndexHtml = fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
-        } catch (e) {
-          return res.status(500).send("Index template not found in dist. Run build first.");
-        }
-      }
-
+    app.get("*", (req, res) => {
       try {
-        // Generate pre-rendered code snapshot with updated route title & tags
-        const preRenderedHtml = await injectSEOAndPrerender(cachedIndexHtml, req.path);
+        const rawHtml = fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
         res.setHeader("Content-Type", "text/html; charset=utf-8");
         res.setHeader("Cache-Control", "public, max-age=3600");
-        res.send(preRenderedHtml);
+        res.send(rawHtml);
       } catch (err) {
-        console.error("SSR rendering error, falling back to raw index.html:", err);
-        res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.send(cachedIndexHtml);
+        console.error("Failed to serve index.html:", err);
+        res.status(500).send("<!DOCTYPE html><html><body>Error loading application index.</body></html>");
       }
     });
   }
@@ -2158,5 +2140,6 @@ Sitemap: https://metazivo.com/sitemap.xml`);
     console.log(`Metazivo Server is running at http://0.0.0.0:${PORT}`);
   });
 }
+
 
 initializeServer();

@@ -365,26 +365,7 @@ export default function App() {
   const activeCustomPage = pages.find((p) => p.slug === currentTab);
   const isCustomPage = pages.some((p) => p.slug === currentTab && !p.isSystem);
 
-  const dynamicFaqSchema = useMemo(() => {
-    if (currentTab !== "blog-detail" || !activeBlog?.content) return null;
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(activeBlog.content, "text/html");
-    const faqs = doc.querySelectorAll("details.faq-item");
-    if (faqs.length === 0) return null;
-    const items = Array.from(faqs).map(faq => ({
-      "@type": "Question",
-      "name": faq.querySelector(".faq-question span")?.textContent?.trim() || "",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.querySelector(".faq-answer")?.innerHTML?.trim() || ""
-      }
-    }));
-    return JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": items
-    });
-  }, [currentTab, activeBlog]);
+  // Dynamic FAQ schema removed to prevent rendering pipe breaks
 
   useEffect(() => {
     if (currentTab === "blog-detail" && activeBlog) {
@@ -1991,10 +1972,7 @@ export default function App() {
               dangerouslySetInnerHTML={{ __html: activeBlog.content }}
             />
 
-            {/* Dynamic FAQ Schema */}
-            {dynamicFaqSchema && (
-              <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: dynamicFaqSchema }} />
-            )}
+            {/* Dynamic FAQ Schema Removed */}
             
             {/* Injected schemas JSON-LD verification block */}
             {activeBlog.schemas?.map((sch) => (
