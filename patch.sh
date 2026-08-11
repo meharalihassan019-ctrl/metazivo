@@ -1,1 +1,1 @@
-sed -i 's|  const handleSelectAsset = (asset: MediaAsset) => {|  const handleSelectAsset = (asset: MediaAsset) => {\n    if (onSelectAsset) {\n      onSelectAsset(asset.url, asset.altText);\n      return;\n    }|g' src/components/MediaLibrary.tsx
+sed -i '/const oldFunctionDeleteMe = () => {/d' src/components/MediaLibrary.tsx

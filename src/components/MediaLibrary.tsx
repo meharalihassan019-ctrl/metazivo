@@ -41,15 +41,12 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
   }, [assets, selectedAssetId]);
 
   const handleSelectAsset = (asset: MediaAsset) => {
-    if (onSelectAsset) {
-      onSelectAsset(asset.url, asset.altText);
-      return;
-    }
     setSelectedAssetId(asset.id);
     setAltText(asset.altText || "");
     setCaption(asset.caption || "");
     setAssetTitle(asset.title || asset.name);
   };
+
 
   const handleSaveMetadata = () => {
     if (!selectedAssetId) return;
