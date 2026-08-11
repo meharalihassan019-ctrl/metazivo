@@ -41,6 +41,11 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
   }, [assets, selectedAssetId]);
 
   const handleSelectAsset = (asset: MediaAsset) => {
+    console.log("Selected asset:", asset);
+    if (!asset.id) {
+      console.error("ASSET HAS NO ID!", asset);
+      asset.id = asset.url; // fallback
+    }
     setSelectedAssetId(asset.id);
     setAltText(asset.altText || "");
     setCaption(asset.caption || "");
@@ -202,8 +207,14 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
                       </div>
                       {onSelectAsset && (
                         <button
-                          onClick={(e) => { e.stopPropagation(); onSelectAsset(asset.url, asset.altText); }}
-                          className="mt-4 px-4 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-[10px] rounded shadow-lg"
+                          type="button"
+                          onClick={(e) => { 
+                            e.preventDefault();
+                            e.stopPropagation(); 
+                            console.log("INSERT IMAGE CLICKED", asset.url);
+                            onSelectAsset(asset.url, asset.altText); 
+                          }}
+                          className="mt-4 px-4 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-[10px] rounded shadow-lg z-50 pointer-events-auto"
                         >
                           INSERT IMAGE
                         </button>
@@ -216,104 +227,6 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
           )}
         </div>
       </div>
-      {/* Right Column: details Panel */}
-      {/* Right Column: details Panel */}
-      <div className="lg:col-span-1 border-l border-slate-800 bg-slate-950/30 p-4 flex flex-col gap-4 overflow-y-auto max-h-[480px]">
-        {selectedAsset ? (
-          <div className="space-y-4">
-            <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">Asset Parameters</h4>
-            <div className="aspect-video w-full rounded-lg overflow-hidden border border-slate-800">
-              <img
-                src={selectedAsset.url}
-                alt={selectedAsset.altText}
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-
-            <div className="space-y-1 font-mono text-[10px] text-slate-400">
-              <div className="flex justify-between">
-                <span>File Size:</span>
-                <span className="text-slate-300 font-semibold">{Math.round(selectedAsset.size / 1024)} KB</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Mime Type:</span>
-                <span className="text-slate-300">{selectedAsset.mimeType}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Folder:</span>
-                <span className="text-slate-300 capitalize">{selectedAsset.folder}</span>
-              </div>
-            </div>
-
-            {/* Editable Fields */}
-            <div className="space-y-3 pt-2 border-t border-slate-900">
-              <div>
-                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-1">Asset Title</label>
-                <input
-                  type="text"
-                  value={assetTitle}
-                  onChange={(e) => setAssetTitle(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-850 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-1">Alt Text (SEO)</label>
-                <input
-                  type="text"
-                  value={altText}
-                  onChange={(e) => setAltText(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-850 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500"
-                  placeholder="Describe image for search crawler indexing"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-1">Caption / Subtitle</label>
-                <input
-                  type="text"
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-850 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2 pt-2">
-              <button
-                type="button"
-                onClick={handleSaveMetadata}
-                className="w-full py-1.5 bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold"
-              >
-                Save Metadata Parameters
-              </button>
-              {onSelectAsset && (
-                <button
-                  type="button"
-                  onClick={handleConfirmSelect}
-                  className="w-full py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-xs font-bold shadow-lg shadow-cyan-500/10"
-                >
-                  Confirm Asset Selection
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => {
-                  onDelete(selectedAsset.id);
-                  setSelectedAssetId(null);
-                }}
-                className="w-full py-1.5 bg-slate-950 hover:bg-red-950 border border-slate-900 text-red-400 hover:text-red-300 rounded-lg text-xs"
-              >
-                Delete File Permanently
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-20 text-slate-600 italic text-xs">
-            Select any file in grid to inspect properties, adjust image alt descriptors, or bind asset url.
-          </div>
-        )}
-      </div>
-
     </div>
   );
 }

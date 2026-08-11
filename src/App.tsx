@@ -3354,7 +3354,7 @@ export default function App() {
               onUpload={handleUploadAsset}
               onDelete={handleDeleteAsset}
               onSelectAsset={(url, altText) => {
-                showMediaSelectorForEditor(url, altText);
+                console.log("Called showMediaSelectorForEditor", url, altText); if (typeof showMediaSelectorForEditor === "function") showMediaSelectorForEditor(url, altText);
                 setShowMediaSelectorForEditor(null);
               }}
             />
