@@ -36,9 +36,7 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
     });
   }, [assets, activeFolder, searchQuery]);
 
-  const selectedAsset = useMemo(() => {
-    return assets.find((a) => a.id === selectedAssetId) || null;
-  }, [assets, selectedAssetId]);
+  const [selectedAsset, setSelectedAsset] = useState<MediaAsset | null>(null);
 
   const handleSelectAsset = (asset: MediaAsset) => {
     console.log("Selected asset:", asset);
@@ -47,6 +45,7 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
       asset.id = asset.url; // fallback
     }
     setSelectedAssetId(asset.id);
+    setSelectedAsset(asset);
     setAltText(asset.altText || "");
     setCaption(asset.caption || "");
     setAssetTitle(asset.title || asset.name);
@@ -76,32 +75,54 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
 
       reader.onload = async (event) => {
         const base64Data = event.target?.result as string;
+        
+        const img = new window.Image();
+        img.onload = async () => {
+          const canvas = document.createElement("canvas");
+          const MAX_WIDTH = 1000;
+          const MAX_HEIGHT = 1000;
+          let width = img.width;
+          let height = img.height;
 
-        // Simulate high-converting WebP compression
-        // reduce byte representation by ~80%
-        const compressedSize = Math.round(file.size * 0.15);
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = Math.round((height * MAX_WIDTH) / width);
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = Math.round((width * MAX_HEIGHT) / height);
+              height = MAX_HEIGHT;
+            }
+          }
 
-        const newAssetData: Partial<MediaAsset> = {
-          name: file.name.replace(/\.[^/.]+$/, "") + ".webp", // convert ext in label
-          mimeType: "image/webp",
-          size: compressedSize,
-          folder: activeFolder === "all" ? "general" : activeFolder,
-          altText: `Optimized alternative text for ${file.name}`,
-          caption: "Compressed WebP Asset",
-          title: file.name,
-          url: base64Data // point source
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+             ctx.drawImage(img, 0, 0, width, height);
+             const compressedBase64 = canvas.toDataURL("image/webp", 0.6);
+             
+             const newAssetData: Partial<MediaAsset> = {
+                name: file.name.replace(/\.[^/.]+$/, "") + ".webp", 
+                mimeType: "image/webp",
+                size: Math.round(compressedBase64.length * 0.75),
+                folder: activeFolder === "all" ? "general" : activeFolder,
+                altText: `Optimized alternative text`,
+                caption: "Compressed WebP Asset",
+                title: file.name,
+                url: compressedBase64
+             };
+             await onUpload(newAssetData);
+          }
+          setUploading(false);
         };
-
-        // Pause to simulate real compression pipelines
-        await new Promise((r) => setTimeout(r, 1200));
-        onUpload(newAssetData);
-        setUploading(false);
+        img.src = base64Data;
       };
 
       reader.readAsDataURL(file);
     }
   };
-
   const handleConfirmSelect = () => {
     if (selectedAsset && onSelectAsset) {
       onSelectAsset(selectedAsset.url, selectedAsset.altText);
@@ -122,6 +143,7 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
                 onClick={() => {
                   setActiveFolder(folder);
                   setSelectedAssetId(null);
+                  setSelectedAsset(null);
                 }}
                 className={`w-full flex items-center gap-2 px-3 py-2 text-xs rounded-lg font-medium transition-all ${
                   activeFolder === folder
@@ -184,7 +206,7 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
               {filteredAssets.map((asset) => (
                 <div
                   key={asset.id}
-                  onClick={() => handleSelectAsset(asset)}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); console.log("DIV CLICKED", asset.id); handleSelectAsset(asset); }}
                   className={`relative aspect-square rounded-xl overflow-hidden cursor-pointer border transition-all ${
                     selectedAssetId === asset.id
                       ? "border-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.3)] bg-slate-900"
@@ -226,6 +248,54 @@ export default function MediaLibrary({ assets, onUpload, onDelete, onSelectAsset
             </div>
           )}
         </div>
+      </div>
+      {/* Right: Inspection / Edit */}
+      <div className="lg:col-span-1 border-l border-slate-800 bg-slate-950/30 p-4">
+        {selectedAsset ? (
+           <div className="space-y-4">
+             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">Asset Properties</h4>
+             <div className="aspect-video bg-slate-900 rounded-lg overflow-hidden border border-slate-800">
+               <img src={selectedAsset.url} alt={selectedAsset.altText} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+             </div>
+             
+             {onSelectAsset && (
+               <button
+                 type="button"
+                 onClick={() => onSelectAsset(selectedAsset.url, selectedAsset.altText)}
+                 className="w-full bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-3 rounded-lg shadow-lg shadow-cyan-500/20"
+               >
+                 OKAY / INSERT IMAGE
+               </button>
+             )}
+
+             <div className="space-y-3">
+               <div>
+                 <label className="text-[10px] text-slate-500 font-bold uppercase">Asset Title</label>
+                 <input type="text" value={assetTitle} onChange={(e) => setAssetTitle(e.target.value)} className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-xs text-white" />
+               </div>
+               <div>
+                 <label className="text-[10px] text-slate-500 font-bold uppercase">Alt Text</label>
+                 <input type="text" value={altText} onChange={(e) => setAltText(e.target.value)} className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-xs text-white" />
+               </div>
+               <div>
+                 <label className="text-[10px] text-slate-500 font-bold uppercase">Caption</label>
+                 <textarea value={caption} onChange={(e) => setCaption(e.target.value)} className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-xs text-white" rows={2} />
+               </div>
+               <div className="flex gap-2">
+                 <button onClick={handleSaveMetadata} className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold py-1.5 rounded flex items-center justify-center gap-1">
+                   <Check className="w-3.5 h-3.5" /> Save Data
+                 </button>
+                 <button onClick={() => onDelete(selectedAssetId!)} className="px-3 bg-red-900/30 hover:bg-red-900/50 text-red-500 rounded border border-red-900/50">
+                   <Trash2 className="w-3.5 h-3.5" />
+                 </button>
+               </div>
+             </div>
+           </div>
+        ) : (
+          <div className="h-full flex items-center justify-center text-center p-6 text-slate-500 text-xs italic">
+            Select any file in grid to inspect properties, adjust image alt descriptors, or bind asset url.
+          </div>
+        )}
       </div>
     </div>
   );
