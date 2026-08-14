@@ -159,7 +159,7 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
 
       {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden w-full border-t border-slate-100 bg-white px-4 py-3 space-y-2 absolute top-full left-0 shadow-xl animate-fade-in">
+        <div className="md:hidden w-full border-t border-slate-100 bg-white px-4 py-3 space-y-2 absolute top-full left-0 shadow-xl animate-fade-in z-[100]">
           {navItems.map((item) => (
             <button
               key={item.tab}

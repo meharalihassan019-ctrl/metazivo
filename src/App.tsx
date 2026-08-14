@@ -272,27 +272,28 @@ export default function App() {
   // Load Initial Full-Stack API Data
   const loadAllData = async () => {
     try {
+      const safeFetch = (url: string) => fetch(url).catch(e => { console.warn(`Blocked or failed request to ${url}:`, e); return null; });
       const [blogsRes, tagsRes, mediaRes, leadsRes, redirectsRes, analyticsRes, pagesRes, contactRes, settingsRes] = await Promise.all([
-        fetch("/api/posts"),
-        fetch("/api/tags"),
-        fetch("/api/media"),
-        fetch("/api/leads"),
-        fetch("/api/redirects"),
-        fetch("/api/analytics"),
-        fetch("/api/pages"),
-        fetch("/api/contact"),
-        fetch("/api/settings")
+        safeFetch("/api/posts"),
+        safeFetch("/api/tags"),
+        safeFetch("/api/media"),
+        safeFetch("/api/leads"),
+        safeFetch("/api/redirects"),
+        safeFetch("/api/analytics"),
+        safeFetch("/api/pages"),
+        safeFetch("/api/contact"),
+        safeFetch("/api/settings")
       ]);
 
-      if (blogsRes.ok) setBlogs(await blogsRes.json());
-      if (tagsRes.ok) setTags(await tagsRes.json());
-      if (mediaRes.ok) setMediaAssets(await mediaRes.json());
-      if (leadsRes.ok) setLeads(await leadsRes.json());
-      if (redirectsRes.ok) setRedirects(await redirectsRes.json());
-      if (analyticsRes.ok) setAnalytics(await analyticsRes.json());
-      if (pagesRes.ok) setPages(await pagesRes.json());
-      if (contactRes.ok) setContactInfo(await contactRes.json());
-      if (settingsRes.ok) setSiteSettings(await settingsRes.json());
+      if (blogsRes?.ok) setBlogs(await blogsRes.json());
+      if (tagsRes?.ok) setTags(await tagsRes.json());
+      if (mediaRes?.ok) setMediaAssets(await mediaRes.json());
+      if (leadsRes?.ok) setLeads(await leadsRes.json());
+      if (redirectsRes?.ok) setRedirects(await redirectsRes.json());
+      if (analyticsRes?.ok) setAnalytics(await analyticsRes.json());
+      if (pagesRes?.ok) setPages(await pagesRes.json());
+      if (contactRes?.ok) setContactInfo(await contactRes.json());
+      if (settingsRes?.ok) setSiteSettings(await settingsRes.json());
     } catch (err) {
       console.error("Failed to sync metrics from server node", err);
     }
