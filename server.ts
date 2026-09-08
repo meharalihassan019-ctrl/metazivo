@@ -90,7 +90,7 @@ import crypto from "crypto";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const PORT = 3000;
 
 app.use(compression());
 
@@ -201,11 +201,20 @@ const defaultDb = {
 
 // Initialize file database
 function loadDb() {
+  if (fs.existsSync(DB_FILE)) {
+    try {
+      const parsed = JSON.parse(fs.readFileSync(DB_FILE, "utf-8"));
+      return { ...defaultDb, ...parsed };
+    } catch (e) {
+      console.error("Error reading db.json", e);
+    }
+  }
   return JSON.parse(JSON.stringify(defaultDb));
 }
 
 function saveDb(data: any) {
   try {
+    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), "utf-8");
     syncDbToFirestore(data); // Sync asynchronously
   } catch (err) {
     console.error("Failed to save local DB", err);
@@ -2068,9 +2077,7 @@ async function injectSEOAndPrerender(html: string, pathname: string): Promise<st
 // VITE DEV SERVER OR STATIC PRODUCTION BUILD ENGINE
 // -----------------------------------------------------------------------------
 async function initializeServer() {
-  console.log("Waiting for Firestore DB to restore...");
-  await restoreDbFromFirestore();
-  console.log("Firestore DB restored.");
+  restoreDbFromFirestore().catch((e) => console.error("Firestore restore background error:", e));
   let distPath = path.join(process.cwd(), "dist");
   if (process.env.NODE_ENV === "production" && !fs.existsSync(distPath)) {
     if (fs.existsSync(path.join(process.cwd(), "index.html"))) {
