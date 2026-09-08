@@ -48,31 +48,28 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ContactForm from "./components/ContactForm";
 import SeoScoreAnalyzer from "./components/SeoScoreAnalyzer";
-import WordEditor from "./components/WordEditor";
-import GutenbergEditor from "./components/GutenbergEditor";
-import SchemaEditor from "./components/SchemaEditor";
-import MediaLibrary from "./components/MediaLibrary";
-import AiAssistant from "./components/AiAssistant";
-import PagesPanel from "./components/PagesPanel";
-import SeoDashboard from "./components/SeoDashboard";
-import WebsiteSpeedTest from "./components/WebsiteSpeedTest";
-import FloatingCyberGlobe from "./components/FloatingCyberGlobe";
-import GlassmorphicCoreEngine from "./components/GlassmorphicCoreEngine";
-import DynamicFloatingGeometry from "./components/DynamicFloatingGeometry";
 import Floating3DRing from "./components/Floating3DRing";
 import ParallaxBentoCard from "./components/ParallaxBentoCard";
 import CustomCursor from "./components/CustomCursor";
 import { servicesData, pricingPlans, portfolioItems, workProcessTimeline, faqList, testimonials, trustedCompanies } from "./data";
 import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary, ContactInfo, CustomPage, SiteSettings } from "./types";
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
-import Preloader from "./components/Preloader";
 import ThreeDTiltCard from "./components/ThreeDTiltCard";
 import MagneticButton from "./components/MagneticButton";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ScrollReveal, StaggerReveal, TextReveal } from "./components/ScrollReveal";
 
+// Code-split heavy admin modules to keep initial bundle ultra-lightweight
+const GutenbergEditor = React.lazy(() => import("./components/GutenbergEditor"));
+const SchemaEditor = React.lazy(() => import("./components/SchemaEditor"));
+const MediaLibrary = React.lazy(() => import("./components/MediaLibrary"));
+const AiAssistant = React.lazy(() => import("./components/AiAssistant"));
+const PagesPanel = React.lazy(() => import("./components/PagesPanel"));
+const SeoDashboard = React.lazy(() => import("./components/SeoDashboard"));
+const WebsiteSpeedTest = React.lazy(() => import("./components/WebsiteSpeedTest"));
+
 // Premium real stock photo URLs (Not AI-generated)
-const hero3D = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"; // Collaborative teamwork real office meeting // Real laptop with SEO analytics dashboard
+const hero3D = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=75"; // Collaborative teamwork real office meeting
 const coding3D = "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80"; // Clean IDE lines of code on high-res screen
 const seo3D = "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=800&q=80"; // Laptop displaying charts and SEO dashboards
 const funnel3D = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"; // Professional analytics data visualization charts
@@ -142,7 +139,7 @@ const getServiceImage = (slug: string) => {
 export default function App() {
   // Navigation Routing States
   const [currentTab, setCurrentTab] = useState<string>("home"); // home, about, services, portfolio, blog, pricing, contact, privacy, terms, service-detail, blog-detail
-  const [appIsLoading, setAppIsLoading] = useState(true);
+  const [appIsLoading, setAppIsLoading] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [prefersReduced, setPrefersReduced] = useState(false);
 
@@ -269,34 +266,49 @@ export default function App() {
   const [renameValue, setRenameValue] = useState("");
   const [tagError, setTagError] = useState("");
 
-  // Load Initial Full-Stack API Data
-  const loadAllData = async () => {
+  // Load Initial Full-Stack API Data (Split between public fast-path and admin lazy-path)
+  const loadPublicData = async () => {
     try {
       const safeFetch = (url: string) => fetch(url).catch(e => { console.warn(`Blocked or failed request to ${url}:`, e); return null; });
-      const [blogsRes, tagsRes, mediaRes, leadsRes, redirectsRes, analyticsRes, pagesRes, contactRes, settingsRes] = await Promise.all([
+      const [blogsRes, pagesRes, contactRes, settingsRes] = await Promise.all([
         safeFetch("/api/posts"),
-        safeFetch("/api/tags"),
-        safeFetch("/api/media"),
-        safeFetch("/api/leads"),
-        safeFetch("/api/redirects"),
-        safeFetch("/api/analytics"),
         safeFetch("/api/pages"),
         safeFetch("/api/contact"),
         safeFetch("/api/settings")
       ]);
 
       if (blogsRes?.ok) setBlogs(await blogsRes.json());
+      if (pagesRes?.ok) setPages(await pagesRes.json());
+      if (contactRes?.ok) setContactInfo(await contactRes.json());
+      if (settingsRes?.ok) setSiteSettings(await settingsRes.json());
+    } catch (err) {
+      console.error("Failed to sync public metrics", err);
+    }
+  };
+
+  const loadAdminData = async () => {
+    try {
+      const safeFetch = (url: string) => fetch(url).catch(e => { console.warn(`Blocked or failed request to ${url}:`, e); return null; });
+      const [tagsRes, mediaRes, leadsRes, redirectsRes, analyticsRes] = await Promise.all([
+        safeFetch("/api/tags"),
+        safeFetch("/api/media"),
+        safeFetch("/api/leads"),
+        safeFetch("/api/redirects"),
+        safeFetch("/api/analytics")
+      ]);
+
       if (tagsRes?.ok) setTags(await tagsRes.json());
       if (mediaRes?.ok) setMediaAssets(await mediaRes.json());
       if (leadsRes?.ok) setLeads(await leadsRes.json());
       if (redirectsRes?.ok) setRedirects(await redirectsRes.json());
       if (analyticsRes?.ok) setAnalytics(await analyticsRes.json());
-      if (pagesRes?.ok) setPages(await pagesRes.json());
-      if (contactRes?.ok) setContactInfo(await contactRes.json());
-      if (settingsRes?.ok) setSiteSettings(await settingsRes.json());
     } catch (err) {
-      console.error("Failed to sync metrics from server node", err);
+      console.error("Failed to sync admin metrics", err);
     }
+  };
+
+  const loadAllData = async () => {
+    await Promise.all([loadPublicData(), loadAdminData()]);
   };
 
   // Helper to parse URL pathname into React route state
@@ -339,8 +351,8 @@ export default function App() {
   };
 
   useEffect(() => {
-    loadAllData();
-    // Record page view on startup
+    loadPublicData();
+    // Record page view on startup asynchronously
     fetch("/api/analytics/hit", { method: "POST" }).catch(() => {});
 
     // Sync route state on startup
@@ -359,6 +371,13 @@ export default function App() {
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
+
+  // Fetch admin operational records only when admin drawer is actively opened
+  useEffect(() => {
+    if (isAdminOpen || isAuthenticated) {
+      loadAdminData();
+    }
+  }, [isAdminOpen, isAuthenticated]);
 
   // Find detailed objects for views
   const activeService = servicesData.find((s) => s.slug === selectedServiceSlug);
@@ -758,12 +777,6 @@ export default function App() {
 
   return (
     <>
-      <AnimatePresence mode="wait">
-        {appIsLoading && (
-          <Preloader onComplete={() => setAppIsLoading(false)} />
-        )}
-      </AnimatePresence>
-
       <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-[#FF5722]/20 selection:text-[#FF5722] relative overflow-hidden">
       
       {/* Interactive premium custom mouse cursor */}
@@ -919,7 +932,12 @@ export default function App() {
                       >
                         <img 
                           src={hero3D} 
-                          alt="Metazivo 3D Hero Illustration" 
+                          alt="Metazivo Expert Digital Engineering and SEO Strategy Team" 
+                          width={800}
+                          height={800}
+                          fetchPriority="high"
+                          loading="eager"
+                          decoding="async"
                           referrerPolicy="no-referrer"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
                         />
@@ -1117,9 +1135,9 @@ export default function App() {
                           <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
                             <ShieldAlert className="w-5 h-5" />
                           </div>
-                          <h4 className="text-lg font-extrabold text-slate-900">Standard Sluggish Templates</h4>
+                          <h3 className="text-lg font-extrabold text-slate-900">Standard Sluggish Templates</h3>
                         </div>
-                        <p className="text-xs text-slate-500 font-light leading-relaxed">
+                        <p className="text-xs text-slate-600 font-light leading-relaxed">
                           Most generic agencies use pre-designed themes with heavy visual builders (Elementor, Divi) and redundant scripts that bloat your backend.
                         </p>
                         <ul className="space-y-3 text-xs text-slate-600">
@@ -1157,7 +1175,7 @@ export default function App() {
                           <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center">
                             <ShieldCheck className="w-5 h-5 text-[#FF5722]" />
                           </div>
-                          <h4 className="text-lg font-extrabold text-white">Metazivo Bespoke Engineering</h4>
+                          <h3 className="text-lg font-extrabold text-white">Metazivo Bespoke Engineering</h3>
                         </div>
                         <p className="text-xs text-slate-400 font-light leading-relaxed">
                           We discard pre-built template noise. We write clean, semantic code from scratch to ensure outstanding speed, design supremacy, and secure architectures.
@@ -1292,8 +1310,8 @@ export default function App() {
                     >
                       <div className="space-y-4">
                         <span className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-800 font-mono border border-slate-200">01</span>
-                        <h4 className="text-sm font-bold text-slate-900">Technical Audit</h4>
-                        <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                        <h3 className="text-sm font-bold text-slate-900">Technical Audit</h3>
+                        <p className="text-[11px] text-slate-600 font-light leading-relaxed">
                           We dissect your current performance, study competitor backlinks, and map out high-value commercial keyword opportunities.
                         </p>
                       </div>
@@ -1309,8 +1327,8 @@ export default function App() {
                     >
                       <div className="space-y-4">
                         <span className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-800 font-mono border border-slate-200">02</span>
-                        <h4 className="text-sm font-bold text-slate-900">Figma UI Blueprint</h4>
-                        <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                        <h3 className="text-sm font-bold text-slate-900">Figma UI Blueprint</h3>
+                        <p className="text-[11px] text-slate-600 font-light leading-relaxed">
                           Our graphic designers craft custom responsive wireframes and cohesive modern styles ensuring flawless user conversions.
                         </p>
                       </div>
@@ -1326,8 +1344,8 @@ export default function App() {
                     >
                       <div className="space-y-4">
                         <span className="w-10 h-10 rounded-full bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-xs font-black text-[#FF5722] font-mono">03</span>
-                        <h4 className="text-sm font-bold text-slate-900">Lightning Dev</h4>
-                        <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                        <h3 className="text-sm font-bold text-slate-900">Lightning Dev</h3>
+                        <p className="text-[11px] text-slate-600 font-light leading-relaxed">
                           We hand-code clean web components or custom blocks. This guarantees a supersonic speed layout and absolute security.
                         </p>
                       </div>
@@ -1343,8 +1361,8 @@ export default function App() {
                     >
                       <div className="space-y-4">
                         <span className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-800 font-mono border border-slate-200">04</span>
-                        <h4 className="text-sm font-bold text-slate-900">Conversion Funnels</h4>
-                        <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                        <h3 className="text-sm font-bold text-slate-900">Conversion Funnels</h3>
+                        <p className="text-[11px] text-slate-600 font-light leading-relaxed">
                           We launch hyper-targeted Meta ad structures alongside persuasive psychological copy, routing buyers directly to your service.
                         </p>
                       </div>
@@ -1360,7 +1378,7 @@ export default function App() {
                     >
                       <div className="space-y-4">
                         <span className="w-10 h-10 rounded-full bg-[#FF5722] flex items-center justify-center text-xs font-black text-white font-mono">05</span>
-                        <h4 className="text-sm font-bold text-white">Active Scaling</h4>
+                        <h3 className="text-sm font-bold text-white">Active Scaling</h3>
                         <p className="text-[11px] text-slate-400 font-light leading-relaxed">
                           Through weekly blogging authority articles, Google map rankings boost, and continuous budget scaling, we secure your market leader status.
                         </p>
@@ -2083,7 +2101,9 @@ export default function App() {
 
         {/* VIEW: WEBSITE SPEED TEST */}
         {currentTab === "tools/website-speed-test" && (
-          <WebsiteSpeedTest onNavigate={handleNavigate} />
+          <React.Suspense fallback={<div className="min-h-[400px] flex items-center justify-center text-slate-400 font-mono text-sm">Loading Speed Diagnostic Tool...</div>}>
+            <WebsiteSpeedTest onNavigate={handleNavigate} />
+          </React.Suspense>
         )}
 
         {/* VIEW 12: CUSTOM DYNAMIC PAGES */}
@@ -2143,7 +2163,8 @@ export default function App() {
           </div>
 
           {/* MAIN CRM PORTAL COMPONENT */}
-          <div className="flex-grow flex overflow-hidden">
+          <React.Suspense fallback={<div className="flex-grow flex items-center justify-center p-8 text-slate-400 font-mono text-xs">Loading Metazivo Control Suite...</div>}>
+            <div className="flex-grow flex overflow-hidden">
             
             {/* If NOT Authenticated: Show login sequence */}
             {!isAuthenticated ? (
@@ -3331,7 +3352,8 @@ export default function App() {
               </div>
             )}
 
-          </div>
+            </div>
+          </React.Suspense>
         </div>
       )}
 

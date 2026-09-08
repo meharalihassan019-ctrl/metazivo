@@ -1653,6 +1653,16 @@ Disallow: /api
 Sitemap: https://metazivo.com/sitemap.xml`);
 });
 
+app.get("/llms.txt", (req, res) => {
+  const filePath = path.join(process.cwd(), "public", "llms.txt");
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=86400");
+  if (fs.existsSync(filePath)) {
+    return res.sendFile(filePath);
+  }
+  res.send(`# Metazivo\n> Premier Digital Agency providing WordPress Development, Technical SEO, Meta Ads Management, Content Writing, and Social Media Growth.\n\nWebsite: https://metazivo.com\nContact: mai@metazivo.com\nPhone: +92 328 8518557\n`);
+});
+
 app.get("/sitemap.xml", async (req, res) => {
   try {
     const [pagesSnap, postsSnap] = await Promise.all([

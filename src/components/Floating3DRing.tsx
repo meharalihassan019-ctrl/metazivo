@@ -14,8 +14,9 @@ interface TorusPoint {
 export default function Floating3DRing() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  const mouseRef = useRef({ x: 0, y: 0 });
   const isHovered = useRef(false);
+  const isVisibleRef = useRef(true);
 
   // Set canvas size
   useEffect(() => {
@@ -23,15 +24,31 @@ export default function Floating3DRing() {
       const canvas = canvasRef.current;
       const container = containerRef.current;
       if (!canvas || !container) return;
-      canvas.width = container.clientWidth * window.devicePixelRatio;
-      canvas.height = container.clientHeight * window.devicePixelRatio;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = container.clientWidth * dpr;
+      canvas.height = container.clientHeight * dpr;
       canvas.style.width = "100%";
       canvas.style.height = "100%";
     };
 
     handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize, { passive: true });
+
+    let observer: IntersectionObserver | null = null;
+    if ("IntersectionObserver" in window && containerRef.current) {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          isVisibleRef.current = entry.isIntersecting;
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(containerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (observer) observer.disconnect();
+    };
   }, []);
 
   // Track mouse position over container
@@ -42,7 +59,7 @@ export default function Floating3DRing() {
     // Normalize to [-1, 1]
     const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-    setMouse({ x, y });
+    mouseRef.current = { x, y };
     isHovered.current = true;
   };
 
@@ -50,7 +67,7 @@ export default function Floating3DRing() {
     isHovered.current = false;
   };
 
-  // Build Torus points
+  // Build Torus points (efficient count: 24 x 12 = 288 points)
   const torusPoints = useRef<TorusPoint[]>([]);
   if (torusPoints.current.length === 0) {
     const points: TorusPoint[] = [];
@@ -58,8 +75,8 @@ export default function Floating3DRing() {
     const r = 30; // Minor radius
     
     // Generate rings
-    const segmentsMajor = 36;
-    const segmentsMinor = 18;
+    const segmentsMajor = 24;
+    const segmentsMinor = 12;
 
     for (let i = 0; i < segmentsMajor; i++) {
       const phi = (i * 2 * Math.PI) / segmentsMajor;
@@ -95,7 +112,7 @@ export default function Floating3DRing() {
     let animationId: number;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     let angleX = 0.5;
@@ -103,7 +120,10 @@ export default function Floating3DRing() {
     let angleZ = 0.2;
 
     const render = () => {
-      const dpr = window.devicePixelRatio || 1;
+      animationId = requestAnimationFrame(render);
+      if (!isVisibleRef.current) return;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const width = canvas.width / dpr;
       const height = canvas.height / dpr;
 
@@ -118,10 +138,10 @@ export default function Floating3DRing() {
       // Gentle floating sine wave
       const floatOffset = Math.sin(Date.now() * 0.0018) * 14;
 
-      // Mouse tracking inertia
-      const scrollY = typeof window !== "undefined" ? window.scrollY : 0;
+      // Mouse tracking inertia via ref (doesn't trigger component re-renders)
+      const mouse = mouseRef.current;
       const targetAngleX = 0.5 + (isHovered.current ? mouse.y * 0.4 : 0);
-      const targetAngleY = 0.6 + (isHovered.current ? mouse.x * 0.5 : 0) + (scrollY * 0.0005);
+      const targetAngleY = 0.6 + (isHovered.current ? mouse.x * 0.5 : 0);
 
       angleX += (targetAngleX - angleX) * 0.08;
       angleY += (targetAngleY - angleY) * 0.08;
@@ -229,12 +249,11 @@ export default function Floating3DRing() {
       ctx.fill();
 
       ctx.restore();
-      animationId = requestAnimationFrame(render);
     };
 
     render();
     return () => cancelAnimationFrame(animationId);
-  }, [mouse]);
+  }, []);
 
   return (
     <div
@@ -252,7 +271,7 @@ export default function Floating3DRing() {
         SYS.CORE_DYNAMICS: <span className="text-[#FF5722]">ACTIVE_TORUS_3D</span>
       </div>
       <div className="absolute top-4 right-6 z-20 text-[10px] font-mono text-slate-500 tracking-wider">
-        PERSPECTIVE_Z: <span className="text-[#FF5722]">{(mouse.x * 100).toFixed(0)}px</span>
+        CORE_ACCELERATION: <span className="text-[#FF5722]">HARDWARE_SYNC</span>
       </div>
     </div>
   );
