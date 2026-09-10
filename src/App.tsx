@@ -50,7 +50,7 @@ import ContactForm from "./components/ContactForm";
 import SeoScoreAnalyzer from "./components/SeoScoreAnalyzer";
 import Floating3DRing from "./components/Floating3DRing";
 import ParallaxBentoCard from "./components/ParallaxBentoCard";
-import CustomCursor from "./components/CustomCursor";
+import HeroVisual from "./components/HeroVisual";
 import { servicesData, pricingPlans, portfolioItems, workProcessTimeline, faqList, testimonials, trustedCompanies } from "./data";
 import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary, ContactInfo, CustomPage, SiteSettings } from "./types";
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
@@ -165,7 +165,6 @@ export default function App() {
     };
   }, []);
 
-  const [heroTilt, setHeroTilt] = useState({ x: 0, y: 0 });
   const [selectedServiceSlug, setSelectedServiceSlug] = useState<string>("");
   const [selectedBlogSlug, setSelectedBlogSlug] = useState<string>("");
 
@@ -313,35 +312,63 @@ export default function App() {
 
   // Helper to parse URL pathname into React route state
   const syncRouteFromPathname = () => {
-    const path = window.location.pathname;
-    if (path === "/" || path === "") {
+    // 1. Normalize duplicate slashes (e.g. /blog//post-slug -> /blog/post-slug)
+    let path = window.location.pathname.replace(/\/+/g, "/");
+    if (path.length > 1 && path.endsWith("/")) {
+      path = path.slice(0, -1);
+    }
+
+    // Auto-clean browser address bar if dirty double slashes existed
+    if (window.location.pathname !== path) {
+      window.history.replaceState({}, "", path + window.location.search + window.location.hash);
+    }
+
+    const lowerPath = path.toLowerCase();
+
+    if (lowerPath === "/" || lowerPath === "") {
       setCurrentTab("home");
-    } else if (path === "/services" || path === "/services/") {
+    } else if (lowerPath === "/services") {
       setCurrentTab("services");
-    } else if (path === "/portfolio" || path === "/portfolio/") {
+    } else if (lowerPath === "/portfolio") {
       setCurrentTab("portfolio");
-    } else if (path === "/blog" || path === "/blog/") {
+    } else if (lowerPath === "/blog") {
       setCurrentTab("blog");
-    } else if (path === "/pricing" || path === "/pricing/") {
+    } else if (lowerPath === "/pricing") {
       setCurrentTab("pricing");
-    } else if (path === "/contact" || path === "/contact/") {
+    } else if (lowerPath === "/contact") {
       setCurrentTab("contact");
-    } else if (path === "/about" || path === "/about/" || path === "/why-choose-us" || path === "/why-choose-us/") {
+    } else if (lowerPath === "/about" || lowerPath === "/why-choose-us") {
       setCurrentTab("about");
-    } else if (path.startsWith("/service/")) {
-      const slug = path.replace("/service/", "").replace("/", "");
+    } else if (lowerPath.startsWith("/service/")) {
+      const slug = path.replace(/^\/service\//i, "").replace(/^\/+|\/+$/g, "");
       setSelectedServiceSlug(slug);
       setCurrentTab("service-detail");
-    } else if (path.startsWith("/blog/")) {
-      const slug = path.replace("/blog/", "").replace("/", "");
+    } else if (lowerPath.startsWith("/blog/")) {
+      const slug = path.replace(/^\/blog\//i, "").replace(/^\/+|\/+$/g, "");
       setSelectedBlogSlug(slug);
       setCurrentTab("blog-detail");
-    } else if (path === "/privacy" || path === "/privacy/") {
+    } else if (lowerPath === "/privacy" || lowerPath === "/privacy-policy") {
       setCurrentTab("privacy");
-    } else if (path === "/terms" || path === "/terms/") {
+    } else if (lowerPath === "/terms" || lowerPath === "/terms-and-conditions") {
       setCurrentTab("terms");
-    } else if (path === "/tools/website-speed-test" || path === "/tools/website-speed-test/") {
+    } else if (
+      lowerPath === "/tools/website-speed-test" ||
+      lowerPath === "/tools" ||
+      lowerPath.startsWith("/tools/") ||
+      lowerPath === "/free-tools/audit" ||
+      lowerPath.startsWith("/free-tools") ||
+      lowerPath === "/free-seo-tools" ||
+      lowerPath === "/free-seo-tool" ||
+      lowerPath === "/seo-tools" ||
+      lowerPath === "/seo-tool" ||
+      lowerPath === "/website-speed-test" ||
+      lowerPath === "/speed-test" ||
+      lowerPath === "/audit"
+    ) {
       setCurrentTab("tools/website-speed-test");
+      if (lowerPath !== "/tools/website-speed-test") {
+        window.history.replaceState({}, "", "/tools/website-speed-test");
+      }
     } else {
       const slug = path.replace(/^\/+/, "").replace(/\/+$/, "");
       if (slug) {
@@ -379,11 +406,19 @@ export default function App() {
     }
   }, [isAdminOpen, isAuthenticated]);
 
-  // Find detailed objects for views
-  const activeService = servicesData.find((s) => s.slug === selectedServiceSlug);
-  const activeBlog = blogs.find((b) => b.slug === selectedBlogSlug);
-  const activeCustomPage = pages.find((p) => p.slug === currentTab);
-  const isCustomPage = pages.some((p) => p.slug === currentTab && !p.isSystem);
+  // Find detailed objects for views with leading/trailing slash resilience
+  const activeService = servicesData.find(
+    (s) => s.slug.replace(/^\/+|\/+$/g, "") === selectedServiceSlug.replace(/^\/+|\/+$/g, "")
+  );
+  const activeBlog = blogs.find(
+    (b) => b.slug.replace(/^\/+|\/+$/g, "") === selectedBlogSlug.replace(/^\/+|\/+$/g, "")
+  );
+  const activeCustomPage = pages.find(
+    (p) => p.slug.replace(/^\/+|\/+$/g, "") === currentTab.replace(/^\/+|\/+$/g, "")
+  );
+  const isCustomPage = pages.some(
+    (p) => p.slug.replace(/^\/+|\/+$/g, "") === currentTab.replace(/^\/+|\/+$/g, "") && !p.isSystem
+  );
 
   // Dynamic FAQ schema removed to prevent rendering pipe breaks
 
@@ -472,26 +507,110 @@ export default function App() {
 
   // Nav Handlers
   const handleNavigate = (tab: string) => {
-    setCurrentTab(tab);
     window.scrollTo({ top: 0, behavior: "smooth" });
-    const path = tab === "home" ? "/" : `/${tab}`;
-    window.history.pushState({}, "", path);
+    if (tab === "home") {
+      setCurrentTab("home");
+      window.history.pushState({}, "", "/");
+    } else if (
+      tab === "tools/website-speed-test" ||
+      tab === "free-tools/audit" ||
+      tab === "free-seo-tools" ||
+      tab === "seo-tools" ||
+      tab === "tools"
+    ) {
+      setCurrentTab("tools/website-speed-test");
+      window.history.pushState({}, "", "/tools/website-speed-test");
+    } else {
+      const cleanTab = tab.replace(/^\/+|\/+$/g, "");
+      setCurrentTab(cleanTab);
+      window.history.pushState({}, "", `/${cleanTab}`);
+    }
   };
 
   const handleOpenService = (slug: string) => {
-    setSelectedServiceSlug(slug);
+    const cleanSlug = slug.replace(/^\/+|\/+$/g, "");
+    setSelectedServiceSlug(cleanSlug);
     setCurrentTab("service-detail");
     window.scrollTo({ top: 0, behavior: "smooth" });
-    window.history.pushState({}, "", `/service/${slug}`);
+    window.history.pushState({}, "", `/service/${cleanSlug}`);
   };
 
   const handleOpenBlog = (slug: string) => {
-    setSelectedBlogSlug(slug);
+    const cleanSlug = slug.replace(/^\/+|\/+$/g, "");
+    setSelectedBlogSlug(cleanSlug);
     setCurrentTab("blog-detail");
     window.scrollTo({ top: 0, behavior: "smooth" });
-    window.history.pushState({}, "", `/blog/${slug}`);
+    window.history.pushState({}, "", `/blog/${cleanSlug}`);
     // Hit view metric
     fetch("/api/analytics/hit", { method: "POST" }).catch(() => {});
+  };
+
+  // Intercept anchor clicks within blog articles so internal links navigate without page reload
+  const handleArticleLinkClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = (e.target as HTMLElement).closest("a");
+    if (!target) return;
+    
+    const href = target.getAttribute("href");
+    if (!href) return;
+
+    // Check if it is an internal link or metazivo.com link
+    const isInternal = 
+      href.startsWith("/") || 
+      href.startsWith("#") ||
+      href.includes("metazivo.com") ||
+      href.includes(window.location.host);
+
+    if (isInternal) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Extract path
+      let cleanPath = href.replace(/^https?:\/\/(www\.)?metazivo\.com/i, "");
+      cleanPath = cleanPath.replace(new RegExp(`^https?:\\/\\/${window.location.host}`, 'i'), '');
+      
+      const linkText = (target.innerText || "").toLowerCase();
+
+      // If href was empty, root slash, or just domain:
+      if (!cleanPath || cleanPath === "/" || cleanPath === "") {
+        if (linkText.includes("seo tool") || linkText.includes("speed") || linkText.includes("audit")) {
+          handleNavigate("tools/website-speed-test");
+          return;
+        }
+        if (linkText.includes("responsive") || linkText.includes("design") || linkText.includes("web dev")) {
+          handleOpenService("custom-web-development");
+          return;
+        }
+        handleNavigate("home");
+        return;
+      }
+
+      // Check special aliases
+      const lower = cleanPath.toLowerCase().replace(/\/+$/, "");
+      if (
+        lower === "/tools" || 
+        lower.startsWith("/tools/") ||
+        lower.startsWith("/free-tools") ||
+        lower.startsWith("/free-seo-tool") ||
+        lower.startsWith("/seo-tool") ||
+        lower.startsWith("/speed-test") ||
+        lower.startsWith("/audit") ||
+        linkText.includes("seo tool") ||
+        linkText.includes("free seo tools")
+      ) {
+        handleNavigate("tools/website-speed-test");
+      } else if (lower.startsWith("/blog/")) {
+        const slug = lower.replace("/blog/", "").replace(/^\/+|\/+$/g, "");
+        handleOpenBlog(slug);
+      } else if (lower.startsWith("/service/")) {
+        const slug = lower.replace("/service/", "").replace(/^\/+|\/+$/g, "");
+        handleOpenService(slug);
+      } else if (linkText.includes("responsive") || linkText.includes("web development") || linkText.includes("website design")) {
+        handleOpenService("custom-web-development");
+      } else {
+        const tab = lower.replace(/^\/+|\/+$/g, "");
+        handleNavigate(tab || "home");
+      }
+    }
   };
 
   // -----------------------------------------------------------------------------
@@ -779,9 +898,6 @@ export default function App() {
     <>
       <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-[#FF5722]/20 selection:text-[#FF5722] relative overflow-hidden">
       
-      {/* Interactive premium custom mouse cursor */}
-      <CustomCursor />
-      
       {/* Decorative Background Glow Blobs */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-100/40 rounded-full blur-[120px]"></div>
@@ -891,112 +1007,9 @@ export default function App() {
                     </div>
                   </ScrollReveal>
 
-                  {/* Right: Custom parametric 3D Glass Floating Ring and status widgets */}
-                                    {/* Right: Custom parametric 3D Glass Floating Ring and status widgets */}
-                  <div 
-                    className="lg:col-span-5 relative flex justify-center items-center"
-                    onMouseMove={(e) => {
-                      if (prefersReduced) return;
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const x = (e.clientX - rect.left) / rect.width - 0.5; // -0.5 to 0.5
-                      const y = (e.clientY - rect.top) / rect.height - 0.5; // -0.5 to 0.5
-                      setHeroTilt({ x, y });
-                    }}
-                    onMouseLeave={() => {
-                      setHeroTilt({ x: 0, y: 0 });
-                    }}
-                  >
-                    <div className="absolute w-[450px] h-[450px] bg-[#FF5722]/5 rounded-full blur-[100px] pointer-events-none" />
-                    
-                    {/* Floating badges with translateZ offsets */}
-                    <div className="relative w-full flex justify-center items-center">
-                      {/* Floating3DRing acts as an ambient tech backdrop */}
-                      <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-                        <ErrorBoundary fallbackName="3D Floating Ring">
-                          <Floating3DRing />
-                        </ErrorBoundary>
-                      </div>
-
-                      {/* Main Hero 3D Picture with elegant tilt glass frame */}
-                      <motion.div 
-                        className="relative z-10 w-4/5 aspect-square rounded-[32px] overflow-hidden border border-slate-200/60 shadow-2xl bg-white group"
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        style={prefersReduced ? {} : {
-                          rotateX: heroTilt.y * -25,
-                          rotateY: heroTilt.x * 25,
-                          transformStyle: "preserve-3d",
-                          perspective: 1000
-                        }}
-                      >
-                        <img 
-                          src={hero3D} 
-                          alt="Metazivo Expert Digital Engineering and SEO Strategy Team" 
-                          width={800}
-                          height={800}
-                          fetchPriority="high"
-                          loading="eager"
-                          decoding="async"
-                          referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent pointer-events-none" />
-                      </motion.div>
-                      
-                      {/* Floating badge 1 */}
-                      <motion.div 
-                        className="absolute -top-6 -right-2 z-20 bg-white/95 backdrop-blur-md border border-orange-100 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-[0_10px_30px_rgba(255,87,34,0.1)]"
-                        style={prefersReduced ? {} : {
-                          x: heroTilt.x * 45,
-                          y: heroTilt.y * 45
-                        }}
-                        animate={prefersReduced ? {} : {
-                          y: [0, -8, 0]
-                        }}
-                        transition={{
-                          y: {
-                            duration: 5,
-                            repeat: Infinity,
-                            ease: [0.445, 0.05, 0.55, 0.95]
-                          }
-                        }}
-                      >
-                        <div className="w-8 h-8 rounded-full bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center text-[#FF5722] text-xs font-bold font-mono">SEO</div>
-                        <div>
-                          <div className="text-[9px] text-slate-500 font-mono uppercase tracking-wider">SEO Optimization</div>
-                          <div className="text-xs font-bold text-slate-900 font-sans">99.2% Score</div>
-                        </div>
-                      </motion.div>
-
-                      {/* Floating badge 2 */}
-                      <motion.div 
-                        className="absolute -bottom-4 -left-2 z-20 bg-white/95 backdrop-blur-md border border-slate-150 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
-                        style={prefersReduced ? {} : {
-                          x: heroTilt.x * -35,
-                          y: heroTilt.y * -35
-                        }}
-                        animate={prefersReduced ? {} : {
-                          y: [0, 8, 0]
-                        }}
-                        transition={{
-                          y: {
-                            duration: 7,
-                            repeat: Infinity,
-                            ease: [0.445, 0.05, 0.55, 0.95],
-                            delay: 0.5
-                          }
-                        }}
-                      >
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#FF5722] animate-ping" />
-                        <div>
-                          <div className="text-[9px] text-slate-500 font-mono uppercase tracking-wider">Campaign Tracking</div>
-                          <div className="text-xs font-bold text-slate-900 font-sans">Always Active</div>
-                        </div>
-                      </motion.div>
-                    </div>
-                  </div>
-                  </div>
+                  {/* Right: High-performance 0-rerender 3D Parallax Visual */}
+                  <HeroVisual prefersReduced={prefersReduced} heroImage={hero3D} />
+                </div>
             </section>
 
             {/* 3. INFINITE MARQUEE TICKER */}
@@ -1989,6 +2002,7 @@ export default function App() {
             <div
               className="prose prose-slate max-w-none text-slate-700 text-sm leading-relaxed space-y-6"
               dangerouslySetInnerHTML={{ __html: activeBlog.content }}
+              onClick={handleArticleLinkClick}
             />
 
             {/* Dynamic FAQ Schema Removed */}

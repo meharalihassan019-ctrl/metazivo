@@ -102,6 +102,59 @@ app.use((req, res, next) => {
   next();
 });
 
+// URL Normalization and SEO 301 Redirect Middleware
+app.use((req, res, next) => {
+  // Skip API, assets, and internal files
+  if (req.path.startsWith("/api") || req.path.startsWith("/@") || req.path.startsWith("/src") || req.path.includes(".")) {
+    return next();
+  }
+
+  // 1. Redirect duplicate slashes (e.g. /blog//post-slug -> /blog/post-slug)
+  if (req.path.length > 1 && req.path.includes("//")) {
+    const cleanPath = req.path.replace(/\/+/g, "/");
+    const query = req.url.slice(req.path.length);
+    return res.redirect(301, cleanPath + query);
+  }
+
+  const normalizedPath = req.path.toLowerCase().replace(/\/+$/, "");
+
+  // 2. SEO Tool Canonical Redirects: Route all tool aliases directly to the Free SEO & Speed Tool
+  const toolAliases = [
+    "/tools",
+    "/free-tools/audit",
+    "/free-tools",
+    "/free-seo-tools",
+    "/free-seo-tool",
+    "/seo-tools",
+    "/seo-tool",
+    "/website-speed-test",
+    "/speed-test",
+    "/audit"
+  ];
+  if (toolAliases.includes(normalizedPath)) {
+    const query = req.url.slice(req.path.length);
+    return res.redirect(301, `/tools/website-speed-test${query}`);
+  }
+
+  // 3. Trailing slash normalization for clean canonical indexing
+  if (req.path.length > 1 && req.path.endsWith("/")) {
+    const cleanPath = req.path.slice(0, -1);
+    const query = req.url.slice(req.path.length);
+    return res.redirect(301, cleanPath + query);
+  }
+
+  // 4. Custom Database 301 Redirect Rules
+  if (db?.redirects && Array.isArray(db.redirects)) {
+    const matchedRule = db.redirects.find((r: any) => r.fromPath === req.path || r.fromPath === normalizedPath);
+    if (matchedRule) {
+      matchedRule.hits = (matchedRule.hits || 0) + 1;
+      return res.redirect(matchedRule.statusCode || 301, matchedRule.toPath);
+    }
+  }
+
+  next();
+});
+
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
@@ -440,10 +493,17 @@ app.get("/api/posts/:slug", async (req, res) => {
 
 app.post("/api/posts", async (req, res) => {
   try {
+    const rawSlug = (req.body.slug || req.body.title || `post-${Date.now()}`).toString();
+    const cleanSlug = rawSlug
+      .replace(/^https?:\/\/[^\/]+/i, "")
+      .replace(/metazivo\.com\/?/i, "")
+      .replace(/^\/+|\/+$/g, "")
+      .trim();
+
     const newPost = {
       id: `post-${Date.now()}`,
       title: req.body.title || "Untitled Draft",
-      slug: req.body.slug || `untitled-draft-${Date.now()}`,
+      slug: cleanSlug || `untitled-draft-${Date.now()}`,
       excerpt: req.body.excerpt || "",
       content: req.body.content || "",
       status: req.body.status || "draft",
@@ -495,9 +555,18 @@ app.put("/api/posts/:id", async (req, res) => {
     if (!postDoc.exists()) {
       return res.status(404).json({ error: "Post not found" });
     }
+    const updatePayload = { ...req.body };
+    if (updatePayload.slug) {
+      updatePayload.slug = updatePayload.slug
+        .toString()
+        .replace(/^https?:\/\/[^\/]+/i, "")
+        .replace(/metazivo\.com\/?/i, "")
+        .replace(/^\/+|\/+$/g, "")
+        .trim();
+    }
     const updatedPost = {
       ...postDoc.data(),
-      ...req.body
+      ...updatePayload
     };
     await setDoc(postRef, updatedPost);
     res.json(updatedPost);
@@ -1676,17 +1745,23 @@ app.get("/sitemap.xml", async (req, res) => {
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
-    const staticRoutes = ["", "/about", "/services", "/portfolio", "/pricing", "/blog", "/contact", "/privacy-policy", "/terms", "/free-tools/audit"];
+    const staticRoutes = ["", "/about", "/services", "/portfolio", "/pricing", "/blog", "/contact", "/privacy-policy", "/terms", "/tools/website-speed-test"];
     staticRoutes.forEach(route => {
       xml += `\n  <url>\n    <loc>${baseUrl}${route}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>${route === "" ? "1.0" : "0.8"}</priority>\n  </url>`;
     });
 
     pages.forEach(page => {
-      xml += `\n  <url>\n    <loc>${baseUrl}/page/${page.slug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`;
+      const cleanSlug = (page.slug || "").replace(/^\/+|\/+$/g, "");
+      if (cleanSlug) {
+        xml += `\n  <url>\n    <loc>${baseUrl}/page/${cleanSlug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`;
+      }
     });
 
     posts.forEach(post => {
-      xml += `\n  <url>\n    <loc>${baseUrl}/blog/${post.slug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
+      const cleanSlug = (post.slug || "").replace(/^\/+|\/+$/g, "");
+      if (cleanSlug) {
+        xml += `\n  <url>\n    <loc>${baseUrl}/blog/${cleanSlug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
+      }
     });
 
     xml += `\n</urlset>`;
@@ -1711,7 +1786,10 @@ app.get("/rss.xml", async (req, res) => {
   <atom:link href="${baseUrl}/rss.xml" rel="self" type="application/rss+xml" />`;
 
     posts.forEach(post => {
-      xml += `\n  <item>\n    <title>${post.title}</title>\n    <link>${baseUrl}/blog/${post.slug}</link>\n    <description><![CDATA[${post.excerpt}]]></description>\n    <pubDate>${new Date(post.publishDate).toUTCString()}</pubDate>\n    <guid>${baseUrl}/blog/${post.slug}</guid>\n  </item>`;
+      const cleanSlug = (post.slug || "").replace(/^\/+|\/+$/g, "");
+      if (cleanSlug) {
+        xml += `\n  <item>\n    <title>${post.title}</title>\n    <link>${baseUrl}/blog/${cleanSlug}</link>\n    <description><![CDATA[${post.excerpt}]]></description>\n    <pubDate>${new Date(post.publishDate).toUTCString()}</pubDate>\n    <guid>${baseUrl}/blog/${cleanSlug}</guid>\n  </item>`;
+      }
     });
 
     xml += `\n</channel>\n</rss>`;
