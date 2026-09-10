@@ -52,7 +52,7 @@ import Floating3DRing from "./components/Floating3DRing";
 import ParallaxBentoCard from "./components/ParallaxBentoCard";
 import HeroVisual from "./components/HeroVisual";
 import { servicesData, pricingPlans, portfolioItems, workProcessTimeline, faqList, testimonials, trustedCompanies } from "./data";
-import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary, ContactInfo, CustomPage, SiteSettings } from "./types";
+import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary, ContactInfo, CustomPage, SiteSettings, AgencyService } from "./types";
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import ThreeDTiltCard from "./components/ThreeDTiltCard";
 import MagneticButton from "./components/MagneticButton";
@@ -134,6 +134,71 @@ const getServiceImage = (slug: string) => {
     default:
       return funnel3D;
   }
+};
+
+// Comprehensive service slug and alias resolver to ensure 100% resilient routing
+export const resolveService = (rawSlug: string): AgencyService | undefined => {
+  if (!rawSlug) return undefined;
+  const clean = rawSlug
+    .toLowerCase()
+    .replace(/^https?:\/\/[^\/]+/i, "")
+    .replace(/metazivo\.com\/?/i, "")
+    .replace(/^\/+|\/+$/g, "")
+    .trim();
+
+  // 1. Direct slug match
+  const exact = servicesData.find(
+    (s) => s.slug.toLowerCase().replace(/^\/+|\/+$/g, "") === clean
+  );
+  if (exact) return exact;
+
+  // 2. Common aliases & intent mapping
+  const aliasMap: Record<string, string> = {
+    "custom-web-development": "website-development",
+    "web-development": "website-development",
+    "responsive-website-design": "website-development",
+    "website-design": "website-development",
+    "web-design": "website-development",
+    "custom-website-development": "website-development",
+    "custom-web-design": "website-development",
+    "custom-website-design": "website-development",
+    "wordpress": "wordpress-development",
+    "woocommerce": "wordpress-development",
+    "custom-wordpress": "wordpress-development",
+    "wordpress-seo": "wordpress-development",
+    "seo-services": "seo",
+    "seo-service": "seo",
+    "search-engine-optimization": "seo",
+    "mobile-apps": "mobile-app-development",
+    "app-development": "mobile-app-development",
+    "mobile-app": "mobile-app-development",
+    "ai-apps": "ai-mobile-apps",
+    "ai-mobile-app": "ai-mobile-apps",
+    "meta-ads": "meta-ads-advertising",
+    "facebook-ads": "meta-ads-advertising",
+    "meta-advertising": "meta-ads-advertising",
+    "social-media": "social-media-management",
+    "smm": "social-media-management",
+    "branding": "graphic-design-branding",
+    "logo-design": "graphic-design-branding",
+    "graphic-design": "graphic-design-branding",
+    "video": "video-editing",
+    "video-production": "video-editing",
+    "saas": "saas-applications",
+    "saas-app": "saas-applications",
+    "chatbot": "chatbots",
+    "ai-chatbot": "chatbots"
+  };
+
+  if (aliasMap[clean]) {
+    const fromMap = servicesData.find((s) => s.slug === aliasMap[clean]);
+    if (fromMap) return fromMap;
+  }
+
+  // 3. Substring fuzzy fallback
+  return servicesData.find(
+    (s) => s.slug.includes(clean) || clean.includes(s.slug)
+  );
 };
 
 export default function App() {
@@ -340,13 +405,44 @@ export default function App() {
     } else if (lowerPath === "/about" || lowerPath === "/why-choose-us") {
       setCurrentTab("about");
     } else if (lowerPath.startsWith("/service/")) {
-      const slug = path.replace(/^\/service\//i, "").replace(/^\/+|\/+$/g, "");
-      setSelectedServiceSlug(slug);
-      setCurrentTab("service-detail");
+      const rawSlug = path.replace(/^\/service\//i, "").replace(/^\/+|\/+$/g, "");
+      const matched = resolveService(rawSlug);
+      if (matched) {
+        setSelectedServiceSlug(matched.slug);
+        setCurrentTab("service-detail");
+        if (rawSlug !== matched.slug) {
+          window.history.replaceState({}, "", `/service/${matched.slug}`);
+        }
+      } else {
+        setSelectedServiceSlug(rawSlug);
+        setCurrentTab("service-detail");
+      }
     } else if (lowerPath.startsWith("/blog/")) {
       const slug = path.replace(/^\/blog\//i, "").replace(/^\/+|\/+$/g, "");
       setSelectedBlogSlug(slug);
       setCurrentTab("blog-detail");
+    } else if (lowerPath.startsWith("/page/")) {
+      const subSlug = lowerPath.replace(/^\/page\//i, "").replace(/^\/+|\/+$/g, "");
+      const systemCanonical: Record<string, { tab: string; path: string }> = {
+        home: { tab: "home", path: "/" },
+        about: { tab: "about", path: "/about" },
+        services: { tab: "services", path: "/services" },
+        portfolio: { tab: "portfolio", path: "/portfolio" },
+        pricing: { tab: "pricing", path: "/pricing" },
+        blog: { tab: "blog", path: "/blog" },
+        contact: { tab: "contact", path: "/contact" },
+        privacy: { tab: "privacy", path: "/privacy-policy" },
+        "privacy-policy": { tab: "privacy", path: "/privacy-policy" },
+        terms: { tab: "terms", path: "/terms" },
+        "terms-and-conditions": { tab: "terms", path: "/terms" }
+      };
+      if (systemCanonical[subSlug]) {
+        setCurrentTab(systemCanonical[subSlug].tab);
+        window.history.replaceState({}, "", systemCanonical[subSlug].path);
+      } else {
+        setCurrentTab(subSlug);
+        window.history.replaceState({}, "", `/${subSlug}`);
+      }
     } else if (lowerPath === "/privacy" || lowerPath === "/privacy-policy") {
       setCurrentTab("privacy");
     } else if (lowerPath === "/terms" || lowerPath === "/terms-and-conditions") {
@@ -406,10 +502,8 @@ export default function App() {
     }
   }, [isAdminOpen, isAuthenticated]);
 
-  // Find detailed objects for views with leading/trailing slash resilience
-  const activeService = servicesData.find(
-    (s) => s.slug.replace(/^\/+|\/+$/g, "") === selectedServiceSlug.replace(/^\/+|\/+$/g, "")
-  );
+  // Find detailed objects for views with leading/trailing slash resilience & alias resolution
+  const activeService = resolveService(selectedServiceSlug);
   const activeBlog = blogs.find(
     (b) => b.slug.replace(/^\/+|\/+$/g, "") === selectedBlogSlug.replace(/^\/+|\/+$/g, "")
   );
@@ -528,11 +622,12 @@ export default function App() {
   };
 
   const handleOpenService = (slug: string) => {
-    const cleanSlug = slug.replace(/^\/+|\/+$/g, "");
-    setSelectedServiceSlug(cleanSlug);
+    const matched = resolveService(slug);
+    const targetSlug = matched ? matched.slug : slug.replace(/^\/+|\/+$/g, "");
+    setSelectedServiceSlug(targetSlug);
     setCurrentTab("service-detail");
     window.scrollTo({ top: 0, behavior: "smooth" });
-    window.history.pushState({}, "", `/service/${cleanSlug}`);
+    window.history.pushState({}, "", `/service/${targetSlug}`);
   };
 
   const handleOpenBlog = (slug: string) => {
@@ -576,8 +671,8 @@ export default function App() {
           handleNavigate("tools/website-speed-test");
           return;
         }
-        if (linkText.includes("responsive") || linkText.includes("design") || linkText.includes("web dev")) {
-          handleOpenService("custom-web-development");
+        if (linkText.includes("responsive") || linkText.includes("design") || linkText.includes("web dev") || linkText.includes("website")) {
+          handleOpenService("website-development");
           return;
         }
         handleNavigate("home");
@@ -605,7 +700,7 @@ export default function App() {
         const slug = lower.replace("/service/", "").replace(/^\/+|\/+$/g, "");
         handleOpenService(slug);
       } else if (linkText.includes("responsive") || linkText.includes("web development") || linkText.includes("website design")) {
-        handleOpenService("custom-web-development");
+        handleOpenService("website-development");
       } else {
         const tab = lower.replace(/^\/+|\/+$/g, "");
         handleNavigate(tab || "home");
@@ -1702,11 +1797,12 @@ export default function App() {
         )}
 
         {/* VIEW 4: DETAILED INDIVIDUAL SERVICE PAGE */}
-        {currentTab === "service-detail" && activeService && (
-          <div id="view-service-detail" className="max-w-4xl mx-auto px-4 py-16 space-y-10 animate-fade-in text-slate-800">
-            <button onClick={() => handleNavigate("services")} className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors cursor-pointer">
-              <ArrowLeft className="w-3.5 h-3.5" /> Back to Services
-            </button>
+        {currentTab === "service-detail" && (
+          activeService ? (
+            <div id="view-service-detail" className="max-w-4xl mx-auto px-4 py-16 space-y-10 animate-fade-in text-slate-800">
+              <button onClick={() => handleNavigate("services")} className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors cursor-pointer">
+                <ArrowLeft className="w-3.5 h-3.5" /> Back to Services
+              </button>
 
             <div className="space-y-6">
               <div className="space-y-4">
@@ -1864,7 +1960,55 @@ export default function App() {
               </div>
             </div>
           </div>
-        )}
+        ) : (
+          <div id="view-service-not-found" className="max-w-4xl mx-auto px-4 py-16 space-y-10 animate-fade-in text-slate-800 text-center">
+            <div className="space-y-4 max-w-xl mx-auto">
+              <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-200/80 px-3.5 py-1.5 rounded-full inline-block">
+                Service Catalog
+              </span>
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-950">High-Performance Agency Services</h1>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-light">
+                Looking for our specialized digital solutions? Browse all 11 active agency engineering services below or consult directly with our technical team.
+              </p>
+              <div className="pt-2 flex flex-wrap justify-center gap-3">
+                <button 
+                  onClick={() => handleNavigate("services")} 
+                  className="px-6 py-3 bg-[#FF5722] hover:bg-[#F4511E] text-white font-bold rounded-2xl text-xs transition-all shadow-md cursor-pointer"
+                >
+                  View All Services
+                </button>
+                <button 
+                  onClick={() => handleNavigate("contact")} 
+                  className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl text-xs border border-slate-200 transition-all cursor-pointer"
+                >
+                  Contact Strategy Team
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-left pt-6">
+              {servicesData.map((service) => (
+                <div
+                  key={service.id}
+                  onClick={() => handleOpenService(service.slug)}
+                  className="p-5 bg-white border border-slate-200/80 rounded-2xl space-y-3 shadow-sm hover:border-[#FF5722]/40 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-mono font-bold text-[#FF5722] bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100">{service.startingPrice}</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#FF5722] group-hover:translate-x-1 transition-all" />
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors">{service.title}</h3>
+                    <p className="text-xs text-slate-500 line-clamp-2 font-light leading-relaxed">{service.description}</p>
+                  </div>
+                  <span className="text-[11px] font-bold text-[#FF5722] inline-flex items-center gap-1 pt-1">
+                    Explore Solution &rarr;
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
 
         {/* VIEW 5: PORTFOLIO LIST PAGE */}
         {currentTab === "portfolio" && (

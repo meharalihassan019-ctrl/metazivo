@@ -136,6 +136,56 @@ app.use((req, res, next) => {
     return res.redirect(301, `/tools/website-speed-test${query}`);
   }
 
+  // 3. Service Slug Aliases Canonical 301 Redirects
+  const serviceAliases: Record<string, string> = {
+    "/service/custom-web-development": "/service/website-development",
+    "/service/web-development": "/service/website-development",
+    "/service/responsive-website-design": "/service/website-development",
+    "/service/website-design": "/service/website-development",
+    "/service/custom-website-development": "/service/website-development",
+    "/service/custom-web-design": "/service/website-development",
+    "/service/web-design": "/service/website-development",
+    "/service/wordpress": "/service/wordpress-development",
+    "/service/woocommerce": "/service/wordpress-development",
+    "/service/custom-wordpress": "/service/wordpress-development",
+    "/service/seo-services": "/service/seo",
+    "/service/seo-service": "/service/seo",
+    "/service/search-engine-optimization": "/service/seo",
+    "/service/mobile-apps": "/service/mobile-app-development",
+    "/service/app-development": "/service/mobile-app-development",
+    "/service/ai-apps": "/service/ai-mobile-apps",
+    "/service/meta-ads": "/service/meta-ads-advertising",
+    "/service/facebook-ads": "/service/meta-ads-advertising",
+    "/service/social-media": "/service/social-media-management",
+    "/service/branding": "/service/graphic-design-branding",
+    "/service/logo-design": "/service/graphic-design-branding",
+    "/service/video": "/service/video-editing",
+    "/service/saas": "/service/saas-applications",
+    "/service/chatbot": "/service/chatbots"
+  };
+  if (serviceAliases[normalizedPath]) {
+    const query = req.url.slice(req.path.length);
+    return res.redirect(301, `${serviceAliases[normalizedPath]}${query}`);
+  }
+
+  // 4. System /page/* Canonical Redirects (Prevents Google Duplicate Content)
+  const systemPageRedirects: Record<string, string> = {
+    "/page/home": "/",
+    "/page/about": "/about",
+    "/page/services": "/services",
+    "/page/portfolio": "/portfolio",
+    "/page/pricing": "/pricing",
+    "/page/blog": "/blog",
+    "/page/contact": "/contact",
+    "/page/privacy": "/privacy-policy",
+    "/page/privacy-policy": "/privacy-policy",
+    "/page/terms": "/terms"
+  };
+  if (systemPageRedirects[normalizedPath]) {
+    const query = req.url.slice(req.path.length);
+    return res.redirect(301, `${systemPageRedirects[normalizedPath]}${query}`);
+  }
+
   // 3. Trailing slash normalization for clean canonical indexing
   if (req.path.length > 1 && req.path.endsWith("/")) {
     const cleanPath = req.path.slice(0, -1);
@@ -1742,32 +1792,99 @@ app.get("/sitemap.xml", async (req, res) => {
     const posts = postsSnap.docs.map(d => d.data());
 
     const baseUrl = "https://metazivo.com";
+    const today = new Date().toISOString().split("T")[0];
+
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
-    const staticRoutes = ["", "/about", "/services", "/portfolio", "/pricing", "/blog", "/contact", "/privacy-policy", "/terms", "/tools/website-speed-test"];
+    // 1. Core Primary Static Pages
+    const staticRoutes: Array<{ path: string; changefreq: string; priority: string }> = [
+      { path: "", changefreq: "daily", priority: "1.0" },
+      { path: "/services", changefreq: "weekly", priority: "0.9" },
+      { path: "/tools/website-speed-test", changefreq: "weekly", priority: "0.9" },
+      { path: "/blog", changefreq: "daily", priority: "0.9" },
+      { path: "/portfolio", changefreq: "weekly", priority: "0.8" },
+      { path: "/pricing", changefreq: "monthly", priority: "0.8" },
+      { path: "/about", changefreq: "monthly", priority: "0.8" },
+      { path: "/contact", changefreq: "monthly", priority: "0.8" },
+      { path: "/privacy-policy", changefreq: "yearly", priority: "0.3" },
+      { path: "/terms", changefreq: "yearly", priority: "0.3" }
+    ];
+
     staticRoutes.forEach(route => {
-      xml += `\n  <url>\n    <loc>${baseUrl}${route}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>${route === "" ? "1.0" : "0.8"}</priority>\n  </url>`;
+      xml += `\n  <url>\n    <loc>${baseUrl}${route.path}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${route.changefreq}</changefreq>\n    <priority>${route.priority}</priority>\n  </url>`;
     });
 
-    pages.forEach(page => {
-      const cleanSlug = (page.slug || "").replace(/^\/+|\/+$/g, "");
-      if (cleanSlug) {
-        xml += `\n  <url>\n    <loc>${baseUrl}/page/${cleanSlug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>`;
-      }
+    // 2. All 11 High-Yield Core Agency Service Landing Pages (Critical for Google Indexing)
+    const serviceSlugs = [
+      "website-development",
+      "wordpress-development",
+      "seo",
+      "ai-mobile-apps",
+      "mobile-app-development",
+      "meta-ads-advertising",
+      "social-media-management",
+      "graphic-design-branding",
+      "video-editing",
+      "saas-applications",
+      "chatbots"
+    ];
+
+    serviceSlugs.forEach(slug => {
+      xml += `\n  <url>\n    <loc>${baseUrl}/service/${slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>`;
     });
 
-    posts.forEach(post => {
-      const cleanSlug = (post.slug || "").replace(/^\/+|\/+$/g, "");
-      if (cleanSlug) {
-        xml += `\n  <url>\n    <loc>${baseUrl}/blog/${cleanSlug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
-      }
-    });
+    // 3. Published Blog Posts with accurate published/updated timestamps
+    posts
+      .filter((post: any) => post.status === "published" || !post.status)
+      .forEach((post: any) => {
+        const cleanSlug = (post.slug || "")
+          .toString()
+          .replace(/^https?:\/\/[^\/]+/i, "")
+          .replace(/metazivo\.com\/?/i, "")
+          .replace(/^\/+|\/+$/g, "")
+          .trim();
+
+        if (cleanSlug) {
+          let postDate = today;
+          if (post.updatedAt) {
+            try { postDate = new Date(post.updatedAt).toISOString().split("T")[0]; } catch(e) {}
+          } else if (post.publishDate) {
+            try { postDate = new Date(post.publishDate).toISOString().split("T")[0]; } catch(e) {}
+          }
+
+          xml += `\n  <url>\n    <loc>${baseUrl}/blog/${cleanSlug}</loc>\n    <lastmod>${postDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`;
+        }
+      });
+
+    // 4. Custom non-system pages (Exclude duplicate system templates to avoid Google Search Console indexing penalties)
+    const systemPageSlugs = new Set([
+      "home", "about", "services", "pricing", "privacy", "privacy-policy", 
+      "terms", "terms-and-conditions", "contact", "portfolio", "blog"
+    ]);
+
+    pages
+      .filter((page: any) => {
+        if (page.isSystem) return false;
+        const normalized = (page.slug || "").toString().toLowerCase().replace(/^\/+|\/+$/g, "");
+        return normalized && !systemPageSlugs.has(normalized);
+      })
+      .forEach((page: any) => {
+        const cleanSlug = (page.slug || "").toString().replace(/^\/+|\/+$/g, "");
+        if (cleanSlug) {
+          xml += `\n  <url>\n    <loc>${baseUrl}/${cleanSlug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`;
+        }
+      });
 
     xml += `\n</urlset>`;
-    res.type("application/xml");
+
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600");
     res.send(xml);
-  } catch(e) { res.status(500).send(""); }
+  } catch(e) { 
+    console.error("Sitemap generation error:", e);
+    res.status(500).type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://metazivo.com</loc></url></urlset>`); 
+  }
 });
 
 
