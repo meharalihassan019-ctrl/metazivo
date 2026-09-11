@@ -67,6 +67,7 @@ const AiAssistant = React.lazy(() => import("./components/AiAssistant"));
 const PagesPanel = React.lazy(() => import("./components/PagesPanel"));
 const SeoDashboard = React.lazy(() => import("./components/SeoDashboard"));
 const WebsiteSpeedTest = React.lazy(() => import("./components/WebsiteSpeedTest"));
+import SeoServicePage from "./components/SeoServicePage";
 
 // Premium real stock photo URLs (Not AI-generated)
 const hero3D = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=75"; // Collaborative teamwork real office meeting
@@ -168,6 +169,11 @@ export const resolveService = (rawSlug: string): AgencyService | undefined => {
     "wordpress-seo": "wordpress-development",
     "seo-services": "seo",
     "seo-service": "seo",
+    "seo-blog-writing": "seo",
+    "seo-and-blog-writing": "seo",
+    "blog-writing": "seo",
+    "seo-writing": "seo",
+    "seo-content-writing": "seo",
     "search-engine-optimization": "seo",
     "mobile-apps": "mobile-app-development",
     "app-development": "mobile-app-development",
@@ -1799,6 +1805,9 @@ export default function App() {
         {/* VIEW 4: DETAILED INDIVIDUAL SERVICE PAGE */}
         {currentTab === "service-detail" && (
           activeService ? (
+            activeService.slug === "seo" ? (
+              <SeoServicePage handleNavigate={handleNavigate} getWhatsAppLink={getWhatsAppLink} />
+            ) : (
             <div id="view-service-detail" className="max-w-4xl mx-auto px-4 py-16 space-y-10 animate-fade-in text-slate-800">
               <button onClick={() => handleNavigate("services")} className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors cursor-pointer">
                 <ArrowLeft className="w-3.5 h-3.5" /> Back to Services
@@ -1960,6 +1969,7 @@ export default function App() {
               </div>
             </div>
           </div>
+          )
         ) : (
           <div id="view-service-not-found" className="max-w-4xl mx-auto px-4 py-16 space-y-10 animate-fade-in text-slate-800 text-center">
             <div className="space-y-4 max-w-xl mx-auto">

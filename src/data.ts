@@ -161,49 +161,81 @@ export const servicesData: AgencyService[] = [
   },
   {
     id: "srv-seo",
-    title: "SEO & Authority Blog Writing Domination",
+    title: "SEO & Blog Writing Services",
     slug: "seo",
     icon: "Search",
-    description: "Climb to Page 1 of Google, dominate organic keywords, and generate free high-intent buyers 24/7.",
-    longDescription: "Right now, your dream clients are searching on Google for the exact services you offer. If they aren't finding your website, they are buying from your direct competitors. Our Search Engine Optimization (SEO) and Blog Writing service is an engineering discipline designed to flood your website with organic buyer traffic. We perform comprehensive technical audits, deploy JSON-LD schema layouts, and target high-ROI keywords. Our copywriting specialists then craft authoritative, high-value blog clusters with semantic LSI indexing. This creates a compounding marketing asset that builds your brand authority, ranks at the top of Google, and brings you highly-profitable leads indefinitely.",
+    description: "Stop Renting Traffic. Start Owning It. Build real search visibility with technical Core Web Vitals, JSON-LD schema, and human-crafted topic clusters.",
+    longDescription: "Every dollar you put into ads stops working the second you stop paying. SEO is different. A page you build today can bring in customers for years without you touching it again. That's why smart businesses treat organic search as an asset, not an expense. Most agencies sell you keyword lists and 500-word filler posts that never rank. Metazivo builds real search visibility — technical fixes, structured content, and writing done by people who actually understand your industry. No shortcuts, no AI spam, no vanity traffic that never buys anything.",
     benefits: [
-      "First-page placement for high-commercial search queries",
-      "Deep semantic topic clusters & highly persuasive SEO articles",
-      "Complete technical On-Page optimization (sitemaps, structured schemas)",
-      "High-authority white-hat backlink acquisition strategies",
-      "Comprehensive monthly performance audits & keyword tracking reports"
+      "Technical SEO Audit & Core Web Vitals (95+ speed scores)",
+      "JSON-LD Schema Markup & Clean URL Architecture",
+      "Topic Cluster Content Strategy written by human industry specialists",
+      "E-E-A-T Google Helpful Content algorithm compliance",
+      "Commercial Intent Mapping turning searches into paying leads"
     ],
     process: [
-      "Technical Website Audit & Competitor Breakdown",
-      "High-Value Commercial Keyword Mapping",
-      "High-Impact Article Writing & Semantic On-Page Editing",
-      "Active Backlink Outreach & continuous ranking boost"
+      "Technical SEO Audit & Hidden Blocker Removal",
+      "JSON-LD Schema & XML Sitemap Architecture",
+      "Topic Cluster & Commercial Search Intent Mapping",
+      "Ongoing Optimization, Ranking Tracking & ROI Reporting"
     ],
     startingPrice: "From $120",
     deliverables: [
-      "Technical SEO On-Page Audits",
-      "Topic Clusters & Keyword Mapping",
-      "High-Converting Blog Copywriting",
-      "White-Hat Backlink Outreach"
+      "Core Web Vitals Optimization",
+      "Structured JSON-LD Schema",
+      "Topic Cluster Pillar Content",
+      "Monthly Conversion & ROI Reporting"
     ],
-    seoTitle: "SEO & Authoritative Blog Copywriting Services | Metazivo",
-    seoDescription: "Rank on page 1 of Google, dominate buyer keywords, and establish ultimate E-E-A-T. High-value topic clusters with semantic LSI indexing and custom schema markup.",
-    fullFulfillmentCopy: "Google's search algorithm has changed. Cheap AI-generated content is being heavily penalized. To rank today, your website must project clear Experience, Expertise, Authoritativeness, and Trustworthiness (E-E-A-T). We don't just dump keywords into paragraphs. We design complete topical authority structures, build semantic LSI keyword clusters, and write high-value blogs that satisfy real search intent. Every piece of content is hand-written by industry copywriters, fully optimized with JSON-LD schema schemas, and structured to capture Google's 'People Also Ask' and Answer Engine results.",
+    seoTitle: "SEO & Blog Writing Services | Stop Renting Traffic | Metazivo",
+    seoDescription: "Stop renting traffic. Start owning it. Metazivo builds real search visibility with technical fixes, Core Web Vitals, JSON-LD schema, and human-researched topic clusters.",
+    fullFulfillmentCopy: "A great blog post on a broken website goes nowhere. Before we write a single word, we fix what's under the hood: Core Web Vitals, site speed, crawlability, and JSON-LD schema markup.\n\nGoogle doesn't rank pages anymore — it ranks sources it trusts. That's why we build connected topic clusters that satisfy real search intent (informational, commercial, and transactional) and comply strictly with Google's E-E-A-T guidelines.",
     caseStudy: {
-      title: "B2B Organic Authority Campaign",
-      challenge: "A B2B consultancy was spending $4,500/month on Google Ads with zero organic traffic or compounding leads.",
-      solution: "Implemented a 6-month topical authority strategy, deploying custom Schema markups and 12 high-intent semantic content pieces.",
-      result: "Captured page 1 for 18 high-commercial keywords, generating over 15,000 monthly organic visitors and cutting ad spend in half.",
-      metric: "+15,000 Organic Visitors/mo"
+      title: "Compounding Organic Revenue Asset",
+      challenge: "A business was spending thousands every month on paid ads that stopped working the second ad spend paused, with zero compounding organic assets.",
+      solution: "Implemented technical Core Web Vitals fixes, JSON-LD schema architecture, and 16 deep human-researched topic clusters mapping commercial buyer search intent.",
+      result: "Achieved page 1 rankings across high-value commercial queries, increasing organic inbound leads by 210% and driving continuous customer acquisition.",
+      metric: "+210% Organic Inbound Leads"
     },
     faqs: [
       {
-        q: "How long does it take to see real ranking improvements from SEO?",
-        a: "While some technical optimizations show results in 2-4 weeks, high-competition keywords usually require 3-6 months of consistent authority building. The upside is that unlike paid ads, organic traffic keeps coming for free forever."
+        q: "How long does it take to see SEO results?",
+        a: "Most sites see early movement in 3 to 4 months and strong results by month 6 to 9. SEO compounds over time, so traffic keeps growing even after the campaign matures, unlike ads that stop the day you stop paying."
       },
       {
-        q: "What is Schema markup and why does it matter for my business?",
-        a: "Schema markup is code that helps search engines understand the exact context of your pages. This enables search engines to display rich snippets, star ratings, and custom price ranges directly on search results, massively boosting click rates."
+        q: "Does Google treat AI-written content differently than human content?",
+        a: "Yes. Google's systems are built to detect and demote generic AI content that lacks real expertise or original insight. Human-researched writing that shows real experience tends to rank higher and hold its position through algorithm updates."
+      },
+      {
+        q: "What is JSON-LD schema markup and why does it matter?",
+        a: "JSON-LD schema is structured code added to your pages that tells search engines exactly what your content means. It helps you show up in rich results, featured snippets, and AI-generated answers instead of getting misread or ignored."
+      },
+      {
+        q: "What's the difference between vanity traffic and commercial intent leads?",
+        a: "Vanity traffic is visitors who never buy anything, often from broad, low-value keywords. Commercial intent leads come from searches showing real buying interest, like 'best CRM for small business.' Metazivo targets the second type."
+      },
+      {
+        q: "How does SEO cost compare to Google Ads over time?",
+        a: "Google Ads traffic stops the moment you stop paying. SEO traffic keeps flowing long after the work is done, so the cost per visitor drops every month a page keeps ranking. Most businesses see SEO become cheaper than ads within a year."
+      },
+      {
+        q: "Do Core Web Vitals and mobile speed really affect rankings?",
+        a: "Yes. Google uses Core Web Vitals — loading speed, interactivity, and visual stability — as a direct ranking factor. Slow or unstable mobile pages rank lower even with strong content, since most searches now happen on phones."
+      },
+      {
+        q: "What is topical authority and why does it matter?",
+        a: "Topical authority means Google sees your site as a complete, trustworthy source on a subject, not just one page that happens to match a keyword. Sites with full topic clusters consistently outrank single articles, even well-written ones."
+      },
+      {
+        q: "What's the risk of black-hat backlinks versus white-hat link building?",
+        a: "Black-hat backlinks (bought links, spam networks) can trigger Google penalties that tank your rankings overnight. White-hat link building earns links through real outreach and quality content, which builds authority safely and holds up over time."
+      },
+      {
+        q: "How do Google algorithm updates affect well-optimized sites?",
+        a: "Sites built on real technical foundations and genuine expertise usually stay stable or even gain ground during updates. Algorithm changes mainly punish thin content, keyword stuffing, and manipulative tactics — the things Metazivo avoids by design."
+      },
+      {
+        q: "How do you report on SEO results and ROI?",
+        a: "We track rankings, organic traffic, and — most importantly — conversions and leads generated from search. Monthly reports show real business impact, not just traffic numbers, so you always know what your investment is actually producing."
       }
     ]
   },
