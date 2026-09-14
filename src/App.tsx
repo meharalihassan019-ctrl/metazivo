@@ -2270,7 +2270,7 @@ export default function App() {
         {/* VIEW: WEBSITE SPEED TEST */}
         {currentTab === "tools/website-speed-test" && (
           <React.Suspense fallback={<div className="min-h-[400px] flex items-center justify-center text-slate-400 font-mono text-sm">Loading Speed Diagnostic Tool...</div>}>
-            <WebsiteSpeedTest onNavigate={handleNavigate} />
+            <WebsiteSpeedTest onNavigate={handleNavigate} getWhatsAppLink={getWhatsAppLink} />
           </React.Suspense>
         )}
 

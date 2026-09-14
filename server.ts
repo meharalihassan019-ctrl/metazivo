@@ -8,6 +8,7 @@ import path from "path";
 import fs from "fs";
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, updateDoc, query, where } from "firebase/firestore";
+import { runRealWebsiteSpeedAudit } from "./src/speedAuditor";
 
 let firestoreDb;
 try {
@@ -1590,124 +1591,23 @@ function getSimulatedPageSpeed(targetUrl: string, strategy: string) {
   };
 }
 
-// PageSpeed Insights API Proxy
+// Real High-Precision Website Speed & Technical Audit Proxy
 app.get("/api/pagespeed", async (req, res) => {
   const targetUrl = req.query.url as string;
-  const strategy = (req.query.strategy as string) || "mobile";
+  const strategy = (req.query.strategy as string) === "desktop" ? "desktop" : "mobile";
 
   if (!targetUrl) {
     return res.status(400).json({ error: "Website URL is required" });
   }
 
-  // Basic URL formatting
-  let formattedUrl = targetUrl.trim();
-  if (!/^https?:\/\//i.test(formattedUrl)) {
-    formattedUrl = "https://" + formattedUrl;
-  }
-
   try {
-    const apiKey = process.env.PAGESPEED_API_KEY;
-    let apiEndpoint = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(formattedUrl)}&strategy=${strategy}`;
-    if (apiKey) {
-      apiEndpoint += `&key=${apiKey}`;
-    }
-
-    const apiRes = await fetch(apiEndpoint);
-    if (!apiRes.ok) {
-      const errText = await apiRes.text();
-      console.warn("PageSpeed API returned error status:", apiRes.status, ". Falling back to simulated speed data.", errText);
-      const simulatedData = getSimulatedPageSpeed(formattedUrl, strategy);
-      return res.json(simulatedData);
-    }
-
-    const data = await apiRes.json();
-    const lighthouse = data?.lighthouseResult;
-
-    if (!lighthouse) {
-      console.warn("Invalid response from PageSpeed API. Falling back to simulated data.");
-      const simulatedData = getSimulatedPageSpeed(formattedUrl, strategy);
-      return res.json(simulatedData);
-    }
-
-    // Performance Score (0-100)
-    const scoreVal = lighthouse.categories?.performance?.score;
-    const score = typeof scoreVal === "number" ? Math.round(scoreVal * 100) : null;
-
-    // Metrics
-    const audits = lighthouse.audits || {};
-    const metrics = {
-      speedIndex: audits["speed-index"]?.displayValue || audits["speed-index"]?.numericValue ? `${(audits["speed-index"].numericValue / 1000).toFixed(1)}s` : "N/A",
-      fcp: audits["first-contentful-paint"]?.displayValue || audits["first-contentful-paint"]?.numericValue ? `${(audits["first-contentful-paint"].numericValue / 1000).toFixed(1)}s` : "N/A",
-      lcp: audits["largest-contentful-paint"]?.displayValue || audits["largest-contentful-paint"]?.numericValue ? `${(audits["largest-contentful-paint"].numericValue / 1000).toFixed(1)}s` : "N/A",
-      cls: audits["cumulative-layout-shift"]?.displayValue || audits["cumulative-layout-shift"]?.numericValue ? audits["cumulative-layout-shift"].displayValue : "N/A",
-      tbt: audits["total-blocking-time"]?.displayValue || audits["total-blocking-time"]?.numericValue ? audits["total-blocking-time"].displayValue : "N/A",
-      interactive: audits["interactive"]?.displayValue || audits["interactive"]?.numericValue ? `${(audits["interactive"].numericValue / 1000).toFixed(1)}s` : "N/A"
-    };
-
-    // Mobile Friendly Status
-    // Standard viewport check and content size viewport score in Lighthouse
-    const viewportAudit = audits["viewport"];
-    const isMobileFriendly = strategy === "desktop" ? "N/A" : (viewportAudit?.score === 1 ? "Yes" : "No");
-
-    // Gather and parse opportunities/diagnostics
-    const issuesList: { title: string; description: string; displayValue: string }[] = [];
-    const auditKeys = Object.keys(audits);
-
-    for (const key of auditKeys) {
-      const audit = audits[key];
-      if (
-        audit &&
-        audit.score !== null &&
-        audit.score < 0.9 &&
-        (audit.details?.type === "opportunity" || audit.details?.type === "diagnostic") &&
-        audit.title &&
-        audit.description
-      ) {
-        issuesList.push({
-          title: audit.title,
-          description: audit.description.replace(/\[Learn more\]\(.*?\)\.?/gi, "").trim(),
-          displayValue: audit.displayValue || "Potential Savings Available"
-        });
-      }
-    }
-
-    // Sort opportunities to prioritize those with displayValues or savings
-    // Just select the first 3-5 most important issues
-    const topIssues = issuesList.slice(0, 3);
-
-    // Fallback issues if none are found
-    if (topIssues.length === 0) {
-      topIssues.push({
-        title: "Optimize Image Formats",
-        description: "Serve images in next-gen formats like WebP or AVIF to reduce file sizes and speed up load times.",
-        displayValue: "Potential savings of 350ms"
-      });
-      topIssues.push({
-        title: "Eliminate Render-Blocking Resources",
-        description: "Your page loads external stylesheets and scripts that prevent content from displaying instantly.",
-        displayValue: "Potential savings of 500ms"
-      });
-      topIssues.push({
-        title: "Enable Text Compression",
-        description: "Compress text-based resources (HTML, CSS, JS) with Gzip or Brotli to reduce network bytes.",
-        displayValue: "Potential savings of 200ms"
-      });
-    }
-
-    res.json({
-      url: formattedUrl,
-      strategy,
-      score,
-      metrics,
-      mobileFriendly: isMobileFriendly,
-      issues: topIssues,
-      simulated: false
+    const auditResult = await runRealWebsiteSpeedAudit(targetUrl, strategy, process.env.PAGESPEED_API_KEY);
+    res.json(auditResult);
+  } catch (err: any) {
+    console.error("Website speed audit failure:", err);
+    res.status(500).json({ 
+      error: "Failed to perform live speed audit. Please verify the URL is accessible and try again." 
     });
-
-  } catch (error) {
-    console.warn("Error calling PageSpeed API. Falling back to simulated speed data:", error);
-    const simulatedData = getSimulatedPageSpeed(formattedUrl, strategy);
-    return res.json(simulatedData);
   }
 });
 
@@ -2079,6 +1979,34 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
     html: ""
   };
 
+  if (p === "/tools/website-speed-test" || p === "/website-speed-test" || p === "/speed-test") {
+    return {
+      title: "Free Website Speed Test & Core Web Vitals Audit | Metazivo",
+      description: "Audit your website speed instantly. Get genuine Core Web Vitals (LCP, INP, CLS, TTFB), server response time, live asset inspection, and actionable speed fixes.",
+      keywords: "website speed test, free pagespeed test, core web vitals audit, test site speed, lcp checker, ttfb test, mobile speed test, metazivo",
+      ogTitle: "Free Website Speed Test & Core Web Vitals Audit | Metazivo",
+      ogDescription: "Audit your website speed instantly. Get genuine Core Web Vitals (LCP, INP, CLS, TTFB), server response time, live asset inspection, and actionable speed fixes.",
+      url: `https://metazivo.com/tools/website-speed-test`,
+      html: `
+        <main>
+          <article>
+            <h1>Free Website Speed Test & Core Web Vitals Audit</h1>
+            <p>Generate a 100% genuine diagnostic audit of your website's performance instantly. Uncover server response latency (TTFB), Largest Contentful Paint (LCP), Cumulative Layout Shift (CLS), Total Blocking Time (TBT), and prioritized engineering fixes.</p>
+            <section>
+              <h2>Google Core Web Vitals Benchmarks (Official 2026 Standards)</h2>
+              <ul>
+                <li><strong>Largest Contentful Paint (LCP):</strong> Measures perceived loading speed. Must trigger within 2.5 seconds.</li>
+                <li><strong>First Contentful Paint (FCP):</strong> Initial visual feedback. Benchmark is under 1.8 seconds.</li>
+                <li><strong>Cumulative Layout Shift (CLS):</strong> Visual layout stability. Maximum threshold is 0.1.</li>
+                <li><strong>Total Blocking Time (TBT):</strong> Main-thread CPU script execution. Ideal is below 200ms.</li>
+                <li><strong>Time to First Byte (TTFB):</strong> Server and DNS responsiveness. Ideal is below 200ms.</li>
+              </ul>
+            </section>
+          </article>
+        </main>`
+    };
+  }
+
   if (p.startsWith("/blog/")) {
     const slug = p.replace("/blog/", "");
     const q = query(collection(firestoreDb, "posts"), where("slug", "==", slug));
@@ -2129,6 +2057,66 @@ async function generateSchema(pathname: string): Promise<string> {
       }
     ]
   };
+
+  if (p === "/tools/website-speed-test" || p === "/website-speed-test" || p === "/speed-test") {
+    baseSchema["@graph"].push({
+      "@type": "WebApplication",
+      "@id": `${domain}/tools/website-speed-test#app`,
+      "name": "Metazivo Free Website Speed Test & Core Web Vitals Audit",
+      "url": `${domain}/tools/website-speed-test`,
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "description": "Analyze mobile and desktop web performance, Core Web Vitals, server TTFB, and technical optimization bottlenecks instantly.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "publisher": { "@id": `${domain}/#organization` }
+    });
+
+    baseSchema["@graph"].push({
+      "@type": "FAQPage",
+      "@id": `${domain}/tools/website-speed-test#faq`,
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Why is website speed critical for Google rankings?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Google officially incorporates Core Web Vitals (LCP, INP, CLS) and page speed as organic ranking signals. Fast websites experience lower bounce rates, higher crawl efficiency, and significantly higher conversion rates."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is considered a good Core Web Vitals score?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Google benchmarks: Largest Contentful Paint (LCP) under 2.5 seconds, Cumulative Layout Shift (CLS) under 0.1, and Total Blocking Time (TBT) under 200 milliseconds. An overall PageSpeed score of 90 or above is classified as good."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this website speed test real and accurate?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. This tool runs genuine live HTTP server probes and Google Lighthouse audits directly against the target website, measuring actual TTFB, HTML payload weight, asset blockers, and Core Web Vitals without fake or simulated estimations."
+          }
+        }
+      ]
+    });
+
+    baseSchema["@graph"].push({
+      "@type": "BreadcrumbList",
+      "@id": `${domain}/tools/website-speed-test#breadcrumbs`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
+        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": `${domain}/tools/website-speed-test` },
+        { "@type": "ListItem", "position": 3, "name": "Website Speed Test", "item": `${domain}/tools/website-speed-test` }
+      ]
+    });
+  }
 
   if (p.startsWith("/blog/")) {
     const slug = p.replace("/blog/", "");
@@ -2312,7 +2300,7 @@ Sitemap: https://metazivo.com/sitemap.xml`);
   if (!isProd) {
     const vite = await createViteServer({
       server: { middlewareMode: true },
-      appType: "spa"
+      appType: "custom"
     });
     app.use(vite.middlewares);
 
@@ -2321,6 +2309,7 @@ Sitemap: https://metazivo.com/sitemap.xml`);
       try {
         let template = fs.readFileSync(path.join(process.cwd(), "index.html"), "utf-8");
         template = await vite.transformIndexHtml(req.path, template);
+        template = await injectSEOAndPrerender(template, req.path);
         res.setHeader("Content-Type", "text/html; charset=utf-8");
         res.send(template);
       } catch (e) {
@@ -2344,12 +2333,13 @@ Sitemap: https://metazivo.com/sitemap.xml`);
     }));
 
     // Intercept and pre-render any incoming page requests dynamically
-    app.get("*", (req, res) => {
+    app.get("*", async (req, res) => {
       try {
         const rawHtml = fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
+        const preRendered = await injectSEOAndPrerender(rawHtml, req.path);
         res.setHeader("Content-Type", "text/html; charset=utf-8");
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-        res.send(rawHtml);
+        res.send(preRendered);
       } catch (err) {
         console.error("Failed to serve index.html:", err);
         res.status(500).send("<!DOCTYPE html><html><body>Error loading application index.</body></html>");
