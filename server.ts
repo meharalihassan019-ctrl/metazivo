@@ -582,21 +582,21 @@ app.post("/api/posts", async (req, res) => {
         avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
         role: "Admin"
       },
-      seoTitle: req.body.seoTitle || req.body.title || "",
-      seoDescription: req.body.seoDescription || req.body.excerpt || "",
+      seoTitle: req.body.seoTitle?.trim() || (req.body.title ? `${req.body.title.trim()} | Metazivo` : ""),
+      seoDescription: req.body.seoDescription?.trim() || req.body.excerpt?.trim() || "",
       seoKeywords: req.body.seoKeywords || [],
       focusKeywords: req.body.focusKeywords || [],
       canonicalUrl: req.body.canonicalUrl || "",
       robotsMeta: req.body.robotsMeta || { index: true, follow: true },
       openGraph: req.body.openGraph || {
-        title: req.body.title || "",
-        description: req.body.excerpt || "",
+        title: req.body.seoTitle?.trim() || req.body.title || "",
+        description: req.body.seoDescription?.trim() || req.body.excerpt || "",
         image: req.body.featuredImage || ""
       },
       twitterCard: req.body.twitterCard || {
         cardType: "summary_large_image",
-        title: req.body.title || "",
-        description: req.body.excerpt || "",
+        title: req.body.seoTitle?.trim() || req.body.title || "",
+        description: req.body.seoDescription?.trim() || req.body.excerpt || "",
         image: req.body.featuredImage || ""
       },
       breadcrumbTitle: req.body.breadcrumbTitle || req.body.title || "",

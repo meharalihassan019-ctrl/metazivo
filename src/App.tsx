@@ -43,6 +43,7 @@ import {
   MessageSquare,
   Tag,
   Sparkles,
+  Globe,
   Image as ImageIcon
 } from "lucide-react";
 import Header from "./components/Header";
@@ -882,18 +883,41 @@ export default function App() {
       const url = isNew ? "/api/posts" : `/api/posts/${editingPost.id}`;
       const method = isNew ? "POST" : "PUT";
 
+      // Always guarantee valid, SEO-optimized fallback for Meta Title and Meta Description
+      const finalSeoTitle = editingPost.seoTitle?.trim() || `${editingPost.title.trim()} | Metazivo`;
+      const finalSeoDesc = editingPost.seoDescription?.trim() || editingPost.excerpt?.trim() || "";
+
       // Calculate simple SEO score before saving to maintain correct database state
       const wordCount = editingPost.content ? editingPost.content.trim().split(/\s+/).filter(Boolean).length : 0;
       let score = 80;
       if (wordCount > 400) score += 10;
-      if (editingPost.seoTitle) score += 5;
-      if (editingPost.seoDescription) score += 5;
-      editingPost.seoScore = Math.min(100, score);
+      if (finalSeoTitle) score += 5;
+      if (finalSeoDesc) score += 5;
+
+      const payloadToSave = {
+        ...editingPost,
+        seoTitle: finalSeoTitle,
+        seoDescription: finalSeoDesc,
+        openGraph: {
+          ...(editingPost.openGraph || {}),
+          title: editingPost.openGraph?.title || finalSeoTitle,
+          description: editingPost.openGraph?.description || finalSeoDesc,
+          image: editingPost.openGraph?.image || editingPost.featuredImage || ""
+        },
+        twitterCard: {
+          ...(editingPost.twitterCard || {}),
+          cardType: "summary_large_image",
+          title: editingPost.twitterCard?.title || finalSeoTitle,
+          description: editingPost.twitterCard?.description || finalSeoDesc,
+          image: editingPost.twitterCard?.image || editingPost.featuredImage || ""
+        },
+        seoScore: Math.min(100, score)
+      };
 
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editingPost)
+        body: JSON.stringify(payloadToSave)
       });
 
       if (res.ok) {
@@ -2838,7 +2862,14 @@ export default function App() {
                                     <td className="p-4">
                                       <div className="flex flex-col">
                                         <span className="font-bold text-white text-xs">{post.title}</span>
-                                        <span className="text-[10px] text-slate-400 font-mono mt-0.5">/{post.slug}</span>
+                                        <div className="flex items-center gap-2 mt-0.5">
+                                          <span className="text-[10px] text-slate-400 font-mono">/{post.slug}</span>
+                                          {post.seoTitle && (
+                                            <span className="text-[9px] font-mono text-[#FF5722] bg-[#FF5722]/10 px-1.5 py-0.5 rounded border border-[#FF5722]/20 truncate max-w-[180px]" title={`Meta Title: ${post.seoTitle}`}>
+                                              Title: {post.seoTitle}
+                                            </span>
+                                          )}
+                                        </div>
                                       </div>
                                     </td>
                                     <td className="p-4 font-mono">{post.categories?.join(", ")}</td>
@@ -2936,7 +2967,21 @@ export default function App() {
                                 <input
                                   type="text"
                                   value={editingPost.title}
-                                  onChange={(e) => setEditingPost((prev) => ({ ...prev, title: e.target.value }))}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    setEditingPost((prev) => {
+                                      const oldAuto = prev.title ? `${prev.title} | Metazivo` : "";
+                                      const shouldAutoUpdate = !prev.seoTitle || prev.seoTitle === oldAuto || prev.seoTitle === prev.title;
+                                      return {
+                                        ...prev,
+                                        title: val,
+                                        seoTitle: shouldAutoUpdate ? (val ? `${val} | Metazivo` : "") : prev.seoTitle,
+                                        slug: !prev.id && (!prev.slug || prev.slug === prev.title?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""))
+                                          ? val.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
+                                          : prev.slug
+                                      };
+                                    });
+                                  }}
                                   className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-400 font-bold"
                                   placeholder="e.g. Speed Optimization Playbook"
                                 />
@@ -3036,15 +3081,94 @@ export default function App() {
                                 />
                               </div>
 
-                              <div>
-                                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5 font-sans">Meta Description Snippet</label>
-                                <textarea
-                                  value={editingPost.seoDescription || ""}
-                                  onChange={(e) => setEditingPost((prev) => ({ ...prev, seoDescription: e.target.value }))}
-                                  rows={2}
-                                  className="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-xs text-slate-300 focus:outline-none focus:border-blue-400"
-                                  placeholder="Provide description snippet to increase Google click through counts..."
-                                />
+                              {/* Search Engine Optimization (Google SERP & Meta Tags) */}
+                              <div className="bg-white/5 border border-white/10 rounded-[20px] p-4 space-y-4">
+                                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                                  <div>
+                                    <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                                      <Globe className="w-4 h-4 text-[#FF5722]" /> Search Engine Optimization (Google SERP)
+                                    </h4>
+                                    <p className="text-[11px] text-slate-400">Custom meta tags configured for Google ranking and search visibility.</p>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (editingPost.title) {
+                                        setEditingPost((prev) => ({
+                                          ...prev,
+                                          seoTitle: `${prev.title} | Metazivo`,
+                                          seoDescription: prev.seoDescription || prev.excerpt || `Read our comprehensive guide on ${prev.title} by Metazivo digital specialists.`
+                                        }));
+                                      }
+                                    }}
+                                    className="text-[10px] text-[#FF5722] hover:text-[#ff7043] font-mono px-2.5 py-1 rounded-lg bg-[#FF5722]/10 border border-[#FF5722]/20 hover:bg-[#FF5722]/20 transition-colors cursor-pointer"
+                                  >
+                                    Auto-fill Meta Tags
+                                  </button>
+                                </div>
+
+                                {/* Meta Title (SEO Title) */}
+                                <div>
+                                  <div className="flex justify-between items-center mb-1.5">
+                                    <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest font-sans">
+                                      Meta Title (SEO Title) <span className="text-[#FF5722]">*</span>
+                                    </label>
+                                    <div className="flex items-center gap-2 text-[10px] font-mono">
+                                      <span className={(editingPost.seoTitle?.length || 0) > 60 ? "text-amber-400 font-bold" : (editingPost.seoTitle?.length || 0) >= 40 ? "text-emerald-400 font-bold" : "text-slate-400"}>
+                                        {editingPost.seoTitle?.length || 0} / 60 chars
+                                      </span>
+                                      <span className="text-[9px] text-slate-500">(Google optimal: 40-60)</span>
+                                    </div>
+                                  </div>
+                                  <input
+                                    type="text"
+                                    value={editingPost.seoTitle || ""}
+                                    onChange={(e) => setEditingPost((prev) => ({ ...prev, seoTitle: e.target.value }))}
+                                    className="w-full bg-slate-950/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#FF5722]"
+                                    placeholder="e.g. Website Speed Optimization Playbook | Metazivo"
+                                  />
+                                </div>
+
+                                {/* Meta Description Snippet */}
+                                <div>
+                                  <div className="flex justify-between items-center mb-1.5">
+                                    <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest font-sans">
+                                      Meta Description Snippet <span className="text-[#FF5722]">*</span>
+                                    </label>
+                                    <div className="flex items-center gap-2 text-[10px] font-mono">
+                                      <span className={(editingPost.seoDescription?.length || 0) > 160 ? "text-amber-400 font-bold" : (editingPost.seoDescription?.length || 0) >= 120 ? "text-emerald-400 font-bold" : "text-slate-400"}>
+                                        {editingPost.seoDescription?.length || 0} / 160 chars
+                                      </span>
+                                      <span className="text-[9px] text-slate-500">(Google optimal: 120-160)</span>
+                                    </div>
+                                  </div>
+                                  <textarea
+                                    value={editingPost.seoDescription || ""}
+                                    onChange={(e) => setEditingPost((prev) => ({ ...prev, seoDescription: e.target.value }))}
+                                    rows={2}
+                                    className="w-full bg-slate-950/40 border border-white/10 rounded-xl p-2.5 text-xs text-slate-300 focus:outline-none focus:border-[#FF5722]"
+                                    placeholder="Provide description snippet under 160 chars to maximize Google click-through rates..."
+                                  />
+                                </div>
+
+                                {/* Real-time Google SERP Snippet Preview */}
+                                <div className="bg-slate-950/70 border border-white/5 rounded-xl p-3.5 space-y-1.5">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-[9px] uppercase tracking-wider text-slate-400 font-mono flex items-center gap-1.5">
+                                      <Globe className="w-3 h-3 text-emerald-400" /> Google Search Result Preview
+                                    </span>
+                                    <span className="text-[9px] text-slate-500 font-mono">Mobile & Desktop SERP</span>
+                                  </div>
+                                  <div className="text-[11px] text-emerald-400 font-sans truncate">
+                                    https://metazivo.com/blog/{editingPost.slug || (editingPost.title ? editingPost.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") : "article-slug")}
+                                  </div>
+                                  <div className="text-sm font-medium text-[#8ab4f8] hover:underline cursor-pointer line-clamp-1">
+                                    {editingPost.seoTitle || (editingPost.title ? `${editingPost.title} | Metazivo` : "SEO Meta Title Preview | Metazivo")}
+                                  </div>
+                                  <div className="text-xs text-slate-300 line-clamp-2 leading-relaxed">
+                                    {editingPost.seoDescription || editingPost.excerpt || "Enter a meta description above to preview how this blog will appear when indexed by Google and shared on search engines."}
+                                  </div>
+                                </div>
                               </div>
                             </div>
 
