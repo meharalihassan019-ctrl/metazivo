@@ -44,6 +44,7 @@ import {
   Tag,
   Sparkles,
   Globe,
+  Table as TableIcon,
   Image as ImageIcon
 } from "lucide-react";
 import Header from "./components/Header";
@@ -63,6 +64,7 @@ import { ScrollReveal, StaggerReveal, TextReveal } from "./components/ScrollReve
 
 // Code-split heavy admin modules to keep initial bundle ultra-lightweight
 const GutenbergEditor = React.lazy(() => import("./components/GutenbergEditor"));
+const ResponsiveTableBuilder = React.lazy(() => import("./components/ResponsiveTableBuilder"));
 const SchemaEditor = React.lazy(() => import("./components/SchemaEditor"));
 const MediaLibrary = React.lazy(() => import("./components/MediaLibrary"));
 const AiAssistant = React.lazy(() => import("./components/AiAssistant"));
@@ -332,6 +334,7 @@ export default function App() {
   const [isEditingPost, setIsEditingPost] = useState(false);
   const [editingPost, setEditingPost] = useState<Partial<BlogPost>>({});
   const [showMediaSelectorForEditor, setShowMediaSelectorForEditor] = useState<((url: string, altText?: string) => void) | null>(null);
+  const [showStandaloneTableBuilder, setShowStandaloneTableBuilder] = useState(false);
 
   // Tag Management Workspace States
   const [newTagName, setNewTagName] = useState("");
@@ -3070,7 +3073,18 @@ export default function App() {
                               </div>
 
                               <div>
-                                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5 font-sans">Article Body (Gutenberg Split)</label>
+                                <div className="flex items-center justify-between mb-1.5">
+                                  <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest font-sans">Article Body (Gutenberg Split)</label>
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowStandaloneTableBuilder(true)}
+                                    className="px-2.5 py-1 bg-[#FF5722]/10 hover:bg-[#FF5722]/20 border border-[#FF5722]/30 text-[#FF5722] hover:text-[#ff7043] rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                                    title="Open Responsive Table Builder (Laptop, Tablet, Mobile Preview & Theme HTML)"
+                                  >
+                                    <TableIcon className="w-3.5 h-3.5" />
+                                    <span>Theme Table Builder (Mobile, Tablet, Laptop)</span>
+                                  </button>
+                                </div>
                                 <GutenbergEditor
                                   value={editingPost.content || ""}
                                   onChange={(html) => setEditingPost((prev) => ({ ...prev, content: html }))}
@@ -3080,6 +3094,22 @@ export default function App() {
                                   }}
                                 />
                               </div>
+
+                              {showStandaloneTableBuilder && (
+                                <React.Suspense fallback={null}>
+                                  <ResponsiveTableBuilder
+                                    isOpen={showStandaloneTableBuilder}
+                                    onClose={() => setShowStandaloneTableBuilder(false)}
+                                    onInsertTable={(html) => {
+                                      setEditingPost((prev) => ({
+                                        ...prev,
+                                        content: (prev.content || "") ? `${prev.content}\n<br/>\n${html}` : html
+                                      }));
+                                      setShowStandaloneTableBuilder(false);
+                                    }}
+                                  />
+                                </React.Suspense>
+                              )}
 
                               {/* Search Engine Optimization (Google SERP & Meta Tags) */}
                               <div className="bg-white/5 border border-white/10 rounded-[20px] p-4 space-y-4">

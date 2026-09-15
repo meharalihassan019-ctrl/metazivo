@@ -39,3 +39,93 @@
 .tiptap-container .ProseMirror h4 {
   color: #ffffff !important;
 }
+
+/* Responsive Table Container & Styling for Mobile, Tablet & Laptop */
+.table-responsive-wrapper,
+.responsive-table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1.5rem 0;
+  border-radius: 1rem;
+}
+
+/* Custom sleek scrollbar for tables */
+.table-responsive-wrapper::-webkit-scrollbar,
+.responsive-table-wrapper::-webkit-scrollbar,
+.prose table::-webkit-scrollbar {
+  height: 6px;
+}
+.table-responsive-wrapper::-webkit-scrollbar-thumb,
+.responsive-table-wrapper::-webkit-scrollbar-thumb,
+.prose table::-webkit-scrollbar-thumb {
+  background: rgba(255, 87, 34, 0.4);
+  border-radius: 3px;
+}
+
+/* Ensure any table inside prose has smooth responsive horizontal scroll on mobile & tablet */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .prose table {
+    min-width: 520px;
+  }
+}
+
+.prose th {
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid rgba(226, 232, 240, 0.8);
+}
+
+.prose td {
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+/* TipTap table styling inside editor */
+.tiptap-container .ProseMirror table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 1.5rem 0;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.tiptap-container .ProseMirror table td,
+.tiptap-container .ProseMirror table th {
+  min-width: 1em;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.tiptap-container .ProseMirror table th {
+  font-weight: bold;
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #ffffff !important;
+}
+
+.tiptap-container .ProseMirror table .selectedCell:after {
+  z-index: 2;
+  position: absolute;
+  content: "";
+  left: 0; right: 0; top: 0; bottom: 0;
+  background: rgba(255, 87, 34, 0.2);
+  pointer-events: none;
+}
