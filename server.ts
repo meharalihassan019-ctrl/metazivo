@@ -1713,6 +1713,7 @@ app.get("/sitemap.xml", async (req, res) => {
       { path: "", changefreq: "daily", priority: "1.0" },
       { path: "/services", changefreq: "weekly", priority: "0.9" },
       { path: "/free-tools", changefreq: "weekly", priority: "0.9" },
+      { path: "/tools/meta-title-description-generator", changefreq: "weekly", priority: "0.9" },
       { path: "/tools/website-speed-test", changefreq: "weekly", priority: "0.9" },
       { path: "/blog", changefreq: "daily", priority: "0.9" },
       { path: "/portfolio", changefreq: "weekly", priority: "0.8" },
@@ -2129,15 +2130,24 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
     };
   }
 
-  // 8. Free Tools Page
-  if (p === "/free-tools" || p === "/tools" || p === "/free-seo-tools" || p === "/free-seo-tool" || p === "/seo-tools") {
+  // 8. Free Tools & Meta Title/Description Generator Tool
+  if (
+    p === "/free-tools" || 
+    p === "/tools" || 
+    p === "/free-seo-tools" || 
+    p === "/free-seo-tool" || 
+    p === "/seo-tools" || 
+    p === "/tools/meta-title-description-generator" || 
+    p === "/meta-title-description-generator"
+  ) {
+    const canonicalUrl = p.includes("meta-title") ? "https://metazivo.com/tools/meta-title-description-generator" : "https://metazivo.com/free-tools";
     return {
-      title: "Free SEO Tools & Meta Tag Generator | Metazivo Free Tools Hub",
+      title: "Free Meta Title & Description Generator | Metazivo Free Tools Hub",
       description: "Generate SEO-optimized meta titles and descriptions in seconds with our free tool, perfectly calibrated to Google ranking guidelines (under 60 & 155 chars).",
       keywords: "meta title generator, meta description generator, free SEO tools, google ranking tags, SEO snippet creator, metazivo free tools hub",
-      ogTitle: "Free SEO Tools & Meta Tag Generator | Metazivo Free Tools Hub",
+      ogTitle: "Free Meta Title & Description Generator | Metazivo Free Tools Hub",
       ogDescription: "Generate SEO-optimized meta titles and descriptions in seconds with our free tool, perfectly calibrated to Google ranking guidelines (under 60 & 155 chars).",
-      url: "https://metazivo.com/free-tools",
+      url: canonicalUrl,
       html: `
         <main>
           <article>
@@ -2297,12 +2307,21 @@ async function generateSchema(pathname: string): Promise<string> {
     });
   }
 
-  if (p === "/free-tools" || p === "/tools" || p === "/free-seo-tools" || p === "/free-seo-tool" || p === "/seo-tools") {
+  if (
+    p === "/free-tools" || 
+    p === "/tools" || 
+    p === "/free-seo-tools" || 
+    p === "/free-seo-tool" || 
+    p === "/seo-tools" || 
+    p === "/tools/meta-title-description-generator" || 
+    p === "/meta-title-description-generator"
+  ) {
+    const appUrl = p.includes("meta-title") ? `${domain}/tools/meta-title-description-generator` : `${domain}/free-tools`;
     baseSchema["@graph"].push({
       "@type": "WebApplication",
-      "@id": `${domain}/free-tools#app`,
+      "@id": `${appUrl}#app`,
       "name": "Metazivo Free Meta Title & Description Generator",
-      "url": `${domain}/free-tools`,
+      "url": appUrl,
       "applicationCategory": "SEOApplication",
       "operatingSystem": "All",
       "browserRequirements": "Requires JavaScript. Requires HTML5.",
@@ -2317,10 +2336,11 @@ async function generateSchema(pathname: string): Promise<string> {
 
     baseSchema["@graph"].push({
       "@type": "BreadcrumbList",
-      "@id": `${domain}/free-tools#breadcrumbs`,
+      "@id": `${appUrl}#breadcrumbs`,
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
-        { "@type": "ListItem", "position": 2, "name": "Free Meta Tag Generator", "item": `${domain}/free-tools` }
+        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": `${domain}/free-tools` },
+        ...(p.includes("meta-title") ? [{ "@type": "ListItem", "position": 3, "name": "Meta Title & Description Generator", "item": appUrl }] : [])
       ]
     });
   }

@@ -470,13 +470,16 @@ export default function App() {
       lowerPath === "/free-tools" ||
       lowerPath === "/tools" ||
       lowerPath.startsWith("/free-tools") ||
+      lowerPath === "/tools/meta-title-description-generator" ||
+      lowerPath === "/meta-title-description-generator" ||
+      lowerPath === "/tools/meta-tag-generator" ||
       lowerPath === "/free-seo-tools" ||
       lowerPath === "/free-seo-tool" ||
       lowerPath === "/seo-tools" ||
       lowerPath === "/seo-tool"
     ) {
       setCurrentTab("free-tools");
-      if (lowerPath !== "/free-tools") {
+      if (lowerPath !== "/free-tools" && lowerPath !== "/tools/meta-title-description-generator") {
         window.history.replaceState({}, "", "/free-tools");
       }
     } else {
@@ -586,6 +589,11 @@ export default function App() {
         description: "Generate SEO-optimized meta titles and descriptions in seconds with our free tool, perfectly calibrated to Google ranking guidelines (under 60 & 155 chars).",
         keywords: "meta title generator, meta description generator, free SEO tools, google ranking tags, SEO snippet creator"
       },
+      "tools/meta-title-description-generator": {
+        title: "Free Meta Title & Description Generator | Metazivo",
+        description: "Generate SEO-optimized meta titles and descriptions in seconds with our free tool, perfectly calibrated to Google ranking guidelines (under 60 & 155 chars).",
+        keywords: "meta title generator, meta description generator, free SEO tools, google ranking tags, SEO snippet creator"
+      },
       "tools/website-speed-test": {
         title: "Free Website Speed Test & Core Web Vitals Audit | Metazivo",
         description: "Audit your website speed instantly. Get genuine Core Web Vitals (LCP, INP, CLS, TTFB), server response time, live asset inspection, and actionable speed fixes.",
@@ -684,11 +692,13 @@ export default function App() {
     } else if (
       tab === "free-tools" ||
       tab === "tools" ||
+      tab === "tools/meta-title-description-generator" ||
+      tab === "meta-title-description-generator" ||
       tab === "free-seo-tools" ||
       tab === "seo-tools"
     ) {
       setCurrentTab("free-tools");
-      window.history.pushState({}, "", "/free-tools");
+      window.history.pushState({}, "", tab.includes("meta-title") ? "/tools/meta-title-description-generator" : "/free-tools");
     } else {
       const cleanTab = tab.replace(/^\/+|\/+$/g, "");
       setCurrentTab(cleanTab);
@@ -757,17 +767,28 @@ export default function App() {
       // Check special aliases
       const lower = cleanPath.toLowerCase().replace(/\/+$/, "");
       if (
+        lower === "/tools/website-speed-test" ||
+        lower === "/website-speed-test" ||
+        lower === "/speed-test" ||
+        lower === "/audit" ||
+        linkText.includes("speed test") ||
+        linkText.includes("speed audit")
+      ) {
+        handleNavigate("tools/website-speed-test");
+      } else if (
         lower === "/tools" || 
         lower.startsWith("/tools/") ||
         lower.startsWith("/free-tools") ||
+        lower === "/tools/meta-title-description-generator" ||
+        lower === "/meta-title-description-generator" ||
         lower.startsWith("/free-seo-tool") ||
         lower.startsWith("/seo-tool") ||
-        lower.startsWith("/speed-test") ||
-        lower.startsWith("/audit") ||
         linkText.includes("seo tool") ||
-        linkText.includes("free seo tools")
+        linkText.includes("free seo tools") ||
+        linkText.includes("meta title") ||
+        linkText.includes("generator")
       ) {
-        handleNavigate("tools/website-speed-test");
+        handleNavigate("free-tools");
       } else if (lower.startsWith("/blog/")) {
         const slug = lower.replace("/blog/", "").replace(/^\/+|\/+$/g, "");
         handleOpenBlog(slug);
