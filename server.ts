@@ -2132,31 +2132,25 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
   // 8. Free Tools Page
   if (p === "/free-tools" || p === "/tools" || p === "/free-seo-tools" || p === "/free-seo-tool" || p === "/seo-tools") {
     return {
-      title: "Free SEO Tools | Metazivo Free Tools Hub",
-      description: "Access free SEO tools recommended by Metazivo experts. Improve your Google rankings with Google Search Console, PageSpeed Insights, Keyword Planner and more.",
-      keywords: "free SEO tools, google search console, pagespeed insights, keyword planner, screaming frog, ahrefs free tools, metazivo free tools hub",
-      ogTitle: "Free SEO Tools | Metazivo Free Tools Hub",
-      ogDescription: "Access free SEO tools recommended by Metazivo experts. Improve your Google rankings with Google Search Console, PageSpeed Insights, Keyword Planner and more.",
+      title: "Free SEO Tools & Meta Tag Generator | Metazivo Free Tools Hub",
+      description: "Generate SEO-optimized meta titles and descriptions in seconds with our free tool, perfectly calibrated to Google ranking guidelines (under 60 & 155 chars).",
+      keywords: "meta title generator, meta description generator, free SEO tools, google ranking tags, SEO snippet creator, metazivo free tools hub",
+      ogTitle: "Free SEO Tools & Meta Tag Generator | Metazivo Free Tools Hub",
+      ogDescription: "Generate SEO-optimized meta titles and descriptions in seconds with our free tool, perfectly calibrated to Google ranking guidelines (under 60 & 155 chars).",
       url: "https://metazivo.com/free-tools",
       html: `
         <main>
           <article>
-            <h1>Free SEO Tools Recommended by Experts</h1>
-            <p>These are the exact free tools we use and recommend to improve Google rankings. All tools are 100% free and powerful enough for serious results.</p>
+            <h1>Free Meta Title & Description Generator</h1>
+            <p>Create click-worthy, search-optimized meta titles and descriptions in seconds. Perfectly calibrated to Google's character guidelines for higher search visibility.</p>
             <section>
-              <h2>Top 10 Free SEO Tools</h2>
-              <ol>
-                <li><strong>Google Search Console:</strong> Track real rankings, impressions, clicks and indexing issues directly from Google.</li>
-                <li><strong>Google Analytics 4:</strong> Understand your traffic, user behavior and conversions for free.</li>
-                <li><strong>Google Keyword Planner:</strong> Find high-potential keywords with real search volume data.</li>
-                <li><strong>Google PageSpeed Insights:</strong> Check Core Web Vitals and get free speed optimization tips.</li>
-                <li><strong>Screaming Frog SEO Spider (Free):</strong> Technical site audit – crawl up to 500 URLs for free.</li>
-                <li><strong>Ahrefs Webmaster Tools:</strong> Free backlink analysis and site audit for your verified website.</li>
-                <li><strong>Bing Webmaster Tools:</strong> Extra ranking data + free keyword research from Microsoft.</li>
-                <li><strong>Google Trends:</strong> Discover trending topics and seasonal search interest.</li>
-                <li><strong>Microsoft Clarity:</strong> Free heatmaps and session recordings to see user behavior.</li>
-                <li><strong>Google Rich Results Test:</strong> Validate structured data and rich snippets for better SERP appearance.</li>
-              </ol>
+              <h2>How to Optimize Your Google Snippets</h2>
+              <p>Keep your title under 60 characters and description under 155 characters for better Google rankings.</p>
+              <ul>
+                <li><strong>Meta Title Limit:</strong> 50 to 60 characters to avoid Google truncation.</li>
+                <li><strong>Meta Description Limit:</strong> 140 to 155 characters for complete SERP display.</li>
+                <li><strong>Keyword Placement:</strong> Position your primary target keyword early in your title.</li>
+              </ul>
             </section>
           </article>
         </main>`
@@ -2305,11 +2299,19 @@ async function generateSchema(pathname: string): Promise<string> {
 
   if (p === "/free-tools" || p === "/tools" || p === "/free-seo-tools" || p === "/free-seo-tool" || p === "/seo-tools") {
     baseSchema["@graph"].push({
-      "@type": "CollectionPage",
-      "@id": `${domain}/free-tools#page`,
-      "name": "Free SEO Tools | Metazivo Free Tools Hub",
+      "@type": "WebApplication",
+      "@id": `${domain}/free-tools#app`,
+      "name": "Metazivo Free Meta Title & Description Generator",
       "url": `${domain}/free-tools`,
-      "description": "Access free SEO tools recommended by Metazivo experts. Improve your Google rankings with Google Search Console, PageSpeed Insights, Keyword Planner and more.",
+      "applicationCategory": "SEOApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "description": "Generate SEO-optimized meta titles and descriptions in seconds, calibrated to Google ranking character limits.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
       "publisher": { "@id": `${domain}/#organization` }
     });
 
@@ -2318,7 +2320,7 @@ async function generateSchema(pathname: string): Promise<string> {
       "@id": `${domain}/free-tools#breadcrumbs`,
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
-        { "@type": "ListItem", "position": 2, "name": "Free SEO Tools", "item": `${domain}/free-tools` }
+        { "@type": "ListItem", "position": 2, "name": "Free Meta Tag Generator", "item": `${domain}/free-tools` }
       ]
     });
   }

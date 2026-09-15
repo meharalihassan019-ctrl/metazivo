@@ -121,8 +121,8 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
                     <Wrench className="w-3.5 h-3.5" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-bold">Free SEO Tools Hub</span>
-                    <span className="text-[10px] text-slate-400 font-light">10+ Verified Tools & Guides</span>
+                    <span className="font-bold">Meta Title & Description Generator</span>
+                    <span className="text-[10px] text-slate-400 font-light">Free SEO Snippet Creator</span>
                   </div>
                 </button>
                 <button
@@ -226,7 +226,7 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
                   }`}
                 >
                   <Wrench className="w-3.5 h-3.5 shrink-0" />
-                  <span>Free Tools Hub (10+ Tools)</span>
+                  <span>Meta Title & Description Generator</span>
                 </button>
                 <button
                   onClick={() => handleNavClick("tools/website-speed-test")}

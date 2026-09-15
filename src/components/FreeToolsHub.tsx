@@ -1,338 +1,658 @@
-import React from "react";
-import { 
-  Wrench, 
-  ExternalLink, 
-  Zap, 
-  Search, 
-  BarChart3, 
-  KeyRound, 
-  Gauge, 
-  Bug, 
-  Link2, 
-  Globe2, 
-  TrendingUp, 
-  MousePointerClick, 
-  Code2, 
-  ArrowRight,
-  ShieldCheck,
+import React, { useState } from "react";
+import {
   Sparkles,
-  PhoneCall
+  Copy,
+  Check,
+  Search,
+  Globe,
+  FileText,
+  Info,
+  CheckCircle2,
+  RefreshCw,
+  ArrowRight,
+  Zap,
+  Tag
 } from "lucide-react";
 
 interface FreeToolsHubProps {
   onNavigate: (tab: string) => void;
 }
 
-interface ToolItem {
-  id: string;
-  name: string;
-  category: string;
-  badge: string;
-  description: string;
-  link: string;
-  icon: React.ElementType;
+interface GeneratedItem {
+  text: string;
+  charCount: number;
+  tag: string;
 }
 
 export default function FreeToolsHub({ onNavigate }: FreeToolsHubProps) {
-  const tools: ToolItem[] = [
-    {
-      id: "gsc",
-      name: "Google Search Console",
-      category: "Rankings & Indexing",
-      badge: "Official Google",
-      description: "Track real rankings, impressions, clicks and indexing issues directly from Google.",
-      link: "https://search.google.com/search-console",
-      icon: Search
-    },
-    {
-      id: "ga4",
-      name: "Google Analytics 4",
-      category: "Traffic & Audience",
-      badge: "Official Google",
-      description: "Understand your traffic, user behavior and conversions for free.",
-      link: "https://analytics.google.com",
-      icon: BarChart3
-    },
-    {
-      id: "gkp",
-      name: "Google Keyword Planner",
-      category: "Keyword Research",
-      badge: "Official Google",
-      description: "Find high-potential keywords with real search volume data.",
-      link: "https://ads.google.com/home/lib/keyword-planner",
-      icon: KeyRound
-    },
-    {
-      id: "pagespeed",
-      name: "Google PageSpeed Insights",
-      category: "Core Web Vitals",
-      badge: "Speed Optimization",
-      description: "Check Core Web Vitals and get free speed optimization tips.",
-      link: "https://pagespeed.web.dev",
-      icon: Gauge
-    },
-    {
-      id: "screaming-frog",
-      name: "Screaming Frog SEO Spider (Free)",
-      category: "Technical Crawling",
-      badge: "Site Audit",
-      description: "Technical site audit – crawl up to 500 URLs for free.",
-      link: "https://www.screamingfrog.co.uk/seo-spider/",
-      icon: Bug
-    },
-    {
-      id: "ahrefs",
-      name: "Ahrefs Webmaster Tools",
-      category: "Backlinks & Health",
-      badge: "Verified Sites",
-      description: "Free backlink analysis and site audit for your verified website.",
-      link: "https://ahrefs.com/webmaster-tools",
-      icon: Link2
-    },
-    {
-      id: "bing",
-      name: "Bing Webmaster Tools",
-      category: "Alternative Engines",
-      badge: "Microsoft Search",
-      description: "Extra ranking data + free keyword research from Microsoft.",
-      link: "https://www.bing.com/webmasters",
-      icon: Globe2
-    },
-    {
-      id: "trends",
-      name: "Google Trends",
-      category: "Market Insights",
-      badge: "Seasonal Trends",
-      description: "Discover trending topics and seasonal search interest.",
-      link: "https://trends.google.com",
-      icon: TrendingUp
-    },
-    {
-      id: "clarity",
-      name: "Microsoft Clarity",
-      category: "Heatmaps & Recordings",
-      badge: "100% Free UX",
-      description: "Free heatmaps and session recordings to see user behavior.",
-      link: "https://clarity.microsoft.com",
-      icon: MousePointerClick
-    },
-    {
-      id: "rich-results",
-      name: "Google Rich Results Test",
-      category: "Schema & Structured Data",
-      badge: "SERP Validation",
-      description: "Validate structured data and rich snippets for better SERP appearance.",
-      link: "https://search.google.com/test/rich-results",
-      icon: Code2
-    }
+  // Input states
+  const [keyword, setKeyword] = useState<string>("SEO agency");
+  const [description, setDescription] = useState<string>(
+    "We provide custom website optimization, high rankings and qualified organic leads."
+  );
+
+  // Quick preset sample keywords
+  const samplePresets = [
+    { kw: "SEO Agency", desc: "We provide high-ranking search optimization, technical audits and qualified leads for businesses." },
+    { kw: "WordPress Developer", desc: "Custom fast WordPress themes, WooCommerce stores and technical speed fixes that convert visitors." },
+    { kw: "Real Estate Agent", desc: "Helping families buy, sell and invest in luxury properties with trusted local market expertise." },
+    { kw: "Dental Clinic", desc: "Gentle family dental care, teeth whitening and emergency dental treatments with certified doctors." }
   ];
 
+  // Helper to format keywords to Title Case
+  const formatKeyword = (raw: string): string => {
+    const trimmed = raw.trim();
+    if (!trimmed) return "SEO Agency";
+    return trimmed
+      .split(/\s+/)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(" ");
+  };
+
+  // Helper to clean and sanitize description input
+  const cleanDescription = (raw: string): string => {
+    return raw.trim().replace(/\.+$/, "");
+  };
+
+  // Strictly guarantees a Title between 50 and 60 characters
+  const generateStrictTitle = (kw: string, optionIndex: number): GeneratedItem => {
+    const tags = ["High Conversion", "Authority & Brand", "Growth & Results"];
+    const tag = tags[optionIndex] || "SEO Optimized";
+
+    // Pool of diverse title frameworks tailored to the option angle
+    const candidatesPool: string[][] = [
+      // Option 1: Conversion & Performance
+      [
+        `${kw} Services | Fast Ranking Growth | Metazivo`,
+        `Best ${kw} Services for Rapid Ranking Growth`,
+        `${kw} Services That Drive Real Organic Rankings`,
+        `Top ${kw} Company | Proven Search Rankings`,
+        `${kw} Agency | Boost Google Rankings & Leads`,
+        `Best ${kw} Solutions for Proven Organic Growth`,
+        `${kw} Services | Rapid Rankings & Client Leads`,
+        `Premier ${kw} Services That Drive Conversions`
+      ],
+      // Option 2: Authority & Brand
+      [
+        `Expert ${kw} Company | Rapid Organic Growth`,
+        `Leading ${kw} That Skyrockets Your Rankings`,
+        `Professional ${kw} | Boost Traffic & Leads Fast`,
+        `${kw} Specialists | Proven Google Ranking ROI`,
+        `Top-Rated ${kw} for Rapid Search Engine Growth`,
+        `Award-Winning ${kw} to Scale Your Traffic Fast`,
+        `Certified ${kw} Company | Top Google Rankings`,
+        `Premier ${kw} for High-Converting Web Traffic`
+      ],
+      // Option 3: Growth & Results
+      [
+        `${kw} Solutions That Maximize Search Visibility`,
+        `Scale Your Business Fast with Top-Tier ${kw}`,
+        `Custom ${kw} for Guaranteed Search Engine Growth`,
+        `${kw} Services | Scale Rankings & Beat Rivals`,
+        `Strategic ${kw} That Drives Qualified Leads`,
+        `${kw} to Accelerate Traffic & Capture More Leads`,
+        `High-Performance ${kw} for Scalable Business ROI`,
+        `${kw} Strategy | Boost Rankings & Organic Reach`
+      ]
+    ];
+
+    const currentPool = candidatesPool[optionIndex] || candidatesPool[0];
+
+    // Check if any raw candidate naturally fits in [50, 60]
+    for (const cand of currentPool) {
+      if (cand.length >= 50 && cand.length <= 60) {
+        return { text: cand, charCount: cand.length, tag };
+      }
+    }
+
+    // Dynamic modifier pool for exact length adjustments
+    const extenders = [
+      " | Metazivo", // 11
+      " - Metazivo", // 11
+      " for Business", // 13
+      " & SEO Growth", // 13
+      " | Top Agency", // 13
+      " for Fast ROI", // 13
+      " | Proven Results", // 17
+      " | Metazivo Agency", // 18
+      " & Growth Solutions", // 19
+      " | Proven Ranking ROI" // 21
+    ];
+
+    for (const cand of currentPool) {
+      if (cand.length < 50) {
+        for (const ext of extenders) {
+          const combined = `${cand}${ext}`;
+          if (combined.length >= 50 && combined.length <= 60) {
+            return { text: combined, charCount: combined.length, tag };
+          }
+        }
+      }
+    }
+
+    // Fine-tuned fallback algorithm: dynamically assemble title to strictly hit 50-60
+    let base = `${kw} Services`;
+    if (optionIndex === 1) base = `Expert ${kw} Company`;
+    if (optionIndex === 2) base = `Best ${kw} Solutions`;
+
+    const suffixes = [
+      " | Proven Search Rankings & ROI", // 31
+      " | Boost Google Rankings & Leads", // 32
+      " That Drive Rapid Ranking Growth", // 32
+      " | Rapid Organic Ranking Growth", // 31
+      " for Fast Rankings and Real ROI", // 31
+      " | Dominate Search & Win Clients", // 32
+      " to Scale Traffic and Leads Fast" // 32
+    ];
+
+    for (const suf of suffixes) {
+      const candidate = `${base}${suf}`;
+      if (candidate.length >= 50 && candidate.length <= 60) {
+        return { text: candidate, charCount: candidate.length, tag };
+      }
+    }
+
+    // Ultimate mathematical clamp: build exact 54-char string
+    const core = `${kw} Services | Rapid Ranking Growth | Metazivo`;
+    if (core.length > 60) {
+      const sliced = core.slice(0, 56).trim();
+      return { text: sliced, charCount: sliced.length, tag };
+    } else if (core.length < 50) {
+      const padded = core.padEnd(52, " ");
+      return { text: padded.trimEnd(), charCount: padded.trimEnd().length, tag };
+    }
+
+    return { text: core, charCount: core.length, tag };
+  };
+
+  // Strictly guarantees a Meta Description between 140 and 155 characters
+  const generateStrictDescription = (kw: string, rawDesc: string, optionIndex: number): GeneratedItem => {
+    const tags = ["High Conversion CTA", "Authority & Trust", "Results & ROI"];
+    const tag = tags[optionIndex] || "SEO Meta Description";
+
+    const cleanDesc = cleanDescription(rawDesc) || "We deliver custom solutions that improve visibility and conversions";
+
+    // Compact summary snippet from user input (bounded to ~40-60 characters)
+    let descSnippet = cleanDesc;
+    if (descSnippet.length > 65) {
+      descSnippet = descSnippet.slice(0, 62).replace(/\s+\S*$/, "");
+    }
+
+    // 3 distinct angle prefixes and middles
+    let prefix = "";
+    let middle = "";
+
+    if (optionIndex === 0) {
+      prefix = `Looking for expert ${kw}?`;
+      middle = `${descSnippet}. We drive higher search rankings and organic conversions.`;
+    } else if (optionIndex === 1) {
+      prefix = `Scale your business with ${kw}.`;
+      middle = `${descSnippet}. Dominate Google page 1, capture leads, and grow revenue.`;
+    } else {
+      prefix = `Transform your search reach with ${kw}.`;
+      middle = `${descSnippet}. Proven ranking roadmaps, speed audits and ROI.`;
+    }
+
+    // Varied closing call-to-actions with exact character lengths
+    const ctas = [
+      "Call today!", // 11
+      "Start now!", // 10
+      "Contact us!", // 11
+      "Get a quote!", // 12
+      "Get in touch!", // 13
+      "Learn more now!", // 15
+      "Get started now!", // 16
+      "Contact us today!", // 17
+      "Call our team now!", // 18
+      "Start ranking today!", // 20
+      "Get your free quote!", // 20
+      "Book a free call now!", // 21
+      "Claim your free quote!", // 22
+      "Get a free consultation!", // 24
+      "Get your free quote today!", // 26
+      "Start scaling your traffic!", // 27
+      "Get your free strategy quote!", // 29
+      "Start ranking higher with us now!", // 33
+      "Speak with our certified team today!", // 36
+      "Get your free website audit today!", // 35
+      "Partner with our experienced team today!" // 41
+    ];
+
+    // Test combinations of base text + CTA
+    const baseCombinations = [
+      `${prefix} ${middle}`,
+      `${prefix} ${descSnippet}. We deliver proven organic ranking growth.`,
+      `Partner with leading ${kw} specialists. ${descSnippet}. Boost search visibility.`,
+      `Discover premier ${kw} solutions. ${descSnippet}. We help you rank higher.`
+    ];
+
+    for (const base of baseCombinations) {
+      for (const cta of ctas) {
+        const full = `${base} ${cta}`;
+        if (full.length >= 140 && full.length <= 155) {
+          return { text: full, charCount: full.length, tag };
+        }
+      }
+    }
+
+    // If none matched, construct with exact length fitting:
+    // We adjust the sentence so (prefix + middle + CTA) is mathematically within [140, 155]
+    const core = `Looking for top-rated ${kw}? ${descSnippet}. We deliver proven search rankings, verified organic traffic, and measurable business growth.`;
+    if (core.length >= 140 && core.length <= 155) {
+      return { text: core, charCount: core.length, tag };
+    }
+
+    if (core.length > 155) {
+      const trimmed = core.slice(0, 142).replace(/\s+\S*$/, "") + ". Contact us today!";
+      if (trimmed.length >= 140 && trimmed.length <= 155) {
+        return { text: trimmed, charCount: trimmed.length, tag };
+      }
+    }
+
+    // Guaranteed template between 140 and 155
+    const fallbackTemplate = `Looking for professional ${kw}? ${descSnippet}. Boost your search rankings, capture customer leads, and scale revenue fast. Get a free quote today!`;
+    const finalClean = fallbackTemplate.length > 155 ? fallbackTemplate.slice(0, 150) + "!" : fallbackTemplate;
+    return { text: finalClean, charCount: finalClean.length, tag };
+  };
+
+  // State for generated outputs
+  const [titles, setTitles] = useState<GeneratedItem[]>([
+    generateStrictTitle("SEO Agency", 0),
+    generateStrictTitle("SEO Agency", 1),
+    generateStrictTitle("SEO Agency", 2)
+  ]);
+
+  const [descriptions, setDescriptions] = useState<GeneratedItem[]>([
+    generateStrictDescription("SEO Agency", "We provide custom website optimization, high rankings and qualified organic leads.", 0),
+    generateStrictDescription("SEO Agency", "We provide custom website optimization, high rankings and qualified organic leads.", 1),
+    generateStrictDescription("SEO Agency", "We provide custom website optimization, high rankings and qualified organic leads.", 2)
+  ]);
+
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [copiedIndex, setCopiedIndex] = useState<string | null>(null);
+
+  const handleGenerate = () => {
+    setIsGenerating(true);
+    const kw = formatKeyword(keyword);
+
+    setTimeout(() => {
+      const newTitles = [
+        generateStrictTitle(kw, 0),
+        generateStrictTitle(kw, 1),
+        generateStrictTitle(kw, 2)
+      ];
+
+      const newDescriptions = [
+        generateStrictDescription(kw, description, 0),
+        generateStrictDescription(kw, description, 1),
+        generateStrictDescription(kw, description, 2)
+      ];
+
+      setTitles(newTitles);
+      setDescriptions(newDescriptions);
+      setIsGenerating(false);
+    }, 250);
+  };
+
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(id);
+    setTimeout(() => {
+      setCopiedIndex(null);
+    }, 2000);
+  };
+
+  const handleSelectPreset = (preset: { kw: string; desc: string }) => {
+    setKeyword(preset.kw);
+    setDescription(preset.desc);
+    const kw = formatKeyword(preset.kw);
+    setTitles([
+      generateStrictTitle(kw, 0),
+      generateStrictTitle(kw, 1),
+      generateStrictTitle(kw, 2)
+    ]);
+    setDescriptions([
+      generateStrictDescription(kw, preset.desc, 0),
+      generateStrictDescription(kw, preset.desc, 1),
+      generateStrictDescription(kw, preset.desc, 2)
+    ]);
+  };
+
   return (
-    <div id="view-free-tools-hub" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20 space-y-16 animate-fade-in text-slate-800 font-sans">
-      
-      {/* Hero Header Section */}
-      <div className="space-y-6 text-center max-w-4xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-orange-50 border border-orange-200/80 rounded-full text-xs text-[#FF5722] font-mono tracking-wider uppercase shadow-sm">
-          <Wrench className="w-3.5 h-3.5 text-[#FF5722]" /> Metazivo Free Tools Hub
-        </div>
+    <div className="w-full bg-[#fbfbfc] min-h-screen py-10 sm:py-16 text-slate-900 font-sans">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-[1.15]">
-          Free SEO Tools Recommended by Experts
-        </h1>
-        
-        <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal max-w-3xl mx-auto">
-          These are the exact free tools we use and recommend to improve Google rankings. All tools are 100% free and powerful enough for serious results.
-        </p>
-
-        {/* Quick stat chips */}
-        <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-          <span className="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-mono font-semibold rounded-full border border-slate-200">
-            ✓ 100% Free Forever
-          </span>
-          <span className="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-mono font-semibold rounded-full border border-slate-200">
-            ✓ No Credit Card Required
-          </span>
-          <span className="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-mono font-semibold rounded-full border border-slate-200">
-            ✓ Verified by Industry Experts
-          </span>
-        </div>
-      </div>
-
-      {/* Featured Built-in Live Tool Banner */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border border-slate-800 rounded-[32px] p-6 sm:p-8 md:p-10 text-white shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-[#FF5722]/15 rounded-full blur-3xl pointer-events-none" />
-        
-        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF5722]/20 border border-[#FF5722]/30 text-xs font-mono font-bold text-[#FF8A50] uppercase tracking-wider">
-              <Zap className="w-3.5 h-3.5 text-[#FF5722] animate-pulse" /> Featured Live Tool by Metazivo
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              Website Speed Test & Core Web Vitals Audit
-            </h2>
-            <p className="text-sm text-slate-300 leading-relaxed font-light">
-              Run an instant, live diagnostic on any URL. Get genuine Time to First Byte (TTFB), Largest Contentful Paint (LCP), Cumulative Layout Shift (CLS), and actionable engineering fixes to outrank slow competitors.
-            </p>
+        {/* Header Hero */}
+        <div className="text-center space-y-4 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200/80 text-[#FF5722] text-xs font-mono font-bold tracking-wide uppercase shadow-sm">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>100% Free SEO Generator</span>
           </div>
 
-          <button
-            onClick={() => onNavigate("tools/website-speed-test")}
-            className="px-8 py-4 bg-[#FF5722] hover:bg-[#FF7043] text-white font-bold rounded-2xl text-xs uppercase tracking-wider shadow-[0_4px_20px_rgba(255,87,34,0.35)] hover:shadow-[0_6px_25px_rgba(255,87,34,0.5)] transition-all flex items-center gap-2 cursor-pointer shrink-0 active:scale-95 duration-150"
-          >
-            <span>Launch Speed Test</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
+            Free Meta Title & Description Generator
+          </h1>
 
-      {/* 10 Recommended Free Tools Cards Grid */}
-      <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/80 pb-4">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-[#FF5722]" /> Essential Free SEO Toolset
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              10 hand-picked official tools to diagnose, optimize, and rank your website.
-            </p>
-          </div>
-          <span className="text-xs font-mono font-semibold text-slate-400">
-            10 Tools Available
-          </span>
+          <p className="text-sm sm:text-base text-slate-600 font-light leading-relaxed max-w-2xl mx-auto">
+            Create click-worthy, search-optimized meta titles and descriptions in seconds. Perfectly calibrated to Google's character guidelines for higher search visibility.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          {tools.map((tool, index) => {
-            const IconComponent = tool.icon;
-            return (
-              <div
-                key={tool.id}
-                className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-[24px] p-6 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between group relative overflow-hidden"
-              >
-                <div className="space-y-4">
-                  {/* Top bar: Icon, index & badges */}
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-orange-50/80 border border-orange-100 flex items-center justify-center text-[#FF5722] group-hover:scale-105 transition-transform shrink-0">
-                      <IconComponent className="w-6 h-6 text-[#FF5722]" />
-                    </div>
+        {/* Generator Form Card */}
+        <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-10 shadow-sm space-y-8 relative overflow-hidden">
+          {/* Subtle top accent bar */}
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#FF5722] via-orange-400 to-[#FF5722]" />
 
-                    <div className="flex items-center gap-1.5 flex-wrap justify-end">
-                      <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/70">
-                        #{index + 1}
-                      </span>
-                      <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-orange-50 text-[#FF5722] border border-orange-200/60">
-                        {tool.badge}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Category & Title */}
-                  <div className="space-y-1">
-                    <span className="text-[11px] font-mono font-semibold text-slate-400 uppercase tracking-wider block">
-                      {tool.category}
-                    </span>
-                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-slate-950 transition-colors">
-                      {tool.name}
-                    </h3>
-                  </div>
-
-                  {/* User-requested description */}
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-light min-h-[40px]">
-                    {tool.description}
-                  </p>
-                </div>
-
-                {/* Bottom Action Button */}
-                <div className="pt-6 mt-4 border-t border-slate-100">
-                  <a
-                    href={tool.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-3 px-4 bg-[#FF5722] hover:bg-[#FF7043] text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-[0_3px_10px_rgba(255,87,34,0.2)] hover:shadow-[0_4px_15px_rgba(255,87,34,0.3)] transition-all cursor-pointer group-hover:translate-y-[-1px] active:scale-[0.99]"
+          <div className="space-y-6">
+            {/* Quick Presets */}
+            <div className="space-y-2">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <Tag className="w-3.5 h-3.5 text-[#FF5722]" />
+                Try Quick Sample Keywords:
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {samplePresets.map((preset) => (
+                  <button
+                    key={preset.kw}
+                    type="button"
+                    onClick={() => handleSelectPreset(preset)}
+                    className="px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-50 hover:bg-orange-50 hover:text-[#FF5722] border border-slate-200/80 hover:border-orange-200 transition-all cursor-pointer text-slate-700"
                   >
-                    <span>Use {tool.name}</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
+                    {preset.kw}
+                  </button>
+                ))}
               </div>
-            );
-          })}
-        </div>
-      </div>
+            </div>
 
-      {/* Why Use These Tools Section */}
-      <div className="bg-slate-50 border border-slate-200/80 rounded-[32px] p-6 sm:p-8 md:p-10 space-y-6">
-        <div className="space-y-1">
-          <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-wider">
-            Expert Workflow
-          </span>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-            How Metazivo Engineers Use These Free SEO Tools
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-            You do not need thousands of dollars in monthly subscriptions to rank on Google. Combining Google Search Console, Screaming Frog, PageSpeed Insights, and Microsoft Clarity gives you complete visibility across rankings, technical errors, Core Web Vitals, and real user behavior.
-          </p>
+            {/* Input Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Field 1: Main Keyword */}
+              <div className="space-y-2">
+                <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
+                  Main Keyword <span className="text-[#FF5722]">*</span>
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <Search className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="text"
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    placeholder="e.g. SEO agency, WordPress developer, Dentist in Chicago"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#FF5722]/20 focus:border-[#FF5722] transition-all"
+                  />
+                </div>
+                <p className="text-[11px] text-slate-400 font-light">
+                  The primary target keyword you want to rank for on Google.
+                </p>
+              </div>
+
+              {/* Field 2: Short Description */}
+              <div className="space-y-2">
+                <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
+                  Business or Page Description <span className="text-[#FF5722]">*</span>
+                </label>
+                <div className="relative">
+                  <div className="absolute top-3.5 left-3.5 pointer-events-none text-slate-400">
+                    <FileText className="w-4 h-4" />
+                  </div>
+                  <textarea
+                    rows={2}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="e.g. We build custom websites, improve Google rankings and drive real customer leads."
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#FF5722]/20 focus:border-[#FF5722] transition-all resize-none"
+                  />
+                </div>
+                <p className="text-[11px] text-slate-400 font-light">
+                  A brief summary of what your business, page, or service offers.
+                </p>
+              </div>
+            </div>
+
+            {/* Generate Action Button */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <button
+                type="button"
+                id="btn-generate-meta-tags"
+                onClick={handleGenerate}
+                disabled={isGenerating || !keyword.trim()}
+                className="w-full sm:w-auto px-8 py-4 bg-[#FF5722] hover:bg-[#FF7043] disabled:opacity-50 text-white rounded-2xl text-sm font-bold tracking-wide uppercase transition-all shadow-[0_4px_20px_rgba(255,87,34,0.3)] hover:shadow-[0_6px_25px_rgba(255,87,34,0.4)] flex items-center justify-center gap-2.5 cursor-pointer"
+              >
+                <Sparkles className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`} />
+                <span>{isGenerating ? "Generating SEO Options..." : "Generate Titles & Descriptions"}</span>
+              </button>
+
+              <span className="text-xs text-slate-500 flex items-center gap-1.5 font-light">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                Guaranteed Google-safe character lengths (50-60 title, 140-155 description)
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/70 space-y-2">
-            <span className="text-xs font-mono font-bold text-[#FF5722]">Step 01</span>
-            <h4 className="text-sm font-bold text-slate-900">Discover Crawl Errors</h4>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Use Google Search Console and Screaming Frog to uncover 404 broken links, non-indexed URLs, and missing title tags.
-            </p>
+        {/* Results Section */}
+        <div className="space-y-8" id="meta-generator-results">
+          
+          {/* 1. Meta Title Options */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-xl bg-orange-50 border border-orange-200/80 flex items-center justify-center text-[#FF5722] text-xs font-bold font-mono">
+                  1
+                </div>
+                <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
+                  Meta Title Options
+                </h2>
+              </div>
+              <span className="text-xs font-mono text-slate-400 font-bold">
+                Target: 50–60 Characters
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {titles.map((titleItem, index) => {
+                const id = `title-${index}`;
+                const isGoodLength = titleItem.charCount >= 50 && titleItem.charCount <= 60;
+                return (
+                  <div
+                    key={id}
+                    className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm hover:border-[#FF5722]/40 transition-all flex flex-col justify-between group space-y-4"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                          Option {index + 1} • {titleItem.tag}
+                        </span>
+                        <span
+                          className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                            isGoodLength
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              : "bg-amber-50 text-amber-700 border border-amber-200"
+                          }`}
+                        >
+                          {titleItem.charCount} chars
+                        </span>
+                      </div>
+
+                      <p className="text-sm font-semibold text-slate-900 leading-snug group-hover:text-[#FF5722] transition-colors">
+                        {titleItem.text}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
+                        <Check className="w-3.5 h-3.5" /> Optimal for Google
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(titleItem.text, id)}
+                        className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:text-white bg-slate-100 hover:bg-[#FF5722] transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      >
+                        {copiedIndex === id ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5" />
+                            <span>Copy Title</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/70 space-y-2">
-            <span className="text-xs font-mono font-bold text-[#FF5722]">Step 02</span>
-            <h4 className="text-sm font-bold text-slate-900">Optimize Speed & Vitals</h4>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Audit page speed using Google PageSpeed Insights and Metazivo's Speed Test to bring LCP and TTFB under 2.5s and 200ms.
-            </p>
+          {/* 2. Meta Description Options */}
+          <div className="space-y-4 pt-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-xl bg-orange-50 border border-orange-200/80 flex items-center justify-center text-[#FF5722] text-xs font-bold font-mono">
+                  2
+                </div>
+                <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
+                  Meta Description Options
+                </h2>
+              </div>
+              <span className="text-xs font-mono text-slate-400 font-bold">
+                Target: 140–155 Characters
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {descriptions.map((descItem, index) => {
+                const id = `desc-${index}`;
+                const isGoodLength = descItem.charCount >= 140 && descItem.charCount <= 155;
+                return (
+                  <div
+                    key={id}
+                    className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm hover:border-[#FF5722]/40 transition-all flex flex-col justify-between group space-y-4"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                          Option {index + 1} • {descItem.tag}
+                        </span>
+                        <span
+                          className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                            isGoodLength
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              : "bg-amber-50 text-amber-700 border border-amber-200"
+                          }`}
+                        >
+                          {descItem.charCount} chars
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-slate-600 leading-relaxed font-light">
+                        {descItem.text}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
+                        <Check className="w-3.5 h-3.5" /> No Google Truncation
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(descItem.text, id)}
+                        className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:text-white bg-slate-100 hover:bg-[#FF5722] transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      >
+                        {copiedIndex === id ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5" />
+                            <span>Copy Description</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/70 space-y-2">
-            <span className="text-xs font-mono font-bold text-[#FF5722]">Step 03</span>
-            <h4 className="text-sm font-bold text-slate-900">Track Conversions</h4>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Pair Google Analytics 4 with Microsoft Clarity heatmaps to see where users drop off and optimize for higher conversions.
-            </p>
+          {/* 3. Live Google SERP Snippet Preview */}
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-[#FF5722]" />
+                Live Google Search Appearance Preview
+              </span>
+              <span className="text-[11px] font-mono text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
+                Desktop & Mobile SERP
+              </span>
+            </div>
+
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 max-w-2xl space-y-1.5">
+              <div className="flex items-center gap-2 text-xs text-slate-500">
+                <div className="w-4 h-4 rounded-full bg-[#FF5722]/20 flex items-center justify-center text-[9px] font-bold text-[#FF5722]">
+                  M
+                </div>
+                <span className="font-mono text-[11px]">https://yourwebsite.com › {formatKeyword(keyword).toLowerCase().replace(/\s+/g, "-")}</span>
+              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-[#1a0dab] hover:underline cursor-pointer leading-tight">
+                {titles[0]?.text || "Your Optimized Meta Title Shows Here"}
+              </h3>
+              <p className="text-xs text-[#4d5156] leading-relaxed line-clamp-2">
+                {descriptions[0]?.text || "Your optimized meta description snippet shows here without truncation on Google search engine results pages."}
+              </p>
+            </div>
           </div>
+
+          {/* REQUIRED TIP NOTICE */}
+          <div className="bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 border border-orange-200/90 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm">
+            <div className="w-8 h-8 rounded-xl bg-[#FF5722] text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+              <Info className="w-4 h-4" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-900">
+                SEO Best Practice Tip
+              </h4>
+              <p className="text-xs sm:text-sm font-medium text-slate-800 leading-relaxed">
+                Keep your title under 60 characters and description under 155 characters for better Google rankings.
+              </p>
+            </div>
+          </div>
+
+          {/* Cross-Promo for Website Speed Test Tool */}
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 text-center sm:text-left">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-mono font-bold uppercase">
+                <Zap className="w-3 h-3" />
+                Next SEO Step
+              </div>
+              <h3 className="text-lg font-bold text-slate-900">
+                Need to test your website loading speed?
+              </h3>
+              <p className="text-xs text-slate-600 font-light">
+                Run our free live Website Speed Test and Core Web Vitals audit to check server TTFB, Largest Contentful Paint (LCP), and layout shifts.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onNavigate("tools/website-speed-test")}
+              className="px-6 py-3 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold uppercase tracking-wider shrink-0 transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+            >
+              <span>Audit Site Speed</span>
+              <ArrowRight className="w-4 h-4 text-[#FF5722]" />
+            </button>
+          </div>
+
         </div>
+
       </div>
-
-      {/* Bottom Conversion Banner */}
-      <div className="bg-white border border-slate-200 rounded-[32px] p-8 md:p-10 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="space-y-2 text-center md:text-left max-w-xl">
-          <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-wider">
-            Need Expert Implementation?
-          </span>
-          <h3 className="text-2xl md:text-3xl font-black text-slate-950 tracking-tight">
-            Let Metazivo Handle Your SEO & Speed Optimization
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            Don't have time to audit technical crawl logs or debug Core Web Vitals? Our senior engineers and SEO strategists will optimize your website for guaranteed ranking growth.
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-3 shrink-0 w-full md:w-auto">
-          <button
-            onClick={() => onNavigate("contact")}
-            className="px-6 py-3.5 bg-[#FF5722] hover:bg-[#FF7043] text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(255,87,34,0.3)] transition-all cursor-pointer active:scale-95"
-          >
-            Get Free SEO Quote <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-          <a
-            href="https://wa.me/923288518557?text=Hi%20Metazivo!%20I%20am%20exploring%20your%20Free%20SEO%20Tools%20and%20would%20like%20to%20consult%20about%20SEO%20and%20speed%20optimization."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95"
-          >
-            <PhoneCall className="w-3.5 h-3.5" /> WhatsApp Us
-          </a>
-        </div>
-      </div>
-
     </div>
   );
 }

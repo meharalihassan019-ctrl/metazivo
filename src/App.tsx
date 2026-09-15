@@ -42,6 +42,7 @@ import {
   Cloud,
   MessageSquare,
   Tag,
+  Sparkles,
   Image as ImageIcon
 } from "lucide-react";
 import Header from "./components/Header";
@@ -581,9 +582,9 @@ export default function App() {
         keywords: "contact metazivo, free SEO quote, website consultation"
       },
       "free-tools": {
-        title: "Free SEO Tools | Metazivo Free Tools Hub",
-        description: "Access free SEO tools recommended by Metazivo experts. Improve your Google rankings with Google Search Console, PageSpeed Insights, Keyword Planner and more.",
-        keywords: "free SEO tools, google search console, pagespeed insights, keyword planner, screaming frog, ahrefs"
+        title: "Free SEO Tools & Meta Tag Generator | Metazivo Free Tools Hub",
+        description: "Generate SEO-optimized meta titles and descriptions in seconds with our free tool, perfectly calibrated to Google ranking guidelines (under 60 & 155 chars).",
+        keywords: "meta title generator, meta description generator, free SEO tools, google ranking tags, SEO snippet creator"
       },
       "tools/website-speed-test": {
         title: "Free Website Speed Test & Core Web Vitals Audit | Metazivo",
@@ -1581,122 +1582,59 @@ export default function App() {
               </div>
             </section>
 
-            {/* 2.8 FREE SEO TOOLS & SPEED AUDIT HUB PROMO */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12 relative z-10" id="free-tools-showcase">
-              <div className="text-center space-y-4 max-w-3xl mx-auto">
-                <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">
-                  100% Free Tools Hub
-                </span>
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                  Free SEO Tools & Live Website Speed Audit
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-600 font-light leading-relaxed">
-                  Boost your rankings and diagnose bottlenecks with our real-time Core Web Vitals performance audit and hand-picked collection of official Google & industry SEO tools.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Tool 1: Live Speed Test */}
-                <ThreeDTiltCard
-                  className="bg-white border border-slate-200/80 hover:border-[#FF5722]/30 p-8 rounded-3xl shadow-sm relative overflow-hidden flex flex-col justify-between group transition-all"
-                  glowColor="rgba(255, 87, 34, 0.08)"
-                  tiltMaxAngle={6}
-                >
-                  <div className="space-y-5">
-                    <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF5722]">
-                        <Activity className="w-6 h-6" />
-                      </div>
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full">
-                        Live Diagnostic
-                      </span>
-                    </div>
-
-                    <div className="space-y-2">
-                      <h3 className="text-xl font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors">
-                        Website Speed Test & Core Web Vitals
-                      </h3>
-                      <p className="text-xs text-slate-600 font-light leading-relaxed">
-                        Audit any domain in seconds. Measures true server response time (TTFB), Largest Contentful Paint (LCP), layout shift, and reveals exact code blockers slowing down your Google rankings.
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-4 gap-2 pt-2">
-                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-150 text-center">
-                        <span className="block text-[10px] font-mono text-slate-400 uppercase">LCP</span>
-                        <span className="text-xs font-bold text-emerald-600 font-mono">&lt;2.5s</span>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-150 text-center">
-                        <span className="block text-[10px] font-mono text-slate-400 uppercase">INP</span>
-                        <span className="text-xs font-bold text-emerald-600 font-mono">&lt;200ms</span>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-150 text-center">
-                        <span className="block text-[10px] font-mono text-slate-400 uppercase">CLS</span>
-                        <span className="text-xs font-bold text-emerald-600 font-mono">&lt;0.1</span>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-150 text-center">
-                        <span className="block text-[10px] font-mono text-slate-400 uppercase">TTFB</span>
-                        <span className="text-xs font-bold text-emerald-600 font-mono">&lt;200ms</span>
-                      </div>
-                    </div>
+            {/* 2.8 HOMEPAGE PROMOTION: FREE META TITLE & DESCRIPTION GENERATOR */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10" id="free-tools-promo">
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-orange-50/30 to-white border border-slate-200/90 p-8 sm:p-12 shadow-sm">
+                <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 bg-[#FF5722]/5 rounded-full blur-3xl pointer-events-none" />
+                
+                <div className="relative z-10 max-w-3xl mx-auto text-center space-y-6">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200/80 text-[#FF5722] text-xs font-mono font-bold tracking-wide uppercase shadow-sm">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>100% Free SEO Tool</span>
                   </div>
 
-                  <div className="pt-6 border-t border-slate-100 mt-6">
+                  <div className="space-y-3">
+                    <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                      Free Meta Title &amp; Description Generator
+                    </h2>
+                    <p className="text-base sm:text-lg text-slate-600 font-light leading-relaxed">
+                      Create SEO-friendly titles and descriptions in seconds
+                    </p>
+                  </div>
+
+                  {/* Visual micro-preview snippet */}
+                  <div className="max-w-xl mx-auto p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm text-left space-y-2">
+                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                      <span>https://metazivo.com › seo-agency</span>
+                      <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">54 / 60 chars</span>
+                    </div>
+                    <p className="text-sm sm:text-base font-bold text-[#1a0dab] line-clamp-1">
+                      SEO Agency Services | Fast Ranking Growth | Metazivo
+                    </p>
+                    <p className="text-xs text-slate-600 font-light line-clamp-2">
+                      Looking for expert SEO agency solutions? We deliver proven Google ranking growth, higher search traffic, and real leads. Get a free quote today!
+                    </p>
+                  </div>
+
+                  {/* Primary CTA button linking to Free Tools page */}
+                  <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
                     <button
-                      onClick={() => handleNavigate("tools/website-speed-test")}
-                      className="w-full py-3 px-6 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-[0_4px_15px_rgba(255,87,34,0.25)] flex items-center justify-center gap-2 cursor-pointer transition-all"
+                      id="btn-home-free-tools"
+                      onClick={() => handleNavigate("free-tools")}
+                      className="w-full sm:w-auto px-8 py-3.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-[0_4px_20px_rgba(255,87,34,0.3)] hover:shadow-[0_6px_25px_rgba(255,87,34,0.4)] flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.02] active:scale-95"
                     >
-                      <span>Test Website Speed Free</span>
+                      <span>Open Free Generator</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
-                  </div>
-                </ThreeDTiltCard>
-
-                {/* Tool 2: Free SEO Tools Hub */}
-                <ThreeDTiltCard
-                  className="bg-white border border-slate-200/80 hover:border-[#FF5722]/30 p-8 rounded-3xl shadow-sm relative overflow-hidden flex flex-col justify-between group transition-all"
-                  glowColor="rgba(255, 87, 34, 0.08)"
-                  tiltMaxAngle={6}
-                >
-                  <div className="space-y-5">
-                    <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF5722]">
-                        <Search className="w-6 h-6" />
-                      </div>
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-widest bg-orange-50 text-[#FF5722] border border-orange-200 px-3 py-1 rounded-full">
-                        10 Curated Tools
-                      </span>
-                    </div>
-
-                    <div className="space-y-2">
-                      <h3 className="text-xl font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors">
-                        Top 10 Free SEO Tools Directory
-                      </h3>
-                      <p className="text-xs text-slate-600 font-light leading-relaxed">
-                        The definitive suite of essential free tools used by top SEO professionals to crawl websites, find keywords, track organic rankings, inspect structured data, and record user sessions.
-                      </p>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 pt-2">
-                      <span className="text-[11px] px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium">Google Search Console</span>
-                      <span className="text-[11px] px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium">Google Analytics 4</span>
-                      <span className="text-[11px] px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium">Keyword Planner</span>
-                      <span className="text-[11px] px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium">Screaming Frog</span>
-                      <span className="text-[11px] px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium">Ahrefs Tools</span>
-                      <span className="text-[11px] px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium">MS Clarity</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-6 border-t border-slate-100 mt-6">
                     <button
-                      onClick={() => handleNavigate("free-tools")}
-                      className="w-full py-3 px-6 bg-slate-900 hover:bg-black text-white rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm"
+                      onClick={() => handleNavigate("tools/website-speed-test")}
+                      className="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all"
                     >
-                      <span>Explore 10+ Free SEO Tools</span>
-                      <ChevronRight className="w-4 h-4 text-[#FF5722]" />
+                      <Activity className="w-4 h-4 text-[#FF5722]" />
+                      <span>Speed Audit Tool</span>
                     </button>
                   </div>
-                </ThreeDTiltCard>
+                </div>
               </div>
             </section>
 
