@@ -1712,6 +1712,7 @@ app.get("/sitemap.xml", async (req, res) => {
     const staticRoutes: Array<{ path: string; changefreq: string; priority: string }> = [
       { path: "", changefreq: "daily", priority: "1.0" },
       { path: "/services", changefreq: "weekly", priority: "0.9" },
+      { path: "/free-tools", changefreq: "weekly", priority: "0.9" },
       { path: "/tools/website-speed-test", changefreq: "weekly", priority: "0.9" },
       { path: "/blog", changefreq: "daily", priority: "0.9" },
       { path: "/portfolio", changefreq: "weekly", priority: "0.8" },
