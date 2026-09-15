@@ -67,6 +67,7 @@ const AiAssistant = React.lazy(() => import("./components/AiAssistant"));
 const PagesPanel = React.lazy(() => import("./components/PagesPanel"));
 const SeoDashboard = React.lazy(() => import("./components/SeoDashboard"));
 const WebsiteSpeedTest = React.lazy(() => import("./components/WebsiteSpeedTest"));
+import FreeToolsHub from "./components/FreeToolsHub";
 import SeoServicePage from "./components/SeoServicePage";
 
 // Premium real stock photo URLs (Not AI-generated)
@@ -455,21 +456,27 @@ export default function App() {
       setCurrentTab("terms");
     } else if (
       lowerPath === "/tools/website-speed-test" ||
-      lowerPath === "/tools" ||
-      lowerPath.startsWith("/tools/") ||
-      lowerPath === "/free-tools/audit" ||
-      lowerPath.startsWith("/free-tools") ||
-      lowerPath === "/free-seo-tools" ||
-      lowerPath === "/free-seo-tool" ||
-      lowerPath === "/seo-tools" ||
-      lowerPath === "/seo-tool" ||
       lowerPath === "/website-speed-test" ||
       lowerPath === "/speed-test" ||
-      lowerPath === "/audit"
+      lowerPath === "/audit" ||
+      lowerPath === "/free-tools/audit"
     ) {
       setCurrentTab("tools/website-speed-test");
       if (lowerPath !== "/tools/website-speed-test") {
         window.history.replaceState({}, "", "/tools/website-speed-test");
+      }
+    } else if (
+      lowerPath === "/free-tools" ||
+      lowerPath === "/tools" ||
+      lowerPath.startsWith("/free-tools") ||
+      lowerPath === "/free-seo-tools" ||
+      lowerPath === "/free-seo-tool" ||
+      lowerPath === "/seo-tools" ||
+      lowerPath === "/seo-tool"
+    ) {
+      setCurrentTab("free-tools");
+      if (lowerPath !== "/free-tools") {
+        window.history.replaceState({}, "", "/free-tools");
       }
     } else {
       const slug = path.replace(/^\/+/, "").replace(/\/+$/, "");
@@ -537,59 +544,113 @@ export default function App() {
 
   // Synchronize SEO Meta Details dynamically on Tab transition
   useEffect(() => {
-    const matchedPage = pages.find((p) => p.slug === currentTab);
-    if (matchedPage) {
-      if (matchedPage.seoTitle) {
-        document.title = matchedPage.seoTitle;
+    const pageSeoMap: Record<string, { title: string; description: string; keywords?: string }> = {
+      home: {
+        title: "Metazivo | SEO, AEO & GEO Agency for Rapid Ranking Growth",
+        description: "Dominate search with Metazivo – expert SEO, AEO, GEO, WordPress development & Meta Ads. Get high-performance websites that rank fast and convert better.",
+        keywords: "SEO agency, AEO agency, GEO engine optimization, WordPress development, Meta Ads, digital growth agency"
+      },
+      about: {
+        title: "About Metazivo | Premium Digital Growth Agency",
+        description: "Learn about Metazivo – a top-rated digital agency specializing in technical SEO, Answer Engine Optimization, Generative Engine Optimization and high-converting websites.",
+        keywords: "about metazivo, digital growth agency, technical SEO, AEO, GEO"
+      },
+      services: {
+        title: "Our Services | SEO, AEO, GEO, WordPress & Meta Ads",
+        description: "Explore Metazivo services: advanced SEO, AEO, GEO, custom WordPress development, Meta Ads management and performance marketing that drives real growth.",
+        keywords: "our services, SEO services, AEO services, GEO optimization, custom WordPress development, Meta Ads"
+      },
+      portfolio: {
+        title: "Portfolio | Metazivo Success Stories & Case Studies",
+        description: "See real results from Metazivo clients. High-ranking websites, SEO case studies and digital growth projects that delivered measurable ROI.",
+        keywords: "portfolio, metazivo case studies, SEO results, client success stories"
+      },
+      blog: {
+        title: "Blog | SEO, AEO & GEO Insights by Metazivo",
+        description: "Expert articles on SEO, Answer Engine Optimization, Generative Engine Optimization, WordPress tips and digital marketing strategies from Metazivo.",
+        keywords: "SEO blog, AEO insights, GEO optimization guides, WordPress tutorials"
+      },
+      pricing: {
+        title: "Pricing | Affordable SEO & Digital Agency Packages",
+        description: "Transparent pricing for Metazivo SEO, AEO, GEO, WordPress and Meta Ads services. Choose the right package for rapid ranking and business growth.",
+        keywords: "SEO pricing, digital agency packages, WordPress development rates"
+      },
+      contact: {
+        title: "Contact Metazivo | Get a Free SEO Quote Today",
+        description: "Contact Metazivo for a free consultation. Let’s discuss your SEO, AEO, GEO or website project and start ranking higher on Google.",
+        keywords: "contact metazivo, free SEO quote, website consultation"
+      },
+      "free-tools": {
+        title: "Free SEO Tools | Metazivo Free Tools Hub",
+        description: "Access free SEO tools recommended by Metazivo experts. Improve your Google rankings with Google Search Console, PageSpeed Insights, Keyword Planner and more.",
+        keywords: "free SEO tools, google search console, pagespeed insights, keyword planner, screaming frog, ahrefs"
+      },
+      "tools/website-speed-test": {
+        title: "Free Website Speed Test & Core Web Vitals Audit | Metazivo",
+        description: "Audit your website speed instantly. Get genuine Core Web Vitals (LCP, INP, CLS, TTFB), server response time, live asset inspection, and actionable speed fixes.",
+        keywords: "website speed test, core web vitals audit, test site speed, lcp checker, ttfb test"
+      }
+    };
+
+    let targetTitle = "";
+    let targetDescription = "";
+    let targetKeywords = "";
+
+    if (pageSeoMap[currentTab]) {
+      targetTitle = pageSeoMap[currentTab].title;
+      targetDescription = pageSeoMap[currentTab].description;
+      targetKeywords = pageSeoMap[currentTab].keywords || "";
+    } else {
+      const matchedPage = pages.find((p) => p.slug === currentTab);
+      if (matchedPage) {
+        targetTitle = matchedPage.seoTitle || `${matchedPage.title} | Metazivo`;
+        targetDescription = matchedPage.seoDescription || "Metazivo - Premium Digital Agency";
+        targetKeywords = (matchedPage.seoKeywords || []).join(", ");
+      } else if (currentTab === "blog-detail" && activeBlog) {
+        targetTitle = activeBlog.seoTitle || `${activeBlog.title} | Metazivo`;
+        targetDescription = activeBlog.seoDescription || activeBlog.excerpt || "";
+        targetKeywords = (activeBlog.seoKeywords || []).join(", ");
+      } else if (currentTab === "service-detail" && activeService) {
+        targetTitle = activeService.seoTitle || `${activeService.title} | Metazivo`;
+        targetDescription = activeService.seoDescription || `Maximize your business revenue with Metazivo's professional ${activeService.title} solutions.`;
+        targetKeywords = activeService.title;
       } else {
-        document.title = `${matchedPage.title} | Metazivo`;
+        const capitalizedTab = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+        targetTitle = currentTab === "home" ? "Metazivo | SEO, AEO & GEO Agency for Rapid Ranking Growth" : `${capitalizedTab} | Metazivo`;
+        targetDescription = "Dominate search with Metazivo – expert SEO, AEO, GEO, WordPress development & Meta Ads. Get high-performance websites that rank fast and convert better.";
       }
+    }
 
-      // Update meta description
-      let metaDesc = document.querySelector('meta[name="description"]');
-      if (!metaDesc) {
-        metaDesc = document.createElement('meta');
-        metaDesc.setAttribute('name', 'description');
-        document.head.appendChild(metaDesc);
-      }
-      metaDesc.setAttribute('content', matchedPage.seoDescription || "Metazivo - Premium Digital Agency");
+    document.title = targetTitle;
 
-      // Update meta keywords
+    // Update meta description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', targetDescription);
+
+    // Update Open Graph and Twitter card tags
+    let ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', targetTitle);
+    let ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', targetDescription);
+    let twTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twTitle) twTitle.setAttribute('content', targetTitle);
+    let twDesc = document.querySelector('meta[name="twitter:description"]');
+    if (twDesc) twDesc.setAttribute('content', targetDescription);
+
+    // Update meta keywords
+    if (targetKeywords) {
       let metaKeywords = document.querySelector('meta[name="keywords"]');
       if (!metaKeywords) {
         metaKeywords = document.createElement('meta');
         metaKeywords.setAttribute('name', 'keywords');
         document.head.appendChild(metaKeywords);
       }
-      metaKeywords.setAttribute('content', (matchedPage.seoKeywords || []).join(", "));
-    } else {
-      // Fallback handlers
-      if (currentTab === "blog-detail" && activeBlog) {
-        document.title = activeBlog.seoTitle || `${activeBlog.title} | Metazivo`;
-      } else if (currentTab === "service-detail" && activeService) {
-        document.title = activeService.seoTitle || `${activeService.title} | Metazivo`;
-        
-        let metaDesc = document.querySelector('meta[name="description"]');
-        if (!metaDesc) {
-          metaDesc = document.createElement('meta');
-          metaDesc.setAttribute('name', 'description');
-          document.head.appendChild(metaDesc);
-        }
-        metaDesc.setAttribute('content', activeService.seoDescription || `Maximize your business revenue with Metazivo's professional ${activeService.title} solutions.`);
-      } else if (currentTab === "tools/website-speed-test") {
-        document.title = "Free Website Speed Test – Check Your Site's Performance Instantly";
-        
-        let metaDesc = document.querySelector('meta[name="description"]');
-        if (!metaDesc) {
-          metaDesc = document.createElement('meta');
-          metaDesc.setAttribute('name', 'description');
-          document.head.appendChild(metaDesc);
-        }
-        metaDesc.setAttribute('content', "Test your website's speed and performance for free. Get instant results and find out what's slowing your site down and hurting your Google ranking.");
-      } else {
-        const capitalizedTab = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
-        document.title = currentTab === "home" ? "Metazivo | Premium Digital Growth Agency" : `${capitalizedTab} | Metazivo`;
-      }
+      metaKeywords.setAttribute('content', targetKeywords);
     }
   }, [currentTab, pages, activeBlog, activeService]);
 
@@ -613,13 +674,20 @@ export default function App() {
       window.history.pushState({}, "", "/");
     } else if (
       tab === "tools/website-speed-test" ||
-      tab === "free-tools/audit" ||
-      tab === "free-seo-tools" ||
-      tab === "seo-tools" ||
-      tab === "tools"
+      tab === "website-speed-test" ||
+      tab === "speed-test" ||
+      tab === "free-tools/audit"
     ) {
       setCurrentTab("tools/website-speed-test");
       window.history.pushState({}, "", "/tools/website-speed-test");
+    } else if (
+      tab === "free-tools" ||
+      tab === "tools" ||
+      tab === "free-seo-tools" ||
+      tab === "seo-tools"
+    ) {
+      setCurrentTab("free-tools");
+      window.history.pushState({}, "", "/free-tools");
     } else {
       const cleanTab = tab.replace(/^\/+|\/+$/g, "");
       setCurrentTab(cleanTab);
@@ -1513,6 +1581,125 @@ export default function App() {
               </div>
             </section>
 
+            {/* 2.8 FREE SEO TOOLS & SPEED AUDIT HUB PROMO */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12 relative z-10" id="free-tools-showcase">
+              <div className="text-center space-y-4 max-w-3xl mx-auto">
+                <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">
+                  100% Free Tools Hub
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                  Free SEO Tools & Live Website Speed Audit
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-600 font-light leading-relaxed">
+                  Boost your rankings and diagnose bottlenecks with our real-time Core Web Vitals performance audit and hand-picked collection of official Google & industry SEO tools.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Tool 1: Live Speed Test */}
+                <ThreeDTiltCard
+                  className="bg-white border border-slate-200/80 hover:border-[#FF5722]/30 p-8 rounded-3xl shadow-sm relative overflow-hidden flex flex-col justify-between group transition-all"
+                  glowColor="rgba(255, 87, 34, 0.08)"
+                  tiltMaxAngle={6}
+                >
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF5722]">
+                        <Activity className="w-6 h-6" />
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full">
+                        Live Diagnostic
+                      </span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors">
+                        Website Speed Test & Core Web Vitals
+                      </h3>
+                      <p className="text-xs text-slate-600 font-light leading-relaxed">
+                        Audit any domain in seconds. Measures true server response time (TTFB), Largest Contentful Paint (LCP), layout shift, and reveals exact code blockers slowing down your Google rankings.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-2 pt-2">
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-150 text-center">
+                        <span className="block text-[10px] font-mono text-slate-400 uppercase">LCP</span>
+                        <span className="text-xs font-bold text-emerald-600 font-mono">&lt;2.5s</span>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-150 text-center">
+                        <span className="block text-[10px] font-mono text-slate-400 uppercase">INP</span>
+                        <span className="text-xs font-bold text-emerald-600 font-mono">&lt;200ms</span>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-150 text-center">
+                        <span className="block text-[10px] font-mono text-slate-400 uppercase">CLS</span>
+                        <span className="text-xs font-bold text-emerald-600 font-mono">&lt;0.1</span>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-150 text-center">
+                        <span className="block text-[10px] font-mono text-slate-400 uppercase">TTFB</span>
+                        <span className="text-xs font-bold text-emerald-600 font-mono">&lt;200ms</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-slate-100 mt-6">
+                    <button
+                      onClick={() => handleNavigate("tools/website-speed-test")}
+                      className="w-full py-3 px-6 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-[0_4px_15px_rgba(255,87,34,0.25)] flex items-center justify-center gap-2 cursor-pointer transition-all"
+                    >
+                      <span>Test Website Speed Free</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </ThreeDTiltCard>
+
+                {/* Tool 2: Free SEO Tools Hub */}
+                <ThreeDTiltCard
+                  className="bg-white border border-slate-200/80 hover:border-[#FF5722]/30 p-8 rounded-3xl shadow-sm relative overflow-hidden flex flex-col justify-between group transition-all"
+                  glowColor="rgba(255, 87, 34, 0.08)"
+                  tiltMaxAngle={6}
+                >
+                  <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF5722]">
+                        <Search className="w-6 h-6" />
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-widest bg-orange-50 text-[#FF5722] border border-orange-200 px-3 py-1 rounded-full">
+                        10 Curated Tools
+                      </span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors">
+                        Top 10 Free SEO Tools Directory
+                      </h3>
+                      <p className="text-xs text-slate-600 font-light leading-relaxed">
+                        The definitive suite of essential free tools used by top SEO professionals to crawl websites, find keywords, track organic rankings, inspect structured data, and record user sessions.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      <span className="text-[11px] px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium">Google Search Console</span>
+                      <span className="text-[11px] px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium">Google Analytics 4</span>
+                      <span className="text-[11px] px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium">Keyword Planner</span>
+                      <span className="text-[11px] px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium">Screaming Frog</span>
+                      <span className="text-[11px] px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium">Ahrefs Tools</span>
+                      <span className="text-[11px] px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium">MS Clarity</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-slate-100 mt-6">
+                    <button
+                      onClick={() => handleNavigate("free-tools")}
+                      className="w-full py-3 px-6 bg-slate-900 hover:bg-black text-white rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm"
+                    >
+                      <span>Explore 10+ Free SEO Tools</span>
+                      <ChevronRight className="w-4 h-4 text-[#FF5722]" />
+                    </button>
+                  </div>
+                </ThreeDTiltCard>
+              </div>
+            </section>
+
             {/* 4. SUCCESS METRICS (Cinematic scroll-driven background Parallax) */}
             <section className="relative w-full py-32 overflow-hidden border-y border-white/10 z-10" id="success-metrics">
               {/* Parallax background wrapper */}
@@ -2265,6 +2452,11 @@ export default function App() {
               </>
             )}
           </div>
+        )}
+
+        {/* VIEW: FREE SEO TOOLS HUB */}
+        {currentTab === "free-tools" && (
+          <FreeToolsHub onNavigate={handleNavigate} />
         )}
 
         {/* VIEW: WEBSITE SPEED TEST */}

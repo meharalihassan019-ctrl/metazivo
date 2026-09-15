@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import React, { useState } from "react";
-import { Menu, X, Phone, Mail, Globe, ChevronDown, Zap } from "lucide-react";
+import { Menu, X, Phone, Mail, Globe, ChevronDown, Zap, Wrench } from "lucide-react";
 
 interface HeaderProps {
   currentTab: string;
@@ -89,36 +89,56 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
             </button>
           ))}
 
-          {/* Interactive Free Tools Dropdown */}
-          <div className="relative">
+          {/* Desktop Free Tools Navigation Link & Submenu */}
+          <div className="relative group/tools">
             <button
-              onClick={() => setToolsDropdownOpen(!toolsDropdownOpen)}
+              id="nav-link-free-tools"
+              onClick={() => handleNavClick("free-tools")}
               onMouseEnter={() => setToolsDropdownOpen(true)}
               className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-1 cursor-pointer ${
-                currentTab === "tools/website-speed-test"
+                currentTab === "free-tools" || currentTab === "tools/website-speed-test"
                   ? "bg-[#FF5722] text-white shadow-[0_4px_12px_rgba(255,87,34,0.25)]"
                   : "text-slate-600 hover:text-[#FF5722] hover:bg-slate-50"
               }`}
             >
-              Free Tools <ChevronDown className="w-3.5 h-3.5" />
+              <span>Free Tools</span>
+              <ChevronDown className="w-3.5 h-3.5 opacity-75" />
             </button>
             {toolsDropdownOpen && (
               <div 
-                className="absolute left-0 mt-2 w-56 bg-white border border-slate-200/80 rounded-2xl p-2 shadow-xl z-50 animate-fade-in"
+                className="absolute left-0 mt-2 w-64 bg-white border border-slate-200/90 rounded-2xl p-2 shadow-2xl z-50 animate-fade-in"
                 onMouseLeave={() => setToolsDropdownOpen(false)}
               >
                 <button
+                  onClick={() => handleNavClick("free-tools")}
+                  className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2.5 cursor-pointer ${
+                    currentTab === "free-tools"
+                      ? "bg-[#FF5722]/10 text-[#FF5722]"
+                      : "text-slate-700 hover:text-[#FF5722] hover:bg-slate-50"
+                  }`}
+                >
+                  <div className="w-7 h-7 rounded-lg bg-orange-50 border border-orange-200/80 flex items-center justify-center text-[#FF5722] shrink-0">
+                    <Wrench className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-bold">Free SEO Tools Hub</span>
+                    <span className="text-[10px] text-slate-400 font-light">10+ Verified Tools & Guides</span>
+                  </div>
+                </button>
+                <button
                   onClick={() => handleNavClick("tools/website-speed-test")}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                  className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2.5 cursor-pointer mt-1 ${
                     currentTab === "tools/website-speed-test"
                       ? "bg-[#FF5722]/10 text-[#FF5722]"
                       : "text-slate-700 hover:text-[#FF5722] hover:bg-slate-50"
                   }`}
                 >
-                  <Zap className="w-3.5 h-3.5 shrink-0 text-[#FF5722]" />
+                  <div className="w-7 h-7 rounded-lg bg-orange-50 border border-orange-200/80 flex items-center justify-center text-[#FF5722] shrink-0">
+                    <Zap className="w-3.5 h-3.5" />
+                  </div>
                   <div className="flex flex-col">
-                    <span>Website Speed Test</span>
-                    <span className="text-[10px] text-slate-400 font-light mt-0.5">Test Core Web Vitals</span>
+                    <span className="font-bold">Website Speed Test</span>
+                    <span className="text-[10px] text-slate-400 font-light">Live Core Web Vitals Audit</span>
                   </div>
                 </button>
               </div>
@@ -173,23 +193,47 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
               {item.label}
             </button>
           ))}
-          {/* Mobile Tools Dropdown */}
+          {/* Mobile Tools Navigation */}
           <div className="space-y-1">
-            <button
-              onClick={() => setMobileToolsOpen(!mobileToolsOpen)}
-              className="w-full text-left px-3 py-2 rounded-md text-sm font-medium flex items-center justify-between text-slate-600 hover:text-[#FF5722] hover:bg-slate-50"
-            >
-              <span>Free Tools</span>
-              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${mobileToolsOpen ? "rotate-180 text-[#FF5722]" : "text-slate-400"}`} />
-            </button>
+            <div className="flex items-center justify-between rounded-md bg-slate-50/80 border border-slate-200/60 p-1">
+              <button
+                onClick={() => handleNavClick("free-tools")}
+                className={`flex-1 text-left px-3 py-2 rounded-md text-sm font-semibold transition-colors ${
+                  currentTab === "free-tools"
+                    ? "bg-[#FF5722] text-white"
+                    : "text-slate-800 hover:text-[#FF5722]"
+                }`}
+              >
+                Free Tools
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileToolsOpen(!mobileToolsOpen)}
+                className="p-2 text-slate-500 hover:text-[#FF5722] cursor-pointer"
+                aria-label="Toggle Free Tools Submenu"
+              >
+                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${mobileToolsOpen ? "rotate-180 text-[#FF5722]" : ""}`} />
+              </button>
+            </div>
             {mobileToolsOpen && (
-              <div className="pl-4 py-1 space-y-1 bg-slate-50/50 rounded-xl">
+              <div className="pl-3 py-1 space-y-1 bg-slate-50/50 rounded-xl border border-slate-100 mt-1">
+                <button
+                  onClick={() => handleNavClick("free-tools")}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+                    currentTab === "free-tools"
+                      ? "bg-[#FF5722] text-white font-black"
+                      : "text-slate-700 hover:text-[#FF5722]"
+                  }`}
+                >
+                  <Wrench className="w-3.5 h-3.5 shrink-0" />
+                  <span>Free Tools Hub (10+ Tools)</span>
+                </button>
                 <button
                   onClick={() => handleNavClick("tools/website-speed-test")}
                   className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
                     currentTab === "tools/website-speed-test"
                       ? "bg-[#FF5722] text-white font-black"
-                      : "text-slate-600 hover:text-[#FF5722]"
+                      : "text-slate-700 hover:text-[#FF5722]"
                   }`}
                 >
                   <Zap className="w-3.5 h-3.5 shrink-0" />

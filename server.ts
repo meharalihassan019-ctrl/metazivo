@@ -119,22 +119,28 @@ app.use((req, res, next) => {
 
   const normalizedPath = req.path.toLowerCase().replace(/\/+$/, "");
 
-  // 2. SEO Tool Canonical Redirects: Route all tool aliases directly to the Free SEO & Speed Tool
-  const toolAliases = [
-    "/tools",
+  // 2. SEO Tool Canonical Redirects
+  const speedToolAliases = [
     "/free-tools/audit",
-    "/free-tools",
-    "/free-seo-tools",
-    "/free-seo-tool",
-    "/seo-tools",
-    "/seo-tool",
     "/website-speed-test",
     "/speed-test",
     "/audit"
   ];
-  if (toolAliases.includes(normalizedPath)) {
+  if (speedToolAliases.includes(normalizedPath)) {
     const query = req.url.slice(req.path.length);
     return res.redirect(301, `/tools/website-speed-test${query}`);
+  }
+
+  const freeToolsAliases = [
+    "/tools",
+    "/free-seo-tools",
+    "/free-seo-tool",
+    "/seo-tools",
+    "/seo-tool"
+  ];
+  if (freeToolsAliases.includes(normalizedPath)) {
+    const query = req.url.slice(req.path.length);
+    return res.redirect(301, `/free-tools${query}`);
   }
 
   // 3. Service Slug Aliases Canonical 301 Redirects
@@ -1970,15 +1976,193 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
   const p = pathname.toLowerCase().replace(/\/$/, "") || "/";
   
   const base = {
-    title: "Metazivo | WordPress Development, Meta Ads & Expert SEO Agency",
-    description: "Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth.",
-    keywords: "SEO agency, WordPress developer, Meta ads expert, social media marketing, SEO content writing, Metazivo",
-    ogTitle: "Metazivo | WordPress Development, Meta Ads & Expert SEO Agency",
-    ogDescription: "Metazivo is a premier digital agency providing premium WordPress development, technical SEO, content writing, Meta ads management, and social media growth.",
+    title: "Metazivo | SEO, AEO & GEO Agency for Rapid Ranking Growth",
+    description: "Dominate search with Metazivo – expert SEO, AEO, GEO, WordPress development & Meta Ads. Get high-performance websites that rank fast and convert better.",
+    keywords: "SEO agency, AEO optimization, GEO AI search, WordPress development, Meta ads expert, Metazivo",
+    ogTitle: "Metazivo | SEO, AEO & GEO Agency for Rapid Ranking Growth",
+    ogDescription: "Dominate search with Metazivo – expert SEO, AEO, GEO, WordPress development & Meta Ads. Get high-performance websites that rank fast and convert better.",
     url: `https://metazivo.com${pathname}`,
     html: ""
   };
 
+  // 1. Homepage
+  if (p === "/" || p === "/home") {
+    return {
+      title: "Metazivo | SEO, AEO & GEO Agency for Rapid Ranking Growth",
+      description: "Dominate search with Metazivo – expert SEO, AEO, GEO, WordPress development & Meta Ads. Get high-performance websites that rank fast and convert better.",
+      keywords: "SEO agency, AEO agency, GEO engine optimization, WordPress development, Meta Ads, digital marketing agency, rapid ranking growth",
+      ogTitle: "Metazivo | SEO, AEO & GEO Agency for Rapid Ranking Growth",
+      ogDescription: "Dominate search with Metazivo – expert SEO, AEO, GEO, WordPress development & Meta Ads. Get high-performance websites that rank fast and convert better.",
+      url: "https://metazivo.com/",
+      html: `
+        <main>
+          <article>
+            <h1>Metazivo | SEO, AEO & GEO Agency for Rapid Ranking Growth</h1>
+            <p>Dominate search with Metazivo – expert SEO, AEO, GEO, WordPress development & Meta Ads. Get high-performance websites that rank fast and convert better.</p>
+            <section>
+              <h2>Core Digital Growth Capabilities</h2>
+              <ul>
+                <li><strong>Search Engine Optimization (SEO):</strong> Technical site architecture, Core Web Vitals, and authoritative backlink funnels.</li>
+                <li><strong>Answer Engine Optimization (AEO):</strong> Structured snippet markup to capture Google answers and voice search responses.</li>
+                <li><strong>Generative Engine Optimization (GEO):</strong> Optimizing brand visibility inside ChatGPT, Google Gemini, Perplexity, and AI Overviews.</li>
+                <li><strong>WordPress Engineering:</strong> Custom, ultra-fast headless and native WordPress development with sub-second page loads.</li>
+                <li><strong>Meta Advertising:</strong> High-ROI customer acquisition campaigns on Instagram and Facebook.</li>
+              </ul>
+            </section>
+          </article>
+        </main>`
+    };
+  }
+
+  // 2. About Page
+  if (p === "/about") {
+    return {
+      title: "About Metazivo | Premium Digital Growth Agency",
+      description: "Learn about Metazivo – a top-rated digital agency specializing in technical SEO, Answer Engine Optimization, Generative Engine Optimization and high-converting websites.",
+      keywords: "about metazivo, digital growth agency, SEO engineers, AEO experts, technical SEO agency",
+      ogTitle: "About Metazivo | Premium Digital Growth Agency",
+      ogDescription: "Learn about Metazivo – a top-rated digital agency specializing in technical SEO, Answer Engine Optimization, Generative Engine Optimization and high-converting websites.",
+      url: "https://metazivo.com/about",
+      html: `
+        <main>
+          <article>
+            <h1>About Metazivo | Premium Digital Growth Agency</h1>
+            <p>Learn about Metazivo – a top-rated digital agency specializing in technical SEO, Answer Engine Optimization, Generative Engine Optimization and high-converting websites.</p>
+          </article>
+        </main>`
+    };
+  }
+
+  // 3. Services Page
+  if (p === "/services" || p === "/service") {
+    return {
+      title: "Our Services | SEO, AEO, GEO, WordPress & Meta Ads",
+      description: "Explore Metazivo services: advanced SEO, AEO, GEO, custom WordPress development, Meta Ads management and performance marketing that drives real growth.",
+      keywords: "SEO services, AEO services, GEO optimization, custom WordPress development, Meta Ads management, performance marketing",
+      ogTitle: "Our Services | SEO, AEO, GEO, WordPress & Meta Ads",
+      ogDescription: "Explore Metazivo services: advanced SEO, AEO, GEO, custom WordPress development, Meta Ads management and performance marketing that drives real growth.",
+      url: "https://metazivo.com/services",
+      html: `
+        <main>
+          <article>
+            <h1>Our Services | SEO, AEO, GEO, WordPress & Meta Ads</h1>
+            <p>Explore Metazivo services: advanced SEO, AEO, GEO, custom WordPress development, Meta Ads management and performance marketing that drives real growth.</p>
+          </article>
+        </main>`
+    };
+  }
+
+  // 4. Portfolio Page
+  if (p === "/portfolio") {
+    return {
+      title: "Portfolio | Metazivo Success Stories & Case Studies",
+      description: "See real results from Metazivo clients. High-ranking websites, SEO case studies and digital growth projects that delivered measurable ROI.",
+      keywords: "metazivo portfolio, SEO case studies, digital agency work, website results, client success stories",
+      ogTitle: "Portfolio | Metazivo Success Stories & Case Studies",
+      ogDescription: "See real results from Metazivo clients. High-ranking websites, SEO case studies and digital growth projects that delivered measurable ROI.",
+      url: "https://metazivo.com/portfolio",
+      html: `
+        <main>
+          <article>
+            <h1>Portfolio | Metazivo Success Stories & Case Studies</h1>
+            <p>See real results from Metazivo clients. High-ranking websites, SEO case studies and digital growth projects that delivered measurable ROI.</p>
+          </article>
+        </main>`
+    };
+  }
+
+  // 5. Blog Page
+  if (p === "/blog") {
+    return {
+      title: "Blog | SEO, AEO & GEO Insights by Metazivo",
+      description: "Expert articles on SEO, Answer Engine Optimization, Generative Engine Optimization, WordPress tips and digital marketing strategies from Metazivo.",
+      keywords: "SEO blog, AEO guides, GEO insights, WordPress tutorials, digital marketing articles",
+      ogTitle: "Blog | SEO, AEO & GEO Insights by Metazivo",
+      ogDescription: "Expert articles on SEO, Answer Engine Optimization, Generative Engine Optimization, WordPress tips and digital marketing strategies from Metazivo.",
+      url: "https://metazivo.com/blog",
+      html: `
+        <main>
+          <article>
+            <h1>Blog | SEO, AEO & GEO Insights by Metazivo</h1>
+            <p>Expert articles on SEO, Answer Engine Optimization, Generative Engine Optimization, WordPress tips and digital marketing strategies from Metazivo.</p>
+          </article>
+        </main>`
+    };
+  }
+
+  // 6. Pricing Page
+  if (p === "/pricing") {
+    return {
+      title: "Pricing | Affordable SEO & Digital Agency Packages",
+      description: "Transparent pricing for Metazivo SEO, AEO, GEO, WordPress and Meta Ads services. Choose the right package for rapid ranking and business growth.",
+      keywords: "SEO pricing, agency packages, WordPress development cost, Meta ads pricing, monthly retainer packages",
+      ogTitle: "Pricing | Affordable SEO & Digital Agency Packages",
+      ogDescription: "Transparent pricing for Metazivo SEO, AEO, GEO, WordPress and Meta Ads services. Choose the right package for rapid ranking and business growth.",
+      url: "https://metazivo.com/pricing",
+      html: `
+        <main>
+          <article>
+            <h1>Pricing | Affordable SEO & Digital Agency Packages</h1>
+            <p>Transparent pricing for Metazivo SEO, AEO, GEO, WordPress and Meta Ads services. Choose the right package for rapid ranking and business growth.</p>
+          </article>
+        </main>`
+    };
+  }
+
+  // 7. Contact Page
+  if (p === "/contact") {
+    return {
+      title: "Contact Metazivo | Get a Free SEO Quote Today",
+      description: "Contact Metazivo for a free consultation. Let’s discuss your SEO, AEO, GEO or website project and start ranking higher on Google.",
+      keywords: "contact metazivo, free SEO quote, hire SEO agency, consultation, website quote",
+      ogTitle: "Contact Metazivo | Get a Free SEO Quote Today",
+      ogDescription: "Contact Metazivo for a free consultation. Let’s discuss your SEO, AEO, GEO or website project and start ranking higher on Google.",
+      url: "https://metazivo.com/contact",
+      html: `
+        <main>
+          <article>
+            <h1>Contact Metazivo | Get a Free SEO Quote Today</h1>
+            <p>Contact Metazivo for a free consultation. Let’s discuss your SEO, AEO, GEO or website project and start ranking higher on Google.</p>
+          </article>
+        </main>`
+    };
+  }
+
+  // 8. Free Tools Page
+  if (p === "/free-tools" || p === "/tools" || p === "/free-seo-tools" || p === "/free-seo-tool" || p === "/seo-tools") {
+    return {
+      title: "Free SEO Tools | Metazivo Free Tools Hub",
+      description: "Access free SEO tools recommended by Metazivo experts. Improve your Google rankings with Google Search Console, PageSpeed Insights, Keyword Planner and more.",
+      keywords: "free SEO tools, google search console, pagespeed insights, keyword planner, screaming frog, ahrefs free tools, metazivo free tools hub",
+      ogTitle: "Free SEO Tools | Metazivo Free Tools Hub",
+      ogDescription: "Access free SEO tools recommended by Metazivo experts. Improve your Google rankings with Google Search Console, PageSpeed Insights, Keyword Planner and more.",
+      url: "https://metazivo.com/free-tools",
+      html: `
+        <main>
+          <article>
+            <h1>Free SEO Tools Recommended by Experts</h1>
+            <p>These are the exact free tools we use and recommend to improve Google rankings. All tools are 100% free and powerful enough for serious results.</p>
+            <section>
+              <h2>Top 10 Free SEO Tools</h2>
+              <ol>
+                <li><strong>Google Search Console:</strong> Track real rankings, impressions, clicks and indexing issues directly from Google.</li>
+                <li><strong>Google Analytics 4:</strong> Understand your traffic, user behavior and conversions for free.</li>
+                <li><strong>Google Keyword Planner:</strong> Find high-potential keywords with real search volume data.</li>
+                <li><strong>Google PageSpeed Insights:</strong> Check Core Web Vitals and get free speed optimization tips.</li>
+                <li><strong>Screaming Frog SEO Spider (Free):</strong> Technical site audit – crawl up to 500 URLs for free.</li>
+                <li><strong>Ahrefs Webmaster Tools:</strong> Free backlink analysis and site audit for your verified website.</li>
+                <li><strong>Bing Webmaster Tools:</strong> Extra ranking data + free keyword research from Microsoft.</li>
+                <li><strong>Google Trends:</strong> Discover trending topics and seasonal search interest.</li>
+                <li><strong>Microsoft Clarity:</strong> Free heatmaps and session recordings to see user behavior.</li>
+                <li><strong>Google Rich Results Test:</strong> Validate structured data and rich snippets for better SERP appearance.</li>
+              </ol>
+            </section>
+          </article>
+        </main>`
+    };
+  }
+
+  // 9. Website Speed Test Tool
   if (p === "/tools/website-speed-test" || p === "/website-speed-test" || p === "/speed-test") {
     return {
       title: "Free Website Speed Test & Core Web Vitals Audit | Metazivo",
@@ -2112,8 +2296,28 @@ async function generateSchema(pathname: string): Promise<string> {
       "@id": `${domain}/tools/website-speed-test#breadcrumbs`,
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
-        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": `${domain}/tools/website-speed-test` },
+        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": `${domain}/free-tools` },
         { "@type": "ListItem", "position": 3, "name": "Website Speed Test", "item": `${domain}/tools/website-speed-test` }
+      ]
+    });
+  }
+
+  if (p === "/free-tools" || p === "/tools" || p === "/free-seo-tools" || p === "/free-seo-tool" || p === "/seo-tools") {
+    baseSchema["@graph"].push({
+      "@type": "CollectionPage",
+      "@id": `${domain}/free-tools#page`,
+      "name": "Free SEO Tools | Metazivo Free Tools Hub",
+      "url": `${domain}/free-tools`,
+      "description": "Access free SEO tools recommended by Metazivo experts. Improve your Google rankings with Google Search Console, PageSpeed Insights, Keyword Planner and more.",
+      "publisher": { "@id": `${domain}/#organization` }
+    });
+
+    baseSchema["@graph"].push({
+      "@type": "BreadcrumbList",
+      "@id": `${domain}/free-tools#breadcrumbs`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
+        { "@type": "ListItem", "position": 2, "name": "Free SEO Tools", "item": `${domain}/free-tools` }
       ]
     });
   }

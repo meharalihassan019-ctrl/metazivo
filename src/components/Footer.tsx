@@ -68,7 +68,7 @@ export default function Footer({ onNavigate, contactInfo, socialLinks }: FooterP
             <ul className="space-y-3.5">
               <li><button onClick={() => handleNavClick("blog")} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> Blog</button></li>
               <li><button onClick={() => handleNavClick("pricing")} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> Pricing</button></li>
-              <li><button onClick={() => handleNavClick("tools/website-speed-test")} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> Free SEO Tools</button></li>
+              <li><button onClick={() => handleNavClick("free-tools")} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> Free SEO Tools</button></li>
               <li><button onClick={() => handleNavClick("contact")} className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"><span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> Contact</button></li>
             </ul>
           </div>
