@@ -74,6 +74,8 @@ const SeoDashboard = React.lazy(() => import("./components/SeoDashboard"));
 const WebsiteSpeedTest = React.lazy(() => import("./components/WebsiteSpeedTest"));
 import FreeToolsHub from "./components/FreeToolsHub";
 import SeoServicePage from "./components/SeoServicePage";
+import SeoToolsPage from "./components/seo-tools/SeoToolsPage";
+import { getToolBySlug } from "./components/seo-tools/seoToolsData";
 
 // Premium real stock photo URLs (Not AI-generated)
 const hero3D = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=75"; // Collaborative teamwork real office meeting
@@ -244,6 +246,7 @@ export default function App() {
 
   const [selectedServiceSlug, setSelectedServiceSlug] = useState<string>("");
   const [selectedBlogSlug, setSelectedBlogSlug] = useState<string>("");
+  const [activeSeoToolSlug, setActiveSeoToolSlug] = useState<string>("");
 
   // Server data states
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
@@ -472,6 +475,14 @@ export default function App() {
         window.history.replaceState({}, "", "/tools/website-speed-test");
       }
     } else if (
+      lowerPath === "/seo-tools" ||
+      lowerPath === "/seo-tool" ||
+      lowerPath.startsWith("/seo-tools/")
+    ) {
+      const subSlug = path.replace(/^\/seo-tools\/?/i, "").replace(/\/+$/, "");
+      setActiveSeoToolSlug(subSlug);
+      setCurrentTab("seo-tools");
+    } else if (
       lowerPath === "/free-tools" ||
       lowerPath === "/tools" ||
       lowerPath.startsWith("/free-tools") ||
@@ -479,9 +490,7 @@ export default function App() {
       lowerPath === "/meta-title-description-generator" ||
       lowerPath === "/tools/meta-tag-generator" ||
       lowerPath === "/free-seo-tools" ||
-      lowerPath === "/free-seo-tool" ||
-      lowerPath === "/seo-tools" ||
-      lowerPath === "/seo-tool"
+      lowerPath === "/free-seo-tool"
     ) {
       setCurrentTab("free-tools");
       if (lowerPath !== "/free-tools" && lowerPath !== "/tools/meta-title-description-generator") {
@@ -680,6 +689,17 @@ export default function App() {
       canonicalPath = "/terms";
     } else if (currentTab === "tools/website-speed-test" || currentTab === "website-speed-test") {
       canonicalPath = "/tools/website-speed-test";
+    } else if (currentTab === "seo-tools") {
+      const toolDef = getToolBySlug(activeSeoToolSlug);
+      if (toolDef) {
+        targetTitle = `${toolDef.name} | Free SEO Tools Suite | Metazivo`;
+        targetDescription = toolDef.shortDescription;
+        canonicalPath = `/seo-tools/${toolDef.slug}`;
+      } else {
+        targetTitle = "Free SEO Tools Suite (30 Developer & Marketer Tools) | Metazivo";
+        targetDescription = "30 enterprise-grade SEO tools for technical audits, Schema JSON-LD generation, Core Web Vitals, keyword clustering, and AI search readiness.";
+        canonicalPath = "/seo-tools";
+      }
     } else if (currentTab === "free-tools" || currentTab === "tools/meta-title-description-generator") {
       canonicalPath = currentTab === "tools/meta-title-description-generator" ? "/tools/meta-title-description-generator" : "/free-tools";
     } else {
@@ -755,13 +775,17 @@ export default function App() {
     ) {
       setCurrentTab("tools/website-speed-test");
       window.history.pushState({}, "", "/tools/website-speed-test");
+    } else if (tab === "seo-tools" || tab.startsWith("seo-tools/")) {
+      const subSlug = tab.replace(/^seo-tools\/?/i, "").replace(/\/+$/, "");
+      setActiveSeoToolSlug(subSlug);
+      setCurrentTab("seo-tools");
+      window.history.pushState({}, "", subSlug ? `/seo-tools/${subSlug}` : "/seo-tools");
     } else if (
       tab === "free-tools" ||
       tab === "tools" ||
       tab === "tools/meta-title-description-generator" ||
       tab === "meta-title-description-generator" ||
-      tab === "free-seo-tools" ||
-      tab === "seo-tools"
+      tab === "free-seo-tools"
     ) {
       setCurrentTab("free-tools");
       window.history.pushState({}, "", tab.includes("meta-title") ? "/tools/meta-title-description-generator" : "/free-tools");
@@ -789,6 +813,19 @@ export default function App() {
     window.history.pushState({}, "", `/blog/${cleanSlug}`);
     // Hit view metric
     fetch("/api/analytics/hit", { method: "POST" }).catch(() => {});
+  };
+
+  const handleNavigateSeoTool = (slug: string) => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (!slug || slug === "hub" || slug === "seo-tools") {
+      setActiveSeoToolSlug("");
+      setCurrentTab("seo-tools");
+      window.history.pushState({}, "", "/seo-tools");
+    } else {
+      setActiveSeoToolSlug(slug);
+      setCurrentTab("seo-tools");
+      window.history.pushState({}, "", `/seo-tools/${slug}`);
+    }
   };
 
   // Intercept anchor clicks within blog articles so internal links navigate without page reload
@@ -2407,7 +2444,11 @@ export default function App() {
               className="prose prose-slate max-w-none text-slate-700 text-sm leading-relaxed space-y-6"
               dangerouslySetInnerHTML={{
                 __html: (activeBlog.content || "").replace(/(<table[\s\S]*?<\/table>)/gi, (tblMatch) => {
-                  return `<div class="responsive-table-wrapper" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; margin: 1.75rem 0;">${tblMatch}</div>`;
+                  const cleanedTable = tblMatch
+                    .replace(/border-slate-[789]00/gi, "border-slate-200")
+                    .replace(/bg-slate-[89]00|bg-\[#0B0F19\]|bg-\[#030712\]|bg-black/gi, "bg-white")
+                    .replace(/background:\s*(#0[bB]0[fF]19|#030712|#111827|black|#000|#000000)/gi, "background: #ffffff");
+                  return `<div class="responsive-table-wrapper" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; margin: 1.75rem 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.05);">${cleanedTable}</div>`;
                 })
               }}
               onClick={handleArticleLinkClick}
@@ -2575,6 +2616,15 @@ export default function App() {
         {/* VIEW: FREE SEO TOOLS HUB */}
         {currentTab === "free-tools" && (
           <FreeToolsHub onNavigate={handleNavigate} />
+        )}
+
+        {/* VIEW: 30 SEO TOOLS PLATFORM */}
+        {currentTab === "seo-tools" && (
+          <SeoToolsPage
+            activeToolSlug={activeSeoToolSlug}
+            onNavigateTool={handleNavigateSeoTool}
+            onNavigateHome={() => handleNavigate("home")}
+          />
         )}
 
         {/* VIEW: WEBSITE SPEED TEST */}

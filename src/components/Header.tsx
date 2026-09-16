@@ -101,34 +101,34 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
           <div className="relative group/tools">
             <a
               id="nav-link-free-tools"
-              href="/free-tools"
+              href="/seo-tools"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavClick("free-tools");
+                handleNavClick("seo-tools");
               }}
               onMouseEnter={() => setToolsDropdownOpen(true)}
               className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-1 cursor-pointer ${
-                currentTab === "free-tools" || currentTab === "tools/website-speed-test"
+                currentTab === "seo-tools" || currentTab === "free-tools" || currentTab === "tools/website-speed-test"
                   ? "bg-[#FF5722] text-white shadow-[0_4px_12px_rgba(255,87,34,0.25)]"
                   : "text-slate-600 hover:text-[#FF5722] hover:bg-slate-50"
               }`}
             >
-              <span>Free Tools</span>
+              <span>SEO Tools</span>
               <ChevronDown className="w-3.5 h-3.5 opacity-75" />
             </a>
             {toolsDropdownOpen && (
               <div 
-                className="absolute left-0 mt-2 w-64 bg-white border border-slate-200/90 rounded-2xl p-2 shadow-2xl z-50 animate-fade-in"
+                className="absolute left-0 mt-2 w-72 bg-white border border-slate-200/90 rounded-2xl p-2 shadow-2xl z-50 animate-fade-in"
                 onMouseLeave={() => setToolsDropdownOpen(false)}
               >
                 <a
-                  href="/free-tools"
+                  href="/seo-tools"
                   onClick={(e) => {
                     e.preventDefault();
-                    handleNavClick("free-tools");
+                    handleNavClick("seo-tools");
                   }}
                   className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2.5 cursor-pointer ${
-                    currentTab === "free-tools"
+                    currentTab === "seo-tools"
                       ? "bg-[#FF5722]/10 text-[#FF5722]"
                       : "text-slate-700 hover:text-[#FF5722] hover:bg-slate-50"
                   }`}
@@ -137,8 +137,8 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
                     <Wrench className="w-3.5 h-3.5" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-bold">Meta Title & Description Generator</span>
-                    <span className="text-[10px] text-slate-400 font-light">Free SEO Snippet Creator</span>
+                    <span className="font-bold">SEO Tools Suite (30 Tools)</span>
+                    <span className="text-[10px] text-slate-400 font-light">Audit, Schema, Robots, Intent & More</span>
                   </div>
                 </a>
                 <a
@@ -159,6 +159,26 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
                   <div className="flex flex-col">
                     <span className="font-bold">Website Speed Test</span>
                     <span className="text-[10px] text-slate-400 font-light">Live Core Web Vitals Audit</span>
+                  </div>
+                </a>
+                <a
+                  href="/free-tools"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick("free-tools");
+                  }}
+                  className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2.5 cursor-pointer mt-1 ${
+                    currentTab === "free-tools"
+                      ? "bg-[#FF5722]/10 text-[#FF5722]"
+                      : "text-slate-700 hover:text-[#FF5722] hover:bg-slate-50"
+                  }`}
+                >
+                  <div className="w-7 h-7 rounded-lg bg-orange-50 border border-orange-200/80 flex items-center justify-center text-[#FF5722] shrink-0">
+                    <Wrench className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-bold">SERP Preview Generator</span>
+                    <span className="text-[10px] text-slate-400 font-light">Free SEO Snippet Creator</span>
                   </div>
                 </a>
               </div>
@@ -229,24 +249,24 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
           <div className="space-y-1">
             <div className="flex items-center justify-between rounded-md bg-slate-50/80 border border-slate-200/60 p-1">
               <a
-                href="/free-tools"
+                href="/seo-tools"
                 onClick={(e) => {
                   e.preventDefault();
-                  handleNavClick("free-tools");
+                  handleNavClick("seo-tools");
                 }}
                 className={`flex-1 text-left px-3 py-2 rounded-md text-sm font-semibold transition-colors block ${
-                  currentTab === "free-tools"
+                  currentTab === "seo-tools"
                     ? "bg-[#FF5722] text-white"
                     : "text-slate-800 hover:text-[#FF5722]"
                 }`}
               >
-                Free Tools
+                SEO Tools
               </a>
               <button
                 type="button"
                 onClick={() => setMobileToolsOpen(!mobileToolsOpen)}
                 className="p-2 text-slate-500 hover:text-[#FF5722] cursor-pointer"
-                aria-label="Toggle Free Tools Submenu"
+                aria-label="Toggle SEO Tools Submenu"
               >
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${mobileToolsOpen ? "rotate-180 text-[#FF5722]" : ""}`} />
               </button>
@@ -254,19 +274,19 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
             {mobileToolsOpen && (
               <div className="pl-3 py-1 space-y-1 bg-slate-50/50 rounded-xl border border-slate-100 mt-1">
                 <a
-                  href="/free-tools"
+                  href="/seo-tools"
                   onClick={(e) => {
                     e.preventDefault();
-                    handleNavClick("free-tools");
+                    handleNavClick("seo-tools");
                   }}
                   className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
-                    currentTab === "free-tools"
+                    currentTab === "seo-tools"
                       ? "bg-[#FF5722] text-white font-black"
                       : "text-slate-700 hover:text-[#FF5722]"
                   }`}
                 >
                   <Wrench className="w-3.5 h-3.5 shrink-0" />
-                  <span>Meta Title & Description Generator</span>
+                  <span>SEO Tools Suite (30 Tools)</span>
                 </a>
                 <a
                   href="/tools/website-speed-test"
@@ -282,6 +302,21 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
                 >
                   <Zap className="w-3.5 h-3.5 shrink-0" />
                   <span>Website Speed Test</span>
+                </a>
+                <a
+                  href="/free-tools"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick("free-tools");
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+                    currentTab === "free-tools"
+                      ? "bg-[#FF5722] text-white font-black"
+                      : "text-slate-700 hover:text-[#FF5722]"
+                  }`}
+                >
+                  <Wrench className="w-3.5 h-3.5 shrink-0" />
+                  <span>SERP Preview Generator</span>
                 </a>
               </div>
             )}

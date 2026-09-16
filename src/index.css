@@ -50,9 +50,9 @@
   -webkit-overflow-scrolling: touch;
   margin: 1.75rem 0;
   border-radius: 1rem;
-  background: #0B0F19;
-  border: 1px solid rgba(255, 87, 34, 0.3);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06) !important;
 }
 
 /* Custom sleek scrollbar for tables */
@@ -65,13 +65,13 @@
 .table-responsive-wrapper::-webkit-scrollbar-track,
 .responsive-table-wrapper::-webkit-scrollbar-track,
 .metazivo-table-module::-webkit-scrollbar-track {
-  background: #030712;
+  background: #F8FAFC;
 }
 .table-responsive-wrapper::-webkit-scrollbar-thumb,
 .responsive-table-wrapper::-webkit-scrollbar-thumb,
 .metazivo-table-module::-webkit-scrollbar-thumb,
 .prose table::-webkit-scrollbar-thumb {
-  background: rgba(255, 87, 34, 0.5);
+  background: #CBD5E1;
   border-radius: 4px;
 }
 .table-responsive-wrapper::-webkit-scrollbar-thumb:hover,
@@ -87,10 +87,11 @@
   border-spacing: 0 !important;
   margin: 1.5rem 0 !important;
   font-size: 0.875rem !important;
-  background: #0B0F19 !important;
+  background: #FFFFFF !important;
   border-radius: 0.75rem !important;
   overflow: hidden !important;
-  border: 1px solid rgba(255, 87, 34, 0.3) !important;
+  border: 1px solid #E2E8F0 !important;
+  color: #1E293B !important;
 }
 
 @media (max-width: 768px) {
@@ -106,10 +107,10 @@
   text-transform: uppercase !important;
   font-size: 0.75rem !important;
   letter-spacing: 0.05em !important;
-  color: #FFFFFF !important;
-  background-color: #111827 !important;
+  color: #0F172A !important;
+  background-color: #F8FAFC !important;
   border-bottom: 2px solid #FF5722 !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-right: 1px solid #E2E8F0 !important;
   text-align: left !important;
 }
 .prose th:last-child {
@@ -119,21 +120,27 @@
 .prose td {
   padding: 0.875rem 1.125rem !important;
   font-size: 0.875rem !important;
-  color: #FFFFFF !important;
-  background-color: transparent !important;
-  border-bottom: 1px solid rgba(255, 87, 34, 0.18) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: #334155 !important;
+  background-color: #FFFFFF !important;
+  border-bottom: 1px solid #F1F5F9 !important;
+  border-right: 1px solid #F1F5F9 !important;
 }
 .prose td:last-child {
   border-right: none !important;
 }
 
 .prose tr:nth-child(even) td {
-  background-color: rgba(255, 255, 255, 0.02) !important;
+  background-color: #F8FAFC !important;
 }
 
 .prose tr:hover td {
-  background-color: rgba(255, 87, 34, 0.08) !important;
+  background-color: #FFF7ED !important;
+}
+
+/* Ensure all child elements inside table cells remain clear and high contrast */
+.prose table td *,
+.prose table th * {
+  color: inherit !important;
 }
 
 /* TipTap table styling inside editor */

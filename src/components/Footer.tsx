@@ -182,11 +182,20 @@ export default function Footer({ onNavigate, contactInfo }: FooterProps) {
               </li>
               <li>
                 <a 
+                  href="/seo-tools" 
+                  onClick={(e) => { e.preventDefault(); handleNavClick("seo-tools"); }} 
+                  className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"
+                >
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> SEO Tools Suite (30)
+                </a>
+              </li>
+              <li>
+                <a 
                   href="/free-tools" 
                   onClick={(e) => { e.preventDefault(); handleNavClick("free-tools"); }} 
                   className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"
                 >
-                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> Meta Tag Generator
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> SERP Preview Generator
                 </a>
               </li>
               <li>

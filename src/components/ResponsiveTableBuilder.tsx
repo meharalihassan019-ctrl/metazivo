@@ -116,7 +116,7 @@ export default function ResponsiveTableBuilder({
   ]);
 
   // Styling & Settings
-  const [themeStyle, setThemeStyle] = useState<TableTheme>("metazivo");
+  const [themeStyle, setThemeStyle] = useState<TableTheme>("clean-light");
   const [responsiveMode, setResponsiveMode] = useState<ResponsiveMode>("scroll");
   const [isZebra, setIsZebra] = useState(true);
   const [hasStickyHeader, setHasStickyHeader] = useState(false);

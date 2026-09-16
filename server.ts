@@ -188,9 +188,7 @@ app.use((req, res, next) => {
   const freeToolsAliases = [
     "/tools",
     "/free-seo-tools",
-    "/free-seo-tool",
-    "/seo-tools",
-    "/seo-tool"
+    "/free-seo-tool"
   ];
   if (freeToolsAliases.includes(normalizedPath)) {
     const query = req.url.slice(req.path.length);
@@ -2014,6 +2012,758 @@ function generateSimulatedResponse(action: string, title: string, keywords: stri
     });
   }
 }
+
+// -----------------------------------------------------------------------------
+// REAL FULL-STACK SEO TOOLS PLATFORM ENDPOINTS
+// -----------------------------------------------------------------------------
+
+// 1. Real Website Technical & On-Page SEO Audit
+app.post("/api/seo-tools/audit", async (req, res) => {
+  let targetUrl = (req.body.url || "").trim();
+  if (!targetUrl) {
+    return res.status(400).json({ error: "Target website URL is required" });
+  }
+
+  if (!/^https?:\/\//i.test(targetUrl)) {
+    targetUrl = "https://" + targetUrl;
+  }
+
+  try {
+    const parsedUrl = new URL(targetUrl);
+    const startTime = Date.now();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+    const response = await fetch(targetUrl, {
+      signal: controller.signal,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 MetazivoSeoAuditor/2.0",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5"
+      },
+      redirect: "follow"
+    });
+    clearTimeout(timeoutId);
+
+    const responseTimeMs = Date.now() - startTime;
+    const finalUrl = response.url || targetUrl;
+    const httpStatus = response.status;
+    const contentType = response.headers.get("content-type") || "";
+    const isHtml = contentType.includes("text/html") || contentType.includes("application/xhtml+xml");
+
+    if (!isHtml && !response.ok) {
+      return res.status(400).json({
+        error: `Website returned status ${httpStatus} (${response.statusText}) and non-HTML content-type: ${contentType}`
+      });
+    }
+
+    const html = await response.text();
+
+    // Technical & On-page regex extraction
+    const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+    const rawTitle = titleMatch ? titleMatch[1].replace(/\s+/g, " ").trim() : "";
+
+    const metaDescMatch = html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i) ||
+                          html.match(/<meta[^>]*content=["']([\s\S]*?)["'][^>]*name=["']description["'][^>]*>/i);
+    const metaDescription = metaDescMatch ? metaDescMatch[1].replace(/\s+/g, " ").trim() : "";
+
+    const canonicalMatch = html.match(/<link[^>]*rel=["']canonical["'][^>]*href=["']([\s\S]*?)["'][^>]*>/i) ||
+                           html.match(/<link[^>]*href=["']([\s\S]*?)["'][^>]*rel=["']canonical["'][^>]*>/i);
+    const canonicalUrl = canonicalMatch ? canonicalMatch[1].trim() : "";
+
+    const robotsMetaMatch = html.match(/<meta[^>]*name=["']robots["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i);
+    const robotsMeta = robotsMetaMatch ? robotsMetaMatch[1].trim() : "";
+
+    const viewportMatch = html.match(/<meta[^>]*name=["']viewport["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i);
+    const hasViewport = !!viewportMatch;
+
+    // Headings
+    const h1Regex = /<h1[^>]*>([\s\S]*?)<\/h1>/gi;
+    const h1List: string[] = [];
+    let h1M;
+    while ((h1M = h1Regex.exec(html)) !== null) {
+      const cleanH1 = h1M[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+      if (cleanH1) h1List.push(cleanH1);
+    }
+
+    const h2Regex = /<h2[^>]*>([\s\S]*?)<\/h2>/gi;
+    const h2List: string[] = [];
+    let h2M;
+    while ((h2M = h2Regex.exec(html)) !== null) {
+      const cleanH2 = h2M[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+      if (cleanH2) h2List.push(cleanH2);
+    }
+
+    // Images & Alt attributes
+    const imgRegex = /<img\b([^>]*)>/gi;
+    let totalImages = 0;
+    let missingAltImages = 0;
+    const sampleMissingAlts: string[] = [];
+    let imgM;
+    while ((imgM = imgRegex.exec(html)) !== null) {
+      totalImages++;
+      const attrs = imgM[1];
+      const hasAlt = /alt=["'][\s\S]*?["']/i.test(attrs);
+      if (!hasAlt) {
+        missingAltImages++;
+        const srcMatch = attrs.match(/src=["']([\s\S]*?)["']/i);
+        if (srcMatch && sampleMissingAlts.length < 5) {
+          sampleMissingAlts.push(srcMatch[1]);
+        }
+      }
+    }
+
+    // Links (internal vs external)
+    const linkRegex = /<a\b[^>]*href=["']([\s\S]*?)["'][^>]*>/gi;
+    let internalLinks = 0;
+    let externalLinks = 0;
+    let linkM;
+    while ((linkM = linkRegex.exec(html)) !== null) {
+      const href = linkM[1].trim();
+      if (!href || href.startsWith("#") || href.startsWith("javascript:") || href.startsWith("mailto:") || href.startsWith("tel:")) {
+        continue;
+      }
+      try {
+        const resolved = new URL(href, finalUrl);
+        if (resolved.hostname === parsedUrl.hostname) {
+          internalLinks++;
+        } else {
+          externalLinks++;
+        }
+      } catch (e) {
+        // relative link
+        internalLinks++;
+      }
+    }
+
+    // Open Graph
+    const ogTitleMatch = html.match(/<meta[^>]*property=["']og:title["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i);
+    const ogDescMatch = html.match(/<meta[^>]*property=["']og:description["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i);
+    const ogImageMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i);
+    const ogUrlMatch = html.match(/<meta[^>]*property=["']og:url["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i);
+    const ogTypeMatch = html.match(/<meta[^>]*property=["']og:type["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i);
+
+    const openGraph = {
+      title: ogTitleMatch ? ogTitleMatch[1].trim() : "",
+      description: ogDescMatch ? ogDescMatch[1].trim() : "",
+      image: ogImageMatch ? ogImageMatch[1].trim() : "",
+      url: ogUrlMatch ? ogUrlMatch[1].trim() : "",
+      type: ogTypeMatch ? ogTypeMatch[1].trim() : "",
+      present: !!(ogTitleMatch || ogDescMatch || ogImageMatch)
+    };
+
+    // Twitter Card
+    const twCardMatch = html.match(/<meta[^>]*name=["']twitter:card["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i);
+    const twTitleMatch = html.match(/<meta[^>]*name=["']twitter:title["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i);
+    const twImageMatch = html.match(/<meta[^>]*name=["']twitter:image["'][^>]*content=["']([\s\S]*?)["'][^>]*>/i);
+
+    const twitterCard = {
+      card: twCardMatch ? twCardMatch[1].trim() : "",
+      title: twTitleMatch ? twTitleMatch[1].trim() : "",
+      image: twImageMatch ? twImageMatch[1].trim() : "",
+      present: !!(twCardMatch || twTitleMatch || twImageMatch)
+    };
+
+    // Structured Data (JSON-LD)
+    const jsonLdRegex = /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+    const schemasFound: string[] = [];
+    let schemaM;
+    while ((schemaM = jsonLdRegex.exec(html)) !== null) {
+      try {
+        const parsed = JSON.parse(schemaM[1].trim());
+        if (parsed["@type"]) {
+          schemasFound.push(Array.isArray(parsed["@type"]) ? parsed["@type"].join(", ") : parsed["@type"]);
+        } else if (parsed["@graph"]) {
+          parsed["@graph"].forEach((g: any) => {
+            if (g["@type"]) schemasFound.push(g["@type"]);
+          });
+        } else {
+          schemasFound.push("JSON-LD Item");
+        }
+      } catch (e) {
+        schemasFound.push("Raw JSON-LD (unparsed)");
+      }
+    }
+
+    // Word Count
+    const textOnly = html
+      .replace(/<script[\s\S]*?<\/script>/gi, "")
+      .replace(/<style[\s\S]*?<\/style>/gi, "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    const wordCount = textOnly ? textOnly.split(/\s+/).length : 0;
+
+    // Indexability signals
+    const isHttps = finalUrl.startsWith("https://");
+    const isNoIndex = /noindex/i.test(robotsMeta);
+    const isNoFollow = /nofollow/i.test(robotsMeta);
+
+    // Scoring Engine
+    let technicalPoints = 100;
+    let onPagePoints = 100;
+    let contentPoints = 100;
+    let performancePoints = 100;
+    let socialPoints = 100;
+    let structuredPoints = 100;
+
+    const issues: Array<{
+      id: string;
+      title: string;
+      severity: "critical" | "warning" | "good";
+      category: "Technical" | "On-Page" | "Content" | "Performance" | "Social" | "Structured Data";
+      whyItMatters: string;
+      howToFix: string;
+    }> = [];
+
+    // Technical evaluations
+    if (httpStatus !== 200) {
+      technicalPoints -= 40;
+      issues.push({
+        id: "status-code-error",
+        title: `HTTP Status returned ${httpStatus}`,
+        severity: "critical",
+        category: "Technical",
+        whyItMatters: "Search engine crawlers expect a 200 OK status code. Non-200 responses can prevent Googlebot from indexing the page.",
+        howToFix: "Verify server routing and DNS configurations so the target URL responds with HTTP 200 OK without errors."
+      });
+    } else {
+      issues.push({
+        id: "status-code-ok",
+        title: "HTTP Status is 200 OK",
+        severity: "good",
+        category: "Technical",
+        whyItMatters: "The URL responds cleanly and is fully accessible to search engine indexers.",
+        howToFix: "No action needed."
+      });
+    }
+
+    if (!isHttps) {
+      technicalPoints -= 25;
+      issues.push({
+        id: "https-missing",
+        title: "Page is not served over secure HTTPS",
+        severity: "critical",
+        category: "Technical",
+        whyItMatters: "Google explicitly uses HTTPS as an active ranking signal, and browsers display 'Not Secure' warnings to users.",
+        howToFix: "Install a valid SSL/TLS certificate and configure a 301 permanent redirect from HTTP to HTTPS."
+      });
+    } else {
+      issues.push({
+        id: "https-valid",
+        title: "Valid HTTPS encryption enabled",
+        severity: "good",
+        category: "Technical",
+        whyItMatters: "Data transferred between visitors and your server is encrypted, meeting Google's security standards.",
+        howToFix: "No action needed."
+      });
+    }
+
+    if (!hasViewport) {
+      technicalPoints -= 20;
+      issues.push({
+        id: "viewport-missing",
+        title: "Missing mobile viewport meta tag",
+        severity: "critical",
+        category: "Technical",
+        whyItMatters: "Google operates on mobile-first indexing. Without a viewport tag, mobile devices render the page zoomed out like a desktop display.",
+        howToFix: "Add `<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />` to the `<head>`."
+      });
+    }
+
+    if (!canonicalUrl) {
+      technicalPoints -= 15;
+      issues.push({
+        id: "canonical-missing",
+        title: "Missing canonical tag",
+        severity: "warning",
+        category: "Technical",
+        whyItMatters: "Canonical tags prevent duplicate content penalties from protocol variations, URL parameters, or scraper sites.",
+        howToFix: "Add `<link rel=\"canonical\" href=\"${finalUrl}\" />` inside the `<head>` of this page."
+      });
+    } else {
+      issues.push({
+        id: "canonical-present",
+        title: "Canonical tag declared",
+        severity: "good",
+        category: "Technical",
+        whyItMatters: `Explicitly points search bots to: ${canonicalUrl}`,
+        howToFix: "No action needed."
+      });
+    }
+
+    if (isNoIndex) {
+      technicalPoints -= 35;
+      issues.push({
+        id: "robots-noindex",
+        title: "Page has 'noindex' directive",
+        severity: "critical",
+        category: "Technical",
+        whyItMatters: "A 'noindex' tag instructs Google never to display this page in organic search results.",
+        howToFix: "If this page is intended for public search traffic, remove the 'noindex' directive from your robots meta tag."
+      });
+    }
+
+    // On-Page evaluations
+    if (!rawTitle) {
+      onPagePoints -= 35;
+      issues.push({
+        id: "title-missing",
+        title: "Missing <title> tag",
+        severity: "critical",
+        category: "On-Page",
+        whyItMatters: "The title tag is one of the single most influential on-page SEO ranking factors and drives SERP click-through rates.",
+        howToFix: "Add a descriptive `<title>` tag between 50 and 60 characters targeting your primary keyword."
+      });
+    } else if (rawTitle.length < 30 || rawTitle.length > 65) {
+      onPagePoints -= 15;
+      issues.push({
+        id: "title-length-suboptimal",
+        title: `Title length (${rawTitle.length} chars) is outside optimal range`,
+        severity: "warning",
+        category: "On-Page",
+        whyItMatters: "Titles under 30 characters underutilize ranking keywords; titles over 60 characters get truncated with ellipses (...) in Google SERPs.",
+        howToFix: "Rewrite the title to be strictly between 50 and 60 characters."
+      });
+    } else {
+      issues.push({
+        id: "title-optimal",
+        title: `Optimal title length (${rawTitle.length} chars)`,
+        severity: "good",
+        category: "On-Page",
+        whyItMatters: "The title fits neatly inside standard desktop and mobile SERP pixel widths without truncation.",
+        howToFix: "No action needed."
+      });
+    }
+
+    if (!metaDescription) {
+      onPagePoints -= 25;
+      issues.push({
+        id: "desc-missing",
+        title: "Missing meta description",
+        severity: "critical",
+        category: "On-Page",
+        whyItMatters: "Without a meta description, Google extracts random text snippets from your page which often fail to compel clicks.",
+        howToFix: "Write a compelling meta description between 150 and 160 characters containing an active call-to-action."
+      });
+    } else if (metaDescription.length < 100 || metaDescription.length > 165) {
+      onPagePoints -= 10;
+      issues.push({
+        id: "desc-length-suboptimal",
+        title: `Meta description length (${metaDescription.length} chars) is outside optimal 140-160 range`,
+        severity: "warning",
+        category: "On-Page",
+        whyItMatters: "Descriptions that are too short fail to engage users; descriptions over 160 characters get truncated.",
+        howToFix: "Refine your meta description to sit between 150 and 160 characters."
+      });
+    } else {
+      issues.push({
+        id: "desc-optimal",
+        title: `Optimal meta description length (${metaDescription.length} chars)`,
+        severity: "good",
+        category: "On-Page",
+        whyItMatters: "The meta description provides a complete, readable snippet in search results.",
+        howToFix: "No action needed."
+      });
+    }
+
+    if (h1List.length === 0) {
+      onPagePoints -= 25;
+      issues.push({
+        id: "h1-missing",
+        title: "No <h1> heading found",
+        severity: "critical",
+        category: "On-Page",
+        whyItMatters: "The H1 heading is the primary structural marker defining the main topic of your page for both users and crawlers.",
+        howToFix: "Include exactly one primary H1 heading containing your core focus keyword."
+      });
+    } else if (h1List.length > 1) {
+      onPagePoints -= 10;
+      issues.push({
+        id: "h1-multiple",
+        title: `Multiple (${h1List.length}) <h1> headings detected`,
+        severity: "warning",
+        category: "On-Page",
+        whyItMatters: "While HTML5 permits multiple H1s, standard SEO best practice recommends a single H1 to maintain unambiguous topic hierarchy.",
+        howToFix: "Retain the primary H1 for the page title and convert secondary headings to H2 or H3 tags."
+      });
+    } else {
+      issues.push({
+        id: "h1-optimal",
+        title: "Single primary <h1> heading defined",
+        severity: "good",
+        category: "On-Page",
+        whyItMatters: `Main topic: "${h1List[0]}"`,
+        howToFix: "No action needed."
+      });
+    }
+
+    if (missingAltImages > 0) {
+      onPagePoints -= Math.min(20, missingAltImages * 5);
+      issues.push({
+        id: "images-missing-alt",
+        title: `${missingAltImages} image(s) missing alt attributes`,
+        severity: "warning",
+        category: "On-Page",
+        whyItMatters: "Alt text is required for screen-reader accessibility and helps your images rank in Google Image Search.",
+        howToFix: "Add descriptive, non-stuffed `alt=\"...\"` attributes to all content images."
+      });
+    } else if (totalImages > 0) {
+      issues.push({
+        id: "images-alt-ok",
+        title: `All ${totalImages} images have alt attributes`,
+        severity: "good",
+        category: "On-Page",
+        whyItMatters: "Accessible to assistive technology and fully indexable by visual search crawlers.",
+        howToFix: "No action needed."
+      });
+    }
+
+    // Content evaluations
+    if (wordCount < 300) {
+      contentPoints -= 30;
+      issues.push({
+        id: "content-thin",
+        title: `Thin content detected (${wordCount} words)`,
+        severity: "warning",
+        category: "Content",
+        whyItMatters: "Pages with fewer than 300 words frequently struggle to rank against comprehensive competitor resources.",
+        howToFix: "Expand the page with helpful context, FAQs, real examples, or step-by-step guidance."
+      });
+    } else {
+      issues.push({
+        id: "content-depth-ok",
+        title: `Sufficient textual content depth (${wordCount} words)`,
+        severity: "good",
+        category: "Content",
+        whyItMatters: "Provides search engines with ample semantic context and topical keyword associations.",
+        howToFix: "No action needed."
+      });
+    }
+
+    // Performance evaluations
+    if (responseTimeMs > 1800) {
+      performancePoints -= 35;
+      issues.push({
+        id: "response-time-slow",
+        title: `Slow server response time (${responseTimeMs}ms)`,
+        severity: "critical",
+        category: "Performance",
+        whyItMatters: "Slow Time to First Byte (TTFB) directly hurts Core Web Vitals (LCP) and causes mobile bounce rates to spike.",
+        howToFix: "Leverage server page caching (Redis/LiteSpeed), optimize database queries, or deploy a global CDN (Cloudflare)."
+      });
+    } else if (responseTimeMs > 800) {
+      performancePoints -= 15;
+      issues.push({
+        id: "response-time-moderate",
+        title: `Moderate response time (${responseTimeMs}ms)`,
+        severity: "warning",
+        category: "Performance",
+        whyItMatters: "Server response time is above Google's recommended 600ms TTFB threshold.",
+        howToFix: "Enable opcode caching, gzip/brotli compression, and optimize edge routing."
+      });
+    } else {
+      issues.push({
+        id: "response-time-fast",
+        title: `Fast server response time (${responseTimeMs}ms)`,
+        severity: "good",
+        category: "Performance",
+        whyItMatters: "Well within Google's optimal < 600ms Time To First Byte (TTFB) window.",
+        howToFix: "No action needed."
+      });
+    }
+
+    // Social evaluations
+    if (!openGraph.present) {
+      socialPoints -= 35;
+      issues.push({
+        id: "og-missing",
+        title: "Missing Open Graph social meta tags",
+        severity: "warning",
+        category: "Social",
+        whyItMatters: "Without Open Graph tags, links shared on Facebook, LinkedIn, Slack, and WhatsApp lack featured images and clean headlines.",
+        howToFix: "Add `og:title`, `og:description`, and `og:image` tags in the `<head>` section."
+      });
+    } else {
+      issues.push({
+        id: "og-present",
+        title: "Open Graph social metadata detected",
+        severity: "good",
+        category: "Social",
+        whyItMatters: "Rich link cards will render properly when shared across social channels.",
+        howToFix: "No action needed."
+      });
+    }
+
+    if (!twitterCard.present) {
+      socialPoints -= 20;
+      issues.push({
+        id: "twitter-missing",
+        title: "Missing Twitter/X card metadata",
+        severity: "warning",
+        category: "Social",
+        whyItMatters: "Twitter cards allow you to specify high-converting `summary_large_image` banners for X timeline shares.",
+        howToFix: "Add `<meta name=\"twitter:card\" content=\"summary_large_image\" />` and associated tags."
+      });
+    }
+
+    // Structured Data evaluations
+    if (schemasFound.length === 0) {
+      structuredPoints -= 40;
+      issues.push({
+        id: "schema-missing",
+        title: "No Schema.org JSON-LD structured data detected",
+        severity: "warning",
+        category: "Structured Data",
+        whyItMatters: "Structured data helps search engines understand entities and qualifies your site for rich results in Google SERPs.",
+        howToFix: "Use our Schema Markup Generator to embed Article, Organization, or FAQPage JSON-LD on this page."
+      });
+    } else {
+      issues.push({
+        id: "schema-present",
+        title: `Structured data detected (${schemasFound.join(", ")})`,
+        severity: "good",
+        category: "Structured Data",
+        whyItMatters: "Helps search engines understand entities and enables rich snippet eligibility.",
+        howToFix: "No action needed."
+      });
+    }
+
+    // Clamp score values between 0 and 100
+    const clamp = (n: number) => Math.max(10, Math.min(100, Math.round(n)));
+    const technicalScore = clamp(technicalPoints);
+    const onPageScore = clamp(onPagePoints);
+    const contentScore = clamp(contentPoints);
+    const performanceScore = clamp(performancePoints);
+    const socialScore = clamp(socialPoints);
+    const structuredDataScore = clamp(structuredPoints);
+
+    const overallScore = Math.round(
+      technicalScore * 0.3 +
+      onPageScore * 0.25 +
+      contentScore * 0.15 +
+      performanceScore * 0.15 +
+      socialScore * 0.075 +
+      structuredDataScore * 0.075
+    );
+
+    return res.json({
+      url: finalUrl,
+      requestedUrl: targetUrl,
+      httpStatus,
+      responseTimeMs,
+      overallScore,
+      scores: {
+        overall: overallScore,
+        technical: technicalScore,
+        onPage: onPageScore,
+        content: contentScore,
+        performance: performanceScore,
+        social: socialScore,
+        structuredData: structuredDataScore
+      },
+      metadata: {
+        title: rawTitle,
+        titleLength: rawTitle.length,
+        description: metaDescription,
+        descriptionLength: metaDescription.length,
+        canonical: canonicalUrl,
+        robotsMeta,
+        hasViewport,
+        isHttps,
+        wordCount
+      },
+      headings: {
+        h1Count: h1List.length,
+        h1List,
+        h2Count: h2List.length,
+        h2List: h2List.slice(0, 10)
+      },
+      media: {
+        totalImages,
+        missingAltImages,
+        sampleMissingAlts
+      },
+      links: {
+        internalLinks,
+        externalLinks
+      },
+      social: {
+        openGraph,
+        twitterCard
+      },
+      structuredData: {
+        count: schemasFound.length,
+        types: schemasFound
+      },
+      issues
+    });
+
+  } catch (err: any) {
+    console.error("SEO Audit fetch error:", err);
+    return res.status(500).json({
+      error: `Could not connect to ${targetUrl}. Please verify the domain is publicly reachable, online, and not blocking automated diagnostic crawlers.`
+    });
+  }
+});
+
+// 2. Real Redirect Chain & Status Checker
+app.post("/api/seo-tools/check-redirects", async (req, res) => {
+  let initialUrl = (req.body.url || "").trim();
+  if (!initialUrl) {
+    return res.status(400).json({ error: "URL is required" });
+  }
+  if (!/^https?:\/\//i.test(initialUrl)) {
+    initialUrl = "https://" + initialUrl;
+  }
+
+  try {
+    const hops: Array<{
+      hop: number;
+      url: string;
+      status: number;
+      statusText: string;
+      redirectLocation?: string;
+    }> = [];
+
+    let currentUrl = initialUrl;
+    let hopCount = 0;
+    const maxHops = 10;
+
+    while (hopCount < maxHops) {
+      hopCount++;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 7000);
+
+      const response = await fetch(currentUrl, {
+        method: "GET",
+        signal: controller.signal,
+        redirect: "manual",
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) MetazivoRedirectInspector/2.0"
+        }
+      });
+      clearTimeout(timeoutId);
+
+      const status = response.status;
+      const location = response.headers.get("location");
+
+      hops.push({
+        hop: hopCount,
+        url: currentUrl,
+        status,
+        statusText: response.statusText,
+        redirectLocation: location || undefined
+      });
+
+      if (status >= 300 && status < 400 && location) {
+        currentUrl = new URL(location, currentUrl).toString();
+      } else {
+        break;
+      }
+    }
+
+    const isChain = hops.length > 2;
+    const finalHop = hops[hops.length - 1];
+
+    res.json({
+      initialUrl,
+      finalUrl: finalHop?.url || initialUrl,
+      finalStatus: finalHop?.status || 200,
+      totalHops: hops.length,
+      isChain,
+      hops
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: `Failed to trace redirects for ${initialUrl}: ${err.message}` });
+  }
+});
+
+// 3. Real Robots.txt Fetcher & Remote Reader
+app.post("/api/seo-tools/fetch-robots", async (req, res) => {
+  let targetUrl = (req.body.url || "").trim();
+  if (!targetUrl) {
+    return res.status(400).json({ error: "Domain or URL is required" });
+  }
+  if (!/^https?:\/\//i.test(targetUrl)) {
+    targetUrl = "https://" + targetUrl;
+  }
+
+  try {
+    const parsed = new URL(targetUrl);
+    const robotsUrl = `${parsed.protocol}//${parsed.host}/robots.txt`;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    const response = await fetch(robotsUrl, {
+      signal: controller.signal,
+      headers: { "User-Agent": "MetazivoRobotsFetcher/2.0" }
+    });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      return res.json({
+        found: false,
+        robotsUrl,
+        status: response.status,
+        content: `# No robots.txt found at ${robotsUrl} (HTTP ${response.status})`
+      });
+    }
+
+    const text = await response.text();
+    res.json({
+      found: true,
+      robotsUrl,
+      status: response.status,
+      content: text
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: `Could not fetch robots.txt: ${err.message}` });
+  }
+});
+
+// 4. Real Broken Links Batch Checker
+app.post("/api/seo-tools/check-links", async (req, res) => {
+  const links: string[] = req.body.links || [];
+  if (!Array.isArray(links) || links.length === 0) {
+    return res.status(400).json({ error: "Array of URLs is required" });
+  }
+
+  const results = await Promise.all(
+    links.slice(0, 25).map(async (url) => {
+      let fullUrl = url.trim();
+      if (!/^https?:\/\//i.test(fullUrl)) {
+        fullUrl = "https://" + fullUrl;
+      }
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        const resp = await fetch(fullUrl, {
+          method: "HEAD",
+          signal: controller.signal,
+          redirect: "follow",
+          headers: { "User-Agent": "MetazivoLinkAuditor/2.0" }
+        });
+        clearTimeout(timeoutId);
+        return {
+          url: fullUrl,
+          status: resp.status,
+          statusText: resp.statusText,
+          ok: resp.ok
+        };
+      } catch (e: any) {
+        return {
+          url: fullUrl,
+          status: 0,
+          statusText: e.name === "AbortError" ? "Timeout" : "Connection Failed",
+          ok: false
+        };
+      }
+    })
+  );
+
+  res.json({ checkedCount: results.length, results });
+});
 
 // -----------------------------------------------------------------------------
 // TECHNICAL SEO PRERENDERING & DYNAMIC METADATA ENGINE
