@@ -9,6 +9,7 @@ import fs from "fs";
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, updateDoc, query, where } from "firebase/firestore";
 import { runRealWebsiteSpeedAudit } from "./src/speedAuditor";
+import { SEO_TOOLS_LIST, getToolBySlug } from "./src/components/seo-tools/seoToolsData";
 
 let firestoreDb;
 try {
@@ -579,14 +580,50 @@ app.delete("/api/tags/:name", (req, res) => {
   res.json({ success: true });
 });
 
+// In-memory posts cache for blazing fast API responses (< 2ms)
+let postsCache: any[] | null = null;
+let postsCacheTime = 0;
+const POSTS_CACHE_TTL = 1000 * 60 * 5; // 5 minutes cache
+
+// Optimize post payload by removing duplicated massive base64 strings in openGraph and twitterCard
+function optimizePostPayload(post: any) {
+  if (!post) return post;
+  const p = { ...post };
+  if (p.openGraph && typeof p.openGraph === "object") {
+    const ogImg = p.openGraph.image;
+    if (typeof ogImg === "string" && ogImg.startsWith("data:")) {
+      p.openGraph = { ...p.openGraph, image: "" };
+    }
+  }
+  if (p.twitterCard && typeof p.twitterCard === "object") {
+    const twImg = p.twitterCard.image;
+    if (typeof twImg === "string" && twImg.startsWith("data:")) {
+      p.twitterCard = { ...p.twitterCard, image: "" };
+    }
+  }
+  return p;
+}
+
 // Blog Endpoints
 app.get("/api/posts", async (req, res) => {
   try {
-    const snapshot = await getDocs(collection(firestoreDb, "posts"));
-    const posts = snapshot.docs.map(doc => doc.data());
-    // Sort by publishDate desc
-    posts.sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime());
-    res.json(posts);
+    // 1. Return from in-memory cache if available and fresh
+    if (postsCache && (Date.now() - postsCacheTime < POSTS_CACHE_TTL)) {
+      return res.json(postsCache);
+    }
+
+    if (firestoreDb) {
+      const snapshot = await getDocs(collection(firestoreDb, "posts"));
+      const posts = snapshot.docs.map(doc => optimizePostPayload(doc.data()));
+      // Sort by publishDate desc
+      posts.sort((a, b) => new Date(b.publishDate || 0).getTime() - new Date(a.publishDate || 0).getTime());
+      postsCache = posts;
+      postsCacheTime = Date.now();
+      return res.json(posts);
+    }
+
+    const fallbackPosts = (db?.posts || []).map(optimizePostPayload);
+    res.json(fallbackPosts);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch posts" });
   }
@@ -594,12 +631,37 @@ app.get("/api/posts", async (req, res) => {
 
 app.get("/api/posts/:slug", async (req, res) => {
   try {
-    const snapshot = await getDocs(collection(firestoreDb, "posts"));
-    const post = snapshot.docs.map(d => d.data()).find((p: any) => p.slug === req.params.slug);
-    if (!post) {
-      return res.status(404).json({ error: "Post not found" });
+    const targetSlug = decodeURIComponent(req.params.slug).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    
+    // 1. Check in-memory cache first (< 1ms response)
+    if (postsCache) {
+      const cached = postsCache.find((p: any) => {
+        const s = (p.slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+        return s === targetSlug || p.id === req.params.slug;
+      });
+      if (cached) return res.json(cached);
     }
-    res.json(post);
+
+    // 2. Direct targeted query in Firestore by slug
+    if (firestoreDb) {
+      const q = query(collection(firestoreDb, "posts"), where("slug", "==", targetSlug));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const post = optimizePostPayload(snap.docs[0].data());
+        return res.json(post);
+      }
+    }
+
+    // 3. Fallback: local db.posts
+    if (db?.posts) {
+      const local = db.posts.find((p: any) => {
+        const s = (p.slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+        return s === targetSlug || p.id === req.params.slug;
+      });
+      if (local) return res.json(optimizePostPayload(local));
+    }
+
+    res.status(404).json({ error: "Post not found" });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch post" });
   }
@@ -656,6 +718,7 @@ app.post("/api/posts", async (req, res) => {
       schemas: req.body.schemas || []
     };
     await setDoc(doc(firestoreDb, "posts", newPost.id), newPost);
+    postsCache = null; // Invalidate cache
     res.status(201).json(newPost);
   } catch (err) {
     res.status(500).json({ error: "Failed to create post" });
@@ -683,6 +746,7 @@ app.put("/api/posts/:id", async (req, res) => {
       ...updatePayload
     };
     await setDoc(postRef, updatedPost);
+    postsCache = null; // Invalidate cache
     res.json(updatedPost);
   } catch (err) {
     res.status(500).json({ error: "Failed to update post" });
@@ -707,6 +771,7 @@ app.post("/api/posts/:id/view", async (req, res) => {
 app.delete("/api/posts/:id", async (req, res) => {
   try {
     await deleteDoc(doc(firestoreDb, "posts", req.params.id));
+    postsCache = null; // Invalidate cache
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: "Failed to delete post" });
@@ -1764,6 +1829,7 @@ app.get("/sitemap.xml", async (req, res) => {
     const staticRoutes: Array<{ path: string; changefreq: string; priority: string }> = [
       { path: "", changefreq: "daily", priority: "1.0" },
       { path: "/services", changefreq: "weekly", priority: "0.9" },
+      { path: "/seo-tools", changefreq: "daily", priority: "1.0" },
       { path: "/free-tools", changefreq: "weekly", priority: "0.9" },
       { path: "/tools/meta-title-description-generator", changefreq: "weekly", priority: "0.9" },
       { path: "/tools/website-speed-test", changefreq: "weekly", priority: "0.9" },
@@ -1780,7 +1846,12 @@ app.get("/sitemap.xml", async (req, res) => {
       xml += `\n  <url>\n    <loc>${baseUrl}${route.path}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${route.changefreq}</changefreq>\n    <priority>${route.priority}</priority>\n  </url>`;
     });
 
-    // 2. All 11 High-Yield Core Agency Service Landing Pages (Critical for Google Indexing)
+    // 2. All 30 Free Online Production SEO Tools & AI Optimization Utilities
+    SEO_TOOLS_LIST.forEach((tool) => {
+      xml += `\n  <url>\n    <loc>${baseUrl}/seo-tools/${tool.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>`;
+    });
+
+    // 3. All 11 High-Yield Core Agency Service Landing Pages (Critical for Google Indexing)
     const serviceSlugs = [
       "website-development",
       "wordpress-development",
@@ -1799,7 +1870,7 @@ app.get("/sitemap.xml", async (req, res) => {
       xml += `\n  <url>\n    <loc>${baseUrl}/service/${slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>`;
     });
 
-    // 3. Published Blog Posts with accurate published/updated timestamps
+    // 4. Published Blog Posts with accurate published/updated timestamps
     posts
       .filter((post: any) => post.status === "published" || !post.status)
       .forEach((post: any) => {
@@ -2879,6 +2950,23 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
 
   // 5. Blog Page
   if (p === "/blog") {
+    let postsList: any[] = [];
+    if (postsCache && (Date.now() - postsCacheTime < POSTS_CACHE_TTL)) {
+      postsList = postsCache;
+    } else if (firestoreDb) {
+      try {
+        const snapshot = await getDocs(collection(firestoreDb, "posts"));
+        postsList = snapshot.docs.map(doc => optimizePostPayload(doc.data()));
+        postsList.sort((a, b) => new Date(b.publishDate || 0).getTime() - new Date(a.publishDate || 0).getTime());
+        postsCache = postsList;
+        postsCacheTime = Date.now();
+      } catch (e) {
+        postsList = (db?.posts || []).map(optimizePostPayload);
+      }
+    } else {
+      postsList = (db?.posts || []).map(optimizePostPayload);
+    }
+
     return {
       title: "Blog | SEO, AEO & GEO Insights by Metazivo",
       description: "Expert articles on SEO, Answer Engine Optimization, Generative Engine Optimization, WordPress tips and digital marketing strategies from Metazivo.",
@@ -2892,7 +2980,8 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
             <h1>Blog | SEO, AEO & GEO Insights by Metazivo</h1>
             <p>Expert articles on SEO, Answer Engine Optimization, Generative Engine Optimization, WordPress tips and digital marketing strategies from Metazivo.</p>
           </article>
-        </main>`
+        </main>`,
+      initialPosts: postsList
     };
   }
 
@@ -2934,13 +3023,83 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
     };
   }
 
-  // 8. Free Tools & Meta Title/Description Generator Tool
+  // 8. 30 Free Production SEO Tools Platform & Individual Tool Pages
+  if (p === "/seo-tools" || p === "/seo-tool") {
+    const toolsHtmlList = SEO_TOOLS_LIST.map(tool => `
+      <li>
+        <h3><a href="/seo-tools/${tool.slug}">${tool.name}</a></h3>
+        <p>${tool.shortDesc}</p>
+        <small>Category: ${tool.category}</small>
+      </li>
+    `).join("");
+
+    return {
+      title: "30 Free SEO Tools & AI Optimization Suite (2026) | Metazivo",
+      description: "Access 30 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.",
+      keywords: "free seo tools, seo tools suite, website audit tool, schema generator, meta tag generator, aeo geo checker, keyword clustering, technical seo tools, metazivo",
+      ogTitle: "30 Free SEO Tools & AI Optimization Suite (2026) | Metazivo",
+      ogDescription: "Access 30 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.",
+      url: "https://metazivo.com/seo-tools",
+      html: `
+        <main>
+          <article>
+            <h1>30 Free Production SEO Tools & AI Search Optimization Suite</h1>
+            <p>Explore Metazivo's free online SEO utilities for digital agencies, marketers, and webmasters. From technical site audits and XML sitemap generation to schema markup and generative engine optimization.</p>
+            <section>
+              <h2>All Available SEO & AI Optimization Tools</h2>
+              <ul>
+                ${toolsHtmlList}
+              </ul>
+            </section>
+          </article>
+        </main>`
+    };
+  }
+
+  if (p.startsWith("/seo-tools/")) {
+    const toolSubSlug = p.replace(/^\/seo-tools\/?/i, "").replace(/\/+$/, "");
+    const tool = getToolBySlug(toolSubSlug);
+    if (tool) {
+      const bestPracticesHtml = (tool.explanation?.bestPractices || []).map(bp => `<li>${bp}</li>`).join("");
+      const faqsHtml = (tool.faqs || []).map(f => `<h3>${f.q}</h3><p>${f.a}</p>`).join("");
+      const relatedHtml = (tool.relatedSlugs || []).map(rs => {
+        const rel = getToolBySlug(rs);
+        return rel ? `<li><a href="/seo-tools/${rel.slug}">${rel.name}</a> - ${rel.shortDesc}</li>` : "";
+      }).filter(Boolean).join("");
+
+      return {
+        title: `${tool.name} – Free Online SEO Tool | Metazivo`,
+        description: `${tool.shortDesc} 100% free with instant diagnostic checks and Google-compliant output.`,
+        keywords: `${tool.name.toLowerCase()}, free seo tool, ${tool.category.toLowerCase()}, ${tool.slug.replace(/-/g, " ")}, seo optimization, google ranking, metazivo`,
+        ogTitle: `${tool.name} – Free Online SEO Tool | Metazivo`,
+        ogDescription: `${tool.shortDesc}`,
+        url: `https://metazivo.com/seo-tools/${tool.slug}`,
+        html: `
+          <main>
+            <article>
+              <h1>${tool.name}</h1>
+              <p>${tool.intro || tool.shortDesc}</p>
+              <section>
+                <h2>What Is the ${tool.name}?</h2>
+                <p>${tool.explanation?.whatIsIt || tool.shortDesc}</p>
+                <h2>Why It Matters for Organic Rankings</h2>
+                <p>${tool.explanation?.whyItMatters || ""}</p>
+                ${bestPracticesHtml ? `<h2>SEO Best Practices & Recommendations</h2><ul>${bestPracticesHtml}</ul>` : ""}
+                ${faqsHtml ? `<h2>Frequently Asked Questions</h2>${faqsHtml}` : ""}
+                ${relatedHtml ? `<h2>Related SEO Tools</h2><ul>${relatedHtml}</ul>` : ""}
+              </section>
+            </article>
+          </main>`
+      };
+    }
+  }
+
+  // 9. Free Tools & Meta Title/Description Generator Tool
   if (
     p === "/free-tools" || 
     p === "/tools" || 
     p === "/free-seo-tools" || 
     p === "/free-seo-tool" || 
-    p === "/seo-tools" || 
     p === "/tools/meta-title-description-generator" || 
     p === "/meta-title-description-generator"
   ) {
@@ -3004,62 +3163,58 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
     const rawSlug = p.replace("/blog/", "");
     const slug = decodeURIComponent(rawSlug).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
     
-    // 1. Try Firestore
-    try {
-      if (firestoreDb) {
-        const q = query(collection(firestoreDb, "posts"), where("slug", "==", slug));
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          const post: any = snap.docs[0].data();
-          return {
-            title: post.seoTitle || `${post.title} | Metazivo`,
-            description: post.seoDescription || post.excerpt || "",
-            keywords: post.seoKeywords?.join(", ") || "",
-            ogTitle: post.seoTitle || `${post.title} | Metazivo`,
-            ogDescription: post.seoDescription || post.excerpt || "",
-            url: `https://metazivo.com/blog/${slug}`,
-            html: `
-              <main>
-                <article>
-                  <h1>${post.title}</h1>
-                  <p>Written by ${post.author?.name || "Metazivo Expert"} | ${new Date(post.publishDate || Date.now()).toLocaleDateString()}</p>
-                  ${post.content || ""}
-                </article>
-              </main>`
-          };
-        }
-      }
-    } catch (err) {
-      console.warn("Firestore error in getSEOData for slug:", slug, err);
-    }
+    let matchedPost: any = null;
 
-    // 2. Fallback: local db.posts
-    if (db?.posts && Array.isArray(db.posts)) {
-      const localPost = db.posts.find((item: any) => {
+    // 1. Check in-memory cache first (instant sub-millisecond response)
+    if (postsCache) {
+      matchedPost = postsCache.find((item: any) => {
         const itemSlug = (item.slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
         return itemSlug === slug || item.id === slug;
       });
-      if (localPost) {
-        return {
-          title: localPost.seoTitle || `${localPost.title} | Metazivo`,
-          description: localPost.seoDescription || localPost.excerpt || "",
-          keywords: localPost.seoKeywords?.join(", ") || "",
-          ogTitle: localPost.seoTitle || `${localPost.title} | Metazivo`,
-          ogDescription: localPost.seoDescription || localPost.excerpt || "",
-          url: `https://metazivo.com/blog/${slug}`,
-          html: `
-            <main>
-              <article>
-                <h1>${localPost.title}</h1>
-                <p>Written by ${localPost.author?.name || "Metazivo Expert"}</p>
-                ${localPost.content || ""}
-              </article>
-            </main>`
-        };
+    }
+
+    // 2. Query Firestore if not in cache
+    if (!matchedPost && firestoreDb) {
+      try {
+        const q = query(collection(firestoreDb, "posts"), where("slug", "==", slug));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          matchedPost = snap.docs[0].data();
+        }
+      } catch (err) {
+        console.warn("Firestore error in getSEOData for slug:", slug, err);
       }
     }
 
-    // 3. Fallback: clean SEO default (never 500 error!)
+    // 3. Fallback: local db.posts
+    if (!matchedPost && db?.posts && Array.isArray(db.posts)) {
+      matchedPost = db.posts.find((item: any) => {
+        const itemSlug = (item.slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+        return itemSlug === slug || item.id === slug;
+      });
+    }
+
+    if (matchedPost) {
+      return {
+        title: matchedPost.seoTitle || `${matchedPost.title} | Metazivo`,
+        description: matchedPost.seoDescription || matchedPost.excerpt || "",
+        keywords: matchedPost.seoKeywords?.join(", ") || "",
+        ogTitle: matchedPost.seoTitle || `${matchedPost.title} | Metazivo`,
+        ogDescription: matchedPost.seoDescription || matchedPost.excerpt || "",
+        url: `https://metazivo.com/blog/${slug}`,
+        html: `
+          <main>
+            <article>
+              <h1>${matchedPost.title}</h1>
+              <p>Written by ${matchedPost.author?.name || "Metazivo Expert"} | ${new Date(matchedPost.publishDate || Date.now()).toLocaleDateString()}</p>
+              ${matchedPost.content || ""}
+            </article>
+          </main>`,
+        initialPost: matchedPost
+      };
+    }
+
+    // 4. Fallback: clean SEO default (never 500 error!)
     const humanTitle = slug.replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     return {
       title: humanTitle ? `${humanTitle} | Metazivo` : "Blog | Metazivo",
@@ -3075,7 +3230,7 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
   return base;
 }
 
-async function generateSchema(pathname: string): Promise<string> {
+async function generateSchema(pathname: string, preloadedPost?: any): Promise<string> {
   const p = pathname.toLowerCase().replace(/\/$/, "") || "/";
   const domain = "https://metazivo.com";
 
@@ -3158,12 +3313,88 @@ async function generateSchema(pathname: string): Promise<string> {
     });
   }
 
+  if (p === "/seo-tools" || p === "/seo-tool") {
+    baseSchema["@graph"].push({
+      "@type": "WebApplication",
+      "@id": `${domain}/seo-tools#app`,
+      "name": "30 Free Production SEO Tools & AI Search Optimization Suite",
+      "url": `${domain}/seo-tools`,
+      "applicationCategory": "SEOApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "description": "Access 30 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "publisher": { "@id": `${domain}/#organization` }
+    });
+
+    baseSchema["@graph"].push({
+      "@type": "BreadcrumbList",
+      "@id": `${domain}/seo-tools#breadcrumbs`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
+        { "@type": "ListItem", "position": 2, "name": "SEO Tools Suite", "item": `${domain}/seo-tools` }
+      ]
+    });
+  }
+
+  if (p.startsWith("/seo-tools/")) {
+    const toolSubSlug = p.replace(/^\/seo-tools\/?/i, "").replace(/\/+$/, "");
+    const tool = getToolBySlug(toolSubSlug);
+    if (tool) {
+      const toolUrl = `${domain}/seo-tools/${tool.slug}`;
+      baseSchema["@graph"].push({
+        "@type": "WebApplication",
+        "@id": `${toolUrl}#app`,
+        "name": tool.name,
+        "url": toolUrl,
+        "applicationCategory": "SEOApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "description": tool.shortDesc,
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "publisher": { "@id": `${domain}/#organization` }
+      });
+
+      baseSchema["@graph"].push({
+        "@type": "BreadcrumbList",
+        "@id": `${toolUrl}#breadcrumbs`,
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
+          { "@type": "ListItem", "position": 2, "name": "SEO Tools Suite", "item": `${domain}/seo-tools` },
+          { "@type": "ListItem", "position": 3, "name": tool.name, "item": toolUrl }
+        ]
+      });
+
+      if (tool.faqs && tool.faqs.length > 0) {
+        baseSchema["@graph"].push({
+          "@type": "FAQPage",
+          "@id": `${toolUrl}#faq`,
+          "mainEntity": tool.faqs.map(faq => ({
+            "@type": "Question",
+            "name": faq.q,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": faq.a
+            }
+          }))
+        });
+      }
+    }
+  }
+
   if (
     p === "/free-tools" || 
     p === "/tools" || 
     p === "/free-seo-tools" || 
     p === "/free-seo-tool" || 
-    p === "/seo-tools" || 
     p === "/tools/meta-title-description-generator" || 
     p === "/meta-title-description-generator"
   ) {
@@ -3198,11 +3429,35 @@ async function generateSchema(pathname: string): Promise<string> {
 
   if (p.startsWith("/blog/")) {
     const slug = p.replace("/blog/", "");
-    const q = query(collection(firestoreDb, "posts"), where("slug", "==", slug));
-    const snap = await getDocs(q);
-    if (!snap.empty) {
-      const post = snap.docs[0].data();
-      
+    let post = preloadedPost;
+    
+    if (!post && postsCache) {
+      post = postsCache.find((item: any) => {
+        const itemSlug = (item.slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+        return itemSlug === slug || item.id === slug;
+      });
+    }
+
+    if (!post && firestoreDb) {
+      try {
+        const q = query(collection(firestoreDb, "posts"), where("slug", "==", slug));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          post = snap.docs[0].data();
+        }
+      } catch (e) {
+        console.warn("Schema post fetch fallback:", e);
+      }
+    }
+
+    if (!post && db?.posts) {
+      post = db.posts.find((item: any) => {
+        const itemSlug = (item.slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+        return itemSlug === slug || item.id === slug;
+      });
+    }
+
+    if (post) {
       baseSchema["@graph"].push({
         "@type": "Article",
         "@id": `${domain}${pathname}/#article`,
@@ -3357,7 +3612,7 @@ async function injectSEOAndPrerender(html: string, pathname: string): Promise<st
 
     // Dynamic JSON-LD Schema Replacement
     try {
-      const generatedSchema = await generateSchema(pathname);
+      const generatedSchema = await generateSchema(pathname, seoData.initialPost);
       const schemaRegex = /<script\s+type=["']application\/ld\+json["']\s+id=["']metazivo-schema-org["']\s*>([\s\S]*?)<\/script>/i;
       if (schemaRegex.test(resHtml)) {
         resHtml = resHtml.replace(schemaRegex, `<script type="application/ld+json" id="metazivo-schema-org">\n${generatedSchema}\n</script>`);
@@ -3366,6 +3621,28 @@ async function injectSEOAndPrerender(html: string, pathname: string): Promise<st
       }
     } catch (schemaErr) {
       console.warn("Schema generation fallback:", schemaErr);
+    }
+
+    // Initial State Pre-hydration Injection (Instant 0ms First Contentful Paint, Zero Skeleton Wait)
+    try {
+      const initialDataPayload: any = {};
+      if (seoData.initialPost) {
+        initialDataPayload.post = optimizePostPayload(seoData.initialPost);
+      } else if (seoData.initialPosts) {
+        initialDataPayload.posts = seoData.initialPosts.map(optimizePostPayload);
+      }
+
+      if (Object.keys(initialDataPayload).length > 0) {
+        const safeJson = JSON.stringify(initialDataPayload).replace(/<\/script/gi, "<\\/script");
+        const stateScript = `<script id="metazivo-initial-state">window.__METAZIVO_INITIAL_STATE__ = ${safeJson};</script>`;
+        if (resHtml.includes("</head>")) {
+          resHtml = resHtml.replace("</head>", `  ${stateScript}\n</head>`);
+        } else {
+          resHtml = stateScript + resHtml;
+        }
+      }
+    } catch (stateErr) {
+      console.warn("Initial state pre-hydration injection fallback:", stateErr);
     }
 
     // Prerender markup inside <div id="root">

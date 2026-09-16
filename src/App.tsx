@@ -248,8 +248,19 @@ export default function App() {
   const [selectedBlogSlug, setSelectedBlogSlug] = useState<string>("");
   const [activeSeoToolSlug, setActiveSeoToolSlug] = useState<string>("");
 
+  // Pre-hydrated server state (Instant 0ms initial render, zero skeleton flash)
+  const ssrInitialData = typeof window !== "undefined" ? (window as any).__METAZIVO_INITIAL_STATE__ : null;
+  const initialPost = ssrInitialData?.post;
+  const initialPosts = ssrInitialData?.posts;
+
   // Server data states
-  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [blogs, setBlogs] = useState<BlogPost[]>(() => {
+    if (initialPost) return [initialPost];
+    if (Array.isArray(initialPosts) && initialPosts.length > 0) return initialPosts;
+    return [];
+  });
+  const [isFetchingBlog, setIsFetchingBlog] = useState(false);
+  const [blogFetchFailed, setBlogFetchFailed] = useState(false);
   const [tags, setTags] = useState<{ name: string; count: number }[]>([]);
   const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>([]);
   const [leads, setLeads] = useState<ContactEnquiry[]>([]);
@@ -346,24 +357,68 @@ export default function App() {
   const [renameValue, setRenameValue] = useState("");
   const [tagError, setTagError] = useState("");
 
-  // Load Initial Full-Stack API Data (Split between public fast-path and admin lazy-path)
-  const loadPublicData = async () => {
-    try {
-      const safeFetch = (url: string) => fetch(url).catch(e => { console.warn(`Blocked or failed request to ${url}:`, e); return null; });
-      const [blogsRes, pagesRes, contactRes, settingsRes] = await Promise.all([
-        safeFetch("/api/posts"),
-        safeFetch("/api/pages"),
-        safeFetch("/api/contact"),
-        safeFetch("/api/settings")
-      ]);
+  // Load Initial Full-Stack API Data (Independent parallel streams, non-blocking)
+  const loadPublicData = () => {
+    const safeFetch = (url: string) => fetch(url).catch(e => { console.warn(`Blocked or failed request to ${url}:`, e); return null; });
 
-      if (blogsRes?.ok) setBlogs(await blogsRes.json());
-      if (pagesRes?.ok) setPages(await pagesRes.json());
-      if (contactRes?.ok) setContactInfo(await contactRes.json());
-      if (settingsRes?.ok) setSiteSettings(await settingsRes.json());
-    } catch (err) {
-      console.error("Failed to sync public metrics", err);
-    }
+    // 1. Fetch posts independently
+    safeFetch("/api/posts").then(async (blogsRes) => {
+      if (blogsRes?.ok) {
+        try {
+          const fetchedBlogs: BlogPost[] = await blogsRes.json();
+          setBlogs((prev) => {
+            if (prev.length === 0) return fetchedBlogs;
+            const map = new Map<string, BlogPost>();
+            fetchedBlogs.forEach((b) => map.set(b.id || b.slug, b));
+            // Keep any full content post already loaded via SSR or single-post fetch
+            prev.forEach((p) => {
+              const key = p.id || p.slug;
+              if (map.has(key)) {
+                map.set(key, { ...map.get(key)!, ...p });
+              } else {
+                map.set(key, p);
+              }
+            });
+            return Array.from(map.values());
+          });
+        } catch (e) {
+          console.warn("Failed parsing posts", e);
+        }
+      }
+    });
+
+    // 2. Fetch pages independently
+    safeFetch("/api/pages").then(async (pagesRes) => {
+      if (pagesRes?.ok) {
+        try {
+          setPages(await pagesRes.json());
+        } catch (e) {
+          console.warn("Failed parsing pages", e);
+        }
+      }
+    });
+
+    // 3. Fetch contact independently
+    safeFetch("/api/contact").then(async (contactRes) => {
+      if (contactRes?.ok) {
+        try {
+          setContactInfo(await contactRes.json());
+        } catch (e) {
+          console.warn("Failed parsing contact", e);
+        }
+      }
+    });
+
+    // 4. Fetch site settings independently
+    safeFetch("/api/settings").then(async (settingsRes) => {
+      if (settingsRes?.ok) {
+        try {
+          setSiteSettings(await settingsRes.json());
+        } catch (e) {
+          console.warn("Failed parsing settings", e);
+        }
+      }
+    });
   };
 
   const loadAdminData = async () => {
@@ -563,6 +618,44 @@ export default function App() {
     }
   }, [currentTab, activeBlog?.id]);
 
+  // Targeted fast single-post fetch if navigating directly or if user refreshed
+  useEffect(() => {
+    if (currentTab === "blog-detail" && selectedBlogSlug && !activeBlog) {
+      let isCancelled = false;
+      setIsFetchingBlog(true);
+      setBlogFetchFailed(false);
+      const cleanSlug = selectedBlogSlug.replace(/^\/+|\/+$/g, "");
+      fetch(`/api/posts/${encodeURIComponent(cleanSlug)}`)
+        .then((res) => {
+          if (!res.ok) {
+            if (res.status === 404) setBlogFetchFailed(true);
+            return null;
+          }
+          return res.json();
+        })
+        .then((post) => {
+          if (post && !isCancelled) {
+            setBlogs((prev) => {
+              if (prev.some((b) => b.id === post.id || b.slug === post.slug)) return prev;
+              return [post, ...prev];
+            });
+            setBlogFetchFailed(false);
+          }
+        })
+        .catch((err) => {
+          console.warn("Single post fetch failed:", err);
+          if (!isCancelled) setBlogFetchFailed(true);
+        })
+        .finally(() => {
+          if (!isCancelled) setIsFetchingBlog(false);
+        });
+
+      return () => {
+        isCancelled = true;
+      };
+    }
+  }, [currentTab, selectedBlogSlug, activeBlog]);
+
   // Synchronize SEO Meta Details dynamically on Tab transition
   useEffect(() => {
     const pageSeoMap: Record<string, { title: string; description: string; keywords?: string }> = {
@@ -692,12 +785,12 @@ export default function App() {
     } else if (currentTab === "seo-tools") {
       const toolDef = getToolBySlug(activeSeoToolSlug);
       if (toolDef) {
-        targetTitle = `${toolDef.name} | Free SEO Tools Suite | Metazivo`;
-        targetDescription = toolDef.shortDescription;
+        targetTitle = `${toolDef.name} – Free Online SEO Tool | Metazivo`;
+        targetDescription = toolDef.shortDesc || toolDef.shortDescription || "";
         canonicalPath = `/seo-tools/${toolDef.slug}`;
       } else {
-        targetTitle = "Free SEO Tools Suite (30 Developer & Marketer Tools) | Metazivo";
-        targetDescription = "30 enterprise-grade SEO tools for technical audits, Schema JSON-LD generation, Core Web Vitals, keyword clustering, and AI search readiness.";
+        targetTitle = "30 Free SEO Tools & AI Optimization Suite (2026) | Metazivo";
+        targetDescription = "Access 30 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.";
         canonicalPath = "/seo-tools";
       }
     } else if (currentTab === "free-tools" || currentTab === "tools/meta-title-description-generator") {
@@ -2467,8 +2560,8 @@ export default function App() {
           </article>
         )}
 
-        {/* Blog Detail Loading Skeleton (Prevents blank white screen while data loads) */}
-        {currentTab === "blog-detail" && !activeBlog && blogs.length === 0 && (
+        {/* Blog Detail Loading Skeleton (Only when actively fetching and post not yet ready) */}
+        {currentTab === "blog-detail" && !activeBlog && !blogFetchFailed && (
           <div className="max-w-3xl mx-auto px-4 py-16 space-y-8 animate-pulse">
             <div className="h-4 w-32 bg-slate-200 rounded"></div>
             <div className="h-10 w-3/4 bg-slate-200 rounded-lg"></div>
@@ -2488,8 +2581,8 @@ export default function App() {
           </div>
         )}
 
-        {/* Blog Detail Not Found State (Graceful fallback) */}
-        {currentTab === "blog-detail" && !activeBlog && blogs.length > 0 && (
+        {/* Blog Detail Not Found State (When fetch finished or verified missing) */}
+        {currentTab === "blog-detail" && !activeBlog && (blogFetchFailed || (!isFetchingBlog && blogs.length > 0)) && (
           <div className="max-w-xl mx-auto px-4 py-24 text-center space-y-6">
             <div className="w-16 h-16 mx-auto rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#FF5722]">
               <FileText className="w-8 h-8" />
