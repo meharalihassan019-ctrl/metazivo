@@ -650,6 +650,33 @@ export default function FreeToolsHub({ onNavigate }: FreeToolsHubProps) {
             </button>
           </div>
 
+          {/* Link to Full SEO Tools Suite */}
+          <div className="bg-orange-50/50 rounded-3xl border border-orange-200/80 p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 text-center sm:text-left">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-orange-100 text-[#FF5722] text-[10px] font-mono font-bold uppercase">
+                <Sparkles className="w-3 h-3" />
+                31 Free Tools
+              </div>
+              <h3 className="text-lg font-bold text-slate-900">
+                Explore the Complete Metazivo SEO & AI Optimization Suite
+              </h3>
+              <p className="text-xs text-slate-600 font-light">
+                Discover technical SEO audit tools, keyword clustering, search intent analysis, schema generators, and robots.txt testers.
+              </p>
+            </div>
+            <a
+              href="/seo-tools"
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigate("seo-tools");
+              }}
+              className="px-6 py-3 bg-[#FF5722] hover:bg-[#e04d1c] text-white rounded-xl text-xs font-bold uppercase tracking-wider shrink-0 transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+            >
+              <span>View All 31 Tools</span>
+              <ArrowRight className="w-4 h-4 text-white" />
+            </a>
+          </div>
+
         </div>
 
       </div>

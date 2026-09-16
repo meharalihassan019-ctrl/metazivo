@@ -127,7 +127,7 @@ export default function SeoToolsHub({ onSelectTool, onNavigateHome }: Props) {
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-            30 enterprise-grade utilities for technical audits, Schema.org JSON-LD generation, Core Web Vitals optimization, keyword clustering, and Answer Engine Optimization (AEO/GEO).
+            31 enterprise-grade utilities for technical audits, Schema.org JSON-LD generation, Core Web Vitals optimization, keyword clustering, and Answer Engine Optimization (AEO/GEO).
           </p>
         </div>
 
@@ -137,7 +137,7 @@ export default function SeoToolsHub({ onSelectTool, onNavigateHome }: Props) {
             <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search 30 tools by name, topic, or keyword (e.g. audit, schema, robots, intent, speed)..."
+              placeholder="Search all tools by name, topic, or keyword (e.g. audit, schema, robots, intent, speed)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-11 pr-4 py-3 bg-slate-50/70 border border-slate-200 rounded-xl text-xs sm:text-sm font-sans text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF5722]/30 focus:border-[#FF5722] transition-all"
@@ -171,10 +171,14 @@ export default function SeoToolsHub({ onSelectTool, onNavigateHome }: Props) {
             const tags = tool.tags || [tool.badge, tool.category.split(" ")[0]];
 
             return (
-              <div
+              <a
                 key={tool.slug}
-                onClick={() => onSelectTool(tool.slug)}
-                className="group bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between hover:border-slate-300 hover:shadow-lg transition-all duration-200 cursor-pointer relative"
+                href={`/tools/${tool.slug}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onSelectTool(tool.slug);
+                }}
+                className="group bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between hover:border-slate-300 hover:shadow-lg transition-all duration-200 cursor-pointer relative text-left"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -210,7 +214,7 @@ export default function SeoToolsHub({ onSelectTool, onNavigateHome }: Props) {
                     <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
-              </div>
+              </a>
             );
           })}
         </div>
@@ -228,7 +232,7 @@ export default function SeoToolsHub({ onSelectTool, onNavigateHome }: Props) {
               }}
               className="text-xs font-bold text-[#FF5722] hover:underline cursor-pointer"
             >
-              Clear filters and view all 30 tools
+              Clear filters and view all tools
             </button>
           </div>
         )}

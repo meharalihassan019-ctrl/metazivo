@@ -186,6 +186,17 @@ app.use((req, res, next) => {
     return res.redirect(301, `/tools/website-speed-test${query}`);
   }
 
+  // 2b. Legacy SEO Tool URLs Redirect to clean /tools/:slug
+  if (normalizedPath.startsWith("/seo-tools/")) {
+    const subSlug = normalizedPath.replace(/^\/seo-tools\/?/, "").replace(/\/+$/, "");
+    if (subSlug) {
+      const toolDef = getToolBySlug(subSlug);
+      const targetSlug = toolDef ? toolDef.slug : subSlug;
+      const query = req.url.slice(req.path.length);
+      return res.redirect(301, `/tools/${targetSlug}${query}`);
+    }
+  }
+
   const freeToolsAliases = [
     "/tools",
     "/free-seo-tools",
@@ -193,7 +204,7 @@ app.use((req, res, next) => {
   ];
   if (freeToolsAliases.includes(normalizedPath)) {
     const query = req.url.slice(req.path.length);
-    return res.redirect(301, `/free-tools${query}`);
+    return res.redirect(301, `/seo-tools${query}`);
   }
 
   // 3. Service Slug Aliases Canonical 301 Redirects
@@ -1846,9 +1857,11 @@ app.get("/sitemap.xml", async (req, res) => {
       xml += `\n  <url>\n    <loc>${baseUrl}${route.path}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${route.changefreq}</changefreq>\n    <priority>${route.priority}</priority>\n  </url>`;
     });
 
-    // 2. All 30 Free Online Production SEO Tools & AI Optimization Utilities
+    // 2. All 31 Free Online Production SEO Tools & AI Optimization Utilities
     SEO_TOOLS_LIST.forEach((tool) => {
-      xml += `\n  <url>\n    <loc>${baseUrl}/seo-tools/${tool.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>`;
+      if (tool.slug !== "website-speed-test" && tool.slug !== "meta-title-description-generator") {
+        xml += `\n  <url>\n    <loc>${baseUrl}/tools/${tool.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>`;
+      }
     });
 
     // 3. All 11 High-Yield Core Agency Service Landing Pages (Critical for Google Indexing)
@@ -3023,27 +3036,27 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
     };
   }
 
-  // 8. 30 Free Production SEO Tools Platform & Individual Tool Pages
+  // 8. 31 Free Production SEO Tools Platform & Individual Tool Pages
   if (p === "/seo-tools" || p === "/seo-tool") {
     const toolsHtmlList = SEO_TOOLS_LIST.map(tool => `
       <li>
-        <h3><a href="/seo-tools/${tool.slug}">${tool.name}</a></h3>
+        <h3><a href="/tools/${tool.slug}">${tool.name}</a></h3>
         <p>${tool.shortDesc}</p>
         <small>Category: ${tool.category}</small>
       </li>
     `).join("");
 
     return {
-      title: "30 Free SEO Tools & AI Optimization Suite (2026) | Metazivo",
-      description: "Access 30 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.",
+      title: "31 Free SEO Tools & AI Optimization Suite (2026) | Metazivo",
+      description: "Access 31 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.",
       keywords: "free seo tools, seo tools suite, website audit tool, schema generator, meta tag generator, aeo geo checker, keyword clustering, technical seo tools, metazivo",
-      ogTitle: "30 Free SEO Tools & AI Optimization Suite (2026) | Metazivo",
-      ogDescription: "Access 30 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.",
+      ogTitle: "31 Free SEO Tools & AI Optimization Suite (2026) | Metazivo",
+      ogDescription: "Access 31 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.",
       url: "https://metazivo.com/seo-tools",
       html: `
         <main>
           <article>
-            <h1>30 Free Production SEO Tools & AI Search Optimization Suite</h1>
+            <h1>31 Free Production SEO Tools & AI Search Optimization Suite</h1>
             <p>Explore Metazivo's free online SEO utilities for digital agencies, marketers, and webmasters. From technical site audits and XML sitemap generation to schema markup and generative engine optimization.</p>
             <section>
               <h2>All Available SEO & AI Optimization Tools</h2>
@@ -3056,29 +3069,36 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
     };
   }
 
-  if (p.startsWith("/seo-tools/")) {
-    const toolSubSlug = p.replace(/^\/seo-tools\/?/i, "").replace(/\/+$/, "");
+  if (p.startsWith("/tools/") || p.startsWith("/seo-tools/")) {
+    const toolSubSlug = p.replace(/^\/(?:tools|seo-tools)\/?/i, "").replace(/\/+$/, "");
     const tool = getToolBySlug(toolSubSlug);
-    if (tool) {
+    if (tool && toolSubSlug !== "website-speed-test") {
       const bestPracticesHtml = (tool.explanation?.bestPractices || []).map(bp => `<li>${bp}</li>`).join("");
       const faqsHtml = (tool.faqs || []).map(f => `<h3>${f.q}</h3><p>${f.a}</p>`).join("");
+      const howToUseHtml = (tool.howToUse || []).map(h => `<li><strong>Step ${h.step}: ${h.title}</strong> - ${h.desc}</li>`).join("");
+      const benefitsHtml = (tool.benefits || []).map(b => `<li><strong>${b.title}</strong>: ${b.desc}</li>`).join("");
       const relatedHtml = (tool.relatedSlugs || []).map(rs => {
         const rel = getToolBySlug(rs);
-        return rel ? `<li><a href="/seo-tools/${rel.slug}">${rel.name}</a> - ${rel.shortDesc}</li>` : "";
+        return rel ? `<li><a href="/tools/${rel.slug}">${rel.name}</a> - ${rel.shortDesc}</li>` : "";
       }).filter(Boolean).join("");
 
+      const title = tool.metaTitle || `${tool.name} – Free Online SEO Tool | Metazivo`;
+      const description = tool.metaDescription || `${tool.shortDesc} 100% free with instant diagnostic checks and Google-compliant output.`;
+
       return {
-        title: `${tool.name} – Free Online SEO Tool | Metazivo`,
-        description: `${tool.shortDesc} 100% free with instant diagnostic checks and Google-compliant output.`,
+        title,
+        description,
         keywords: `${tool.name.toLowerCase()}, free seo tool, ${tool.category.toLowerCase()}, ${tool.slug.replace(/-/g, " ")}, seo optimization, google ranking, metazivo`,
-        ogTitle: `${tool.name} – Free Online SEO Tool | Metazivo`,
-        ogDescription: `${tool.shortDesc}`,
-        url: `https://metazivo.com/seo-tools/${tool.slug}`,
+        ogTitle: title,
+        ogDescription: description,
+        url: `https://metazivo.com/tools/${tool.slug}`,
         html: `
           <main>
             <article>
               <h1>${tool.name}</h1>
               <p>${tool.intro || tool.shortDesc}</p>
+              ${howToUseHtml ? `<section><h2>How to Use the ${tool.name}</h2><ol>${howToUseHtml}</ol></section>` : ""}
+              ${benefitsHtml ? `<section><h2>Benefits of Using ${tool.name}</h2><ul>${benefitsHtml}</ul></section>` : ""}
               <section>
                 <h2>What Is the ${tool.name}?</h2>
                 <p>${tool.explanation?.whatIsIt || tool.shortDesc}</p>
@@ -3341,11 +3361,11 @@ async function generateSchema(pathname: string, preloadedPost?: any): Promise<st
     });
   }
 
-  if (p.startsWith("/seo-tools/")) {
-    const toolSubSlug = p.replace(/^\/seo-tools\/?/i, "").replace(/\/+$/, "");
+  if (p.startsWith("/tools/") || p.startsWith("/seo-tools/")) {
+    const toolSubSlug = p.replace(/^\/(?:tools|seo-tools)\/?/i, "").replace(/\/+$/, "");
     const tool = getToolBySlug(toolSubSlug);
-    if (tool) {
-      const toolUrl = `${domain}/seo-tools/${tool.slug}`;
+    if (tool && toolSubSlug !== "website-speed-test") {
+      const toolUrl = `${domain}/tools/${tool.slug}`;
       baseSchema["@graph"].push({
         "@type": "WebApplication",
         "@id": `${toolUrl}#app`,
@@ -3354,7 +3374,7 @@ async function generateSchema(pathname: string, preloadedPost?: any): Promise<st
         "applicationCategory": "SEOApplication",
         "operatingSystem": "All",
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
-        "description": tool.shortDesc,
+        "description": tool.metaDescription || tool.shortDesc,
         "offers": {
           "@type": "Offer",
           "price": "0",
@@ -3534,6 +3554,14 @@ async function injectSEOAndPrerender(html: string, pathname: string): Promise<st
       canonicalPath = "/terms";
     } else if (canonicalPath.includes("website-speed-test") || canonicalPath.includes("speed-test")) {
       canonicalPath = "/tools/website-speed-test";
+    } else if (canonicalPath.startsWith("/seo-tools/")) {
+      const rawS = canonicalPath.replace("/seo-tools/", "").replace(/^\/+|\/+$/g, "");
+      const toolDef = getToolBySlug(rawS);
+      canonicalPath = toolDef ? `/tools/${toolDef.slug}` : `/tools/${rawS}`;
+    } else if (canonicalPath.startsWith("/tools/")) {
+      const rawS = canonicalPath.replace("/tools/", "").replace(/^\/+|\/+$/g, "");
+      const toolDef = getToolBySlug(rawS);
+      canonicalPath = toolDef ? `/tools/${toolDef.slug}` : `/tools/${rawS}`;
     } else if (canonicalPath.includes("meta-title")) {
       canonicalPath = "/tools/meta-title-description-generator";
     }

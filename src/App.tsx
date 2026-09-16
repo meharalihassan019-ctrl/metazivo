@@ -529,28 +529,37 @@ export default function App() {
       if (lowerPath !== "/tools/website-speed-test") {
         window.history.replaceState({}, "", "/tools/website-speed-test");
       }
+    } else if (lowerPath.startsWith("/tools/")) {
+      const toolSlug = path.replace(/^\/tools\/?/i, "").replace(/\/+$/, "");
+      if (toolSlug) {
+        setActiveSeoToolSlug(toolSlug);
+        setCurrentTab("seo-tools");
+      } else {
+        setActiveSeoToolSlug("");
+        setCurrentTab("seo-tools");
+      }
     } else if (
       lowerPath === "/seo-tools" ||
       lowerPath === "/seo-tool" ||
       lowerPath.startsWith("/seo-tools/")
     ) {
       const subSlug = path.replace(/^\/seo-tools\/?/i, "").replace(/\/+$/, "");
-      setActiveSeoToolSlug(subSlug);
-      setCurrentTab("seo-tools");
+      if (subSlug) {
+        setActiveSeoToolSlug(subSlug);
+        setCurrentTab("seo-tools");
+        window.history.replaceState({}, "", `/tools/${subSlug}`);
+      } else {
+        setActiveSeoToolSlug("");
+        setCurrentTab("seo-tools");
+      }
     } else if (
       lowerPath === "/free-tools" ||
       lowerPath === "/tools" ||
       lowerPath.startsWith("/free-tools") ||
-      lowerPath === "/tools/meta-title-description-generator" ||
-      lowerPath === "/meta-title-description-generator" ||
-      lowerPath === "/tools/meta-tag-generator" ||
       lowerPath === "/free-seo-tools" ||
       lowerPath === "/free-seo-tool"
     ) {
       setCurrentTab("free-tools");
-      if (lowerPath !== "/free-tools" && lowerPath !== "/tools/meta-title-description-generator") {
-        window.history.replaceState({}, "", "/free-tools");
-      }
     } else {
       const slug = path.replace(/^\/+/, "").replace(/\/+$/, "");
       if (slug) {
@@ -785,12 +794,12 @@ export default function App() {
     } else if (currentTab === "seo-tools") {
       const toolDef = getToolBySlug(activeSeoToolSlug);
       if (toolDef) {
-        targetTitle = `${toolDef.name} – Free Online SEO Tool | Metazivo`;
-        targetDescription = toolDef.shortDesc || toolDef.shortDescription || "";
-        canonicalPath = `/seo-tools/${toolDef.slug}`;
+        targetTitle = toolDef.metaTitle || `${toolDef.name} – Free Online SEO Tool | Metazivo`;
+        targetDescription = toolDef.metaDescription || toolDef.shortDesc || toolDef.shortDescription || "";
+        canonicalPath = `/tools/${toolDef.slug}`;
       } else {
-        targetTitle = "30 Free SEO Tools & AI Optimization Suite (2026) | Metazivo";
-        targetDescription = "Access 30 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.";
+        targetTitle = "31 Free SEO Tools & AI Optimization Suite (2026) | Metazivo";
+        targetDescription = "Access 31 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.";
         canonicalPath = "/seo-tools";
       }
     } else if (currentTab === "free-tools" || currentTab === "tools/meta-title-description-generator") {
@@ -868,20 +877,37 @@ export default function App() {
     ) {
       setCurrentTab("tools/website-speed-test");
       window.history.pushState({}, "", "/tools/website-speed-test");
+    } else if (tab.startsWith("tools/")) {
+      const subSlug = tab.replace(/^tools\/?/i, "").replace(/\/+$/, "");
+      if (subSlug === "website-speed-test") {
+        setCurrentTab("tools/website-speed-test");
+        window.history.pushState({}, "", "/tools/website-speed-test");
+      } else {
+        setActiveSeoToolSlug(subSlug);
+        setCurrentTab("seo-tools");
+        window.history.pushState({}, "", `/tools/${subSlug}`);
+      }
     } else if (tab === "seo-tools" || tab.startsWith("seo-tools/")) {
       const subSlug = tab.replace(/^seo-tools\/?/i, "").replace(/\/+$/, "");
-      setActiveSeoToolSlug(subSlug);
-      setCurrentTab("seo-tools");
-      window.history.pushState({}, "", subSlug ? `/seo-tools/${subSlug}` : "/seo-tools");
+      if (!subSlug) {
+        setActiveSeoToolSlug("");
+        setCurrentTab("seo-tools");
+        window.history.pushState({}, "", "/seo-tools");
+      } else if (subSlug === "website-speed-test") {
+        setCurrentTab("tools/website-speed-test");
+        window.history.pushState({}, "", "/tools/website-speed-test");
+      } else {
+        setActiveSeoToolSlug(subSlug);
+        setCurrentTab("seo-tools");
+        window.history.pushState({}, "", `/tools/${subSlug}`);
+      }
     } else if (
       tab === "free-tools" ||
       tab === "tools" ||
-      tab === "tools/meta-title-description-generator" ||
-      tab === "meta-title-description-generator" ||
       tab === "free-seo-tools"
     ) {
       setCurrentTab("free-tools");
-      window.history.pushState({}, "", tab.includes("meta-title") ? "/tools/meta-title-description-generator" : "/free-tools");
+      window.history.pushState({}, "", "/free-tools");
     } else {
       const cleanTab = tab.replace(/^\/+|\/+$/g, "");
       setCurrentTab(cleanTab);
@@ -914,10 +940,13 @@ export default function App() {
       setActiveSeoToolSlug("");
       setCurrentTab("seo-tools");
       window.history.pushState({}, "", "/seo-tools");
+    } else if (slug === "website-speed-test") {
+      setCurrentTab("tools/website-speed-test");
+      window.history.pushState({}, "", "/tools/website-speed-test");
     } else {
       setActiveSeoToolSlug(slug);
       setCurrentTab("seo-tools");
-      window.history.pushState({}, "", `/seo-tools/${slug}`);
+      window.history.pushState({}, "", `/tools/${slug}`);
     }
   };
 
@@ -971,18 +1000,22 @@ export default function App() {
         linkText.includes("speed audit")
       ) {
         handleNavigate("tools/website-speed-test");
+      } else if (lower.startsWith("/tools/")) {
+        const toolSlug = lower.replace("/tools/", "").replace(/^\/+|\/+$/g, "");
+        handleNavigateSeoTool(toolSlug);
+      } else if (lower.startsWith("/seo-tools/")) {
+        const toolSlug = lower.replace("/seo-tools/", "").replace(/^\/+|\/+$/g, "");
+        handleNavigateSeoTool(toolSlug);
       } else if (
-        lower === "/tools" || 
-        lower.startsWith("/tools/") ||
+        lower === "/seo-tools" ||
+        lower === "/seo-tool" ||
+        linkText.includes("seo tools suite")
+      ) {
+        handleNavigateSeoTool("");
+      } else if (
+        lower === "/free-tools" || 
         lower.startsWith("/free-tools") ||
-        lower === "/tools/meta-title-description-generator" ||
-        lower === "/meta-title-description-generator" ||
-        lower.startsWith("/free-seo-tool") ||
-        lower.startsWith("/seo-tool") ||
-        linkText.includes("seo tool") ||
-        linkText.includes("free seo tools") ||
-        linkText.includes("meta title") ||
-        linkText.includes("generator")
+        lower.startsWith("/free-seo-tool")
       ) {
         handleNavigate("free-tools");
       } else if (lower.startsWith("/blog/")) {

@@ -9,7 +9,8 @@ import {
   ExternalLink,
   ShieldCheck,
   Check,
-  MessageSquare
+  MessageSquare,
+  CheckCircle2
 } from "lucide-react";
 import { SeoToolDef, SEO_TOOLS_LIST } from "./seoToolsData";
 
@@ -32,11 +33,11 @@ export default function ToolShell({
   const [copiedLink, setCopiedLink] = useState(false);
 
   const relatedTools = SEO_TOOLS_LIST.filter((t) =>
-    tool.relatedSlugs.includes(t.slug)
+    tool.relatedSlugs?.includes(t.slug)
   );
 
   const handleShareTool = () => {
-    const url = `${window.location.origin}/seo-tools/${tool.slug}`;
+    const url = `${window.location.origin}/tools/${tool.slug}`;
     if (navigator.clipboard) {
       navigator.clipboard.writeText(url);
       setCopiedLink(true);
@@ -54,12 +55,16 @@ export default function ToolShell({
       {/* Top Breadcrumb & Actions Bar */}
       <nav aria-label="SEO Tools Breadcrumb" className="flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-slate-500 border-b border-slate-200/80 pb-4">
         <div className="flex items-center gap-2 flex-wrap">
-          <button
-            onClick={onNavigateHome}
+          <a
+            href="/seo-tools"
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigateHome();
+            }}
             className="hover:text-[#FF5722] transition-colors cursor-pointer flex items-center gap-1 font-semibold"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> All SEO Tools
-          </button>
+          </a>
           <span>/</span>
           <span className="text-slate-400">{tool.category}</span>
           <span>/</span>
@@ -121,56 +126,132 @@ export default function ToolShell({
         {children}
       </section>
 
-      {/* Helpful Technical Explanation Section */}
-      <section className="bg-gradient-to-br from-slate-50 to-orange-50/30 border border-slate-200/80 rounded-3xl p-6 sm:p-8 space-y-6">
-        <div className="space-y-2">
-          <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest">Technical Guide</span>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-950">
-            About {tool.name}
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-700 leading-relaxed font-sans">
-          <div className="space-y-2 bg-white/80 p-5 rounded-2xl border border-slate-200/60 shadow-xs">
-            <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#FF5722]" />
-              What It Is
-            </h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              {tool.explanation.whatIsIt}
+      {/* Simple "How to use" steps */}
+      {tool.howToUse && tool.howToUse.length > 0 && (
+        <section className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
+          <div className="space-y-2">
+            <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest">
+              Simple 3-Step Guide
+            </span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-950">
+              How to Use the {tool.name}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-sans max-w-2xl">
+              Follow these simple steps to run your analysis and optimize your web pages for higher search engine performance.
             </p>
           </div>
 
-          <div className="space-y-2 bg-white/80 p-5 rounded-2xl border border-slate-200/60 shadow-xs">
-            <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#FF5722]" />
-              Why It Matters for Search Rankings
-            </h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              {tool.explanation.whyItMatters}
-            </p>
-          </div>
-        </div>
-
-        <div className="bg-white/90 border border-slate-200/70 p-5 rounded-2xl space-y-3">
-          <h3 className="text-xs font-bold text-slate-900 uppercase font-mono tracking-wider">
-            Key SEO Best Practices
-          </h3>
-          <ul className="space-y-2 text-xs text-slate-600 font-sans">
-            {tool.explanation.bestPractices.map((bp, i) => (
-              <li key={i} className="flex items-start gap-2.5">
-                <div className="w-4 h-4 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-bold">
-                  ✓
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {tool.howToUse.map((item, idx) => (
+              <div
+                key={idx}
+                className="relative p-5 rounded-2xl bg-slate-50/70 border border-slate-200/70 flex flex-col justify-between space-y-3 hover:border-orange-200 transition-colors"
+              >
+                <div className="space-y-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-orange-100 text-[#FF5722] font-mono font-bold text-sm flex items-center justify-center">
+                    0{item.step}
+                  </div>
+                  <h3 className="font-bold text-slate-900 text-sm font-sans">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                    {item.desc}
+                  </p>
                 </div>
-                <span>{bp}</span>
-              </li>
+              </div>
             ))}
-          </ul>
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
+
+      {/* Benefits of using this tool */}
+      {tool.benefits && tool.benefits.length > 0 && (
+        <section className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
+          <div className="space-y-2">
+            <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest">
+              Key Advantages
+            </span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-950">
+              Benefits of Using the {tool.name}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 font-sans max-w-2xl">
+              Engineered to give SEO professionals, business owners, and developers reliable ranking advantages.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {tool.benefits.map((benefit, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-slate-50/60 border border-slate-200/70 space-y-2.5 hover:border-orange-200 transition-colors"
+              >
+                <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200/80 text-emerald-600 flex items-center justify-center text-xs font-bold">
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-slate-900 text-sm font-sans">
+                  {benefit.title}
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                  {benefit.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Helpful Technical Explanation Section */}
+      {tool.explanation && (
+        <section className="bg-gradient-to-br from-slate-50 to-orange-50/30 border border-slate-200/80 rounded-3xl p-6 sm:p-8 space-y-6">
+          <div className="space-y-2">
+            <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest">Technical Guide</span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-950">
+              About {tool.name}
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-700 leading-relaxed font-sans">
+            <div className="space-y-2 bg-white/80 p-5 rounded-2xl border border-slate-200/60 shadow-xs">
+              <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#FF5722]" />
+                What It Is
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                {tool.explanation.whatIsIt}
+              </p>
+            </div>
+
+            <div className="space-y-2 bg-white/80 p-5 rounded-2xl border border-slate-200/60 shadow-xs">
+              <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#FF5722]" />
+                Why It Matters for Search Rankings
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                {tool.explanation.whyItMatters}
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white/90 border border-slate-200/70 p-5 rounded-2xl space-y-3">
+            <h3 className="text-xs font-bold text-slate-900 uppercase font-mono tracking-wider">
+              Key SEO Best Practices
+            </h3>
+            <ul className="space-y-2 text-xs text-slate-600 font-sans">
+              {tool.explanation.bestPractices.map((bp, i) => (
+                <li key={i} className="flex items-start gap-2.5">
+                  <div className="w-4 h-4 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-bold">
+                    ✓
+                  </div>
+                  <span>{bp}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {/* Frequently Asked Questions */}
-      {tool.faqs.length > 0 && (
+      {tool.faqs && tool.faqs.length > 0 && (
         <section className="space-y-6">
           <div className="space-y-1">
             <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest">Common Questions</span>
@@ -210,26 +291,38 @@ export default function ToolShell({
         </section>
       )}
 
-      {/* Related SEO Tools Recommendations */}
+      {/* Related SEO Tools Recommendations with direct HTML links */}
       {relatedTools.length > 0 && (
         <section className="space-y-4 pt-4 border-t border-slate-200/70">
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <h2 className="text-base font-bold text-slate-900">
-              Related Free SEO Tools
-            </h2>
-            <button
-              onClick={onNavigateHome}
-              className="text-xs font-semibold text-[#FF5722] hover:underline cursor-pointer"
+            <div>
+              <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest block">More Utilities</span>
+              <h2 className="text-xl sm:text-2xl font-extrabold text-slate-950">
+                Related SEO Tools
+              </h2>
+            </div>
+            <a
+              href="/seo-tools"
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigateHome();
+              }}
+              className="text-xs font-semibold text-[#FF5722] hover:underline cursor-pointer flex items-center gap-1"
             >
-              View All 30 Tools →
-            </button>
+              <span>View All 31 Tools</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {relatedTools.map((rt) => (
-              <button
+              <a
                 key={rt.slug}
-                onClick={() => onNavigateTool(rt.slug)}
+                href={`/tools/${rt.slug}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigateTool(rt.slug);
+                }}
                 className="text-left p-4 rounded-2xl border border-slate-200/80 hover:border-[#FF5722]/50 hover:bg-orange-50/20 transition-all group bg-white shadow-xs cursor-pointer flex flex-col justify-between"
               >
                 <div className="space-y-1.5">
@@ -247,7 +340,7 @@ export default function ToolShell({
                   <span>Launch Tool</span>
                   <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                 </div>
-              </button>
+              </a>
             ))}
           </div>
         </section>

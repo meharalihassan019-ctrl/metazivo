@@ -1235,6 +1235,156 @@ export default function WebsiteSpeedTest({ onNavigate, getWhatsAppLink }: Websit
         </div>
       </div>
 
+      {/* How to Use Section */}
+      <div className="bg-white border border-slate-200 rounded-[32px] p-6 md:p-8 max-w-4xl mx-auto space-y-6 shadow-xs">
+        <div className="space-y-1.5">
+          <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest">Simple 3-Step Guide</span>
+          <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+            How to Use the Website Speed Test
+          </h2>
+          <p className="text-xs text-slate-600">
+            Diagnose latency bottlenecks and benchmark your Core Web Vitals performance in under 30 seconds.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200/70 space-y-2.5">
+            <div className="w-8 h-8 rounded-xl bg-orange-100 text-[#FF5722] font-mono font-bold text-sm flex items-center justify-center">01</div>
+            <h3 className="font-bold text-slate-900 text-sm">Enter Target URL</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">Paste your domain or full URL path into the audit input above.</p>
+          </div>
+          <div className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200/70 space-y-2.5">
+            <div className="w-8 h-8 rounded-xl bg-orange-100 text-[#FF5722] font-mono font-bold text-sm flex items-center justify-center">02</div>
+            <h3 className="font-bold text-slate-900 text-sm">Select Strategy</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">Choose Mobile or Desktop simulation to run accurate network audits.</p>
+          </div>
+          <div className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200/70 space-y-2.5">
+            <div className="w-8 h-8 rounded-xl bg-orange-100 text-[#FF5722] font-mono font-bold text-sm flex items-center justify-center">03</div>
+            <h3 className="font-bold text-slate-900 text-sm">Review Opportunities</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">Inspect TTFB, LCP, INP, uncompressed assets, and implement prioritized fixes.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Benefits Section */}
+      <div className="bg-white border border-slate-200 rounded-[32px] p-6 md:p-8 max-w-4xl mx-auto space-y-6 shadow-xs">
+        <div className="space-y-1.5">
+          <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest">Key Advantages</span>
+          <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+            Benefits of Using Website Speed Test
+          </h2>
+          <p className="text-xs text-slate-600">
+            Engineered to give developers and marketers real data to win higher Google search rankings.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="p-5 rounded-2xl bg-slate-50/60 border border-slate-200/70 space-y-2">
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xs font-bold">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+            <h3 className="font-bold text-slate-900 text-sm">Higher Google Search Rankings</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">Core Web Vitals are confirmed ranking factors across mobile and desktop searches.</p>
+          </div>
+          <div className="p-5 rounded-2xl bg-slate-50/60 border border-slate-200/70 space-y-2">
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xs font-bold">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+            <h3 className="font-bold text-slate-900 text-sm">Reduced Bounce Rates</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">Fast sub-second loading keeps visitors engaged and browsing your content longer.</p>
+          </div>
+          <div className="p-5 rounded-2xl bg-slate-50/60 border border-slate-200/70 space-y-2">
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xs font-bold">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+            <h3 className="font-bold text-slate-900 text-sm">Genuine Real-Time Socket Audit</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">Direct server socket probes with zero simulated or fake metrics.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Related Tools Section */}
+      <div className="bg-white border border-slate-200 rounded-[32px] p-6 md:p-8 max-w-4xl mx-auto space-y-6 shadow-xs">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest block">More Utilities</span>
+            <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+              Related SEO Tools
+            </h2>
+          </div>
+          <a
+            href="/seo-tools"
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate("seo-tools");
+            }}
+            className="text-xs font-semibold text-[#FF5722] hover:underline cursor-pointer flex items-center gap-1"
+          >
+            <span>View All 31 Tools</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </a>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <a
+            href="/tools/seo-audit-checker"
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate("tools/seo-audit-checker");
+            }}
+            className="text-left p-4 rounded-2xl border border-slate-200/80 hover:border-[#FF5722]/50 hover:bg-orange-50/20 transition-all group bg-white shadow-xs cursor-pointer flex flex-col justify-between"
+          >
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-mono font-bold text-[#FF5722] uppercase tracking-wider block">Technical & Audit</span>
+              <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors line-clamp-1">SEO Audit Checker</h3>
+              <p className="text-xs text-slate-500 font-light line-clamp-2">Complete on-page and technical SEO audit with health score.</p>
+            </div>
+            <div className="mt-3 text-xs font-semibold text-slate-600 group-hover:text-[#FF5722] flex items-center gap-1">
+              <span>Launch Tool</span>
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </a>
+
+          <a
+            href="/tools/core-web-vitals-checker"
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate("tools/core-web-vitals-checker");
+            }}
+            className="text-left p-4 rounded-2xl border border-slate-200/80 hover:border-[#FF5722]/50 hover:bg-orange-50/20 transition-all group bg-white shadow-xs cursor-pointer flex flex-col justify-between"
+          >
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-mono font-bold text-[#FF5722] uppercase tracking-wider block">Speed & Performance</span>
+              <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors line-clamp-1">Core Web Vitals Checker</h3>
+              <p className="text-xs text-slate-500 font-light line-clamp-2">Analyze LCP, FID/INP, and CLS benchmarks for Google ranking compliance.</p>
+            </div>
+            <div className="mt-3 text-xs font-semibold text-slate-600 group-hover:text-[#FF5722] flex items-center gap-1">
+              <span>Launch Tool</span>
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </a>
+
+          <a
+            href="/tools/pagespeed-estimator"
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate("tools/pagespeed-estimator");
+            }}
+            className="text-left p-4 rounded-2xl border border-slate-200/80 hover:border-[#FF5722]/50 hover:bg-orange-50/20 transition-all group bg-white shadow-xs cursor-pointer flex flex-col justify-between"
+          >
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-mono font-bold text-[#FF5722] uppercase tracking-wider block">Speed & Performance</span>
+              <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors line-clamp-1">PageSpeed Estimator</h3>
+              <p className="text-xs text-slate-500 font-light line-clamp-2">Estimate mobile and desktop Google PageSpeed scores and pinpoint latency.</p>
+            </div>
+            <div className="mt-3 text-xs font-semibold text-slate-600 group-hover:text-[#FF5722] flex items-center gap-1">
+              <span>Launch Tool</span>
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </a>
+        </div>
+      </div>
+
     </div>
   );
 }

@@ -186,7 +186,7 @@ export default function Footer({ onNavigate, contactInfo }: FooterProps) {
                   onClick={(e) => { e.preventDefault(); handleNavClick("seo-tools"); }} 
                   className="text-slate-400 hover:text-[#FF5722] text-sm transition-colors text-left flex items-center gap-2 group"
                 >
-                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> SEO Tools Suite (30)
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF5722] text-xs">→</span> SEO Tools Suite (31)
                 </a>
               </li>
               <li>

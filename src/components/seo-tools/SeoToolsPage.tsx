@@ -16,6 +16,7 @@ import HeadingStructureTool from "./HeadingStructureTool";
 import TechnicalSeoToolkit from "./TechnicalSeoToolkit";
 import ContentSeoToolkit from "./ContentSeoToolkit";
 import PerformanceAndIndexTools from "./PerformanceAndIndexTools";
+import WebsiteSpeedTest from "../WebsiteSpeedTest";
 
 interface Props {
   activeToolSlug?: string;
@@ -214,6 +215,25 @@ export default function SeoToolsPage({ activeToolSlug, onNavigateTool, onNavigat
     case "pagespeed-fix-recommendation-tool":
     case "google-index-checker":
     case "crawl-budget-analyzer":
+      return (
+        <PerformanceAndIndexTools
+          tool={toolDef}
+          onNavigateTool={onNavigateTool}
+          onNavigateHome={onNavigateHome}
+        />
+      );
+
+    case "website-speed-test":
+      return (
+        <WebsiteSpeedTest
+          onNavigate={(target) => {
+            if (target === "home") onNavigateHome();
+            else if (target === "seo-tools" || target === "hub") onNavigateTool("");
+            else onNavigateTool(target.replace(/^tools\//, ""));
+          }}
+        />
+      );
+
     default:
       return (
         <PerformanceAndIndexTools
