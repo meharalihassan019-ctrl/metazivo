@@ -1184,7 +1184,7 @@ export default function WebsiteSpeedTest({ onNavigate, getWhatsAppLink }: Websit
             </div>
             <h3 className="text-base font-bold text-slate-900">Lower Ads CPC</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              High PageSpeed scores elevate your Google Ads Landing Page Quality Score, reducing cost-per-click while outranking competitors.
+              High PageSpeed scores improve your Google Ads Landing Page Quality Score, reducing cost-per-click while outranking competitors.
             </p>
           </div>
         </div>

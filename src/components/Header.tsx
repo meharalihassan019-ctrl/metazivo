@@ -46,8 +46,12 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
     <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm" id="app-header">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex justify-between items-center">
         {/* Brand Logo */}
-        <div 
-          onClick={() => handleNavClick("home")} 
+        <a 
+          href="/"
+          onClick={(e) => {
+            e.preventDefault();
+            handleNavClick("home");
+          }} 
           className="flex items-center gap-3 cursor-pointer group"
           id="brand-logo"
         >
@@ -70,15 +74,19 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
               Growth Engine
             </span>
           </div>
-        </div>
+        </a>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-1" aria-label="Main Navigation">
           {navItems.map((item) => (
-            <button
+            <a
               key={item.tab}
               id={`nav-link-${item.tab}`}
-              onClick={() => handleNavClick(item.tab)}
+              href={item.tab === "home" ? "/" : `/${item.tab}`}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick(item.tab);
+              }}
               className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer ${
                 currentTab === item.tab
                   ? "bg-[#FF5722] text-white shadow-[0_4px_12px_rgba(255,87,34,0.25)]"
@@ -86,14 +94,18 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
               }`}
             >
               {item.label}
-            </button>
+            </a>
           ))}
 
           {/* Desktop Free Tools Navigation Link & Submenu */}
           <div className="relative group/tools">
-            <button
+            <a
               id="nav-link-free-tools"
-              onClick={() => handleNavClick("free-tools")}
+              href="/free-tools"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick("free-tools");
+              }}
               onMouseEnter={() => setToolsDropdownOpen(true)}
               className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-1 cursor-pointer ${
                 currentTab === "free-tools" || currentTab === "tools/website-speed-test"
@@ -103,14 +115,18 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
             >
               <span>Free Tools</span>
               <ChevronDown className="w-3.5 h-3.5 opacity-75" />
-            </button>
+            </a>
             {toolsDropdownOpen && (
               <div 
                 className="absolute left-0 mt-2 w-64 bg-white border border-slate-200/90 rounded-2xl p-2 shadow-2xl z-50 animate-fade-in"
                 onMouseLeave={() => setToolsDropdownOpen(false)}
               >
-                <button
-                  onClick={() => handleNavClick("free-tools")}
+                <a
+                  href="/free-tools"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick("free-tools");
+                  }}
                   className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2.5 cursor-pointer ${
                     currentTab === "free-tools"
                       ? "bg-[#FF5722]/10 text-[#FF5722]"
@@ -124,9 +140,13 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
                     <span className="font-bold">Meta Title & Description Generator</span>
                     <span className="text-[10px] text-slate-400 font-light">Free SEO Snippet Creator</span>
                   </div>
-                </button>
-                <button
-                  onClick={() => handleNavClick("tools/website-speed-test")}
+                </a>
+                <a
+                  href="/tools/website-speed-test"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick("tools/website-speed-test");
+                  }}
                   className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2.5 cursor-pointer mt-1 ${
                     currentTab === "tools/website-speed-test"
                       ? "bg-[#FF5722]/10 text-[#FF5722]"
@@ -140,14 +160,18 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
                     <span className="font-bold">Website Speed Test</span>
                     <span className="text-[10px] text-slate-400 font-light">Live Core Web Vitals Audit</span>
                   </div>
-                </button>
+                </a>
               </div>
             )}
           </div>
-          <button
+          <a
             key="contact"
             id="nav-link-contact"
-            onClick={() => handleNavClick("contact")}
+            href="/contact"
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavClick("contact");
+            }}
             className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer ${
               currentTab === "contact"
                 ? "bg-[#FF5722] text-white shadow-[0_4px_12px_rgba(255,87,34,0.25)]"
@@ -155,17 +179,21 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
             }`}
           >
             Contact
-          </button>
+          </a>
         </nav>
 
         {/* Action button & Mobile Toggle */}
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => handleNavClick("contact")}
+          <a
+            href="/contact"
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavClick("contact");
+            }}
             className="hidden sm:inline-flex px-6 py-2.5 bg-[#FF5722] hover:bg-[#FF7043] rounded-full text-white text-xs font-semibold tracking-wide transition-all shadow-[0_4px_12px_rgba(255,87,34,0.3)] cursor-pointer hover:scale-[1.02] active:scale-95 duration-150"
           >
             Get a Quote
-          </button>
+          </a>
           {/* Mobile menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -181,9 +209,13 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
       {mobileMenuOpen && (
         <div className="md:hidden w-full border-t border-slate-100 bg-white px-4 py-3 space-y-2 absolute top-full left-0 shadow-xl animate-fade-in z-[100]">
           {navItems.map((item) => (
-            <button
+            <a
               key={item.tab}
-              onClick={() => handleNavClick(item.tab)}
+              href={item.tab === "home" ? "/" : `/${item.tab}`}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick(item.tab);
+              }}
               className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium block ${
                 currentTab === item.tab
                   ? "bg-[#FF5722] text-white"
@@ -191,21 +223,25 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
               }`}
             >
               {item.label}
-            </button>
+            </a>
           ))}
           {/* Mobile Tools Navigation */}
           <div className="space-y-1">
             <div className="flex items-center justify-between rounded-md bg-slate-50/80 border border-slate-200/60 p-1">
-              <button
-                onClick={() => handleNavClick("free-tools")}
-                className={`flex-1 text-left px-3 py-2 rounded-md text-sm font-semibold transition-colors ${
+              <a
+                href="/free-tools"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick("free-tools");
+                }}
+                className={`flex-1 text-left px-3 py-2 rounded-md text-sm font-semibold transition-colors block ${
                   currentTab === "free-tools"
                     ? "bg-[#FF5722] text-white"
                     : "text-slate-800 hover:text-[#FF5722]"
                 }`}
               >
                 Free Tools
-              </button>
+              </a>
               <button
                 type="button"
                 onClick={() => setMobileToolsOpen(!mobileToolsOpen)}
@@ -217,8 +253,12 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
             </div>
             {mobileToolsOpen && (
               <div className="pl-3 py-1 space-y-1 bg-slate-50/50 rounded-xl border border-slate-100 mt-1">
-                <button
-                  onClick={() => handleNavClick("free-tools")}
+                <a
+                  href="/free-tools"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick("free-tools");
+                  }}
                   className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
                     currentTab === "free-tools"
                       ? "bg-[#FF5722] text-white font-black"
@@ -227,9 +267,13 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
                 >
                   <Wrench className="w-3.5 h-3.5 shrink-0" />
                   <span>Meta Title & Description Generator</span>
-                </button>
-                <button
-                  onClick={() => handleNavClick("tools/website-speed-test")}
+                </a>
+                <a
+                  href="/tools/website-speed-test"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick("tools/website-speed-test");
+                  }}
                   className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
                     currentTab === "tools/website-speed-test"
                       ? "bg-[#FF5722] text-white font-black"
@@ -238,12 +282,16 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
                 >
                   <Zap className="w-3.5 h-3.5 shrink-0" />
                   <span>Website Speed Test</span>
-                </button>
+                </a>
               </div>
             )}
           </div>
-          <button
-            onClick={() => handleNavClick("contact")}
+          <a
+            href="/contact"
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavClick("contact");
+            }}
             className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium block ${
               currentTab === "contact"
                 ? "bg-[#FF5722] text-white"
@@ -251,14 +299,18 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
             }`}
           >
             Contact
-          </button>
+          </a>
           <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
-            <button
-              onClick={() => handleNavClick("contact")}
-              className="w-full py-2.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-semibold text-center transition-all shadow-[0_4px_12px_rgba(255,87,34,0.25)]"
+            <a
+              href="/contact"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick("contact");
+              }}
+              className="w-full py-2.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-semibold text-center transition-all shadow-[0_4px_12px_rgba(255,87,34,0.25)] block"
             >
               Get a Quote
-            </button>
+            </a>
           </div>
         </div>
       )}

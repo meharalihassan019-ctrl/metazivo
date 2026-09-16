@@ -20,46 +20,46 @@ export const servicesData: AgencyService[] = [
     title: "AI Mobile Apps",
     slug: "ai-mobile-apps",
     icon: "Cpu",
-    description: "Intelligent mobile applications embedded with server-side LLMs, Gemini AI features, real-time voice, and smart triggers.",
-    longDescription: "Artificial Intelligence is redefining the software landscape. We build next-generation AI Mobile Applications that embed advanced machine learning models, natural language processing, and real-time computer vision. Powered by server-side Gemini, OpenAI, or custom local models, our AI apps offer super-fast smart recommendations, automatic content generation, advanced search capabilities, and personalized conversational layers. Stand out in the app stores with a highly optimized, future-proof AI application.",
+    description: "Custom mobile applications with server-side AI logic, real-time voice translation, and smart workflows that solve real problems.",
+    longDescription: "Most AI apps fail because they put a thin wrapper around a basic prompt. We build production-ready mobile apps with server-side AI pipelines. Whether you need automated document parsing, smart in-app customer support, or voice translation, we route every request through secure backend proxies. Your API keys stay protected on the server, token costs stay under control, and your users get instant responses without interface lag.",
     benefits: [
-      "Custom AI models and Gemini API integrations secure from client-side leaks",
-      "Interactive smart agents capable of natural dialogue and task automation",
-      "High-speed voice-to-text, real-time translations, and computer vision features",
-      "Staggering visual designs paired with super-fast database caching",
-      "Complete metrics reporting to monitor API costs and user engagement"
+      "Secure backend API proxies so your private keys never leak onto client devices",
+      "Task automation workflows that handle real user requests and inquiries",
+      "Real-time speech-to-text, in-app translations, and lightweight vision features",
+      "Native performance on iOS and Android with fast local database caching",
+      "Usage monitoring dashboards to track API token costs and daily engagement"
     ],
     process: [
-      "AI Capabilities Blueprint & Architecture Design",
-      "Prompt Engineering & Server-Side LLM Integration",
-      "Cross-Platform UI/UX Frontend Engineering",
-      "Performance Tuning & Cloud Ingress Cost Safeguards"
+      "Architecture & Technical Scope Definition",
+      "Backend Proxy & Secure LLM Integration",
+      "Cross-Platform Mobile Interface Engineering",
+      "Performance Testing & Store Submission"
     ],
     startingPrice: "From $449",
     deliverables: [
       "Cross-Platform Flutter/React Native Builds",
       "Server-Side Gemini/OpenAI API Proxies",
-      "Real-Time AI Voice & Translation Engines",
-      "Secure User State Persistence"
+      "Real-Time Voice & Translation Integrations",
+      "Secure User State & Cloud Persistence"
     ],
     seoTitle: "AI Mobile App Development Services | Metazivo",
-    seoDescription: "Deploy secure, high-yield custom iOS & Android applications with advanced Gemini AI integrations, natural voice processing, and smart automated triggers.",
-    fullFulfillmentCopy: "In today's digital landscape, a mobile app is no longer just a luxury—it is the direct command center for your client relationships. Standard apps suffer from high uninstall rates because they lack active, personalized utility. By embedding server-side LLMs and real-time Gemini intelligence directly into your app structures, we turn static screens into proactive growth systems. Your clients get real-time advice, automatic voice translations, and conversational interfaces that keep them coming back every single day. Most importantly, we handle all LLM calls on our secure server, preventing your critical API keys from ever leaking to the client side.",
+    seoDescription: "Custom iOS and Android apps with secure server-side AI integrations, voice processing, and automated user workflows. Built for speed and data security.",
+    fullFulfillmentCopy: "Apps that rely solely on static screens struggle with user retention. When you add useful in-app intelligence, users stay engaged. We build production-ready apps with server-side AI pipelines. Your clients get instant answers, automated workflow assistance, and voice tools that solve specific tasks. More importantly, we never put raw API keys in mobile app packages. All requests pass through an Express proxy, keeping your billing safe and credentials secure.",
     caseStudy: {
-      title: "Intelligent Client Engagement System",
-      challenge: "An international e-commerce startup had high cart abandonment rates and poor engagement.",
-      solution: "Built a custom React Native app featuring a Gemini-powered personal shopping assistant and personalized smart notifications.",
-      result: "Cart conversion rate boosted by 142% and daily active users increased by 3.5x.",
-      metric: "+142% Conversion Rate"
+      title: "Smart In-App Support & Ordering Workflow",
+      challenge: "An e-commerce startup faced high cart abandonment and slow customer inquiry response times.",
+      solution: "Built a cross-platform React Native app with a secure server-side shopping assistant and targeted notification triggers.",
+      result: "Cart checkout rate rose by 142% and daily active users increased by 3.5x over three months.",
+      metric: "+142% Checkout Rate"
     },
     faqs: [
       {
         q: "How do server-side AI integrations protect my API keys?",
-        a: "We route all requests through secure Express backend proxies. This means your private Gemini API keys never sit on a user's phone, completely preventing unauthorized access and unexpected credit costs."
+        a: "We route all AI requests through secure Express backend proxies. This means your private API credentials never sit on a user's phone, preventing unauthorized usage and unexpected billing spikes."
       },
       {
-        q: "Will the app support both iOS and Android platforms?",
-        a: "Yes. We use cross-platform frameworks like Flutter and React Native to deliver perfect native performance on both operating systems from a single, robust codebase."
+        q: "Will the app run smoothly on both iOS and Android?",
+        a: "Yes. We use cross-platform frameworks like Flutter and React Native to deliver responsive, native-feeling performance on both platforms from a single codebase."
       }
     ]
   },
@@ -68,46 +68,46 @@ export const servicesData: AgencyService[] = [
     title: "WordPress & WooCommerce Sales Engines",
     slug: "wordpress-development",
     icon: "Layout",
-    description: "Ditch bloated templates. Get ultra-fast custom WordPress & WooCommerce stores optimized for continuous sales.",
-    longDescription: "Most WordPress websites are built on heavy templates that crash, load slowly, and repel clients. We construct high-converting, lightweight WordPress and WooCommerce sales engines. By designing custom blocks and discarding bloated plugins, we ensure your sales pipelines and online store products load instantly. Your checkouts are optimized with a frictionless 1-click flow, and your database is configured for absolute speed. This is a robust investment designed to scale your business, rank higher on search engines, and maximize your profits without any maintenance headaches.",
+    description: "Clean, plugin-light WooCommerce stores and custom WordPress sites engineered to load in under a second and convert traffic.",
+    longDescription: "Most WordPress websites crawl because they rely on 40+ plugins and heavy visual builders like Elementor or Divi. When a page takes 5 seconds to load, half your buyers leave before seeing a single product. We build custom sites using native Gutenberg blocks and clean code. You get an intuitive dashboard where you can edit text and images easily, while your customers get a fast, one-step checkout that keeps revenue flowing.",
     benefits: [
-      "100% bespoke custom-coded theme blocks – absolutely zero bulky template code",
-      "WooCommerce checkouts optimized for maximum checkout speed and conversion",
-      "Advanced caching, extreme security setups, and automated hourly cloud backups",
-      "Ultimate admin simplicity – easily update text, images, and blogs in seconds",
-      "Built-in local conversion rate optimization (CRO) widgets"
+      "Hand-coded Gutenberg blocks with zero bloated page builder scripts",
+      "Streamlined WooCommerce checkout designed to minimize cart abandonment",
+      "Server-level caching, WebP image delivery, and automated daily backups",
+      "Simple admin dashboard — update products, text, and photos in seconds",
+      "Tested against Core Web Vitals to maintain sub-1s load times"
     ],
     process: [
-      "Structure Design & Secure Database Provisioning",
-      "Lightweight Custom Theme Development & Testing",
-      "WooCommerce Cart & payment gateways integration",
-      "Extreme speed optimization & security deployment"
+      "Site Architecture & Database Setup",
+      "Custom Lightweight Theme Development",
+      "WooCommerce Cart & Payment Gateway Integration",
+      "Speed Hardening & Security Deployment"
     ],
     startingPrice: "From $150",
     deliverables: [
-      "Custom Theme & Gutenberg Blocks",
-      "WooCommerce Integration",
-      "1-Click Frictionless Checkout",
-      "Hourly Cloud Backups"
+      "Custom Theme & Native Gutenberg Blocks",
+      "WooCommerce Store Configuration",
+      "1-Step Frictionless Checkout Flow",
+      "Automated Cloud Backup Setup"
     ],
     seoTitle: "Custom WordPress & WooCommerce Development | Metazivo",
-    seoDescription: "Boost your e-commerce revenue with ultra-fast custom-coded WordPress blocks, optimized 1-click WooCommerce checkouts, and clean, database-level speed setups.",
-    fullFulfillmentCopy: "Most developers hand you a WordPress site built on pre-made theme builders like Elementor or Divi. While they look fine initially, they load dozens of heavy CSS and JS files in the background. For every second your site takes to load, you lose 20% of your buyers. We build bespoke custom-coded theme blocks directly on the native Gutenberg editor. You get a clean, lightweight dashboard that is easy to edit, and your visitors get an instant page load speed under 1 second. We optimize your WooCommerce checkout down to a single-step flow, removing distractions and forcing conversion rates up.",
+    seoDescription: "Boost your online sales with clean, custom-coded WordPress blocks, streamlined 1-step WooCommerce checkouts, and sub-second mobile load speeds.",
+    fullFulfillmentCopy: "Most developers take the easy way out: install a pre-made theme, stack 30 plugins on top, and hand you a slow website. It might look fine on day one, but it breaks during updates and runs slowly on mobile phones. We do the opposite. We write clean theme templates directly for WordPress's native block editor. You get a lightweight dashboard that anyone on your team can update, while your shoppers experience page loads under one second. We trim the checkout to a clean single-step flow, removing every unnecessary field that costs you sales.",
     caseStudy: {
-      title: "Bespoke WooCommerce Sales Acceleration",
-      challenge: "A premium clothing store suffered from a sluggish 6.4-second load time, leading to major client drop-offs.",
-      solution: "Rebuilt the entire store with zero pre-made plugins, utilizing custom Gutenberg block structures and automated media optimizations.",
-      result: "Page speed decreased to 0.8 seconds, and sales immediately shot up by 195% within 30 days.",
-      metric: "0.8s Load Speed"
+      title: "WooCommerce Speed & Checkout Optimization",
+      challenge: "An apparel store had a 6.4-second mobile load time, causing significant drop-offs before checkout.",
+      solution: "Rebuilt the store without heavy third-party page builders, using custom Gutenberg blocks and automated image optimization.",
+      result: "Mobile load speed dropped to 0.8 seconds, and store revenue increased by 195% within the first 30 days.",
+      metric: "0.8s Mobile Load Speed"
     },
     faqs: [
       {
-        q: "Will I be able to edit my text and add new products easily without a builder?",
-        a: "Absolutely. We build custom native blocks, meaning you can edit text, swap images, and publish blogs exactly like a Word document, with zero risk of breaking the layout."
+        q: "Can I edit my text and add new products easily without a builder?",
+        a: "Yes. We build with WordPress's native block editor. You can edit text, swap images, and add products just like editing a document, without worrying about breaking the page layout."
       },
       {
-        q: "Do you provide WooCommerce setup and payment gateway integration?",
-        a: "Yes. We set up complete WooCommerce configurations, tax parameters, shipping metrics, and integrate reliable Stripe, PayPal, or local credit card processors."
+        q: "Do you handle payment gateway setup and testing?",
+        a: "Yes. We set up your payment processors (Stripe, PayPal, or local merchant gateways), configure shipping and tax rules, and test real transactions before launch."
       }
     ]
   },
@@ -116,46 +116,46 @@ export const servicesData: AgencyService[] = [
     title: "Mobile Application Development",
     slug: "mobile-app-development",
     icon: "Smartphone",
-    description: "Bespoke native-performance iOS & Android applications built with modern cross-platform Flutter/React Native frameworks.",
-    longDescription: "A premium mobile app is the ultimate touchpoint for modern client engagement. We build native-performance iOS and Android applications written with clean, maintainable Flutter or React Native structures. We discard slow web-views and heavy runtimes, designing gorgeous responsive views that run at 120 FPS. Integrated with secure local storage, push notification servers, real-time sync, and robust security, we submit your apps directly to the stores ready to scale.",
+    description: "High-performance iOS and Android applications built with Flutter or React Native. Fast, reliable, and smooth on every device.",
+    longDescription: "Nobody keeps an app that stutters or crashes when they lose mobile signal. We build mobile apps with Flutter and React Native that compile directly to native code. That means smooth animations, immediate tap responses, and offline storage that saves user work even when connectivity drops. From initial Figma designs to App Store and Google Play approvals, we handle the full development cycle.",
     benefits: [
-      "High-performance native iOS & Android applications written from scratch",
-      "Fully integrated push notifications, biometrics, and secure offline storage",
-      "Fluid animations and responsive screens matching custom Figma designs",
-      "Complete App Store and Google Play Store deployment guidelines",
-      "Seamless integration with custom REST APIs and cloud databases"
+      "Single shared codebase delivering native responsiveness on iOS and Android",
+      "Offline-first local caching so users can work without an internet connection",
+      "Integrated push notifications, biometric login, and camera/location permissions",
+      "Clean interfaces built to match approved Figma designs precisely",
+      "Full handling of App Store and Google Play review and submission requirements"
     ],
     process: [
-      "Mobile Wireframing & Interactive UI/UX Design",
-      "Native-Performance Frontend & API Integration",
-      "Rigorous Cross-Device Testing & Performance Tuning",
-      "App Store & Google Play Store Submission"
+      "Wireframing & Interactive UI/UX Design",
+      "Frontend Development & API Integration",
+      "Cross-Device Testing & Offline Data Sync",
+      "App Store & Google Play Submission"
     ],
     startingPrice: "From $449",
     deliverables: [
-      "Native iOS & Android Builds",
-      "App Store Publishing Support",
-      "Push Notification Systems",
-      "Biometrics & Local Storage Integrations"
+      "Production-Ready iOS & Android Builds",
+      "Store Submission & Approval Support",
+      "Push Notification Integration",
+      "Local Database & Biometric Authentication"
     ],
-    seoTitle: "iOS & Android App Development | Flutter & React Native",
-    seoDescription: "High-performance native iOS and Android application development. We build cross-platform apps with 120 FPS performance, offline local caching, and secure API integrations.",
-    fullFulfillmentCopy: "A slow, laggy app is worse than having no app at all. If your screens flicker or transitions stutter, your users will delete it. We write high-efficiency cross-platform applications using Flutter or React Native. This allows us to share 90% of the codebase across iOS and Android while maintaining true native compiling. Your app benefits from hardware-accelerated animations running at a smooth 120 FPS, secure offline database engines, and lightweight background push notification listeners that trigger without draining the user's battery.",
+    seoTitle: "iOS & Android App Development | Flutter & React Native | Metazivo",
+    seoDescription: "High-performance native iOS and Android application development. We build cross-platform apps with 60-120 FPS speed, offline caching, and secure API integrations.",
+    fullFulfillmentCopy: "If an app feels sluggish or drops data when a user loses signal, they delete it. We engineer cross-platform apps using Flutter or React Native to share 90% of the code between iOS and Android without sacrificing speed. Users get fluid transitions, hardware-accelerated rendering, and local caching that syncs smoothly the moment they reconnect. We also manage developer certificates, bundle IDs, privacy disclosures, and store review requirements so your launch goes through without rejection.",
     caseStudy: {
-      title: "Enterprise Logistics App Redeployment",
-      challenge: "A logistics platform had a legacy app that constantly crashed offline, causing field workers to lose delivery tracking data.",
-      solution: "Developed a robust cross-platform app utilizing reactive offline storage that automatically syncs with the central server upon detecting internet connection.",
-      result: "Completely eliminated tracking data loss and boosted daily operational delivery speed by 42%.",
-      metric: "0% Offline Data Loss"
+      title: "Logistics Field App Redeployment",
+      challenge: "A field logistics team struggled with an old app that crashed offline, losing delivery signatures and driver timestamps.",
+      solution: "Developed a cross-platform mobile app with an offline-first database that queues changes locally and syncs automatically when back online.",
+      result: "Zero data loss across 12,000 monthly deliveries and a 42% improvement in daily driver turnaround times.",
+      metric: "Zero Offline Data Loss"
     },
     faqs: [
       {
-        q: "Can you publish the apps directly to our company's Google Play and Apple App Stores?",
-        a: "Yes. We handle the entire deployment lifecycle, including configuring developer accounts, generating security certificates, optimizing store screenshots, and getting direct store approvals."
+        q: "Can you publish the apps directly to our developer accounts?",
+        a: "Yes. We manage the full release process: creating release builds, signing certificates, writing store listings, configuring privacy policies, and addressing review feedback."
       },
       {
-        q: "Do you integrate with third-party tracking or customer management tools?",
-        a: "Absolutely. We build custom API connectors to link your app directly with Salesforce, HubSpot, Firebase, custom SQL databases, and custom backends."
+        q: "Can the app connect to our existing database or CRM?",
+        a: "Yes. We connect your mobile application to your existing REST or GraphQL APIs, custom databases, Firebase, or CRM platforms like HubSpot and Salesforce."
       }
     ]
   },
@@ -244,46 +244,46 @@ export const servicesData: AgencyService[] = [
     title: "High-Performance Website Development",
     slug: "website-development",
     icon: "Code",
-    description: "Enterprise-grade React & Next.js architectures built for supreme speed, absolute security, and unbeatable conversion rates.",
-    longDescription: "A slow website is silently bleeding your revenue every day. We build bespoke, lightning-fast web applications using premium React and Next.js structures that load in under 500 milliseconds. We discard heavy frameworks and redundant codes, crafting hand-coded responsive masterpieces that render perfectly on every single device. With integrated analytics, ultra-clean UI/UX, and complete SEO-ready layouts, your business gains instant digital superiority, leaving your competitors in the dust.",
+    description: "Custom React & Next.js websites built for businesses that demand sub-second load times, clean code, and higher search rankings.",
+    longDescription: "A slow website quietly drains your sales every day. If your pages take more than 2 seconds to load, potential clients click away and hire your competitor instead. We build custom web applications using React and Next.js with server-side rendering and edge caching. We write clean, semantic HTML and Tailwind CSS from scratch. No bulky builders, no unnecessary dependencies. Your site scores 95+ on Google PageSpeed Insights, keeps visitors engaged, and gives search engines the clean structure they reward.",
     benefits: [
-      "Bespoke lightweight code written completely from scratch",
-      "Perfect Core Web Vitals (95+ score guaranteed on Google PageSpeed Insights)",
-      "Premium responsive UI/UX designed to guide users directly to action",
-      "Extreme security hardening to make your web app virtually unhackable",
-      "Dynamic interactive panels that capture and retain attention instantly"
+      "Clean, hand-written React code with minimal third-party dependencies",
+      "95+ score on Google PageSpeed Insights for both mobile and desktop",
+      "Mobile-first responsive layouts that guide visitors straight to your contact or checkout",
+      "Static file generation and server caching for reliable uptime during traffic spikes",
+      "Built-in OpenGraph cards, structured schema markup, and clean URLs"
     ],
     process: [
-      "User Journey mapping & Wireframing",
+      "User Journey Mapping & Wireframing",
       "High-Fidelity Custom Figma UI Design",
-      "Clean Optimized Frontend & API Integration",
-      "Security Audit & Public Production Launch"
+      "Clean Frontend Development & API Integration",
+      "Security Audit & Production Launch"
     ],
     startingPrice: "From $449",
     deliverables: [
-      "Custom React/Next.js Code",
+      "Custom React/Next.js Codebase",
       "Google PageSpeed 95+ Hardening",
-      "Frictionless Responsive Layouts",
-      "Integrated Web Analytics"
+      "Mobile-First Responsive Layouts",
+      "Integrated Web Analytics & Schema"
     ],
     seoTitle: "Next.js & React Web Development Agency | Metazivo",
-    seoDescription: "Custom full-stack React & Next.js architectures. Guaranteed 95+ Core Web Vitals score, absolute security, and bespoke high-converting user interfaces.",
-    fullFulfillmentCopy: "Your website is your 24/7 digital office. When someone clicks your link from social media or Google, you have exactly 3 seconds to earn their trust before they bounce. We build ultra-high-speed web platforms using Next.js and React. By utilizing server-side rendering (SSR) and advanced edge caching, we ensure your pages load instantly anywhere in the world. We write every line of code by hand with strict semantic HTML, resulting in a flawless 100/100 PageSpeed score that pleases both your visitors and Google's ranking crawlers.",
+    seoDescription: "Custom full-stack React & Next.js web development. Sub-second load speeds, 95+ Core Web Vitals, and conversion-focused user interfaces.",
+    fullFulfillmentCopy: "Your website is your first impression. When someone finds your business from a search result or ad, you have roughly three seconds to show them you are legitimate. We build high-speed websites with Next.js and React. By combining server-side rendering with edge caching, your pages appear almost instantly on any device. We write semantic HTML by hand, optimize images before they load, and keep JavaScript bundles tiny. That gives your visitors a smooth browsing experience and gives Google the exact Core Web Vitals signals it needs to rank you higher.",
     caseStudy: {
       title: "Speed & Conversion Re-architecture",
       challenge: "A digital service company had a legacy website that failed Core Web Vitals, resulting in high advertising bounce rates.",
-      solution: "Migrated the entire design to a custom React architecture with automated next-gen image compression and streamlined script deliveries.",
+      solution: "Migrated the entire design to a custom React architecture with automated next-gen image compression and streamlined script delivery.",
       result: "Achieved a 99/100 score on Google PageSpeed Insights and reduced ad bounce rate by 55%.",
       metric: "99/100 PageSpeed Score"
     },
     faqs: [
       {
-        q: "Why should we choose custom React/Next.js over a basic website builder?",
-        a: "React offers unparalleled performance, unlimited custom design freedom, and complete immunity to the server crashes and security hacks that plague standard CMS tools."
+        q: "Why choose custom React/Next.js over a basic website builder?",
+        a: "React provides immediate page transitions, full design flexibility, and complete freedom from the plugin conflicts, bloat, and database crashes common in drag-and-drop builders."
       },
       {
-        q: "What is Core Web Vitals, and why does Google care?",
-        a: "Core Web Vitals are speed metrics Google uses to evaluate real user experiences. Websites with poor web vitals are pushed down in search rankings, while fast-loading sites get rewarded with a significant boost in rankings."
+        q: "What are Core Web Vitals, and why does Google care?",
+        a: "Core Web Vitals measure real-world user experience: how fast a page loads (LCP), how quickly it responds to taps (INP), and whether elements jump around while loading (CLS). Fast-loading sites rank higher and convert more visitors."
       }
     ]
   },
@@ -292,34 +292,34 @@ export const servicesData: AgencyService[] = [
     title: "Meta Ads (Facebook & Instagram) Acquisition System",
     slug: "meta-ads-advertising",
     icon: "TrendingUp",
-    description: "High-ROI Facebook & Instagram campaigns, custom funnel tracking, and psychological copies to turn ad spend into pure profit.",
-    longDescription: "Stop wasting money on useless boosting buttons with no returns. We construct systematic, multi-tiered paid advertising funnels across Meta (Facebook & Instagram) and Google. By designing thumb-stopping visual creatives, writing highly persuasive psychological ad copies, and implementing server-side Conversion APIs, we bypass iOS privacy blocks to capture 100% of your customer leads with absolute pixel accuracy. We continuously monitor and split-test target lookalikes and customized retargeting groups to lower your customer acquisition cost while maximizing your Return on Ad Spend (ROAS) to scale your sales to the sky.",
+    description: "Targeted Facebook and Instagram campaigns with direct-response copy, custom creative assets, and server-side tracking that captures real sales.",
+    longDescription: "Boosting posts is the fastest way to burn your marketing budget. Real advertising success comes from a structured funnel. We build paid campaigns across Meta (Facebook & Instagram) that turn strangers into paying buyers. We write direct, benefit-focused ad copy, design visual creatives that stop people from scrolling, and set up the server-side Conversions API (CAPI). That means your attribution data remains accurate even after iOS privacy updates, allowing the ad algorithm to find qualified buyers at a lower cost per lead.",
     benefits: [
-      "Predictable pipeline of ready-to-buy customer leads",
-      "Thumb-stopping graphic ads and highly persuasive ad copies",
-      "Lookalike and Custom Audience clusters to reach the right buyers",
-      "Server-side Meta API setup for 100% pixel tracking precision",
-      "Frictionless instant lead capture forms & conversion-boosting landing pages"
+      "Clear sales funnels designed for customer acquisition, not vanity clicks",
+      "Direct-response ad copy focused on solving your buyer's specific problems",
+      "Custom audience segments and lookalikes built from your best historical buyers",
+      "Server-side Meta Conversions API (CAPI) for 100% pixel tracking precision",
+      "Clean instant lead forms and conversion-focused landing page layouts"
     ],
     process: [
-      "Target Avatar Profiling & Competitor Ad Analysis",
-      "Premium Creative Asset Design & Script Writing",
-      "Advanced Pixel & Conversion API setup",
-      "Weekly budget scaling & strategic campaign testing"
+      "Customer Avatar Profiling & Competitor Ad Analysis",
+      "Visual Creative Design & Script Writing",
+      "Meta Pixel & Server-Side Conversions API (CAPI) Setup",
+      "Weekly Split-Testing & Budget Scaling"
     ],
     startingPrice: "From $120",
     deliverables: [
       "Ad Campaign Funnel Design",
-      "High-ROI Creative Asset Layouts",
-      "Copywriting & Direct-Response Hooks",
-      "CAPI Server-Side Tracking"
+      "Custom Creative Assets & Variations",
+      "Direct-Response Ad Copywriting",
+      "Server-Side CAPI Tracking Setup"
     ],
     seoTitle: "High-ROI Meta Ads (Facebook & Instagram) Agency | Metazivo",
-    seoDescription: "Systematic paid advertising funnels that convert. Direct-response ad copywriting, high-yield creatives, and pixel-perfect server-side CAPI setups.",
-    fullFulfillmentCopy: "Most businesses lose money on social media ads because they lack a systematic funnel. Simply hitting 'boost post' sends money directly to Meta without tracking actual sales. We construct multi-tiered client acquisition machines. We write direct-response ad copies using proven psychological hooks, design thumb-stopping graphic assets, and deploy advanced server-side Conversion APIs (CAPI). This ensures 100% of your conversion data is tracked accurately, bypassing iOS privacy limits so we can scale your budgets with extreme return on investment.",
+    seoDescription: "Systematic paid advertising funnels that convert. Direct-response ad copywriting, high-performing creatives, and pixel-perfect server-side CAPI setups.",
+    fullFulfillmentCopy: "Most businesses lose money on social media ads because they treat boosting posts as a strategy. You get likes, but zero sales calls. We build multi-step acquisition funnels. First, we identify what your ideal customer actually cares about. Then we write copy that directly addresses their problems and create visual assets that stand out in crowded feeds. We also install Meta's Conversions API directly on your server, ensuring every lead and sale is tracked accurately even with iOS ad blockers. That feeds clean data back into Meta's algorithm so your cost per acquisition drops as you scale.",
     caseStudy: {
       title: "Direct-Response E-commerce Scale",
-      challenge: "A premium skincare brand was struggling with rising customer acquisition costs and a poor 1.2x Return on Ad Spend (ROAS).",
+      challenge: "A skincare brand was struggling with rising customer acquisition costs and an unprofitable 1.2x Return on Ad Spend (ROAS).",
       solution: "Deployed a systematic retargeting funnel with direct-response visual assets and custom CAPI server-side tracking.",
       result: "Lowered acquisition costs by 45% and boosted ROAS to a stable, profitable 4.8x.",
       metric: "4.8x Return on Ad Spend"
@@ -327,154 +327,154 @@ export const servicesData: AgencyService[] = [
     faqs: [
       {
         q: "What makes your Meta Ads strategy different from standard marketing agencies?",
-        a: "We integrate direct-response copywriting with deep technical setups like server-side Conversion APIs. This gives Meta's AI algorithm cleaner data, which naturally drives your lead cost down."
+        a: "We combine direct-response copywriting with deep technical setups like server-side Conversion APIs. This gives Meta's machine learning cleaner data, which lowers your cost per lead."
       },
       {
         q: "Do I need a separate budget for advertising spend?",
-        a: "Yes. Our fee is for the strategic creation, design, and management of your funnels. You pay ad budgets directly to Meta based on what you are comfortable investing."
+        a: "Yes. Our fee covers strategy, ad copywriting, creative design, and campaign management. You pay your ad budget directly to Meta based on what you want to invest."
       }
     ]
   },
   {
     id: "srv-smm",
-    title: "Social Media Management & Viral Reels",
+    title: "Social Media Management & Video Reels",
     slug: "social-media-management",
     icon: "Activity",
-    description: "Aesthetic feed grids, engaging viral reels editing, and daily community algorithms to build high organic follower loyalty.",
-    longDescription: "A dead or boring social media page makes your business look untrustworthy and cheap. We transform your social profiles (Instagram, TikTok, LinkedIn) into active, high-status digital showrooms. We handle the entire creative workflow: designing gorgeous high-fidelity graphic feeds that project premium authority, editing captivating high-retention short-form reels, writing persuasive copy, and implementing strategic interaction algorithms that force social media networks to promote your posts. Focus 100% on your business operations while we build a loyal fan base that actively buys from you.",
+    description: "Consistent feed design, short-form video editing, and clear copywriting that build trust and keep your brand in front of buyers.",
+    longDescription: "An inactive social media profile makes a business look closed. When clients search for you and find a page that hasn't posted in six months, they hesitate. We take full control of your organic social presence on Instagram, TikTok, and LinkedIn. We plan cohesive feeds, edit short-form reels with clean captions and sound design, write clear descriptions, and maintain a consistent posting calendar. You run your operations while we keep your brand visible, professional, and active.",
     benefits: [
-      "Cohesive, high-status feed grid design that instantly builds trust",
-      "High-retention viral video reels editing with custom effects and hooks",
-      "Viral storytelling scriptwriting designed to maximize shares and saves",
-      "Daily algorithm interaction to boost organic feed placement and reach",
-      "Complete automated calendar scheduling – zero daily stress for you"
+      "Professional feed layouts that show your business is active and credible",
+      "Short-form video editing with concise pacing, on-screen text, and clean audio",
+      "Scriptwriting and captions that focus on educating your target buyers",
+      "Consistent scheduling so your audience hears from you every week",
+      "Hands-off workflow — we handle the planning, editing, and publishing"
     ],
     process: [
-      "Visual Brand Identity & Competitor Feed Audit",
-      "Viral Video Scripting & Multi-media Asset Batching",
-      "Premium Cinematic Editing & Captivating Copywriting",
-      "Strategic Daily Scheduling & active profile warming"
+      "Visual Brand Audit & Content Strategy",
+      "Video Scripting & Creative Asset Batching",
+      "Video Editing & Caption Copywriting",
+      "Content Calendar Scheduling & Community Publishing"
     ],
     startingPrice: "From $100",
     deliverables: [
-      "Aesthetic Page Layouts & Grids",
-      "Viral Short-Form Scriptwriting",
-      "Dynamic Caption Copywriting",
-      "Persistent Interaction Algorithms"
+      "Cohesive Feed Layouts & Graphic Templates",
+      "Short-Form Video Scriptwriting",
+      "Caption Copywriting with Focused Calls-to-Action",
+      "Automated Multi-Platform Scheduling"
     ],
-    seoTitle: "Social Media Growth & Viral Reels Agency | Metazivo",
-    seoDescription: "Turn passive followers into loyal buyers. We handle aesthetic grid planning, cinematic video editing, viral scriptwriting, and daily algorithm warming.",
-    fullFulfillmentCopy: "A dead or generic social media page tells prospective clients that your business is inactive. In contrast, an active, high-status grid builds immediate authority. We manage your entire organic social presence across Instagram, TikTok, and LinkedIn. We design visually striking premium feeds, edit high-retention short-form video reels with custom animated captions, and write engaging descriptions that drive saves and shares. We run strategic profile-warming interaction routines to make sure the algorithms actively show your content to your target market.",
+    seoTitle: "Social Media Management & Video Reels Agency | Metazivo",
+    seoDescription: "Turn passive followers into qualified buyers. We handle feed planning, short-form video editing, copywriting, and consistent content publishing.",
+    fullFulfillmentCopy: "When potential clients consider hiring you, they check your social channels to see if you are active. A dead profile creates doubt; a sharp, consistent presence builds trust immediately. We run your organic channels from start to finish. We write scripts, edit your raw video footage into short reels with clear captions, design branded carousel slides, and schedule posts at optimal times. You don't have to spend hours thinking about what to post or wrestling with video editing software—we keep your brand looking professional every day.",
     caseStudy: {
-      title: "Real Estate Luxury Branding Domination",
-      challenge: "A premium real estate firm had under 1,000 followers and zero leads coming from their social channels.",
-      solution: "Implemented a high-status organic grid design paired with 3 cinematic reels weekly targeting high-net-worth local buyers.",
-      result: "Grew follower count to 14,000+ in 90 days and closed 3 high-end property deals directly from Instagram inquiries.",
+      title: "Real Estate Client Acquisition Strategy",
+      challenge: "A real estate brokerage had under 1,000 followers and zero inquiries coming from their social channels.",
+      solution: "Implemented a clean organic grid design paired with 3 informative video reels weekly addressing local property buyer questions.",
+      result: "Grew follower count to 14,000+ in 90 days and closed 3 property deals directly from Instagram inquiries.",
       metric: "14,000+ Followers in 90 Days"
     },
     faqs: [
       {
         q: "Do we need to spend hours recording videos or writing captions?",
-        a: "No. We handle 100% of the heavy lifting. We write the scripts, edit your raw footage, write the captions, design the cover templates, and schedule everything for you."
+        a: "No. We handle the heavy lifting. We give you clear scripts or prompt questions, you record brief clips on your phone, and we do all the editing, captions, cover art, and scheduling."
       },
       {
         q: "Can you manage profiles across multiple networks simultaneously?",
-        a: "Yes. Our standard package includes cross-posting across Instagram, TikTok, Facebook, and professional networks like LinkedIn to maximize your brand reach."
+        a: "Yes. Our standard package includes cross-posting across Instagram, TikTok, Facebook, and LinkedIn so your content reaches your audience wherever they spend time."
       }
     ]
   },
   {
     id: "srv-branding",
-    title: "Graphic Design & Corporate Logo Branding",
+    title: "Brand Identity & Logo Design",
     slug: "graphic-design-branding",
     icon: "Palette",
-    description: "Premium corporate logos, cohesive color systems, and high-status brand assets that instantly establish market leadership.",
-    longDescription: "Your logo and visual identity are the first things clients see. If your branding looks generic or outdated, you are instantly perceived as low quality. We engineer premium, clean, high-contrast logo systems and complete brand guidelines (custom typography, luxury color palettes, and digital styling sheets). We design outstanding vector assets that embed your company into your customers' minds, projecting ultimate market leadership and enabling you to command premium prices.",
+    description: "Vector logos, clear brand guidelines, and professional marketing materials that make your business look established and credible.",
+    longDescription: "If your logo looks like a free Canva template, clients will assume your work is low quality. First impressions set the ceiling on what you can charge. We create clean, distinctive logo systems with complete brand guidelines—including typography rules, primary and secondary color palettes, and digital asset templates. You get scalable vector files that look sharp on business cards, apparel, websites, and large signage.",
     benefits: [
-      "Timeless, custom-drawn vector logos that stand out everywhere",
-      "Full corporate style guide manual (exact fonts, color values, layout rules)",
-      "High-converting print-ready and digital marketing materials",
-      "Stunning cohesive graphics across all social and business assets",
-      "Fully scalable source files delivered in all high-resolution formats"
+      "Clean vector logo designs built from scratch for your specific industry",
+      "Brand style guide covering color codes (HEX, RGB, CMYK) and font pairings",
+      "Print-ready and digital assets formatted for web, social media, and packaging",
+      "Full ownership of all source files (AI, SVG, EPS, PNG, PDF)",
+      "Consistent visual rules so your team always presents a unified brand"
     ],
     process: [
-      "Brand Philosophy & Visual Competitor Research",
-      "Custom Creative Concept Designing & Iterations",
-      "Color Palette Definition & Typography Matching",
-      "Asset Exporting & Complete Style Guide Delivery"
+      "Brand Briefing & Industry Research",
+      "Concept Development & Sketching",
+      "Color Palette & Typography Selection",
+      "Vector Asset Finalization & Brand Guidelines Delivery"
     ],
     startingPrice: "From $80",
     deliverables: [
-      "Bespoke Vector Logo Design",
-      "Complete Brand Guidelines Manual",
-      "Corporate Visual Style Sheets",
-      "All Scalable High-Res Source Files"
+      "Vector Logo System (Primary, Secondary, Mark)",
+      "Comprehensive Brand Guidelines Manual",
+      "Social Media Profile & Banner Templates",
+      "All Scalable High-Resolution Source Files"
     ],
-    seoTitle: "Premium Corporate Logo Design & Branding Agency | Metazivo",
-    seoDescription: "Establish market leadership with bespoke corporate vector logos, complete luxury color palettes, custom typography, and official corporate brand style manuals.",
-    fullFulfillmentCopy: "Your visual identity is the literal face of your company. If your logo looks like a free template from Canva, clients will assume your services are cheap. We craft bespoke vector logo systems and full corporate branding manuals that project elite market authority. We research your competitors, select luxury color palettes that convey trust, and choose custom typography that sets you apart. We deliver full, scalable source files alongside complete guidelines so that your branding remains absolutely consistent across physical products, web platforms, and print media.",
+    seoTitle: "Corporate Logo Design & Brand Identity Agency | Metazivo",
+    seoDescription: "Make your business look established with custom vector logos, complete color palettes, typography guidelines, and official brand style manuals.",
+    fullFulfillmentCopy: "Your visual branding is the handshake your company offers before a customer ever talks to you. If your branding looks messy or dated, buyers wonder if your actual services are cut-rate too. We design clean vector logos and complete identity packages. We research your competitors so your look is distinct, choose color palettes that build trust, and select typography that is easy to read across screens and print. When we hand over the project, you receive all raw vector files and an easy-to-follow guide so anyone designing for your company stays completely on-brand.",
     caseStudy: {
-      title: "Corporate Visual Transformation",
-      challenge: "An engineering consultancy was losing high-ticket contracts to larger firms because their logo looked outdated.",
-      solution: "Crafted a minimalist, modern geometric visual identity and delivered a comprehensive 24-page brand style guide.",
-      result: "Commanded a 35% price increase on consultative proposals and successfully won their first million-dollar corporate contract.",
-      metric: "35% Price Increase Achieved"
+      title: "Consultancy Rebrand & Visual Identity",
+      challenge: "An engineering consultancy was losing large bids to larger firms because their logo and presentation decks looked dated.",
+      solution: "Created a minimalist, modern visual identity and delivered a comprehensive 24-page brand style guide covering documents, web, and print.",
+      result: "Increased their average proposal pricing by 35% and closed a major corporate contract within 60 days of launching the new identity.",
+      metric: "35% Increase in Average Contract Size"
     },
     faqs: [
       {
-        q: "What assets are included in the final corporate brand identity package?",
-        a: "You receive your official master vector logo in all formats, alternative layouts, custom color hex systems, typography rules, social media banners, and digital business stationery."
+        q: "What files and formats are included in the final brand package?",
+        a: "You receive master vector files (AI, EPS, SVG) and high-resolution web formats (PNG, JPG, PDF), with transparent backgrounds, dark and light versions, and social profile crops."
       },
       {
         q: "Who owns the copyright of the final logo designs?",
-        a: "Upon project completion and final payment, 100% intellectual property ownership and commercial copyrights are legally transferred to your organization."
+        a: "You do. Upon project completion and final payment, 100% intellectual property ownership and commercial copyrights belong exclusively to your company."
       }
     ]
   },
   {
     id: "srv-video",
-    title: "Video Editing & Production",
+    title: "Video Editing & Content Repurposing",
     slug: "video-editing",
     icon: "Video",
-    description: "Professional high-retention video editing and post-production structured with dynamic pacing, motion graphics, and sound design to make your content look exceptionally professional.",
-    longDescription: "Video is the ultimate medium of influence and trust. Low-quality video with poor audio, flat editing, or sluggish pacing repels potential clients. We elevate your brand value with expert post-production video editing. We specialize in high-retention short-form reels, TikToks, and Facebook video ads formatted with dynamic captions, cinematic sound effects, seamless transitions, and professional color grading that hook attention in the first 3 seconds.",
+    description: "Clean video post-production with concise pacing, accurate subtitles, clear audio, and color correction for reels, ads, and long-form content.",
+    longDescription: "Muffled audio, long pauses, and clumsy cuts make viewers click away in seconds. We turn your raw recordings into clean, engaging videos. We cut out filler words, balance audio levels, add styled on-screen captions, and apply natural color correction. Whether you need 30-second TikTok and Instagram ad clips or a 15-minute YouTube explainer, we deliver finished files ready to publish.",
     benefits: [
-      "Dynamic auto-captions and custom motion graphic animations styled for your brand",
-      "High-retention narrative pacing structured to maximize watch time and viral scores",
-      "Cinematic color grading and custom sound design (SFX) that project luxury quality",
-      "Multi-platform optimization for YouTube, Instagram Reels, TikTok, and web players",
-      "Engaging hooks and seamless zoom effects that eliminate audience boredom"
+      "Clean jump-cuts and pacing that keep viewers watching without dead air",
+      "Accurate, styled on-screen captions so viewers can follow without sound",
+      "Background audio leveling and noise removal for crisp, clear speech",
+      "Vertical (9:16) and horizontal (16:9) formats rendered in 1080p or 4K",
+      "Fast 24 to 48-hour delivery for standard short-form videos"
     ],
     process: [
-      "Footage Storyboarding & Audience Hook Concepting",
-      "High-Retention Assembly, Dynamic Zooming & Multi-Cam Syncing",
-      "Sound Design, Audio Clean-up & Background Beat Layering",
-      "Cinematic Color Grading, Subtitles, & Motion Graphic Exports"
+      "Raw Footage Review & Pacing Assembly",
+      "Jump-Cutting, Zoom Trimming & Filler Word Removal",
+      "Audio Balancing, Noise Reduction & Sound FX",
+      "Color Correction, Subtitle Styling & Export"
     ],
     startingPrice: "From $15",
     deliverables: [
-      "Instagram Reels & TikToks",
-      "Facebook Videos",
-      "Facebook & Instagram Video Ads"
+      "Instagram Reels & TikToks (9:16)",
+      "Facebook & YouTube Video Formats",
+      "Paid Video Ad Variations with Hooks"
     ],
     seoTitle: "Professional Video Editing & Post-Production | Metazivo",
-    seoDescription: "High-retention cinematic video editing. Streamline your content with engaging subtitle animations, custom sound design, dynamic transitions, and pro color grading.",
-    fullFulfillmentCopy: "In the attention economy, your video has precisely 3 seconds to hook a viewer. Flat audio, boring pauses, or generic transitions will cause them to scroll away. We provide elite video post-production that transforms raw files into high-retention cinematic content. We edit out unnecessary filler words, sync footage to professional background scores, apply rich color grading, and add dynamic custom-animated captions. Whether it's a high-impact Facebook ad, a YouTube documentary, or a viral reel, we optimize every frame to maximize watch-time and audience engagement.",
+    seoDescription: "High-retention video editing services. Clean pacing, styled animated captions, sound balancing, and color correction for reels, TikToks, and video ads.",
+    fullFulfillmentCopy: "Most viewers watch social video with the sound off, and they decide whether to keep watching in the first three seconds. If your video is slow to start, has muffled sound, or lacks clear captions, they scroll right past. We edit your raw footage to keep it tight and informative. We remove pauses, balance your vocal track, add on-screen text that highlights key points, and export in the right aspect ratio for each platform. You send us raw clips from your phone or camera, and we return polished videos ready to upload.",
     caseStudy: {
-      title: "Course Engagement Optimization",
-      challenge: "An online education brand had high video drop-off rates, with users leaving within the first 15 seconds.",
-      solution: "Restructured the course previews with rapid narrative pacing, dynamic zooming, sound effects, and animated text overlays.",
-      result: "Boosted average video watch-time by 210% and increased masterclass signups by 68%.",
-      metric: "210% Watch-Time Boost"
+      title: "Course Preview Video Optimization",
+      challenge: "An education company had high drop-off rates on their preview videos, with most viewers leaving in the first 15 seconds.",
+      solution: "Restructured the opening hooks, trimmed dead pauses, added clear animated subtitles, and applied clean audio leveling.",
+      result: "Average video watch time increased by 210% and course signup page clicks rose by 68%.",
+      metric: "210% Increase in Watch Time"
     },
     faqs: [
       {
         q: "What file formats and resolutions do you deliver?",
-        a: "We deliver fully optimized MP4 files in both horizontal (16:9 for YouTube/Web) and vertical (9:16 for Reels/TikTok/Shorts) formats, rendered in crisp 1080p or 4K resolution."
+        a: "We deliver MP4 files optimized for web and social platforms in both vertical (9:16 for Reels/TikTok/Shorts) and horizontal (16:9 for YouTube/Web) formats, rendered in 1080p or 4K."
       },
       {
-        q: "What is your turnaround time for a standard video edit?",
-        a: "For short-form content under 60 seconds, we deliver within 24 to 48 hours. Long-form video projects are scheduled individually based on raw footage length and complexity."
+        q: "What is your typical turnaround time?",
+        a: "For short-form videos under 60 seconds, we deliver within 24 to 48 hours. Long-form video turnaround depends on footage length and is scheduled upfront."
       }
     ]
   },
@@ -483,46 +483,46 @@ export const servicesData: AgencyService[] = [
     title: "SaaS Applications",
     slug: "saas-applications",
     icon: "Cloud",
-    description: "Highly scalable Multi-Tenant Software-as-a-Service systems built with subscription billings, secure roles, and dynamic dashboards.",
-    longDescription: "Building a SaaS requires absolute security, database performance, and clean subscription lifecycles. We engineer bespoke SaaS platforms using full-stack React and Node/Express architectures. We integrate robust multi-tenant architectures, granular user permissions, secure JWT authentication, and automated billing engines like Stripe or PayPal. Complete with beautiful administrative dashboards, dynamic charts, CSV exports, and email verification systems, we provide the ultimate foundation to launch your subscription-based software product and secure recurring revenue.",
+    description: "Custom multi-tenant software platforms built with React, Node.js, and secure databases. Includes Stripe billing and user management.",
+    longDescription: "Launching a software product requires more than a pretty interface. You need secure database isolation, reliable subscription billing, and an admin dashboard that gives you control over user accounts. We engineer custom SaaS applications with React on the frontend and Node/Express on the backend. We integrate Stripe for recurring plans, implement JWT authentication, set up role-based permissions, and build interactive analytics so your customers have a smooth, dependable experience from day one.",
     benefits: [
-      "Multi-tenant database structures supporting secure isolated user workspaces",
-      "Full Stripe billing suite integration supporting trials, coupons, and tiered plans",
-      "Responsive analytical boards with dynamic Recharts and clean metrics",
-      "Granular RBAC (Role-Based Access Control) security systems",
-      "99.9% uptime guaranteed architecture prepared for rapid user scale"
+      "Multi-tenant database design that keeps each customer's data isolated and secure",
+      "Stripe billing integration supporting recurring plans, trials, and invoices",
+      "Role-based access control (Admin, Manager, Member) with secure JWT sessions",
+      "Interactive dashboard with clean charts, data tables, and CSV exports",
+      "Container-ready architecture built for reliable uptime and easy hosting"
     ],
     process: [
-      "SaaS Database Modeling & Secure API Architecture",
-      "High-Status Interactive Dashboard Frontend Design",
-      "Stripe Subscription & Authentication Integration",
-      "Automated Backups & Production Load Testing"
+      "Database Schema Modeling & API Architecture",
+      "Dashboard Interface Design & Prototyping",
+      "Stripe Subscription Checkout & Webhook Integration",
+      "Security Auditing & Load Testing"
     ],
     startingPrice: "From $449",
     deliverables: [
-      "Multi-Tenant Full-Stack Architectures",
-      "Secure JWT / OAuth Authentication",
-      "Stripe Subscription Checkout Integration",
-      "Aesthetic Administrative Dashboards"
+      "Custom Full-Stack Code (React + Node/Express)",
+      "Stripe Subscription & Webhook Integration",
+      "Role-Based Authentication & Permissions",
+      "Admin & Customer Analytics Dashboards"
     ],
-    seoTitle: "SaaS Application Development Agency | Full-Stack React",
-    seoDescription: "Build secure, highly scalable multi-tenant Software-as-a-Service platforms. Stripe subscription checkout integration, RBAC permissions, and custom dashboards.",
-    fullFulfillmentCopy: "Building a SaaS application requires rock-solid backend architecture, absolute data isolation, and smooth billing integrations. We design premium full-stack SaaS platforms with custom Express or Nest.js APIs and responsive React dashboards. We construct robust multi-tenant databases to keep user workspaces perfectly isolated, integrate detailed Role-Based Access Control (RBAC), and deploy Stripe or PayPal billing suites for recurring plans. Complete with dynamic analytical charts and secure JWT authentication, we give you the perfect foundation to launch your digital product.",
+    seoTitle: "SaaS Application Development Agency | Full-Stack React | Metazivo",
+    seoDescription: "Build secure, scalable multi-tenant SaaS platforms. Stripe subscription billing, role-based access control, and custom analytics dashboards.",
+    fullFulfillmentCopy: "Building a SaaS application requires rock-solid backend architecture, absolute data isolation, and smooth billing integrations. We design full-stack SaaS platforms with custom Express APIs and responsive React dashboards. We construct multi-tenant databases to keep customer accounts completely separated, configure Role-Based Access Control (RBAC), and integrate Stripe for recurring subscriptions and automated invoices. Complete with dynamic data charts and secure authentication, we give you the foundation to launch your product with confidence.",
     caseStudy: {
-      title: "Consulting Workflow SaaS Infrastructure",
-      challenge: "A management consultancy wanted to package their proprietary workflow into a subscription software but lacked the technical team.",
-      solution: "Engineered a secure multi-tenant React/Node SaaS platform with tier-based Stripe subscription checkout and an interactive task dashboard.",
-      result: "Successfully launched to 500+ paying beta organizations, generating a steady stream of Monthly Recurring Revenue (MRR).",
-      metric: "Launched to 500+ Organizations"
+      title: "Consulting Workflow Platform",
+      challenge: "A management firm wanted to turn their internal consulting workflow into a subscription software tool but lacked an in-house engineering team.",
+      solution: "Engineered a secure multi-tenant React and Node SaaS application with tiered Stripe subscriptions and an interactive task management dashboard.",
+      result: "Successfully launched to 500+ paying organizations, establishing reliable recurring revenue.",
+      metric: "500+ Active Paying Organizations"
     },
     faqs: [
       {
-        q: "How do you ensure our SaaS database is secure from unauthorized access?",
-        a: "We enforce strict multi-tenant schema isolation, sanitize all API database queries to prevent SQL injections, encrypt passwords with bcrypt, and implement secure JWT tokens for session verification."
+        q: "How do you protect customer data in a multi-tenant application?",
+        a: "We enforce strict tenant ID scoping on every database query, hash passwords using bcrypt, use secure HTTP-only cookies for JWT session tokens, and validate all API request parameters."
       },
       {
-        q: "Can you help migrate our existing clients onto the new SaaS platform?",
-        a: "Yes. We build custom data migration scripts to securely transfer user records, history databases, and custom settings from legacy formats or spreadsheets."
+        q: "Can you help migrate our existing client data into the new platform?",
+        a: "Yes. We build custom migration scripts to safely transfer customer records, historical data, and settings from spreadsheets or legacy databases."
       }
     ]
   },
@@ -531,46 +531,46 @@ export const servicesData: AgencyService[] = [
     title: "Chatbots",
     slug: "chatbots",
     icon: "MessageSquare",
-    description: "Automated customer support & sales chatbots powered by Gemini to answer leads and capture sales 24/7.",
-    longDescription: "Never miss a lead or customer inquiry again. We build automated sales and customer support Chatbots that engage with your website visitors in real-time. Powered by custom-trained Gemini LLM contexts, these chatbots answer complex product questions, book consultative calls, gather lead contact information, and resolve support tickets instantly. Fully customized to match your brand's voice and integrated directly with your CRM, slack, or emails, these agents work 24/7/365 to qualify buyers and increase conversions.",
+    description: "Automated customer support & sales chatbots trained on your documentation to answer questions and capture leads 24/7.",
+    longDescription: "When someone visits your website at 9 PM on a Sunday with questions about your services, waiting for an email reply often means losing them to a competitor who answers first. We build custom chatbots trained directly on your service documentation, FAQs, and pricing guidelines. They answer customer questions accurately, capture email and phone details, and offer direct links to your booking calendar. When a complex issue arises, they route the conversation directly to your team.",
     benefits: [
-      "Advanced AI model trained specifically on your company documents and FAQ",
-      "Dynamic instant call booking and automated lead qualification pipelines",
-      "Multilingual support translating queries automatically in real-time",
-      "Seamless handover to live human support agents when requested",
-      "Complete analytical logs to monitor user satisfaction and chat success"
+      "Trained strictly on your verified documents to prevent made-up or inaccurate answers",
+      "Automated lead capture that collects contact details before booking meetings",
+      "Calendar integration so interested prospects can pick a time immediately",
+      "Clean chat transcript logs sent directly to your email or Slack channel",
+      "Lightweight web widget that loads quickly without slowing down your site"
     ],
     process: [
-      "Knowledge Base Structuring & Brand Voice Configuration",
-      "Custom Conversational Flow Design & Tool Integrations",
-      "Widget Embedded Deployment & Cross-Browser Styling",
-      "Dialogue Quality Assurance & Continual Model Tuning"
+      "Knowledge Base Preparation & System Guardrails",
+      "Conversational Flow Design & Tool Integrations",
+      "Web Chat Widget Styling & Site Integration",
+      "Response Accuracy Testing & Verification"
     ],
     startingPrice: "From $449",
     deliverables: [
-      "Trained Gemini LLM Conversational Agents",
-      "Live Web Chat Integrations",
-      "Automatic Contact Captures & CRM Hooks",
-      "Multilingual Real-Time Translations"
+      "Custom-Trained AI Chat Widget",
+      "Calendar Booking & Lead Capture Integration",
+      "Email & CRM Webhook Notifications",
+      "Knowledge Base Documentation Setup"
     ],
-    seoTitle: "AI Chatbots & Conversational Agents | Gemini Integration",
-    seoDescription: "Automate customer support and sales. Deploy custom-trained Gemini AI conversational agents that qualify leads, answer FAQs, and book calls 24/7.",
-    fullFulfillmentCopy: "When a potential buyer visits your website, they want immediate answers. If they have to wait hours for an email reply, they will simply go to a competitor. Our custom-trained Gemini AI chatbots act as your smartest 24/7 sales and customer support agents. We feed the AI with your company's documents, price lists, and FAQs, teaching it to speak in your exact brand voice. The chatbot doesn't just chat; it actively qualifies leads, captures contact details, books consultative calls on your calendar, and hands off complex issues to live humans.",
+    seoTitle: "AI Chatbots & Conversational Agents | Metazivo",
+    seoDescription: "Automate customer support and sales lead capture. Deploy custom-trained chatbots that qualify leads, answer FAQs, and book calls 24/7.",
+    fullFulfillmentCopy: "When a potential buyer visits your website, they want immediate answers. If they have to wait hours for an email reply, they will simply check another provider. Our custom-trained chatbots act as your 24/7 first responder. We feed the model with your company's service specs, pricing guidelines, and FAQs, setting strict boundaries so it stays helpful and accurate. The chatbot answers common questions, gathers lead contact information, and guides prospects to your booking calendar.",
     caseStudy: {
-      title: "Real-Time AI Sales Assistant",
-      challenge: "A service provider was losing premium evening and weekend leads due to slow response times.",
-      solution: "Deployed a custom-trained Gemini chatbot trained on company service specs and synced directly with their booking calendar.",
-      result: "Captured and pre-qualified 48 additional leads in the first month, increasing booking rates by 73% without extra staffing costs.",
-      metric: "+73% Calendar Bookings"
+      title: "After-Hours Lead Capture System",
+      challenge: "A professional services firm was missing weekend and evening inquiries because nobody was available to answer questions.",
+      solution: "Deployed a custom-trained chatbot grounded in the firm's service catalog and linked to their consultation calendar.",
+      result: "Captured and qualified 48 new prospective client leads in the first month, increasing booked calls by 73%.",
+      metric: "+73% Increase in Booked Calls"
     },
     faqs: [
       {
-        q: "Will the chatbot give wrong information or make up answers?",
-        a: "No. We apply strict system prompt boundaries and ground the AI model solely on your uploaded knowledge base documents, preventing any 'hallucinations' or off-topic responses."
+        q: "Will the chatbot give inaccurate information or hallucinate answers?",
+        a: "No. We set strict system instructions and ground the model strictly in the documents you provide. If a visitor asks something outside that scope, the bot politely directs them to your contact form."
       },
       {
-        q: "Can the chatbot connect to my active CRM tool?",
-        a: "Yes. We integrate the chatbot directly with HubSpot, Salesforce, active Slack channels, WhatsApp Business API, and automated email trigger sequences."
+        q: "Can the chatbot connect with our existing tools?",
+        a: "Yes. We can route lead notifications to your email, Slack, HubSpot, or any CRM with webhook support."
       }
     ]
   }
@@ -582,10 +582,10 @@ export const pricingPlans = [
     name: "Startup Core",
     price: "$100",
     period: "one-time",
-    description: "Perfect for new businesses needing a premium digital launch pad.",
+    description: "Ideal for new businesses needing a clean, fast website to establish credibility.",
     features: [
-      "Premium Custom Website (up to 5 Pages)",
-      "Fully Responsive Grid & Glassmorphism UI",
+      "Custom Website (up to 5 Pages)",
+      "Fully Responsive Mobile Layout & Clean Modern UI",
       "Core Web Vitals Hardened (90+ Speed Score)",
       "Basic On-Page SEO Configuration",
       "Contact Form Integration with Email Alerts",
@@ -600,18 +600,18 @@ export const pricingPlans = [
     name: "Professional Video & Reels",
     price: "$120",
     period: "month",
-    description: "Perfect for creators and brands looking to dominate short-form media with professional, high-retention video content.",
+    description: "For creators and business owners who need consistent, high-retention short-form video content.",
     features: [
-      "12x Premium Edited Reels / TikToks per month",
-      "Engaging Auto-Captions with Custom Brand Styling",
-      "Professional Sound Design (SFX) & Beat Syncing",
-      "Cinematic Color Grading & Audio Enhancement",
-      "Complete raw footage trimming & clean transitions",
-      "YouTube Shorts & IG Reels multi-formatting",
-      "24-48 hour rapid turnaround guarantee",
+      "12x Edited Reels / TikToks per month",
+      "Engaging Auto-Captions with Brand Styling",
+      "Sound Balancing & Crisp Audio Cleanup",
+      "Color Correction & Natural Grading",
+      "Jump-cut trimming & dead pause removal",
+      "Formatted for YouTube Shorts & IG Reels (9:16)",
+      "24-48 hour turnaround per video",
       "Includes 1 custom animated visual intro/outro"
     ],
-    cta: "Start Video Domination",
+    cta: "Start Video Production",
     popular: false
   },
   {
@@ -619,16 +619,16 @@ export const pricingPlans = [
     name: "Business Growth",
     price: "$199",
     period: "month",
-    description: "Our signature plan to systematically capture search rankings and scale sales.",
+    description: "Our signature growth plan to capture search rankings, publish helpful content, and acquire buyers.",
     features: [
-      "Bespoke High-Performance CMS Website",
+      "Custom High-Performance Website",
       "Comprehensive Technical & Local SEO Setup",
-      "Weekly High-Value SEO Blogging (4 Posts/mo)",
+      "Weekly High-Value SEO Articles (4 Posts/mo)",
       "Meta Ads Funnel Design & Ad Copywriting",
-      "Advanced Schema.org JSON-LD Markup",
+      "Structured Schema.org JSON-LD Markup",
       "95+ Google PageSpeed Guarantee",
-      "Premium WebP Image Compression pipeline",
-      "8x Professional Short-form Videos (Reels/TikToks) with Sound FX",
+      "Automated WebP Image Compression",
+      "8x Professional Short-form Videos (Reels/TikToks)",
       "Bi-Weekly Strategy & Reporting Calls",
       "24/7 Priority Support & Maintenance"
     ],
@@ -640,15 +640,15 @@ export const pricingPlans = [
     name: "App & SaaS Development",
     price: "$449",
     period: "starting",
-    description: "Bespoke high-performance mobile apps, multi-tenant SaaS platforms, custom AI systems, and automated chatbots.",
+    description: "High-performance mobile apps, multi-tenant SaaS platforms, custom AI integrations, and automated chatbots.",
     features: [
       "Custom Flutter/React Native Mobile App or SaaS",
-      "Custom AI Integration (Gemini, Voice, Prompts)",
+      "Server-Side AI Integration (Voice, Prompts, LLMs)",
       "Automated Support Chatbots & CRM Integrations",
       "Stripe Subscription Engine & User Accounts System",
-      "Administrative Analytical Dashboard (Charts, Tables)",
+      "Administrative Analytics Dashboard (Charts, Tables)",
       "High-Performance Database Setup (SQL or Firestore)",
-      "App Store & Play Store Deployment Guidelines",
+      "App Store & Play Store Deployment Support",
       "3 Months Dedicated Support & Security Auditing"
     ],
     cta: "Start My Custom App",
@@ -659,19 +659,19 @@ export const pricingPlans = [
     name: "Enterprise Custom",
     price: "Custom",
     period: "quote",
-    description: "Complete full-stack development, custom brand systems, and omnichannel growth.",
+    description: "Complete full-stack engineering, custom software infrastructure, and dedicated growth support.",
     features: [
-      "Bespoke Full-Stack Web App (React + Express)",
-      "Deep-tier custom Shopify / WooCommerce Architecture",
-      "Omnichannel Ads (Meta + Google + LinkedIn)",
-      "Advanced content analysis & automatic XML feeds",
-      "Unlimited SEO optimization & high-quality Backlinks",
-      "Complete Omnichannel Video Production & Post-Production (Unlimited)",
-      "Dedicated Project Account Director",
+      "Custom Full-Stack Web App (React + Express)",
+      "Custom WooCommerce or Shopify Architecture",
+      "Cross-Platform Ads (Meta + Google + LinkedIn)",
+      "Content Strategy & Automated XML Feeds",
+      "Comprehensive SEO Audits & Backlink Strategy",
+      "Full Video Production & Post-Production",
+      "Dedicated Technical Account Lead",
       "99.9% Server SLA & Backup Strategy",
-      "Custom Database Migrations support"
+      "Custom Database Migrations Support"
     ],
-    cta: "Contact Our Architect",
+    cta: "Speak with Our Team",
     popular: false
   }
 ];
@@ -679,19 +679,19 @@ export const pricingPlans = [
 export const portfolioItems = [
   {
     id: "port-1",
-    title: "Sleek Skincare - WordPress Sales Engine",
+    title: "Sleek Skincare - WooCommerce Sales Engine",
     category: "WordPress & WooCommerce Development",
     image: wpMockup,
     metrics: "1.2s Load Time | +240% Sales Volume",
-    description: "Designed a lightweight WooCommerce store from scratch, replacing bloated plugins with custom Gutenberg blocks. Reduced checkout friction to boost direct orders by 240%."
+    description: "Built a lightweight WooCommerce store from scratch, replacing bloated plugins with custom Gutenberg blocks. Reduced checkout friction to boost direct orders by 240%."
   },
   {
     id: "port-2",
-    title: "Apex Logistics - Google Ranking Domination",
+    title: "Apex Logistics - Search Visibility Growth",
     category: "SEO & Authority Blog Content",
     image: seoMockup,
     metrics: "#1 Position on Google | +350% Organic Leads",
-    description: "Built semantic LSI content clusters, deployed structural JSON-LD schemas, and resolved crawling errors. Tripled organic monthly inquiries without spending on ads."
+    description: "Built semantic topic clusters, deployed structural JSON-LD schemas, and resolved crawl errors. Tripled organic monthly inquiries without spending on ads."
   },
   {
     id: "port-3",
@@ -707,20 +707,20 @@ export const portfolioItems = [
     category: "Custom Web App Development",
     image: customReactMockup,
     metrics: "99/100 Core Web Vitals Speed Score",
-    description: "Engineered a stunning, modern React/Next.js SaaS portal with dynamic database caching and glassmorphic designs, resulting in flawless performance across all mobile devices."
+    description: "Engineered a fast, modern React/Next.js portal with server-side caching and clean UI layouts, resulting in smooth performance across all mobile devices."
   },
   {
     id: "port-5",
     title: "Salams Muslim Marriage - Global Matrimony App",
     category: "Mobile Application Development",
     image: salamsMockup,
-    metrics: "4M+ Successful Matches | 120 FPS Flutter Engine",
-    description: "Optimized and scaled the global Muslim matchmaking experience. Deployed premium high-performance card swipe mechanics, localized matching, secure real-time chats, and custom user search layouts in Flutter.",
+    metrics: "4M+ Successful Matches | Native-Speed Flutter Engine",
+    description: "Optimized and scaled the global Muslim matchmaking experience. Built high-performance card swipe mechanics, localized matching, secure real-time chats, and custom search layouts in Flutter.",
     playStoreUrl: "https://apps.apple.com/us/app/salams-halal-muslim-marriage/id965359176"
   },
   {
     id: "port-6",
-    title: "Orange Beam (OB Dev) - High-Tech Project Sync",
+    title: "Orange Beam (OB Dev) - Field Project Sync",
     category: "Mobile Application Development",
     image: obdevMockup,
     metrics: "100% Offline Workflow Sync | Custom REST API",
@@ -732,7 +732,7 @@ export const portfolioItems = [
     title: "OPVG Family - Global Volunteer Community App",
     category: "Mobile Application Development",
     image: opvgMockup,
-    metrics: "50K+ Active Volunteers | Perfect Play Store Rating",
+    metrics: "50K+ Active Volunteers | Verified Play Store Rating",
     description: "Designed a clean, intuitive cross-platform community app for the Overseas Pakistani Voters Group. Features dynamic voter registry verification tools, volunteer forums, and automated push notices.",
     playStoreUrl: "https://play.google.com/store/apps/details?id=com.family.opvgfamily"
   }
@@ -741,28 +741,28 @@ export const portfolioItems = [
 export const workProcessTimeline = [
   {
     step: "01",
-    title: "Technical SEO Audit",
-    desc: "We scan your digital footprint, identify toxic scripts, crawl errors, and map out your competitors' ranking vulnerabilities."
+    title: "Technical Audit & Discovery",
+    desc: "We scan your current website, identify slow scripts, fix crawl errors, and analyze where your competitors are getting their traffic."
   },
   {
     step: "02",
-    title: "Bespoke Growth Blueprint",
-    desc: "We blueprint custom UI/UX frameworks, research target focus keywords, and map out high-converting paid ad funnel architectures."
+    title: "Custom Growth Roadmap",
+    desc: "We map out clean wireframes, identify high-intent search keywords, and structure your conversion funnels before writing a single line of code."
   },
   {
     step: "03",
-    title: "Precision Development",
-    desc: "Our software engineers write lightweight clean code utilizing glassmorphism styles, responsive styling, and fast database schemas."
+    title: "Clean Code & Fast Architecture",
+    desc: "Our engineers write lightweight, clean code with responsive mobile layouts, fast database queries, and zero unnecessary scripts."
   },
   {
     step: "04",
-    title: "Speed Hardening & SEO Scoring",
-    desc: "We run advanced media compression, deploy robots metadata, configure canonical generators, and audit Core Web Vitals."
+    title: "Speed Hardening & SEO Verification",
+    desc: "We compress all images to WebP, verify structured schema markup, test Core Web Vitals, and make sure your pages score 95+ on PageSpeed."
   },
   {
     step: "05",
-    title: "Launch & Growth Loops",
-    desc: "We trigger sitemap index signals, initiate real-time analytics tracking, and scale paid Meta ad sets to feed leads automatically."
+    title: "Launch & Performance Tracking",
+    desc: "We submit clean XML sitemaps to Google Search Console, set up conversion tracking, and monitor live traffic to ensure smooth growth."
   }
 ];
 

@@ -44,6 +44,7 @@ import {
   Tag,
   Sparkles,
   Globe,
+  MapPin,
   Table as TableIcon,
   Image as ImageIcon
 } from "lucide-react";
@@ -292,11 +293,11 @@ export default function App() {
     if (slug === "wordpress-development") {
       text = "Hi! I am interested in your WordPress & WooCommerce Sales Engine service. Let's discuss how we can scale my website and online store.";
     } else if (slug === "seo") {
-      text = "Hi! I am interested in your SEO & Authority Blog Writing Domination service. Let's discuss how we can rank my business on the first page of Google.";
+      text = "Hi! I am interested in your SEO & Authority Content service. Let's discuss how we can rank my business on the first page of Google.";
     } else if (slug === "meta-ads-advertising") {
       text = "Hi! I am interested in your Meta Ads Acquisition System. Let's discuss how we can scale my campaigns and generate high-ROI leads.";
     } else if (slug === "social-media-management") {
-      text = "Hi! I am interested in your Social Media Management & Viral Reels service. Let's discuss how to elevate my brand and increase organic reach.";
+      text = "Hi! I am interested in your Social Media Management & Viral Reels service. Let's discuss how to grow my brand and increase organic reach.";
     } else if (slug === "website-development") {
       text = "Hi! I am interested in your High-Performance Website Development service. Let's discuss my custom React/Next.js requirements.";
     } else if (slug === "graphic-design-branding") {
@@ -525,9 +526,12 @@ export default function App() {
 
   // Find detailed objects for views with leading/trailing slash resilience & alias resolution
   const activeService = resolveService(selectedServiceSlug);
-  const activeBlog = blogs.find(
-    (b) => b.slug.replace(/^\/+|\/+$/g, "") === selectedBlogSlug.replace(/^\/+|\/+$/g, "")
-  );
+  const activeBlog = blogs.find((b) => {
+    if (!selectedBlogSlug) return false;
+    const cleanB = decodeURIComponent(b.slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    const cleanSel = decodeURIComponent(selectedBlogSlug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    return cleanB === cleanSel || b.id === selectedBlogSlug || (b.title && b.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") === cleanSel);
+  });
   const activeCustomPage = pages.find(
     (p) => p.slug.replace(/^\/+|\/+$/g, "") === currentTab.replace(/^\/+|\/+$/g, "")
   );
@@ -619,10 +623,20 @@ export default function App() {
         targetTitle = matchedPage.seoTitle || `${matchedPage.title} | Metazivo`;
         targetDescription = matchedPage.seoDescription || "Metazivo - Premium Digital Agency";
         targetKeywords = (matchedPage.seoKeywords || []).join(", ");
-      } else if (currentTab === "blog-detail" && activeBlog) {
-        targetTitle = activeBlog.seoTitle || `${activeBlog.title} | Metazivo`;
-        targetDescription = activeBlog.seoDescription || activeBlog.excerpt || "";
-        targetKeywords = (activeBlog.seoKeywords || []).join(", ");
+      } else if (currentTab === "blog-detail") {
+        if (activeBlog) {
+          targetTitle = activeBlog.seoTitle || `${activeBlog.title} | Metazivo`;
+          targetDescription = activeBlog.seoDescription || activeBlog.excerpt || "Expert technical SEO, WordPress engineering, and digital growth playbooks by Metazivo.";
+          targetKeywords = (activeBlog.seoKeywords || []).join(", ");
+        } else {
+          const rawSlug = selectedBlogSlug ? selectedBlogSlug.replace(/^\/+|\/+$/g, "") : "";
+          const humanTitle = decodeURIComponent(rawSlug)
+            .replace(/[-_]+/g, " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+          targetTitle = humanTitle ? `${humanTitle} | Metazivo` : "Blog | Metazivo";
+          targetDescription = "Expert technical SEO, WordPress engineering, and digital growth playbooks by Metazivo.";
+          targetKeywords = "SEO, digital marketing, WordPress, Metazivo";
+        }
       } else if (currentTab === "service-detail" && activeService) {
         targetTitle = activeService.seoTitle || `${activeService.title} | Metazivo`;
         targetDescription = activeService.seoDescription || `Maximize your business revenue with Metazivo's professional ${activeService.title} solutions.`;
@@ -635,6 +649,52 @@ export default function App() {
     }
 
     document.title = targetTitle;
+
+    // Update Self-Referencing Canonical Tag Dynamically (Resolves GSC Canonical Errors)
+    let canonicalPath = "/";
+    if (currentTab === "home") {
+      canonicalPath = "/";
+    } else if (currentTab === "blog-detail") {
+      const slug = activeBlog ? activeBlog.slug : selectedBlogSlug;
+      const cleanSlug = decodeURIComponent(slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      canonicalPath = `/blog/${cleanSlug}`;
+    } else if (currentTab === "service-detail") {
+      const slug = activeService ? activeService.slug : selectedServiceSlug;
+      const cleanSlug = decodeURIComponent(slug || "").toLowerCase().replace(/^\/+|\/+$/g, "");
+      canonicalPath = `/service/${cleanSlug}`;
+    } else if (currentTab === "services") {
+      canonicalPath = "/services";
+    } else if (currentTab === "portfolio") {
+      canonicalPath = "/portfolio";
+    } else if (currentTab === "blog") {
+      canonicalPath = "/blog";
+    } else if (currentTab === "pricing") {
+      canonicalPath = "/pricing";
+    } else if (currentTab === "contact") {
+      canonicalPath = "/contact";
+    } else if (currentTab === "about") {
+      canonicalPath = "/about";
+    } else if (currentTab === "privacy") {
+      canonicalPath = "/privacy-policy";
+    } else if (currentTab === "terms") {
+      canonicalPath = "/terms";
+    } else if (currentTab === "tools/website-speed-test" || currentTab === "website-speed-test") {
+      canonicalPath = "/tools/website-speed-test";
+    } else if (currentTab === "free-tools" || currentTab === "tools/meta-title-description-generator") {
+      canonicalPath = currentTab === "tools/meta-title-description-generator" ? "/tools/meta-title-description-generator" : "/free-tools";
+    } else {
+      canonicalPath = `/${currentTab.replace(/^\/+|\/+$/g, "")}`;
+    }
+
+    const canonicalUrl = `https://metazivo.com${canonicalPath === "/" ? "/" : canonicalPath}`;
+
+    let canonicalTag = document.querySelector('link[rel="canonical"]');
+    if (!canonicalTag) {
+      canonicalTag = document.createElement('link');
+      canonicalTag.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalTag);
+    }
+    canonicalTag.setAttribute('href', canonicalUrl);
 
     // Update meta description
     let metaDesc = document.querySelector('meta[name="description"]');
@@ -650,6 +710,8 @@ export default function App() {
     if (ogTitle) ogTitle.setAttribute('content', targetTitle);
     let ogDesc = document.querySelector('meta[property="og:description"]');
     if (ogDesc) ogDesc.setAttribute('content', targetDescription);
+    let ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) ogUrl.setAttribute('content', canonicalUrl);
     let twTitle = document.querySelector('meta[name="twitter:title"]');
     if (twTitle) twTitle.setAttribute('content', targetTitle);
     let twDesc = document.querySelector('meta[name="twitter:description"]');
@@ -665,7 +727,7 @@ export default function App() {
       }
       metaKeywords.setAttribute('content', targetKeywords);
     }
-  }, [currentTab, pages, activeBlog, activeService]);
+  }, [currentTab, pages, activeBlog, activeService, selectedBlogSlug]);
 
   // Sync Activity Logs inside CRM
   const logActivity = (action: string) => {
@@ -1178,20 +1240,21 @@ export default function App() {
                     </div>
 
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-slate-900">
-                      Dominate Search with <br />
+                      Websites Built to Load Fast <br />
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF5722] via-[#FF7043] to-[#FF8A50]">
-                        SEO, AEO & GEO
-                      </span> <br />
-                      For Unstoppable Growth.
+                        and Win Top Search Rankings.
+                      </span>
                     </h1>
 
                     <p className="text-slate-600 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                      Metazivo is a premier digital engineering agency engineered for rapid ranking. We specialize in <strong className="text-slate-900 font-semibold">SEO (Search Engine Optimization)</strong>, <strong className="text-slate-900 font-semibold">AEO (Answer Engine Optimization)</strong>, and <strong className="text-slate-900 font-semibold">GEO (Generative Engine Optimization)</strong> to secure top positions in modern AI-driven search landscapes.
+                      We help growing businesses build custom websites, improve organic search visibility, and run profitable customer acquisition campaigns. No slow templates, no inflated marketing promises—just clean code and measurable results.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
                       <MagneticButton
-                        onClick={() => {
+                        href="#core-services"
+                        onClick={(e) => {
+                          e?.preventDefault();
                           const target = document.getElementById("core-services");
                           target?.scrollIntoView({ behavior: "smooth" });
                         }}
@@ -1201,7 +1264,11 @@ export default function App() {
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </MagneticButton>
                       <MagneticButton
-                        onClick={() => handleNavigate("contact")}
+                        href="/contact"
+                        onClick={(e) => {
+                          e?.preventDefault();
+                          handleNavigate("contact");
+                        }}
                         className="px-8 py-4 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200/80 rounded-full text-xs font-bold uppercase tracking-wider cursor-pointer"
                       >
                         Get Started
@@ -1272,22 +1339,26 @@ export default function App() {
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-16 relative z-10" id="core-services">
               <div className="text-center space-y-4">
                 <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full font-sans">Our Capabilities</span>
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-sans">Professional Digital Services</h2>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-sans">Services Built for Growth</h2>
                 <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto font-light font-sans">
-                  We design customized growth mechanisms using premium engineering models. No slow pre-built templates, strictly custom code.
+                  We build fast websites, run targeted ad campaigns, and rank your business on search engines. No slow pre-made themes, just clean custom code that delivers results.
                 </p>
               </div>
 
               <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {servicesData.map((srv) => (
-                  <div
+                  <a
                     key={srv.id}
                     id={`homepage-service-${srv.slug}`}
-                    className="h-full"
-                    onClick={() => handleOpenService(srv.slug)}
+                    href={`/service/${srv.slug}`}
+                    className="h-full block group cursor-pointer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleOpenService(srv.slug);
+                    }}
                   >
                     <ThreeDTiltCard 
-                      className="h-full flex flex-col justify-between p-7 bg-white border border-slate-200/85 hover:border-[#FF5722]/30 rounded-[32px] transition-all duration-300 shadow-sm hover:shadow-md group cursor-pointer"
+                      className="h-full flex flex-col justify-between p-7 bg-white border border-slate-200/85 hover:border-[#FF5722]/30 rounded-[32px] transition-all duration-300 shadow-sm hover:shadow-md"
                       glowColor="rgba(255, 87, 34, 0.12)"
                       tiltMaxAngle={8}
                     >
@@ -1324,20 +1395,14 @@ export default function App() {
                         </div>
 
                         <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleOpenService(srv.slug);
-                            }}
-                            className="text-xs font-semibold text-[#FF5722] hover:text-[#FF7043] transition-colors inline-flex items-center gap-1.5 cursor-pointer font-sans"
-                          >
+                          <span className="text-xs font-semibold text-[#FF5722] group-hover:text-[#FF7043] transition-colors inline-flex items-center gap-1.5 font-sans">
                             <span>Explore Service Detail</span>
                             <ArrowRight className="w-3.5 h-3.5" />
-                          </button>
+                          </span>
                         </div>
                       </div>
                     </ThreeDTiltCard>
-                  </div>
+                  </a>
                 ))}
               </StaggerReveal>
             </section>
@@ -1406,27 +1471,27 @@ export default function App() {
                           <div className="w-10 h-10 rounded-xl bg-[#FF5722]/10 border border-[#FF5722]/20 flex items-center justify-center">
                             <ShieldCheck className="w-5 h-5 text-[#FF5722]" />
                           </div>
-                          <h3 className="text-lg font-extrabold text-white">Metazivo Bespoke Engineering</h3>
+                          <h3 className="text-lg font-extrabold text-white">The Metazivo Approach</h3>
                         </div>
                         <p className="text-xs text-slate-400 font-light leading-relaxed">
-                          We discard pre-built template noise. We write clean, semantic code from scratch to ensure outstanding speed, design supremacy, and secure architectures.
+                          We build custom websites and applications with clean, hand-crafted code. You get fast load times, rock-solid security, and an interface that converts visitors into paying clients.
                         </p>
                         <ul className="space-y-3 text-xs text-slate-300">
                           <li className="flex items-start gap-2">
                             <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
-                            <span><strong>Supersonic Speed:</strong> Rendered in under 1.2 seconds, getting 100% PageSpeed Core Web Vitals score.</span>
+                            <span><strong>Sub-Second Load Times:</strong> Pages load in under 1.2 seconds, consistently passing Google's Core Web Vitals with 95+ scores.</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
-                            <span><strong>Bulletproof Security:</strong> Custom-tailored core files with automated daily cloud updates and zero dangerous plugins.</span>
+                            <span><strong>Airtight Security:</strong> Clean codebase without bloated third-party plugins, protected with automated cloud backups and server-side validation.</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
-                            <span><strong>Elite Custom Brand Design:</strong> Tailored specifically to your visual guideline to engage buyers.</span>
+                            <span><strong>Distinct Custom Design:</strong> Tailored specifically to your brand guidelines, making your business look established and credible.</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-[#FF5722] font-bold mt-0.5 font-mono">✓</span>
-                            <span><strong>Advanced Built-In SEO Engine:</strong> Integrated microdata schemas, fully optimized structures, and responsive tag architectures.</span>
+                            <span><strong>Search-Ready Structure:</strong> Built-in JSON-LD schema markup, clean canonical URLs, and semantic HTML that search engines easily index.</span>
                           </li>
                         </ul>
                       </div>
@@ -1621,7 +1686,11 @@ export default function App() {
 
               <div className="flex justify-center pt-8">
                 <MagneticButton
-                  onClick={() => handleNavigate("contact")}
+                  href="/contact"
+                  onClick={(e) => {
+                    e?.preventDefault();
+                    handleNavigate("contact");
+                  }}
                   className="px-8 py-3.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-[0_4px_15px_rgba(255,87,34,0.25)] flex items-center gap-2 cursor-pointer"
                 >
                   <span>Build My Blueprint Now</span>
@@ -1666,21 +1735,29 @@ export default function App() {
 
                   {/* Primary CTA button linking to Free Tools page */}
                   <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <button
+                    <a
                       id="btn-home-free-tools"
-                      onClick={() => handleNavigate("free-tools")}
+                      href="/free-tools"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavigate("free-tools");
+                      }}
                       className="w-full sm:w-auto px-8 py-3.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-[0_4px_20px_rgba(255,87,34,0.3)] hover:shadow-[0_6px_25px_rgba(255,87,34,0.4)] flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.02] active:scale-95"
                     >
                       <span>Open Free Generator</span>
                       <ArrowRight className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleNavigate("tools/website-speed-test")}
+                    </a>
+                    <a
+                      href="/tools/website-speed-test"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavigate("tools/website-speed-test");
+                      }}
                       className="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all"
                     >
                       <Activity className="w-4 h-4 text-[#FF5722]" />
                       <span>Speed Audit Tool</span>
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -2325,10 +2402,14 @@ export default function App() {
               </div>
             )}
 
-            {/* Blog Post Content Body */}
+            {/* Blog Post Content Body with Auto-wrapped Responsive Tables */}
             <div
               className="prose prose-slate max-w-none text-slate-700 text-sm leading-relaxed space-y-6"
-              dangerouslySetInnerHTML={{ __html: activeBlog.content }}
+              dangerouslySetInnerHTML={{
+                __html: (activeBlog.content || "").replace(/(<table[\s\S]*?<\/table>)/gi, (tblMatch) => {
+                  return `<div class="responsive-table-wrapper" style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; margin: 1.75rem 0;">${tblMatch}</div>`;
+                })
+              }}
               onClick={handleArticleLinkClick}
             />
 
@@ -2343,6 +2424,47 @@ export default function App() {
               />
             ))}
           </article>
+        )}
+
+        {/* Blog Detail Loading Skeleton (Prevents blank white screen while data loads) */}
+        {currentTab === "blog-detail" && !activeBlog && blogs.length === 0 && (
+          <div className="max-w-3xl mx-auto px-4 py-16 space-y-8 animate-pulse">
+            <div className="h-4 w-32 bg-slate-200 rounded"></div>
+            <div className="h-10 w-3/4 bg-slate-200 rounded-lg"></div>
+            <div className="flex items-center gap-3 py-3 border-y border-slate-100">
+              <div className="w-10 h-10 rounded-full bg-slate-200"></div>
+              <div className="space-y-2">
+                <div className="h-3 w-28 bg-slate-200 rounded"></div>
+                <div className="h-2 w-20 bg-slate-200 rounded"></div>
+              </div>
+            </div>
+            <div className="w-full aspect-video rounded-2xl bg-slate-200"></div>
+            <div className="space-y-4 pt-4">
+              <div className="h-4 w-full bg-slate-200 rounded"></div>
+              <div className="h-4 w-5/6 bg-slate-200 rounded"></div>
+              <div className="h-4 w-4/6 bg-slate-200 rounded"></div>
+            </div>
+          </div>
+        )}
+
+        {/* Blog Detail Not Found State (Graceful fallback) */}
+        {currentTab === "blog-detail" && !activeBlog && blogs.length > 0 && (
+          <div className="max-w-xl mx-auto px-4 py-24 text-center space-y-6">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#FF5722]">
+              <FileText className="w-8 h-8" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900">Article Under Preparation</h2>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              This publication is currently being updated or has moved to a new canonical address. Explore our comprehensive library of technical guides below.
+            </p>
+            <button
+              onClick={() => handleNavigate("blog")}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Browse All Articles</span>
+            </button>
+          </div>
         )}
 
         {/* VIEW 8: PRICING DETAILED PAGE */}
@@ -2391,11 +2513,21 @@ export default function App() {
               <div className="space-y-4 font-mono text-xs text-slate-700 bg-slate-50 border border-slate-200/80 p-5 rounded-2xl">
                 <div className="flex gap-2 items-center">
                   <Phone className="w-4 h-4 text-[#FF5722]" />
-                  <span>{contactInfo?.phone || "+92 328 8518557"}</span>
+                  <a href={`tel:${(contactInfo?.phone || "+92 328 8518557").replace(/[^+\d]/g, "")}`} className="hover:text-[#FF5722] transition-colors">
+                    {contactInfo?.phone || "+92 328 8518557"}
+                  </a>
                 </div>
                 <div className="flex gap-2 items-center">
                   <Mail className="w-4 h-4 text-[#FF5722]" />
-                  <span>{contactInfo?.email || "mai@metazivo.com"}</span>
+                  <a href={`mailto:${contactInfo?.email || "mai@metazivo.com"}`} className="hover:text-[#FF5722] transition-colors">
+                    {contactInfo?.email || "mai@metazivo.com"}
+                  </a>
+                </div>
+                <div className="flex gap-2 items-start">
+                  <MapPin className="w-4 h-4 text-[#FF5722] shrink-0 mt-0.5" />
+                  <address className="not-italic font-sans text-xs text-slate-600 leading-relaxed">
+                    {contactInfo?.address || "Office 402, Metazivo Heights, Sector F-5, Islamabad, 44000, Pakistan"}
+                  </address>
                 </div>
               </div>
             </div>

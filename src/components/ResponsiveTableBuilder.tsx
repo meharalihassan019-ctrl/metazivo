@@ -327,13 +327,13 @@ export default function ResponsiveTableBuilder({
     }> = {
       metazivo: {
         containerBg: "#0B0F19",
-        borderColor: "rgba(255, 255, 255, 0.1)",
+        borderColor: "rgba(255, 87, 34, 0.3)",
         headerBg: "#111827",
         headerText: "#FFFFFF",
-        rowEvenBg: "transparent",
-        rowOddBg: "rgba(255, 255, 255, 0.02)",
-        rowHoverBg: "rgba(255, 87, 34, 0.06)",
-        textColor: "#E2E8F0",
+        rowEvenBg: "#0B0F19",
+        rowOddBg: "#0E1526",
+        rowHoverBg: "rgba(255, 87, 34, 0.1)",
+        textColor: "#FFFFFF",
         accentColor: "#FF5722"
       },
       midnight: {
@@ -403,12 +403,12 @@ export default function ResponsiveTableBuilder({
     html += `    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; min-width: 580px;">\n`;
     
     // THEAD
-    html += `      <thead style="background: ${cfg.headerBg}; border-bottom: 1px solid ${cfg.borderColor};">\n`;
+    html += `      <thead style="background: ${cfg.headerBg}; border-bottom: 2px solid ${cfg.accentColor};">\n`;
     html += `        <tr>\n`;
     headers.forEach((h, idx) => {
       const align = alignments[idx] || "left";
       const stickyStyle = hasStickyFirstCol && idx === 0 ? `position: sticky; left: 0; background: ${cfg.headerBg}; z-index: 2;` : "";
-      html += `          <th style="padding: 12px 16px; font-weight: 700; color: ${cfg.headerText}; text-align: ${align}; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; ${stickyStyle}">${h}</th>\n`;
+      html += `          <th style="padding: 14px 18px; font-weight: 700; color: ${cfg.headerText} !important; text-align: ${align}; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; border-right: 1px solid rgba(255, 255, 255, 0.06); ${stickyStyle}">${h}</th>\n`;
     });
     html += `        </tr>\n`;
     html += `      </thead>\n`;
@@ -423,8 +423,8 @@ export default function ResponsiveTableBuilder({
       row.forEach((cell, cIdx) => {
         const align = alignments[cIdx] || "left";
         const isFirst = cIdx === 0;
-        const stickyStyle = hasStickyFirstCol && isFirst ? `position: sticky; left: 0; background: ${rowBg || cfg.containerBg}; z-index: 1; font-weight: 600; color: #FFFFFF;` : `color: ${cfg.textColor};`;
-        html += `          <td style="padding: 12px 16px; text-align: ${align}; font-size: 0.8125rem; ${stickyStyle}">${cell}</td>\n`;
+        const stickyStyle = hasStickyFirstCol && isFirst ? `position: sticky; left: 0; background: ${rowBg || cfg.containerBg}; z-index: 1; font-weight: 600; color: #FFFFFF !important;` : `color: ${cfg.textColor} !important;`;
+        html += `          <td style="padding: 13px 18px; text-align: ${align}; font-size: 0.8125rem; border-right: 1px solid rgba(255, 255, 255, 0.04); ${stickyStyle}">${cell}</td>\n`;
       });
       html += `        </tr>\n`;
     });

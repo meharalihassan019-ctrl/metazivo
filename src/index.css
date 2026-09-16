@@ -42,83 +42,135 @@
 
 /* Responsive Table Container & Styling for Mobile, Tablet & Laptop */
 .table-responsive-wrapper,
-.responsive-table-wrapper {
+.responsive-table-wrapper,
+.metazivo-table-module {
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  margin: 1.5rem 0;
+  margin: 1.75rem 0;
   border-radius: 1rem;
+  background: #0B0F19;
+  border: 1px solid rgba(255, 87, 34, 0.3);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
 }
 
 /* Custom sleek scrollbar for tables */
 .table-responsive-wrapper::-webkit-scrollbar,
 .responsive-table-wrapper::-webkit-scrollbar,
+.metazivo-table-module::-webkit-scrollbar,
 .prose table::-webkit-scrollbar {
   height: 6px;
 }
+.table-responsive-wrapper::-webkit-scrollbar-track,
+.responsive-table-wrapper::-webkit-scrollbar-track,
+.metazivo-table-module::-webkit-scrollbar-track {
+  background: #030712;
+}
 .table-responsive-wrapper::-webkit-scrollbar-thumb,
 .responsive-table-wrapper::-webkit-scrollbar-thumb,
+.metazivo-table-module::-webkit-scrollbar-thumb,
 .prose table::-webkit-scrollbar-thumb {
-  background: rgba(255, 87, 34, 0.4);
-  border-radius: 3px;
+  background: rgba(255, 87, 34, 0.5);
+  border-radius: 4px;
+}
+.table-responsive-wrapper::-webkit-scrollbar-thumb:hover,
+.responsive-table-wrapper::-webkit-scrollbar-thumb:hover,
+.metazivo-table-module::-webkit-scrollbar-thumb:hover {
+  background: #FF5722;
 }
 
-/* Ensure any table inside prose has smooth responsive horizontal scroll on mobile & tablet */
+/* Ensure any table inside prose has smooth responsive horizontal scroll and theme matching */
 .prose table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.5rem 0;
-  font-size: 0.875rem;
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  margin: 1.5rem 0 !important;
+  font-size: 0.875rem !important;
+  background: #0B0F19 !important;
+  border-radius: 0.75rem !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 87, 34, 0.3) !important;
 }
 
 @media (max-width: 768px) {
   .prose table {
-    min-width: 520px;
+    min-width: 540px !important;
+    display: table;
   }
 }
 
 .prose th {
-  padding: 0.75rem 1rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  border-bottom: 2px solid rgba(226, 232, 240, 0.8);
+  padding: 0.875rem 1.125rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.05em !important;
+  color: #FFFFFF !important;
+  background-color: #111827 !important;
+  border-bottom: 2px solid #FF5722 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  text-align: left !important;
+}
+.prose th:last-child {
+  border-right: none !important;
 }
 
 .prose td {
-  padding: 0.75rem 1rem;
-  font-size: 0.8125rem;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  padding: 0.875rem 1.125rem !important;
+  font-size: 0.875rem !important;
+  color: #FFFFFF !important;
+  background-color: transparent !important;
+  border-bottom: 1px solid rgba(255, 87, 34, 0.18) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+.prose td:last-child {
+  border-right: none !important;
+}
+
+.prose tr:nth-child(even) td {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+.prose tr:hover td {
+  background-color: rgba(255, 87, 34, 0.08) !important;
 }
 
 /* TipTap table styling inside editor */
 .tiptap-container .ProseMirror table {
-  border-collapse: collapse;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
   table-layout: fixed;
   width: 100%;
   margin: 1.5rem 0;
   overflow: hidden;
   border-radius: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 87, 34, 0.3) !important;
+  background: #0B0F19 !important;
 }
 
 .tiptap-container .ProseMirror table td,
 .tiptap-container .ProseMirror table th {
   min-width: 1em;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 8px 12px;
+  padding: 10px 14px;
   vertical-align: top;
   box-sizing: border-box;
   position: relative;
+  color: #FFFFFF !important;
 }
 
 .tiptap-container .ProseMirror table th {
   font-weight: bold;
   text-align: left;
-  background-color: rgba(255, 255, 255, 0.06);
-  color: #ffffff !important;
+  background-color: #111827 !important;
+  color: #FFFFFF !important;
+  border-bottom: 2px solid #FF5722 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.tiptap-container .ProseMirror table td {
+  border-bottom: 1px solid rgba(255, 87, 34, 0.18) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
 .tiptap-container .ProseMirror table .selectedCell:after {
@@ -126,6 +178,6 @@
   position: absolute;
   content: "";
   left: 0; right: 0; top: 0; bottom: 0;
-  background: rgba(255, 87, 34, 0.2);
+  background: rgba(255, 87, 34, 0.25);
   pointer-events: none;
 }

@@ -103,18 +103,72 @@ app.use((req, res, next) => {
   next();
 });
 
-// URL Normalization and SEO 301 Redirect Middleware
+// URL Normalization, Legacy WordPress 410 Cleaner, and SEO 301 Redirect Middleware
 app.use((req, res, next) => {
+  // 0. Handle legacy WordPress URLs cleanly (resolves Google Search Console 5xx errors permanently)
+  const lowerPath = req.path.toLowerCase();
+  const isLegacyWordPress = 
+    lowerPath.startsWith("/wp-admin") ||
+    lowerPath.startsWith("/wp-content") ||
+    lowerPath.startsWith("/wp-includes") ||
+    lowerPath.startsWith("/wp-json") ||
+    lowerPath.startsWith("/xmlrpc.php") ||
+    lowerPath.endsWith(".php") ||
+    lowerPath.includes("/wp-");
+
+  if (isLegacyWordPress) {
+    // Setting 410 Gone explicitly tells Googlebot the resource is permanently deleted
+    // This removes old WordPress URLs from Google's index and permanently eliminates 5xx errors
+    res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
+    res.setHeader("Cache-Control", "public, max-age=604800");
+    return res.status(410).send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>410 Resource Gone | Metazivo</title>
+  <meta name="robots" content="noindex, nofollow">
+</head>
+<body style="font-family:system-ui,-apple-system,sans-serif;background:#030712;color:#ffffff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;padding:1rem;box-sizing:border-box;">
+  <div style="text-align:center;max-width:480px;background:#0B0F19;padding:2.5rem;border-radius:24px;border:1px solid rgba(255,87,34,0.3);box-shadow:0 20px 40px -15px rgba(0,0,0,0.7);">
+    <div style="width:56px;height:56px;margin:0 auto 1.25rem;border-radius:16px;background:rgba(255,87,34,0.1);display:flex;align-items:center;justify-content:center;color:#FF5722;font-size:1.75rem;font-weight:bold;">410</div>
+    <h1 style="color:#ffffff;font-size:1.5rem;font-weight:bold;margin:0 0 0.75rem 0;">Resource Permanently Removed</h1>
+    <p style="color:#94a3b8;font-size:0.875rem;line-height:1.6;margin:0 0 1.5rem 0;">The requested legacy WordPress resource is no longer hosted on Metazivo. Our modern infrastructure is powered by Next.js & React performance engines.</p>
+    <a href="/" style="display:inline-block;padding:0.75rem 1.75rem;background:#FF5722;color:#ffffff;text-decoration:none;border-radius:12px;font-weight:bold;font-size:0.875rem;transition:all 0.2s;">Return to Homepage</a>
+  </div>
+</body>
+</html>`);
+  }
+
   // Skip API, assets, and internal files
   if (req.path.startsWith("/api") || req.path.startsWith("/@") || req.path.startsWith("/src") || req.path.includes(".")) {
     return next();
   }
 
-  // 1. Redirect duplicate slashes (e.g. /blog//post-slug -> /blog/post-slug)
+  // 1. WordPress search parameter templates (?s={search_term_string} or empty ?s=) -> 301 Redirect to /
+  if (req.query.s !== undefined) {
+    const cleanSearch = String(req.query.s).trim();
+    if (!cleanSearch || cleanSearch.includes("{search_term_string}") || cleanSearch.includes("%7Bsearch_term_string%7D")) {
+      return res.redirect(301, "/");
+    }
+  }
+
+  // 2. Redirect duplicate slashes (e.g. /blog//post-slug -> /blog/post-slug)
   if (req.path.length > 1 && req.path.includes("//")) {
     const cleanPath = req.path.replace(/\/+/g, "/");
     const query = req.url.slice(req.path.length);
     return res.redirect(301, cleanPath + query);
+  }
+
+  // 3. Blog Slug Normalization & Canonical 301 Redirects
+  // Fixes "Alternate page with proper canonical tag" for URLs with Title Case, spaces, or encoded characters
+  if (req.path.toLowerCase().startsWith("/blog/")) {
+    const rawSlug = req.path.slice(6); // remove /blog/
+    const decodedSlug = decodeURIComponent(rawSlug).trim();
+    // Normalize to clean lowercase hyphenated slug
+    const cleanSlug = decodedSlug.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    if (cleanSlug && (rawSlug !== cleanSlug || req.path !== `/blog/${cleanSlug}`)) {
+      return res.redirect(301, `/blog/${cleanSlug}`);
+    }
   }
 
   const normalizedPath = req.path.toLowerCase().replace(/\/+$/, "");
@@ -1954,9 +2008,9 @@ function generateSimulatedResponse(action: string, title: string, keywords: stri
     });
   } else if (action === "social") {
     return res.json({
-      linkedin: `📈 Scaling our client's organic footprints with structured strategies! Check out our latest breakdown on "${safeTitle}". Learn how Metazivo deploys performance metrics to drive conversion rates. #Metazivo #SEO #DigitalGrowth #Agency`,
-      facebook: `Ready to grow your business online? 🌐 Our team at Metazivo just released the ultimate playbook: "${safeTitle}". Read more to get actionable growth tips today! #Metazivo #WebDevelopment #MetaAds`,
-      instagram: `Transform your brand's digital efficiency. ⚡ We are sharing our internal methodology on "${safeTitle}" to supercharge your digital authority. Swipe up or click the link in our bio! 🔗 #Metazivo #GrowthHacking #Design`
+      linkedin: `Building real organic search visibility takes consistency and clean technical execution. We just published a detailed breakdown on "${safeTitle}" covering what actually moves the needle. Read the full guide on our website. #Metazivo #SEO #WebDevelopment #BusinessGrowth`,
+      facebook: `Looking to improve your search rankings and website performance? Our team at Metazivo just published a practical guide on "${safeTitle}". Check out the full breakdown and see what steps you can apply today. #Metazivo #WebDevelopment #SearchRankings`,
+      instagram: `Clean code, fast load times, and practical SEO. We put together a step-by-step breakdown on "${safeTitle}" to help you build real search authority. Link in bio to read more! 🔗 #Metazivo #WebDesign #SEO #DigitalAgency`
     });
   }
 }
@@ -2197,28 +2251,75 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
   }
 
   if (p.startsWith("/blog/")) {
-    const slug = p.replace("/blog/", "");
-    const q = query(collection(firestoreDb, "posts"), where("slug", "==", slug));
-    const snap = await getDocs(q);
-    if (!snap.empty) {
-      const post = snap.docs[0].data();
-      return {
-        title: post.seoTitle || `${post.title} | Metazivo`,
-        description: post.seoDescription || post.excerpt || "",
-        keywords: post.seoKeywords?.join(", ") || "",
-        ogTitle: post.seoTitle || `${post.title} | Metazivo`,
-        ogDescription: post.seoDescription || post.excerpt || "",
-        url: `https://metazivo.com${pathname}`,
-        html: `
-          <main>
-            <article>
-              <h1>${post.title}</h1>
-              <p>Written by ${post.author?.name || "Metazivo Expert"} | ${new Date(post.publishDate).toLocaleDateString()}</p>
-              ${post.content}
-            </article>
-          </main>`
-      };
+    const rawSlug = p.replace("/blog/", "");
+    const slug = decodeURIComponent(rawSlug).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    
+    // 1. Try Firestore
+    try {
+      if (firestoreDb) {
+        const q = query(collection(firestoreDb, "posts"), where("slug", "==", slug));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          const post: any = snap.docs[0].data();
+          return {
+            title: post.seoTitle || `${post.title} | Metazivo`,
+            description: post.seoDescription || post.excerpt || "",
+            keywords: post.seoKeywords?.join(", ") || "",
+            ogTitle: post.seoTitle || `${post.title} | Metazivo`,
+            ogDescription: post.seoDescription || post.excerpt || "",
+            url: `https://metazivo.com/blog/${slug}`,
+            html: `
+              <main>
+                <article>
+                  <h1>${post.title}</h1>
+                  <p>Written by ${post.author?.name || "Metazivo Expert"} | ${new Date(post.publishDate || Date.now()).toLocaleDateString()}</p>
+                  ${post.content || ""}
+                </article>
+              </main>`
+          };
+        }
+      }
+    } catch (err) {
+      console.warn("Firestore error in getSEOData for slug:", slug, err);
     }
+
+    // 2. Fallback: local db.posts
+    if (db?.posts && Array.isArray(db.posts)) {
+      const localPost = db.posts.find((item: any) => {
+        const itemSlug = (item.slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+        return itemSlug === slug || item.id === slug;
+      });
+      if (localPost) {
+        return {
+          title: localPost.seoTitle || `${localPost.title} | Metazivo`,
+          description: localPost.seoDescription || localPost.excerpt || "",
+          keywords: localPost.seoKeywords?.join(", ") || "",
+          ogTitle: localPost.seoTitle || `${localPost.title} | Metazivo`,
+          ogDescription: localPost.seoDescription || localPost.excerpt || "",
+          url: `https://metazivo.com/blog/${slug}`,
+          html: `
+            <main>
+              <article>
+                <h1>${localPost.title}</h1>
+                <p>Written by ${localPost.author?.name || "Metazivo Expert"}</p>
+                ${localPost.content || ""}
+              </article>
+            </main>`
+        };
+      }
+    }
+
+    // 3. Fallback: clean SEO default (never 500 error!)
+    const humanTitle = slug.replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    return {
+      title: humanTitle ? `${humanTitle} | Metazivo` : "Blog | Metazivo",
+      description: "Read in-depth SEO, speed optimization, and digital marketing insights published by Metazivo.",
+      keywords: "SEO, technical audit, page speed, Metazivo",
+      ogTitle: humanTitle ? `${humanTitle} | Metazivo` : "Blog | Metazivo",
+      ogDescription: "Read in-depth SEO, speed optimization, and digital marketing insights published by Metazivo.",
+      url: `https://metazivo.com/blog/${slug}`,
+      html: `<main><article><h1>${humanTitle || "Metazivo Blog"}</h1><p>Technical publication</p></article></main>`
+    };
   }
 
   return base;
@@ -2397,105 +2498,144 @@ async function generateSchema(pathname: string): Promise<string> {
   return JSON.stringify(baseSchema, null, 2);
 }
 
+// High-Speed In-Memory SSR Cache for sub-second loading (< 10ms TTFB for crawlers & visitors)
+const ssrCache = new Map<string, { html: string; timestamp: number }>();
+const SSR_CACHE_TTL = 1000 * 60 * 30; // 30 minutes
+
 async function injectSEOAndPrerender(html: string, pathname: string): Promise<string> {
-  const seoData = await getPageSEOAndContent(pathname);
-  let resHtml = html;
-
-  // Title Replacement
-  if (resHtml.includes("<title>")) {
-    resHtml = resHtml.replace(/<title>[\s\S]*?<\/title>/i, `<title>${seoData.title}</title>`);
-  } else {
-    resHtml = resHtml.replace("</head>", `  <title>${seoData.title}</title>\n</head>`);
+  // Check memory cache for instant response
+  const cached = ssrCache.get(pathname);
+  if (cached && (Date.now() - cached.timestamp < SSR_CACHE_TTL)) {
+    return cached.html;
   }
 
-  // Meta Description Replacement
-  const descRegex = /<meta\s+name=["']description["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
-  if (descRegex.test(resHtml)) {
-    resHtml = resHtml.replace(descRegex, `<meta name="description" content="${seoData.description}" />`);
-  } else {
-    resHtml = resHtml.replace("</head>", `  <meta name="description" content="${seoData.description}" />\n</head>`);
+  try {
+    const seoData = await getPageSEOAndContent(pathname);
+    let resHtml = html;
+
+    // Clean pathname for canonical URL: strip query parameters, trailing slashes, and normalize to lowercase
+    let canonicalPath = (pathname.split("?")[0].replace(/\/+$/, "") || "/").toLowerCase();
+    if (canonicalPath.startsWith("/blog/")) {
+      const rawS = canonicalPath.replace("/blog/", "");
+      const cleanS = decodeURIComponent(rawS).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      canonicalPath = `/blog/${cleanS}`;
+    } else if (canonicalPath.startsWith("/service/")) {
+      const rawS = canonicalPath.replace("/service/", "");
+      const cleanS = decodeURIComponent(rawS).toLowerCase().replace(/^\/+|\/+$/g, "");
+      canonicalPath = `/service/${cleanS}`;
+    } else if (canonicalPath === "/privacy" || canonicalPath === "/privacy-policy") {
+      canonicalPath = "/privacy-policy";
+    } else if (canonicalPath === "/terms" || canonicalPath === "/terms-and-conditions") {
+      canonicalPath = "/terms";
+    } else if (canonicalPath.includes("website-speed-test") || canonicalPath.includes("speed-test")) {
+      canonicalPath = "/tools/website-speed-test";
+    } else if (canonicalPath.includes("meta-title")) {
+      canonicalPath = "/tools/meta-title-description-generator";
+    }
+    const cleanCanonicalUrl = `https://metazivo.com${canonicalPath === "/" ? "/" : canonicalPath}`;
+
+    // Title Replacement
+    if (resHtml.includes("<title>")) {
+      resHtml = resHtml.replace(/<title>[\s\S]*?<\/title>/i, `<title>${seoData.title}</title>`);
+    } else {
+      resHtml = resHtml.replace("</head>", `  <title>${seoData.title}</title>\n</head>`);
+    }
+
+    // Meta Description Replacement
+    const descRegex = /<meta\s+name=["']description["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+    if (descRegex.test(resHtml)) {
+      resHtml = resHtml.replace(descRegex, `<meta name="description" content="${seoData.description}" />`);
+    } else {
+      resHtml = resHtml.replace("</head>", `  <meta name="description" content="${seoData.description}" />\n</head>`);
+    }
+
+    // Meta Keywords Replacement
+    const keywordsRegex = /<meta\s+name=["']keywords["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+    if (keywordsRegex.test(resHtml)) {
+      resHtml = resHtml.replace(keywordsRegex, `<meta name="keywords" content="${seoData.keywords}" />`);
+    } else {
+      resHtml = resHtml.replace("</head>", `  <meta name="keywords" content="${seoData.keywords}" />\n</head>`);
+    }
+
+    // OG Title Replacement
+    const ogTitleRegex = /<meta\s+property=["']og:title["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+    if (ogTitleRegex.test(resHtml)) {
+      resHtml = resHtml.replace(ogTitleRegex, `<meta property="og:title" content="${seoData.ogTitle}" />`);
+    } else {
+      resHtml = resHtml.replace("</head>", `  <meta property="og:title" content="${seoData.ogTitle}" />\n</head>`);
+    }
+
+    // OG Description Replacement
+    const ogDescRegex = /<meta\s+property=["']og:description["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+    if (ogDescRegex.test(resHtml)) {
+      resHtml = resHtml.replace(ogDescRegex, `<meta property="og:description" content="${seoData.ogDescription}" />`);
+    } else {
+      resHtml = resHtml.replace("</head>", `  <meta property="og:description" content="${seoData.ogDescription}" />\n</head>`);
+    }
+
+    // OG URL Replacement (Self-Referencing Clean Canonical)
+    const ogUrlRegex = /<meta\s+property=["']og:url["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+    if (ogUrlRegex.test(resHtml)) {
+      resHtml = resHtml.replace(ogUrlRegex, `<meta property="og:url" content="${cleanCanonicalUrl}" />`);
+    } else {
+      resHtml = resHtml.replace("</head>", `  <meta property="og:url" content="${cleanCanonicalUrl}" />\n</head>`);
+    }
+
+    // Twitter Title Replacement
+    const twTitleRegex = /<meta\s+name=["']twitter:title["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+    if (twTitleRegex.test(resHtml)) {
+      resHtml = resHtml.replace(twTitleRegex, `<meta name="twitter:title" content="${seoData.title}" />`);
+    } else {
+      resHtml = resHtml.replace("</head>", `  <meta name="twitter:title" content="${seoData.title}" />\n</head>`);
+    }
+
+    // Twitter Description Replacement
+    const twDescRegex = /<meta\s+name=["']twitter:description["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+    if (twDescRegex.test(resHtml)) {
+      resHtml = resHtml.replace(twDescRegex, `<meta name="twitter:description" content="${seoData.description}" />`);
+    } else {
+      resHtml = resHtml.replace("</head>", `  <meta name="twitter:description" content="${seoData.description}" />\n</head>`);
+    }
+
+    // Canonical Tag Replacement (Self-Referencing Clean Canonical)
+    const canonicalRegex = /<link\s+rel=["']canonical["']\s+href=["'][\s\S]*?["']\s*\/?>/i;
+    if (canonicalRegex.test(resHtml)) {
+      resHtml = resHtml.replace(canonicalRegex, `<link rel="canonical" href="${cleanCanonicalUrl}" />`);
+    } else {
+      resHtml = resHtml.replace("</head>", `  <link rel="canonical" href="${cleanCanonicalUrl}" />\n</head>`);
+    }
+
+    // Dynamic JSON-LD Schema Replacement
+    try {
+      const generatedSchema = await generateSchema(pathname);
+      const schemaRegex = /<script\s+type=["']application\/ld\+json["']\s+id=["']metazivo-schema-org["']\s*>([\s\S]*?)<\/script>/i;
+      if (schemaRegex.test(resHtml)) {
+        resHtml = resHtml.replace(schemaRegex, `<script type="application/ld+json" id="metazivo-schema-org">\n${generatedSchema}\n</script>`);
+      } else {
+        resHtml = resHtml.replace("</head>", `  <script type="application/ld+json" id="metazivo-schema-org">\n${generatedSchema}\n</script>\n</head>`);
+      }
+    } catch (schemaErr) {
+      console.warn("Schema generation fallback:", schemaErr);
+    }
+
+    // Prerender markup inside <div id="root">
+    const rootRegex = /<div\s+id=["']root["']\s*>([\s\S]*?)<\/div>/i;
+    if (rootRegex.test(resHtml) && seoData.html) {
+      resHtml = resHtml.replace(rootRegex, `<div id="root">${seoData.html}</div>`);
+    }
+
+    // Custom Head Tags Injection
+    if (db.settings && db.settings.customHeadTags) {
+      resHtml = resHtml.replace("</head>", `\n  ${db.settings.customHeadTags}\n</head>`);
+    }
+
+    // Save to memory cache
+    ssrCache.set(pathname, { html: resHtml, timestamp: Date.now() });
+    return resHtml;
+  } catch (err) {
+    console.error("injectSEOAndPrerender error, returning raw HTML:", err);
+    return html;
   }
-
-  // Meta Keywords Replacement
-  const keywordsRegex = /<meta\s+name=["']keywords["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
-  if (keywordsRegex.test(resHtml)) {
-    resHtml = resHtml.replace(keywordsRegex, `<meta name="keywords" content="${seoData.keywords}" />`);
-  } else {
-    resHtml = resHtml.replace("</head>", `  <meta name="keywords" content="${seoData.keywords}" />\n</head>`);
-  }
-
-  // OG Title Replacement
-  const ogTitleRegex = /<meta\s+property=["']og:title["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
-  if (ogTitleRegex.test(resHtml)) {
-    resHtml = resHtml.replace(ogTitleRegex, `<meta property="og:title" content="${seoData.ogTitle}" />`);
-  } else {
-    resHtml = resHtml.replace("</head>", `  <meta property="og:title" content="${seoData.ogTitle}" />\n</head>`);
-  }
-
-  // OG Description Replacement
-  const ogDescRegex = /<meta\s+property=["']og:description["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
-  if (ogDescRegex.test(resHtml)) {
-    resHtml = resHtml.replace(ogDescRegex, `<meta property="og:description" content="${seoData.ogDescription}" />`);
-  } else {
-    resHtml = resHtml.replace("</head>", `  <meta property="og:description" content="${seoData.ogDescription}" />\n</head>`);
-  }
-
-  // OG URL Replacement
-  const ogUrlRegex = /<meta\s+property=["']og:url["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
-  if (ogUrlRegex.test(resHtml)) {
-    resHtml = resHtml.replace(ogUrlRegex, `<meta property="og:url" content="${seoData.url}" />`);
-  } else {
-    resHtml = resHtml.replace("</head>", `  <meta property="og:url" content="${seoData.url}" />\n</head>`);
-  }
-
-  // Twitter Title Replacement
-  const twTitleRegex = /<meta\s+name=["']twitter:title["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
-  if (twTitleRegex.test(resHtml)) {
-    resHtml = resHtml.replace(twTitleRegex, `<meta name="twitter:title" content="${seoData.title}" />`);
-  } else {
-    resHtml = resHtml.replace("</head>", `  <meta name="twitter:title" content="${seoData.title}" />\n</head>`);
-  }
-
-  // Twitter Description Replacement
-  const twDescRegex = /<meta\s+name=["']twitter:description["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
-  if (twDescRegex.test(resHtml)) {
-    resHtml = resHtml.replace(twDescRegex, `<meta name="twitter:description" content="${seoData.description}" />`);
-  } else {
-    resHtml = resHtml.replace("</head>", `  <meta name="twitter:description" content="${seoData.description}" />\n</head>`);
-  }
-
-  // Canonical Tag Replacement
-  const canonicalRegex = /<link\s+rel=["']canonical["']\s+href=["'][\s\S]*?["']\s*\/?>/i;
-  if (canonicalRegex.test(resHtml)) {
-    resHtml = resHtml.replace(canonicalRegex, `<link rel="canonical" href="https://metazivo.com${pathname}" />`);
-  } else {
-    resHtml = resHtml.replace("</head>", `  <link rel="canonical" href="https://metazivo.com${pathname}" />\n</head>`);
-  }
-
-  // Dynamic JSON-LD Schema Replacement
-  const schemaRegex = /<script\s+type=["']application\/ld\+json["']\s+id=["']metazivo-schema-org["']\s*>([\s\S]*?)<\/script>/i;
-  if (schemaRegex.test(resHtml)) {
-    resHtml = resHtml.replace(schemaRegex, `<script type="application/ld+json" id="metazivo-schema-org">\n${await generateSchema(pathname)}\n</script>`);
-  } else {
-    resHtml = resHtml.replace("</head>", `  <script type="application/ld+json" id="metazivo-schema-org">\n${await generateSchema(pathname)}\n</script>\n</head>`);
-  }
-
-  // Prerender markup inside <div id="root">
-  const rootRegex = /<div\s+id=["']root["']\s*>([\s\S]*?)<\/div>/i;
-  if (rootRegex.test(resHtml)) {
-    resHtml = resHtml.replace(rootRegex, `<div id="root">${seoData.html}</div>`);
-  }
-
-
-  // Custom Head Tags Injection
-  if (db.settings && db.settings.customHeadTags) {
-    resHtml = resHtml.replace("</head>", `
-  ${db.settings.customHeadTags}
-</head>`);
-  }
-
-  return resHtml;
-
 }
 
 // -----------------------------------------------------------------------------
@@ -2538,9 +2678,16 @@ Sitemap: https://metazivo.com/sitemap.xml`);
         template = await vite.transformIndexHtml(req.path, template);
         template = await injectSEOAndPrerender(template, req.path);
         res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.send(template);
+        res.status(200).send(template);
       } catch (e) {
-        next(e);
+        console.warn("Dev SSR fallback:", e);
+        try {
+          const fallback = fs.readFileSync(path.join(process.cwd(), "index.html"), "utf-8");
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          res.status(200).send(fallback);
+        } catch (err2) {
+          next(e);
+        }
       }
     });
   } else {
@@ -2562,14 +2709,16 @@ Sitemap: https://metazivo.com/sitemap.xml`);
     // Intercept and pre-render any incoming page requests dynamically
     app.get("*", async (req, res) => {
       try {
-        const rawHtml = fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
+        const rawHtml = cachedIndexHtml || fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
         const preRendered = await injectSEOAndPrerender(rawHtml, req.path);
         res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-        res.send(preRendered);
+        res.setHeader("Cache-Control", "public, max-age=1800, stale-while-revalidate=86400");
+        res.status(200).send(preRendered);
       } catch (err) {
-        console.error("Failed to serve index.html:", err);
-        res.status(500).send("<!DOCTYPE html><html><body>Error loading application index.</body></html>");
+        console.warn("Failed to pre-render page, using clean 200 fallback:", err);
+        const fallback = cachedIndexHtml || (fs.existsSync(path.join(distPath, "index.html")) ? fs.readFileSync(path.join(distPath, "index.html"), "utf-8") : "<!DOCTYPE html><html><head><title>Metazivo</title></head><body><div id='root'></div></body></html>");
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.status(200).send(fallback);
       }
     });
   }

@@ -415,7 +415,7 @@ export default function SeoDashboard({
         index: true,
         follow: true,
         ogTitle: p.seoTitle || p.title,
-        ogDescription: p.seoDescription || "Metazivo bespoke engineering roadmap.",
+        ogDescription: p.seoDescription || "Metazivo custom web development and growth services.",
         ogImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
         twitterTitle: p.seoTitle || p.title,
         twitterDescription: p.seoDescription || "Metazivo web platform.",

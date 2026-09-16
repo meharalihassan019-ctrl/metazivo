@@ -4,11 +4,12 @@ import { motion, useSpring, useMotionValue } from "motion/react";
 interface MagneticButtonProps {
   children: React.ReactNode;
   className?: string;
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent) => void;
   id?: string;
   type?: "button" | "submit" | "reset";
   range?: number; // Distance threshold to trigger magnetism
   strength?: number; // Strength of pull (0 to 1)
+  href?: string;
 }
 
 export default function MagneticButton({
@@ -18,9 +19,10 @@ export default function MagneticButton({
   id,
   type = "button",
   range = 45,
-  strength = 0.38
+  strength = 0.38,
+  href
 }: MagneticButtonProps) {
-  const btnRef = useRef<HTMLButtonElement>(null);
+  const btnRef = useRef<any>(null);
   const [prefersReduced, setPrefersReduced] = useState(false);
 
   // Position displacement motion values
@@ -73,6 +75,30 @@ export default function MagneticButton({
     x.set(0);
     y.set(0);
   };
+
+  if (href) {
+    return (
+      <motion.a
+        ref={btnRef}
+        href={href}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onClick={onClick}
+        id={id}
+        className={`relative select-none inline-block ${className}`}
+        style={
+          prefersReduced
+            ? {}
+            : {
+                x: springX,
+                y: springY,
+              }
+        }
+      >
+        {children}
+      </motion.a>
+    );
+  }
 
   return (
     <motion.button
