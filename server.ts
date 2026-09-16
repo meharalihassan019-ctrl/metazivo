@@ -197,6 +197,18 @@ app.use((req, res, next) => {
     }
   }
 
+  // 2c. Tool alias canonical redirects (e.g. /tools/pagespeed-estimator -> /tools/pagespeed-fix-recommendation-tool)
+  if (normalizedPath.startsWith("/tools/")) {
+    const subSlug = normalizedPath.replace(/^\/tools\/?/, "").replace(/\/+$/, "");
+    if (subSlug && subSlug !== "website-speed-test") {
+      const toolDef = getToolBySlug(subSlug);
+      if (toolDef && toolDef.slug !== subSlug) {
+        const query = req.url.slice(req.path.length);
+        return res.redirect(301, `/tools/${toolDef.slug}${query}`);
+      }
+    }
+  }
+
   const freeToolsAliases = [
     "/tools",
     "/free-seo-tools",
@@ -205,6 +217,16 @@ app.use((req, res, next) => {
   if (freeToolsAliases.includes(normalizedPath)) {
     const query = req.url.slice(req.path.length);
     return res.redirect(301, `/seo-tools${query}`);
+  }
+
+  // 2d. Legal and General Canonical Redirects
+  if (normalizedPath === "/privacy") {
+    const query = req.url.slice(req.path.length);
+    return res.redirect(301, `/privacy-policy${query}`);
+  }
+  if (normalizedPath === "/terms-and-conditions") {
+    const query = req.url.slice(req.path.length);
+    return res.redirect(301, `/terms${query}`);
   }
 
   // 3. Service Slug Aliases Canonical 301 Redirects
@@ -1838,12 +1860,10 @@ app.get("/sitemap.xml", async (req, res) => {
 
     // 1. Core Primary Static Pages
     const staticRoutes: Array<{ path: string; changefreq: string; priority: string }> = [
-      { path: "", changefreq: "daily", priority: "1.0" },
+      { path: "/", changefreq: "daily", priority: "1.0" },
       { path: "/services", changefreq: "weekly", priority: "0.9" },
       { path: "/seo-tools", changefreq: "daily", priority: "1.0" },
       { path: "/free-tools", changefreq: "weekly", priority: "0.9" },
-      { path: "/tools/meta-title-description-generator", changefreq: "weekly", priority: "0.9" },
-      { path: "/tools/website-speed-test", changefreq: "weekly", priority: "0.9" },
       { path: "/blog", changefreq: "daily", priority: "0.9" },
       { path: "/portfolio", changefreq: "weekly", priority: "0.8" },
       { path: "/pricing", changefreq: "monthly", priority: "0.8" },
@@ -1854,14 +1874,13 @@ app.get("/sitemap.xml", async (req, res) => {
     ];
 
     staticRoutes.forEach(route => {
-      xml += `\n  <url>\n    <loc>${baseUrl}${route.path}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${route.changefreq}</changefreq>\n    <priority>${route.priority}</priority>\n  </url>`;
+      const locUrl = route.path === "/" ? `${baseUrl}/` : `${baseUrl}${route.path}`;
+      xml += `\n  <url>\n    <loc>${locUrl}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${route.changefreq}</changefreq>\n    <priority>${route.priority}</priority>\n  </url>`;
     });
 
     // 2. All 31 Free Online Production SEO Tools & AI Optimization Utilities
     SEO_TOOLS_LIST.forEach((tool) => {
-      if (tool.slug !== "website-speed-test" && tool.slug !== "meta-title-description-generator") {
-        xml += `\n  <url>\n    <loc>${baseUrl}/tools/${tool.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>`;
-      }
+      xml += `\n  <url>\n    <loc>${baseUrl}/tools/${tool.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>`;
     });
 
     // 3. All 11 High-Yield Core Agency Service Landing Pages (Critical for Google Indexing)

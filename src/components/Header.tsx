@@ -137,7 +137,7 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
                     <Wrench className="w-3.5 h-3.5" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-bold">SEO Tools Suite (30 Tools)</span>
+                    <span className="font-bold">SEO Tools Suite (31 Tools)</span>
                     <span className="text-[10px] text-slate-400 font-light">Audit, Schema, Robots, Intent & More</span>
                   </div>
                 </a>
@@ -286,7 +286,7 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
                   }`}
                 >
                   <Wrench className="w-3.5 h-3.5 shrink-0" />
-                  <span>SEO Tools Suite (30 Tools)</span>
+                  <span>SEO Tools Suite (31 Tools)</span>
                 </a>
                 <a
                   href="/tools/website-speed-test"

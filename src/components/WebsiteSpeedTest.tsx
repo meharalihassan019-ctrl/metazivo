@@ -1365,17 +1365,17 @@ export default function WebsiteSpeedTest({ onNavigate, getWhatsAppLink }: Websit
           </a>
 
           <a
-            href="/tools/pagespeed-estimator"
+            href="/tools/pagespeed-fix-recommendation-tool"
             onClick={(e) => {
               e.preventDefault();
-              onNavigate("tools/pagespeed-estimator");
+              onNavigate("tools/pagespeed-fix-recommendation-tool");
             }}
             className="text-left p-4 rounded-2xl border border-slate-200/80 hover:border-[#FF5722]/50 hover:bg-orange-50/20 transition-all group bg-white shadow-xs cursor-pointer flex flex-col justify-between"
           >
             <div className="space-y-1.5">
               <span className="text-[10px] font-mono font-bold text-[#FF5722] uppercase tracking-wider block">Speed & Performance</span>
-              <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors line-clamp-1">PageSpeed Estimator</h3>
-              <p className="text-xs text-slate-500 font-light line-clamp-2">Estimate mobile and desktop Google PageSpeed scores and pinpoint latency.</p>
+              <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors line-clamp-1">PageSpeed Fix Recommendation Tool</h3>
+              <p className="text-xs text-slate-500 font-light line-clamp-2">Actionable, prioritized speed fixes for TTFB, render blocking resources, and asset compression.</p>
             </div>
             <div className="mt-3 text-xs font-semibold text-slate-600 group-hover:text-[#FF5722] flex items-center gap-1">
               <span>Launch Tool</span>

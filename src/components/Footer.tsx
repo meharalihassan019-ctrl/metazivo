@@ -248,7 +248,7 @@ export default function Footer({ onNavigate, contactInfo }: FooterProps) {
           <div className="flex items-center gap-6">
             <a 
               href="/privacy-policy" 
-              onClick={(e) => { e.preventDefault(); handleNavClick("privacy"); }} 
+              onClick={(e) => { e.preventDefault(); handleNavClick("privacy-policy"); }} 
               className="text-xs text-slate-500 hover:text-[#FF5722] cursor-pointer transition-colors"
             >
               Privacy Policy

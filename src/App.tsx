@@ -883,9 +883,11 @@ export default function App() {
         setCurrentTab("tools/website-speed-test");
         window.history.pushState({}, "", "/tools/website-speed-test");
       } else {
-        setActiveSeoToolSlug(subSlug);
+        const toolDef = getToolBySlug(subSlug);
+        const targetSlug = toolDef ? toolDef.slug : subSlug;
+        setActiveSeoToolSlug(targetSlug);
         setCurrentTab("seo-tools");
-        window.history.pushState({}, "", `/tools/${subSlug}`);
+        window.history.pushState({}, "", `/tools/${targetSlug}`);
       }
     } else if (tab === "seo-tools" || tab.startsWith("seo-tools/")) {
       const subSlug = tab.replace(/^seo-tools\/?/i, "").replace(/\/+$/, "");
@@ -897,9 +899,11 @@ export default function App() {
         setCurrentTab("tools/website-speed-test");
         window.history.pushState({}, "", "/tools/website-speed-test");
       } else {
-        setActiveSeoToolSlug(subSlug);
+        const toolDef = getToolBySlug(subSlug);
+        const targetSlug = toolDef ? toolDef.slug : subSlug;
+        setActiveSeoToolSlug(targetSlug);
         setCurrentTab("seo-tools");
-        window.history.pushState({}, "", `/tools/${subSlug}`);
+        window.history.pushState({}, "", `/tools/${targetSlug}`);
       }
     } else if (
       tab === "free-tools" ||
@@ -908,6 +912,12 @@ export default function App() {
     ) {
       setCurrentTab("free-tools");
       window.history.pushState({}, "", "/free-tools");
+    } else if (tab === "privacy" || tab === "privacy-policy") {
+      setCurrentTab("privacy");
+      window.history.pushState({}, "", "/privacy-policy");
+    } else if (tab === "terms" || tab === "terms-and-conditions") {
+      setCurrentTab("terms");
+      window.history.pushState({}, "", "/terms");
     } else {
       const cleanTab = tab.replace(/^\/+|\/+$/g, "");
       setCurrentTab(cleanTab);
