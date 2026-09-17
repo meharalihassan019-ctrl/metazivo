@@ -10,6 +10,8 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, updateDoc, query, where } from "firebase/firestore";
 import { runRealWebsiteSpeedAudit } from "./src/speedAuditor";
 import { SEO_TOOLS_LIST, getToolBySlug } from "./src/components/seo-tools/seoToolsData";
+import { servicesData } from "./src/data";
+import { generateBlogSchemaJson, buildPageSchemaGraph, extractFaqsFromHtml } from "./src/schemaHelper";
 
 let firestoreDb;
 try {
@@ -146,162 +148,197 @@ app.use((req, res, next) => {
   }
 
   // 1. WordPress search parameter templates (?s={search_term_string} or empty ?s=) -> 301 Redirect to /
-  if (req.query.s !== undefined) {
-    const cleanSearch = String(req.query.s).trim();
-    if (!cleanSearch || cleanSearch.includes("{search_term_string}") || cleanSearch.includes("%7Bsearch_term_string%7D")) {
+  const rawUrl = req.originalUrl || req.url || "";
+  if (req.query?.s !== undefined || rawUrl.includes("?s=") || rawUrl.includes("&s=")) {
+    const cleanSearch = String(req.query?.s || "").trim();
+    if (
+      !cleanSearch ||
+      cleanSearch.includes("{search_term_string}") ||
+      rawUrl.includes("{search_term_string}") ||
+      rawUrl.includes("%7Bsearch_term_string%7D") ||
+      rawUrl.includes("%7bsearch_term_string%7d")
+    ) {
       return res.redirect(301, "/");
     }
   }
 
-  // 2. Redirect duplicate slashes (e.g. /blog//post-slug -> /blog/post-slug)
-  if (req.path.length > 1 && req.path.includes("//")) {
-    const cleanPath = req.path.replace(/\/+/g, "/");
-    const query = req.url.slice(req.path.length);
-    return res.redirect(301, cleanPath + query);
-  }
-
-  // 3. Blog Slug Normalization & Canonical 301 Redirects
-  // Fixes "Alternate page with proper canonical tag" for URLs with Title Case, spaces, or encoded characters
-  if (req.path.toLowerCase().startsWith("/blog/")) {
-    const rawSlug = req.path.slice(6); // remove /blog/
-    const decodedSlug = decodeURIComponent(rawSlug).trim();
-    // Normalize to clean lowercase hyphenated slug
-    const cleanSlug = decodedSlug.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-    if (cleanSlug && (rawSlug !== cleanSlug || req.path !== `/blog/${cleanSlug}`)) {
-      return res.redirect(301, `/blog/${cleanSlug}`);
-    }
-  }
-
-  const normalizedPath = req.path.toLowerCase().replace(/\/+$/, "");
-
-  // 2. SEO Tool Canonical Redirects
-  const speedToolAliases = [
-    "/free-tools/audit",
-    "/website-speed-test",
-    "/speed-test",
-    "/audit"
-  ];
-  if (speedToolAliases.includes(normalizedPath)) {
-    const query = req.url.slice(req.path.length);
-    return res.redirect(301, `/tools/website-speed-test${query}`);
-  }
-
-  // 2b. Legacy SEO Tool URLs Redirect to clean /tools/:slug
-  if (normalizedPath.startsWith("/seo-tools/")) {
-    const subSlug = normalizedPath.replace(/^\/seo-tools\/?/, "").replace(/\/+$/, "");
-    if (subSlug) {
-      const toolDef = getToolBySlug(subSlug);
-      const targetSlug = toolDef ? toolDef.slug : subSlug;
-      const query = req.url.slice(req.path.length);
-      return res.redirect(301, `/tools/${targetSlug}${query}`);
-    }
-  }
-
-  // 2c. Tool alias canonical redirects (e.g. /tools/pagespeed-estimator -> /tools/pagespeed-fix-recommendation-tool)
-  if (normalizedPath.startsWith("/tools/")) {
-    const subSlug = normalizedPath.replace(/^\/tools\/?/, "").replace(/\/+$/, "");
-    if (subSlug && subSlug !== "website-speed-test") {
-      const toolDef = getToolBySlug(subSlug);
-      if (toolDef && toolDef.slug !== subSlug) {
-        const query = req.url.slice(req.path.length);
-        return res.redirect(301, `/tools/${toolDef.slug}${query}`);
-      }
-    }
-  }
-
-  const freeToolsAliases = [
-    "/tools",
-    "/free-seo-tools",
-    "/free-seo-tool"
-  ];
-  if (freeToolsAliases.includes(normalizedPath)) {
-    const query = req.url.slice(req.path.length);
-    return res.redirect(301, `/seo-tools${query}`);
-  }
-
-  // 2d. Legal and General Canonical Redirects
-  if (normalizedPath === "/privacy") {
-    const query = req.url.slice(req.path.length);
-    return res.redirect(301, `/privacy-policy${query}`);
-  }
-  if (normalizedPath === "/terms-and-conditions") {
-    const query = req.url.slice(req.path.length);
-    return res.redirect(301, `/terms${query}`);
-  }
-
-  // 3. Service Slug Aliases Canonical 301 Redirects
-  const serviceAliases: Record<string, string> = {
-    "/service/custom-web-development": "/service/website-development",
-    "/service/web-development": "/service/website-development",
-    "/service/responsive-website-design": "/service/website-development",
-    "/service/website-design": "/service/website-development",
-    "/service/custom-website-development": "/service/website-development",
-    "/service/custom-web-design": "/service/website-development",
-    "/service/web-design": "/service/website-development",
-    "/service/wordpress": "/service/wordpress-development",
-    "/service/woocommerce": "/service/wordpress-development",
-    "/service/custom-wordpress": "/service/wordpress-development",
-    "/service/seo-services": "/service/seo",
-    "/service/seo-service": "/service/seo",
-    "/service/seo-blog-writing": "/service/seo",
-    "/service/seo-and-blog-writing": "/service/seo",
-    "/service/blog-writing": "/service/seo",
-    "/service/seo-writing": "/service/seo",
-    "/service/seo-content-writing": "/service/seo",
-    "/service/search-engine-optimization": "/service/seo",
-    "/service/mobile-apps": "/service/mobile-app-development",
-    "/service/app-development": "/service/mobile-app-development",
-    "/service/ai-apps": "/service/ai-mobile-apps",
-    "/service/meta-ads": "/service/meta-ads-advertising",
-    "/service/facebook-ads": "/service/meta-ads-advertising",
-    "/service/social-media": "/service/social-media-management",
-    "/service/branding": "/service/graphic-design-branding",
-    "/service/logo-design": "/service/graphic-design-branding",
-    "/service/video": "/service/video-editing",
-    "/service/saas": "/service/saas-applications",
-    "/service/chatbot": "/service/chatbots"
-  };
-  if (serviceAliases[normalizedPath]) {
-    const query = req.url.slice(req.path.length);
-    return res.redirect(301, `${serviceAliases[normalizedPath]}${query}`);
-  }
-
-  // 4. System /page/* Canonical Redirects (Prevents Google Duplicate Content)
-  const systemPageRedirects: Record<string, string> = {
-    "/page/home": "/",
-    "/page/about": "/about",
-    "/page/services": "/services",
-    "/page/portfolio": "/portfolio",
-    "/page/pricing": "/pricing",
-    "/page/blog": "/blog",
-    "/page/contact": "/contact",
-    "/page/privacy": "/privacy-policy",
-    "/page/privacy-policy": "/privacy-policy",
-    "/page/terms": "/terms"
-  };
-  if (systemPageRedirects[normalizedPath]) {
-    const query = req.url.slice(req.path.length);
-    return res.redirect(301, `${systemPageRedirects[normalizedPath]}${query}`);
-  }
-
-  // 3. Trailing slash normalization for clean canonical indexing
-  if (req.path.length > 1 && req.path.endsWith("/")) {
-    const cleanPath = req.path.slice(0, -1);
-    const query = req.url.slice(req.path.length);
-    return res.redirect(301, cleanPath + query);
-  }
-
-  // 4. Custom Database 301 Redirect Rules
+  // 2. Custom Database 301 Redirect Rules (Configured by admin)
   if (db?.redirects && Array.isArray(db.redirects)) {
-    const matchedRule = db.redirects.find((r: any) => r.fromPath === req.path || r.fromPath === normalizedPath);
+    const norm = req.path.toLowerCase().replace(/\/+$/, "");
+    const matchedRule = db.redirects.find((r: any) => r.fromPath === req.path || r.fromPath === norm);
     if (matchedRule) {
       matchedRule.hits = (matchedRule.hits || 0) + 1;
       return res.redirect(matchedRule.statusCode || 301, matchedRule.toPath);
     }
   }
 
+  // 3. Strict URL Canonicalization & 301 Permanent Redirects
+  // Normalizes uppercase, spaces, %20, duplicate slashes, trailing slashes, and legacy aliases
+  const canonicalPath = resolveCanonicalUrl(req.path);
+  if (canonicalPath !== req.path) {
+    const query = req.url.slice(req.path.length);
+    return res.redirect(301, canonicalPath + query);
+  }
+
   next();
 });
+
+// Canonical URL Resolution & Route Aliases Mapping
+export const SERVICE_ALIASES: Record<string, string> = {
+  "/service/custom-web-development": "/service/website-development",
+  "/service/web-development": "/service/website-development",
+  "/service/responsive-website-design": "/service/website-development",
+  "/service/website-design": "/service/website-development",
+  "/service/custom-website-development": "/service/website-development",
+  "/service/custom-web-design": "/service/website-development",
+  "/service/web-design": "/service/website-development",
+  "/service/wordpress": "/service/wordpress-development",
+  "/service/woocommerce": "/service/wordpress-development",
+  "/service/custom-wordpress": "/service/wordpress-development",
+  "/service/seo-services": "/service/seo",
+  "/service/seo-service": "/service/seo",
+  "/service/seo-blog-writing": "/service/seo",
+  "/service/seo-and-blog-writing": "/service/seo",
+  "/service/blog-writing": "/service/seo",
+  "/service/seo-writing": "/service/seo",
+  "/service/seo-content-writing": "/service/seo",
+  "/service/search-engine-optimization": "/service/seo",
+  "/service/mobile-apps": "/service/mobile-app-development",
+  "/service/app-development": "/service/mobile-app-development",
+  "/service/ai-apps": "/service/ai-mobile-apps",
+  "/service/meta-ads": "/service/meta-ads-advertising",
+  "/service/facebook-ads": "/service/meta-ads-advertising",
+  "/service/social-media": "/service/social-media-management",
+  "/service/branding": "/service/graphic-design-branding",
+  "/service/logo-design": "/service/graphic-design-branding",
+  "/service/video": "/service/video-editing",
+  "/service/video-production": "/service/video-editing",
+  "/service/saas": "/service/saas-applications",
+  "/service/saas-development": "/service/saas-applications",
+  "/service/ai-chatbots": "/service/chatbots",
+  "/service/ai-chatbot": "/service/chatbots",
+  "/service/chatbot": "/service/chatbots",
+  "/service/chatbot-development": "/service/chatbots",
+  "/service": "/services"
+};
+
+export const SYSTEM_PAGE_REDIRECTS: Record<string, string> = {
+  "/page/home": "/",
+  "/page/about": "/about",
+  "/page/services": "/services",
+  "/page/portfolio": "/portfolio",
+  "/page/pricing": "/pricing",
+  "/page/blog": "/blog",
+  "/page/contact": "/contact",
+  "/page/privacy": "/privacy-policy",
+  "/page/privacy-policy": "/privacy-policy",
+  "/page/terms": "/terms",
+  "/page/terms-and-conditions": "/terms"
+};
+
+export function resolveCanonicalUrl(rawPath: string): string {
+  if (!rawPath || rawPath === "/") return "/";
+
+  // 1. Decode URI safely
+  let decoded = rawPath;
+  try {
+    decoded = decodeURIComponent(rawPath);
+  } catch (e) {
+    decoded = rawPath;
+  }
+
+  // 2. Normalize duplicate slashes (e.g. //blog///post-slug -> /blog/post-slug)
+  decoded = decoded.replace(/\/+/g, "/");
+
+  // 3. Trailing slash policy: Root is "/", all other paths must NOT have a trailing slash
+  if (decoded.length > 1 && decoded.endsWith("/")) {
+    decoded = decoded.slice(0, -1);
+  }
+
+  // 4. Split segments and normalize: lowercase, replace spaces & invalid characters with hyphens
+  const parts = decoded.split("/").map((seg, idx) => {
+    if (idx === 0 && seg === "") return "";
+    let clean = seg.trim().toLowerCase();
+    // Replace spaces, plus signs, underscores with hyphens
+    clean = clean.replace(/[\s+_]+/g, "-");
+    // Strip characters that aren't a-z, 0-9, or hyphens
+    clean = clean.replace(/[^a-z0-9\-]/g, "");
+    // Collapse consecutive hyphens
+    clean = clean.replace(/-+/g, "-");
+    // Remove leading and trailing hyphens
+    clean = clean.replace(/^-+|-+$/g, "");
+    return clean;
+  });
+
+  let canonical = parts.join("/");
+  if (!canonical.startsWith("/")) canonical = "/" + canonical;
+  if (canonical === "") canonical = "/";
+
+  // 5. SEO Tools Redirect Rules
+  if (
+    canonical === "/free-tools/audit" ||
+    canonical === "/website-speed-test" ||
+    canonical === "/speed-test" ||
+    canonical === "/audit"
+  ) {
+    return "/tools/website-speed-test";
+  }
+
+  if (
+    canonical === "/tools" ||
+    canonical === "/free-seo-tools" ||
+    canonical === "/free-seo-tool"
+  ) {
+    return "/seo-tools";
+  }
+
+  // 6. Legal and Core Page Aliases
+  if (canonical === "/privacy") {
+    return "/privacy-policy";
+  }
+  if (canonical === "/terms-and-conditions") {
+    return "/terms";
+  }
+  if (canonical === "/why-choose-us") {
+    return "/about";
+  }
+  if (canonical === "/home") {
+    return "/";
+  }
+
+  // 7. Legacy SEO tool paths: /seo-tools/:slug -> /tools/:slug
+  if (canonical.startsWith("/seo-tools/")) {
+    const subSlug = canonical.replace(/^\/seo-tools\/?/, "");
+    if (subSlug === "website-speed-test") {
+      return "/tools/website-speed-test";
+    }
+    const toolDef = getToolBySlug(subSlug);
+    return `/tools/${toolDef ? toolDef.slug : subSlug}`;
+  }
+
+  // 8. Tool alias canonicalization: /tools/:slug -> /tools/${toolDef.slug}
+  if (canonical.startsWith("/tools/")) {
+    const subSlug = canonical.replace(/^\/tools\/?/, "");
+    if (subSlug && subSlug !== "website-speed-test") {
+      const toolDef = getToolBySlug(subSlug);
+      if (toolDef && toolDef.slug !== subSlug) {
+        return `/tools/${toolDef.slug}`;
+      }
+    }
+  }
+
+  // 9. Service Aliases
+  if (SERVICE_ALIASES[canonical]) {
+    return SERVICE_ALIASES[canonical];
+  }
+
+  // 10. System Page Aliases (/page/...)
+  if (SYSTEM_PAGE_REDIRECTS[canonical]) {
+    return SYSTEM_PAGE_REDIRECTS[canonical];
+  }
+
+  return canonical;
+}
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
@@ -618,7 +655,31 @@ let postsCache: any[] | null = null;
 let postsCacheTime = 0;
 const POSTS_CACHE_TTL = 1000 * 60 * 5; // 5 minutes cache
 
-// Optimize post payload by removing duplicated massive base64 strings in openGraph and twitterCard
+// Sitemap In-Memory Cache
+let sitemapCacheXml: string | null = null;
+let sitemapCacheEtag = "";
+let sitemapCacheTime = 0;
+const SITEMAP_CACHE_TTL = 1000 * 60 * 15; // 15 minutes cache
+
+// High-Speed In-Memory SSR Cache for sub-second loading (< 10ms TTFB for crawlers & visitors)
+interface SsrCacheEntry {
+  html: string;
+  timestamp: number;
+  etag: string;
+}
+const ssrCache = new Map<string, SsrCacheEntry>();
+const SSR_CACHE_TTL = 1000 * 60 * 30; // 30 minutes
+
+export function invalidateGlobalCaches() {
+  postsCache = null;
+  postsCacheTime = 0;
+  sitemapCacheXml = null;
+  sitemapCacheEtag = "";
+  sitemapCacheTime = 0;
+  ssrCache.clear();
+}
+
+// Optimize post payload by removing duplicated massive base64 strings in openGraph and twitterCard while preserving featuredImage
 function optimizePostPayload(post: any) {
   if (!post) return post;
   const p = { ...post };
@@ -750,8 +811,34 @@ app.post("/api/posts", async (req, res) => {
       seoScore: req.body.seoScore || 80,
       schemas: req.body.schemas || []
     };
+
+    // Auto-generate rich schema markup if not explicitly provided
+    if (!newPost.schemas || newPost.schemas.length === 0) {
+      try {
+        const autoSchemaJson = generateBlogSchemaJson({
+          title: newPost.title,
+          slug: newPost.slug,
+          excerpt: newPost.excerpt,
+          content: newPost.content,
+          focusKeywords: newPost.focusKeywords,
+          author: newPost.author,
+          publishDate: newPost.publishDate,
+          featuredImage: newPost.featuredImage
+        });
+        newPost.schemas = [
+          {
+            id: `schema-auto-${Date.now()}`,
+            type: "BlogPosting",
+            jsonData: autoSchemaJson
+          }
+        ];
+      } catch (schemaGenErr) {
+        console.warn("Backend auto schema generation fallback on POST:", schemaGenErr);
+      }
+    }
+
     await setDoc(doc(firestoreDb, "posts", newPost.id), newPost);
-    postsCache = null; // Invalidate cache
+    invalidateGlobalCaches();
     res.status(201).json(newPost);
   } catch (err) {
     res.status(500).json({ error: "Failed to create post" });
@@ -778,11 +865,63 @@ app.put("/api/posts/:id", async (req, res) => {
       ...postDoc.data(),
       ...updatePayload
     };
+
+    // Auto-generate rich schema if schemas array is missing or empty
+    if (!updatedPost.schemas || updatedPost.schemas.length === 0) {
+      try {
+        const autoSchemaJson = generateBlogSchemaJson({
+          title: updatedPost.title,
+          slug: updatedPost.slug,
+          excerpt: updatedPost.excerpt,
+          content: updatedPost.content,
+          focusKeywords: updatedPost.focusKeywords,
+          author: updatedPost.author,
+          publishDate: updatedPost.publishDate,
+          featuredImage: updatedPost.featuredImage
+        });
+        updatedPost.schemas = [
+          {
+            id: `schema-auto-${Date.now()}`,
+            type: "BlogPosting",
+            jsonData: autoSchemaJson
+          }
+        ];
+      } catch (schemaGenErr) {
+        console.warn("Backend auto schema generation fallback on PUT:", schemaGenErr);
+      }
+    }
+
     await setDoc(postRef, updatedPost);
-    postsCache = null; // Invalidate cache
+    invalidateGlobalCaches();
     res.json(updatedPost);
   } catch (err) {
     res.status(500).json({ error: "Failed to update post" });
+  }
+});
+
+// Standalone Schema Generation API Endpoint
+app.post("/api/generate-blog-schema", (req, res) => {
+  try {
+    const { title, slug, excerpt, content, focusKeywords, author } = req.body;
+    const schemaJson = generateBlogSchemaJson({
+      title,
+      slug,
+      excerpt,
+      content,
+      focusKeywords,
+      author
+    });
+    res.json({
+      success: true,
+      schemaJson,
+      schemaConfig: {
+        id: `schema-auto-${Date.now()}`,
+        type: "BlogPosting",
+        jsonData: schemaJson
+      }
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to generate schema", details: err.message });
   }
 });
 
@@ -804,7 +943,7 @@ app.post("/api/posts/:id/view", async (req, res) => {
 app.delete("/api/posts/:id", async (req, res) => {
   try {
     await deleteDoc(doc(firestoreDb, "posts", req.params.id));
-    postsCache = null; // Invalidate cache
+    invalidateGlobalCaches();
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: "Failed to delete post" });
@@ -1788,6 +1927,7 @@ app.post("/api/pages", async (req, res) => {
       publishDate: new Date().toISOString()
     };
     await setDoc(doc(firestoreDb, "pages", newPage.id), newPage);
+    invalidateGlobalCaches();
     res.status(201).json(newPage);
   } catch(e) { res.status(500).json({error: "Failed"}); }
 });
@@ -1806,6 +1946,7 @@ app.put("/api/pages/:id", (req, res) => {
       seoKeywords: req.body.seoKeywords || db.pages[index].seoKeywords || []
     };
     saveDb(db);
+    invalidateGlobalCaches();
     res.json(db.pages[index]);
   } else {
     res.status(404).json({ error: "Page not found" });
@@ -1815,6 +1956,7 @@ app.put("/api/pages/:id", (req, res) => {
 app.delete("/api/pages/:id", async (req, res) => {
   try {
     await deleteDoc(doc(firestoreDb, "pages", req.params.id));
+    invalidateGlobalCaches();
     res.json({ success: true });
   } catch(e) { res.status(500).json({error: "Failed"}); }
 });
@@ -1845,20 +1987,41 @@ app.get("/llms.txt", (req, res) => {
 
 app.get("/sitemap.xml", async (req, res) => {
   try {
-    const [pagesSnap, postsSnap] = await Promise.all([
-      getDocs(collection(firestoreDb, "pages")),
-      getDocs(collection(firestoreDb, "posts"))
-    ]);
-    const pages = pagesSnap.docs.map(d => d.data());
-    const posts = postsSnap.docs.map(d => d.data());
+    // 1. Instant response from in-memory cache if fresh (< 15 mins)
+    if (sitemapCacheXml && (Date.now() - sitemapCacheTime < SITEMAP_CACHE_TTL)) {
+      res.setHeader("Content-Type", "application/xml; charset=utf-8");
+      res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+      res.setHeader("ETag", sitemapCacheEtag);
+      if (req.headers["if-none-match"] === sitemapCacheEtag) {
+        return res.status(304).end();
+      }
+      return res.send(sitemapCacheXml);
+    }
+
+    let pages: any[] = db?.pages || [];
+    let posts: any[] = db?.posts || [];
+
+    if (firestoreDb) {
+      try {
+        const [pagesSnap, postsSnap] = await Promise.all([
+          getDocs(collection(firestoreDb, "pages")),
+          getDocs(collection(firestoreDb, "posts"))
+        ]);
+        if (!pagesSnap.empty) pages = pagesSnap.docs.map(d => d.data());
+        if (!postsSnap.empty) posts = postsSnap.docs.map(d => d.data());
+      } catch (fErr) {
+        console.warn("Firestore fetch error for sitemap, using local db fallback:", fErr);
+      }
+    }
 
     const baseUrl = "https://metazivo.com";
     const today = new Date().toISOString().split("T")[0];
+    const addedUrls = new Set<string>();
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
-    // 1. Core Primary Static Pages
+    // 1. Core Primary Static Pages (Strict 200 OK Canonical Final URLs)
     const staticRoutes: Array<{ path: string; changefreq: string; priority: string }> = [
       { path: "/", changefreq: "daily", priority: "1.0" },
       { path: "/services", changefreq: "weekly", priority: "0.9" },
@@ -1875,15 +2038,22 @@ app.get("/sitemap.xml", async (req, res) => {
 
     staticRoutes.forEach(route => {
       const locUrl = route.path === "/" ? `${baseUrl}/` : `${baseUrl}${route.path}`;
-      xml += `\n  <url>\n    <loc>${locUrl}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${route.changefreq}</changefreq>\n    <priority>${route.priority}</priority>\n  </url>`;
+      if (!addedUrls.has(locUrl)) {
+        addedUrls.add(locUrl);
+        xml += `\n  <url>\n    <loc>${locUrl}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${route.changefreq}</changefreq>\n    <priority>${route.priority}</priority>\n  </url>`;
+      }
     });
 
-    // 2. All 31 Free Online Production SEO Tools & AI Optimization Utilities
+    // 2. All 31 Free Production SEO Tools & Utilities (Canonical /tools/:slug)
     SEO_TOOLS_LIST.forEach((tool) => {
-      xml += `\n  <url>\n    <loc>${baseUrl}/tools/${tool.slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>`;
+      const locUrl = `${baseUrl}/tools/${tool.slug}`;
+      if (!addedUrls.has(locUrl)) {
+        addedUrls.add(locUrl);
+        xml += `\n  <url>\n    <loc>${locUrl}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>`;
+      }
     });
 
-    // 3. All 11 High-Yield Core Agency Service Landing Pages (Critical for Google Indexing)
+    // 3. All 11 High-Yield Core Agency Service Landing Pages
     const serviceSlugs = [
       "website-development",
       "wordpress-development",
@@ -1899,59 +2069,98 @@ app.get("/sitemap.xml", async (req, res) => {
     ];
 
     serviceSlugs.forEach(slug => {
-      xml += `\n  <url>\n    <loc>${baseUrl}/service/${slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>`;
+      const locUrl = `${baseUrl}/service/${slug}`;
+      if (!addedUrls.has(locUrl)) {
+        addedUrls.add(locUrl);
+        xml += `\n  <url>\n    <loc>${locUrl}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>`;
+      }
     });
 
-    // 4. Published Blog Posts with accurate published/updated timestamps
+    // 4. Published Blog Posts (Excludes drafts, search templates, query strings, and non-canonical variants)
     posts
-      .filter((post: any) => post.status === "published" || !post.status)
+      .filter((post: any) => post && (post.status === "published" || !post.status))
       .forEach((post: any) => {
-        const cleanSlug = (post.slug || "")
-          .toString()
+        let rawSlug = (post.slug || "").toString();
+        rawSlug = rawSlug
           .replace(/^https?:\/\/[^\/]+/i, "")
           .replace(/metazivo\.com\/?/i, "")
           .replace(/^\/+|\/+$/g, "")
           .trim();
 
-        if (cleanSlug) {
-          let postDate = today;
-          if (post.updatedAt) {
-            try { postDate = new Date(post.updatedAt).toISOString().split("T")[0]; } catch(e) {}
-          } else if (post.publishDate) {
-            try { postDate = new Date(post.publishDate).toISOString().split("T")[0]; } catch(e) {}
-          }
+        // Safe decode and normalize to canonical slug format
+        try {
+          rawSlug = decodeURIComponent(rawSlug);
+        } catch (e) {}
 
-          xml += `\n  <url>\n    <loc>${baseUrl}/blog/${cleanSlug}</loc>\n    <lastmod>${postDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`;
+        const cleanSlug = rawSlug
+          .toLowerCase()
+          .replace(/[\s+_]+/g, "-")
+          .replace(/[^a-z0-9\-]/g, "")
+          .replace(/-+/g, "-")
+          .replace(/^-+|-+$/g, "");
+
+        if (cleanSlug) {
+          const locUrl = `${baseUrl}/blog/${cleanSlug}`;
+          if (!addedUrls.has(locUrl)) {
+            addedUrls.add(locUrl);
+            let postDate = today;
+            if (post.updatedAt) {
+              try { postDate = new Date(post.updatedAt).toISOString().split("T")[0]; } catch(e) {}
+            } else if (post.publishDate) {
+              try { postDate = new Date(post.publishDate).toISOString().split("T")[0]; } catch(e) {}
+            }
+
+            xml += `\n  <url>\n    <loc>${locUrl}</loc>\n    <lastmod>${postDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`;
+          }
         }
       });
 
-    // 4. Custom non-system pages (Exclude duplicate system templates to avoid Google Search Console indexing penalties)
+    // 5. Custom non-system pages (Exclude duplicate system templates to prevent duplicate content penalties)
     const systemPageSlugs = new Set([
       "home", "about", "services", "pricing", "privacy", "privacy-policy", 
-      "terms", "terms-and-conditions", "contact", "portfolio", "blog"
+      "terms", "terms-and-conditions", "contact", "portfolio", "blog", "free-tools", "tools", "seo-tools"
     ]);
 
     pages
       .filter((page: any) => {
-        if (page.isSystem) return false;
+        if (!page || page.isSystem) return false;
         const normalized = (page.slug || "").toString().toLowerCase().replace(/^\/+|\/+$/g, "");
         return normalized && !systemPageSlugs.has(normalized);
       })
       .forEach((page: any) => {
-        const cleanSlug = (page.slug || "").toString().replace(/^\/+|\/+$/g, "");
+        const cleanSlug = (page.slug || "")
+          .toString()
+          .toLowerCase()
+          .replace(/[^a-z0-9\-]/g, "-")
+          .replace(/-+/g, "-")
+          .replace(/^-+|-+$/g, "");
+
         if (cleanSlug) {
-          xml += `\n  <url>\n    <loc>${baseUrl}/${cleanSlug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`;
+          const locUrl = `${baseUrl}/${cleanSlug}`;
+          if (!addedUrls.has(locUrl)) {
+            addedUrls.add(locUrl);
+            xml += `\n  <url>\n    <loc>${locUrl}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`;
+          }
         }
       });
 
     xml += `\n</urlset>`;
 
+    // Save in cache
+    sitemapCacheXml = xml;
+    sitemapCacheTime = Date.now();
+    sitemapCacheEtag = `W/"${crypto.createHash("md5").update(xml).digest("hex").slice(0, 16)}"`;
+
     res.setHeader("Content-Type", "application/xml; charset=utf-8");
-    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+    res.setHeader("ETag", sitemapCacheEtag);
+    if (req.headers["if-none-match"] === sitemapCacheEtag) {
+      return res.status(304).end();
+    }
     res.send(xml);
   } catch(e) { 
     console.error("Sitemap generation error:", e);
-    res.status(500).type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://metazivo.com</loc></url></urlset>`); 
+    res.status(500).type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://metazivo.com/</loc></url></urlset>`); 
   }
 });
 
@@ -2093,20 +2302,28 @@ function generateSimulatedResponse(action: string, title: string, keywords: stri
       ]
     });
   } else if (action === "schema") {
-    return res.json({
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      "headline": safeTitle,
-      "description": `Comprehensive analysis of ${safeTitle}.`,
-      "author": {
-        "@type": "Person",
-        "name": "Mehar Ali Hassan"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "Metazivo"
-      }
-    });
+    try {
+      const generated = generateBlogSchemaJson({
+        title: safeTitle,
+        slug: safeTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-")
+      });
+      return res.json(JSON.parse(generated));
+    } catch (_) {
+      return res.json({
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": safeTitle,
+        "description": `Comprehensive analysis of ${safeTitle}.`,
+        "author": {
+          "@type": "Person",
+          "name": "Mehar Ali Hassan"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Metazivo"
+        }
+      });
+    }
   } else if (action === "social") {
     return res.json({
       linkedin: `Building real organic search visibility takes consistency and clean technical execution. We just published a detailed breakdown on "${safeTitle}" covering what actually moves the needle. Read the full guide on our website. #Metazivo #SEO #WebDevelopment #BusinessGrowth`,
@@ -3270,213 +3487,18 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
 }
 
 async function generateSchema(pathname: string, preloadedPost?: any): Promise<string> {
-  const p = pathname.toLowerCase().replace(/\/$/, "") || "/";
-  const domain = "https://metazivo.com";
+  const canonicalPath = resolveCanonicalUrl(pathname.split("?")[0]);
+  const p = canonicalPath.toLowerCase().replace(/\/+$/, "") || "/";
 
-  const baseSchema: any = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": `${domain}/#organization`,
-        "name": "Metazivo",
-        "url": `${domain}/`,
-        "logo": {
-          "@type": "ImageObject",
-          "@id": `${domain}/#logo`,
-          "url": `${domain}/favicon.svg`,
-          "contentUrl": `${domain}/favicon.svg`,
-          "caption": "Metazivo Logo"
-        }
-      }
-    ]
-  };
-
-  if (p === "/tools/website-speed-test" || p === "/website-speed-test" || p === "/speed-test") {
-    baseSchema["@graph"].push({
-      "@type": "WebApplication",
-      "@id": `${domain}/tools/website-speed-test#app`,
-      "name": "Metazivo Free Website Speed Test & Core Web Vitals Audit",
-      "url": `${domain}/tools/website-speed-test`,
-      "applicationCategory": "UtilityApplication",
-      "operatingSystem": "All",
-      "browserRequirements": "Requires JavaScript. Requires HTML5.",
-      "description": "Analyze mobile and desktop web performance, Core Web Vitals, server TTFB, and technical optimization bottlenecks instantly.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "publisher": { "@id": `${domain}/#organization` }
-    });
-
-    baseSchema["@graph"].push({
-      "@type": "FAQPage",
-      "@id": `${domain}/tools/website-speed-test#faq`,
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Why is website speed critical for Google rankings?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Google officially incorporates Core Web Vitals (LCP, INP, CLS) and page speed as organic ranking signals. Fast websites experience lower bounce rates, higher crawl efficiency, and significantly higher conversion rates."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What is considered a good Core Web Vitals score?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Google benchmarks: Largest Contentful Paint (LCP) under 2.5 seconds, Cumulative Layout Shift (CLS) under 0.1, and Total Blocking Time (TBT) under 200 milliseconds. An overall PageSpeed score of 90 or above is classified as good."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is this website speed test real and accurate?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. This tool runs genuine live HTTP server probes and Google Lighthouse audits directly against the target website, measuring actual TTFB, HTML payload weight, asset blockers, and Core Web Vitals without fake or simulated estimations."
-          }
-        }
-      ]
-    });
-
-    baseSchema["@graph"].push({
-      "@type": "BreadcrumbList",
-      "@id": `${domain}/tools/website-speed-test#breadcrumbs`,
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
-        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": `${domain}/free-tools` },
-        { "@type": "ListItem", "position": 3, "name": "Website Speed Test", "item": `${domain}/tools/website-speed-test` }
-      ]
-    });
-  }
-
-  if (p === "/seo-tools" || p === "/seo-tool") {
-    baseSchema["@graph"].push({
-      "@type": "WebApplication",
-      "@id": `${domain}/seo-tools#app`,
-      "name": "30 Free Production SEO Tools & AI Search Optimization Suite",
-      "url": `${domain}/seo-tools`,
-      "applicationCategory": "SEOApplication",
-      "operatingSystem": "All",
-      "browserRequirements": "Requires JavaScript. Requires HTML5.",
-      "description": "Access 30 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "publisher": { "@id": `${domain}/#organization` }
-    });
-
-    baseSchema["@graph"].push({
-      "@type": "BreadcrumbList",
-      "@id": `${domain}/seo-tools#breadcrumbs`,
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
-        { "@type": "ListItem", "position": 2, "name": "SEO Tools Suite", "item": `${domain}/seo-tools` }
-      ]
-    });
-  }
-
-  if (p.startsWith("/tools/") || p.startsWith("/seo-tools/")) {
-    const toolSubSlug = p.replace(/^\/(?:tools|seo-tools)\/?/i, "").replace(/\/+$/, "");
-    const tool = getToolBySlug(toolSubSlug);
-    if (tool && toolSubSlug !== "website-speed-test") {
-      const toolUrl = `${domain}/tools/${tool.slug}`;
-      baseSchema["@graph"].push({
-        "@type": "WebApplication",
-        "@id": `${toolUrl}#app`,
-        "name": tool.name,
-        "url": toolUrl,
-        "applicationCategory": "SEOApplication",
-        "operatingSystem": "All",
-        "browserRequirements": "Requires JavaScript. Requires HTML5.",
-        "description": tool.metaDescription || tool.shortDesc,
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "publisher": { "@id": `${domain}/#organization` }
-      });
-
-      baseSchema["@graph"].push({
-        "@type": "BreadcrumbList",
-        "@id": `${toolUrl}#breadcrumbs`,
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
-          { "@type": "ListItem", "position": 2, "name": "SEO Tools Suite", "item": `${domain}/seo-tools` },
-          { "@type": "ListItem", "position": 3, "name": tool.name, "item": toolUrl }
-        ]
-      });
-
-      if (tool.faqs && tool.faqs.length > 0) {
-        baseSchema["@graph"].push({
-          "@type": "FAQPage",
-          "@id": `${toolUrl}#faq`,
-          "mainEntity": tool.faqs.map(faq => ({
-            "@type": "Question",
-            "name": faq.q,
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": faq.a
-            }
-          }))
-        });
-      }
-    }
-  }
-
-  if (
-    p === "/free-tools" || 
-    p === "/tools" || 
-    p === "/free-seo-tools" || 
-    p === "/free-seo-tool" || 
-    p === "/tools/meta-title-description-generator" || 
-    p === "/meta-title-description-generator"
-  ) {
-    const appUrl = p.includes("meta-title") ? `${domain}/tools/meta-title-description-generator` : `${domain}/free-tools`;
-    baseSchema["@graph"].push({
-      "@type": "WebApplication",
-      "@id": `${appUrl}#app`,
-      "name": "Metazivo Free Meta Title & Description Generator",
-      "url": appUrl,
-      "applicationCategory": "SEOApplication",
-      "operatingSystem": "All",
-      "browserRequirements": "Requires JavaScript. Requires HTML5.",
-      "description": "Generate SEO-optimized meta titles and descriptions in seconds, calibrated to Google ranking character limits.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "publisher": { "@id": `${domain}/#organization` }
-    });
-
-    baseSchema["@graph"].push({
-      "@type": "BreadcrumbList",
-      "@id": `${appUrl}#breadcrumbs`,
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${domain}/` },
-        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": `${domain}/free-tools` },
-        ...(p.includes("meta-title") ? [{ "@type": "ListItem", "position": 3, "name": "Meta Title & Description Generator", "item": appUrl }] : [])
-      ]
-    });
-  }
-
+  let post = preloadedPost;
   if (p.startsWith("/blog/")) {
     const slug = p.replace("/blog/", "");
-    let post = preloadedPost;
-    
     if (!post && postsCache) {
       post = postsCache.find((item: any) => {
         const itemSlug = (item.slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
         return itemSlug === slug || item.id === slug;
       });
     }
-
     if (!post && firestoreDb) {
       try {
         const q = query(collection(firestoreDb, "posts"), where("slug", "==", slug));
@@ -3488,102 +3510,42 @@ async function generateSchema(pathname: string, preloadedPost?: any): Promise<st
         console.warn("Schema post fetch fallback:", e);
       }
     }
-
     if (!post && db?.posts) {
       post = db.posts.find((item: any) => {
         const itemSlug = (item.slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
         return itemSlug === slug || item.id === slug;
       });
     }
-
-    if (post) {
-      baseSchema["@graph"].push({
-        "@type": "Article",
-        "@id": `${domain}${pathname}/#article`,
-        "isPartOf": { "@id": `${domain}${pathname}/#webpage` },
-        "mainEntityOfPage": `${domain}${pathname}`,
-        "headline": post.title,
-        "description": post.excerpt || "",
-        "image": post.featuredImage || `${domain}/og-image.jpg`,
-        "author": {
-          "@type": "Person",
-          "name": post.author?.name || "Metazivo Expert",
-          "url": `${domain}/about`
-        },
-        "publisher": { "@id": `${domain}/#organization` },
-        "datePublished": post.publishDate || "2026-07-10T08:00:00+00:00"
-      });
-
-      // Parse dynamic FAQ schema from post.content
-      const domRegex = /<details class="faq-item[\s\S]*?<summary[\s\S]*?>[\s\S]*?<span>([\s\S]*?)<\/span>[\s\S]*?<\/summary>[\s\S]*?<div class="faq-answer[\s\S]*?>([\s\S]*?)<\/div>/gi;
-      let match;
-      const faqItems = [];
-      while ((match = domRegex.exec(post.content)) !== null) {
-        faqItems.push({
-          "@type": "Question",
-          "name": match[1].trim(),
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": match[2].trim().replace(/<[^>]+>/g, '') // strip nested html
-          }
-        });
-      }
-
-      if (faqItems.length > 0) {
-        baseSchema["@graph"].push({
-          "@type": "FAQPage",
-          "@id": `${domain}${pathname}/#faq`,
-          "mainEntity": faqItems
-        });
-      }
-    }
   }
 
-  return JSON.stringify(baseSchema, null, 2);
+  let tool = null;
+  if (p.startsWith("/tools/") || p.startsWith("/seo-tools/")) {
+    const toolSubSlug = p.replace(/^\/(?:tools|seo-tools)\/?/i, "").replace(/\/+$/, "");
+    tool = getToolBySlug(toolSubSlug);
+  }
+
+  const schemaGraph = buildPageSchemaGraph(p, {
+    blogPost: post,
+    seoTool: tool
+  });
+
+  return JSON.stringify(schemaGraph, null, 2);
 }
 
-// High-Speed In-Memory SSR Cache for sub-second loading (< 10ms TTFB for crawlers & visitors)
-const ssrCache = new Map<string, { html: string; timestamp: number }>();
-const SSR_CACHE_TTL = 1000 * 60 * 30; // 30 minutes
-
 async function injectSEOAndPrerender(html: string, pathname: string): Promise<string> {
-  // Check memory cache for instant response
-  const cached = ssrCache.get(pathname);
+  // Normalize path using the single source of truth canonical function
+  const canonicalPath = resolveCanonicalUrl(pathname.split("?")[0]);
+
+  // Check memory cache for instant sub-second response (< 10ms TTFB for crawlers & visitors)
+  const cached = ssrCache.get(canonicalPath);
   if (cached && (Date.now() - cached.timestamp < SSR_CACHE_TTL)) {
     return cached.html;
   }
 
   try {
-    const seoData = await getPageSEOAndContent(pathname);
+    const seoData = await getPageSEOAndContent(canonicalPath);
     let resHtml = html;
 
-    // Clean pathname for canonical URL: strip query parameters, trailing slashes, and normalize to lowercase
-    let canonicalPath = (pathname.split("?")[0].replace(/\/+$/, "") || "/").toLowerCase();
-    if (canonicalPath.startsWith("/blog/")) {
-      const rawS = canonicalPath.replace("/blog/", "");
-      const cleanS = decodeURIComponent(rawS).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-      canonicalPath = `/blog/${cleanS}`;
-    } else if (canonicalPath.startsWith("/service/")) {
-      const rawS = canonicalPath.replace("/service/", "");
-      const cleanS = decodeURIComponent(rawS).toLowerCase().replace(/^\/+|\/+$/g, "");
-      canonicalPath = `/service/${cleanS}`;
-    } else if (canonicalPath === "/privacy" || canonicalPath === "/privacy-policy") {
-      canonicalPath = "/privacy-policy";
-    } else if (canonicalPath === "/terms" || canonicalPath === "/terms-and-conditions") {
-      canonicalPath = "/terms";
-    } else if (canonicalPath.includes("website-speed-test") || canonicalPath.includes("speed-test")) {
-      canonicalPath = "/tools/website-speed-test";
-    } else if (canonicalPath.startsWith("/seo-tools/")) {
-      const rawS = canonicalPath.replace("/seo-tools/", "").replace(/^\/+|\/+$/g, "");
-      const toolDef = getToolBySlug(rawS);
-      canonicalPath = toolDef ? `/tools/${toolDef.slug}` : `/tools/${rawS}`;
-    } else if (canonicalPath.startsWith("/tools/")) {
-      const rawS = canonicalPath.replace("/tools/", "").replace(/^\/+|\/+$/g, "");
-      const toolDef = getToolBySlug(rawS);
-      canonicalPath = toolDef ? `/tools/${toolDef.slug}` : `/tools/${rawS}`;
-    } else if (canonicalPath.includes("meta-title")) {
-      canonicalPath = "/tools/meta-title-description-generator";
-    }
     const cleanCanonicalUrl = `https://metazivo.com${canonicalPath === "/" ? "/" : canonicalPath}`;
 
     // Title Replacement
@@ -3703,8 +3665,9 @@ async function injectSEOAndPrerender(html: string, pathname: string): Promise<st
       resHtml = resHtml.replace("</head>", `\n  ${db.settings.customHeadTags}\n</head>`);
     }
 
-    // Save to memory cache
-    ssrCache.set(pathname, { html: resHtml, timestamp: Date.now() });
+    // Save to memory cache with unique MD5 ETag
+    const etag = `W/"${crypto.createHash("md5").update(resHtml).digest("hex").slice(0, 16)}"`;
+    ssrCache.set(canonicalPath, { html: resHtml, timestamp: Date.now(), etag });
     return resHtml;
   } catch (err) {
     console.error("injectSEOAndPrerender error, returning raw HTML:", err);
@@ -3725,19 +3688,6 @@ async function initializeServer() {
   }
   const isProd = process.env.NODE_ENV === "production";
 
-  // Serve robots.txt explicitly with correct headers globally
-  app.get("/robots.txt", (req, res) => {
-    res.type("text/plain");
-    res.send(`User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /api
-
-Sitemap: https://metazivo.com/sitemap.xml`);
-  });
-
-
-
   if (!isProd) {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -3745,13 +3695,20 @@ Sitemap: https://metazivo.com/sitemap.xml`);
     });
     app.use(vite.middlewares);
 
-    // Let Vite handle fallback SPA index file rendering in development, but pre-render SEO tags
+    // Let Vite handle fallback SPA index file rendering in development, with SEO and caching
     app.get("*", async (req, res, next) => {
       try {
         let template = fs.readFileSync(path.join(process.cwd(), "index.html"), "utf-8");
         template = await vite.transformIndexHtml(req.path, template);
         template = await injectSEOAndPrerender(template, req.path);
+
+        const etag = `W/"${crypto.createHash("md5").update(template).digest("hex").slice(0, 16)}"`;
         res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.setHeader("Cache-Control", "public, max-age=300, stale-while-revalidate=3600");
+        res.setHeader("ETag", etag);
+        if (req.headers["if-none-match"] === etag) {
+          return res.status(304).end();
+        }
         res.status(200).send(template);
       } catch (e) {
         console.warn("Dev SSR fallback:", e);
@@ -3785,8 +3742,14 @@ Sitemap: https://metazivo.com/sitemap.xml`);
       try {
         const rawHtml = cachedIndexHtml || fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
         const preRendered = await injectSEOAndPrerender(rawHtml, req.path);
+
+        const etag = `W/"${crypto.createHash("md5").update(preRendered).digest("hex").slice(0, 16)}"`;
         res.setHeader("Content-Type", "text/html; charset=utf-8");
         res.setHeader("Cache-Control", "public, max-age=1800, stale-while-revalidate=86400");
+        res.setHeader("ETag", etag);
+        if (req.headers["if-none-match"] === etag) {
+          return res.status(304).end();
+        }
         res.status(200).send(preRendered);
       } catch (err) {
         console.warn("Failed to pre-render page, using clean 200 fallback:", err);

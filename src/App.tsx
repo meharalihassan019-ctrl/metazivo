@@ -76,6 +76,7 @@ import FreeToolsHub from "./components/FreeToolsHub";
 import SeoServicePage from "./components/SeoServicePage";
 import SeoToolsPage from "./components/seo-tools/SeoToolsPage";
 import { getToolBySlug } from "./components/seo-tools/seoToolsData";
+import { injectSchemaToHead, generateBlogSchemaJson } from "./schemaHelper";
 
 // Premium real stock photo URLs (Not AI-generated)
 const hero3D = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=75"; // Collaborative teamwork real office meeting
@@ -489,9 +490,15 @@ export default function App() {
         setCurrentTab("service-detail");
       }
     } else if (lowerPath.startsWith("/blog/")) {
-      const slug = path.replace(/^\/blog\//i, "").replace(/^\/+|\/+$/g, "");
-      setSelectedBlogSlug(slug);
+      const rawSlug = path.replace(/^\/blog\//i, "").replace(/^\/+|\/+$/g, "");
+      let decoded = rawSlug;
+      try { decoded = decodeURIComponent(rawSlug); } catch(e) {}
+      const cleanSlug = decoded.toLowerCase().replace(/[\s+_]+/g, "-").replace(/[^a-z0-9\-]/g, "").replace(/-+/g, "-").replace(/^-+|-+$/g, "");
+      setSelectedBlogSlug(cleanSlug);
       setCurrentTab("blog-detail");
+      if (rawSlug !== cleanSlug) {
+        window.history.replaceState({}, "", `/blog/${cleanSlug}`);
+      }
     } else if (lowerPath.startsWith("/page/")) {
       const subSlug = lowerPath.replace(/^\/page\//i, "").replace(/^\/+|\/+$/g, "");
       const systemCanonical: Record<string, { tab: string; path: string }> = {
@@ -516,8 +523,14 @@ export default function App() {
       }
     } else if (lowerPath === "/privacy" || lowerPath === "/privacy-policy") {
       setCurrentTab("privacy");
+      if (window.location.pathname !== "/privacy-policy") {
+        window.history.replaceState({}, "", "/privacy-policy");
+      }
     } else if (lowerPath === "/terms" || lowerPath === "/terms-and-conditions") {
       setCurrentTab("terms");
+      if (window.location.pathname !== "/terms") {
+        window.history.replaceState({}, "", "/terms");
+      }
     } else if (
       lowerPath === "/tools/website-speed-test" ||
       lowerPath === "/website-speed-test" ||
@@ -526,24 +539,28 @@ export default function App() {
       lowerPath === "/free-tools/audit"
     ) {
       setCurrentTab("tools/website-speed-test");
-      if (lowerPath !== "/tools/website-speed-test") {
+      if (window.location.pathname !== "/tools/website-speed-test") {
         window.history.replaceState({}, "", "/tools/website-speed-test");
       }
     } else if (lowerPath.startsWith("/tools/")) {
-      const toolSlug = path.replace(/^\/tools\/?/i, "").replace(/\/+$/, "");
+      const toolSlug = lowerPath.replace(/^\/tools\/?/i, "").replace(/\/+$/, "");
       if (toolSlug) {
         setActiveSeoToolSlug(toolSlug);
         setCurrentTab("seo-tools");
+        if (window.location.pathname !== `/tools/${toolSlug}`) {
+          window.history.replaceState({}, "", `/tools/${toolSlug}`);
+        }
       } else {
         setActiveSeoToolSlug("");
         setCurrentTab("seo-tools");
+        window.history.replaceState({}, "", "/seo-tools");
       }
     } else if (
       lowerPath === "/seo-tools" ||
       lowerPath === "/seo-tool" ||
       lowerPath.startsWith("/seo-tools/")
     ) {
-      const subSlug = path.replace(/^\/seo-tools\/?/i, "").replace(/\/+$/, "");
+      const subSlug = lowerPath.replace(/^\/seo-tools\/?/i, "").replace(/\/+$/, "");
       if (subSlug) {
         setActiveSeoToolSlug(subSlug);
         setCurrentTab("seo-tools");
@@ -551,6 +568,9 @@ export default function App() {
       } else {
         setActiveSeoToolSlug("");
         setCurrentTab("seo-tools");
+        if (window.location.pathname !== "/seo-tools") {
+          window.history.replaceState({}, "", "/seo-tools");
+        }
       }
     } else if (
       lowerPath === "/free-tools" ||
@@ -560,6 +580,9 @@ export default function App() {
       lowerPath === "/free-seo-tool"
     ) {
       setCurrentTab("free-tools");
+      if (window.location.pathname !== "/free-tools") {
+        window.history.replaceState({}, "", "/free-tools");
+      }
     } else {
       const slug = path.replace(/^\/+/, "").replace(/\/+$/, "");
       if (slug) {
@@ -849,7 +872,15 @@ export default function App() {
       }
       metaKeywords.setAttribute('content', targetKeywords);
     }
-  }, [currentTab, pages, activeBlog, activeService, selectedBlogSlug]);
+
+    // Technical SEO: Inject/Update Full Schema.org JSON-LD Graph in <head> for Google & Detailed SEO Extension
+    injectSchemaToHead(canonicalPath, {
+      blogPost: activeBlog,
+      serviceSlug: activeService ? activeService.slug : selectedServiceSlug,
+      seoTool: activeSeoToolSlug ? getToolBySlug(activeSeoToolSlug) : null,
+      pageData: pages.find((p) => p.slug === currentTab)
+    });
+  }, [currentTab, pages, activeBlog, activeService, selectedBlogSlug, activeSeoToolSlug, selectedServiceSlug]);
 
   // Sync Activity Logs inside CRM
   const logActivity = (action: string) => {
@@ -1132,10 +1163,37 @@ export default function App() {
       if (finalSeoTitle) score += 5;
       if (finalSeoDesc) score += 5;
 
+      // Auto-generate Google-ready Schema (BlogPosting + FAQs + Breadcrumbs) if none configured
+      let finalSchemas = editingPost.schemas || [];
+      if (finalSchemas.length === 0) {
+        try {
+          const autoJson = generateBlogSchemaJson({
+            title: editingPost.title,
+            slug: editingPost.slug || editingPost.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+            content: editingPost.content,
+            excerpt: finalSeoDesc,
+            focusKeywords: editingPost.focusKeywords,
+            author: editingPost.author,
+            publishDate: editingPost.publishDate,
+            featuredImage: editingPost.featuredImage
+          });
+          finalSchemas = [
+            {
+              id: `schema-auto-${Date.now()}`,
+              type: "BlogPosting",
+              jsonData: autoJson
+            }
+          ];
+        } catch (schemaGenErr) {
+          console.warn("Auto schema generation on save:", schemaGenErr);
+        }
+      }
+
       const payloadToSave = {
         ...editingPost,
         seoTitle: finalSeoTitle,
         seoDescription: finalSeoDesc,
+        schemas: finalSchemas,
         openGraph: {
           ...(editingPost.openGraph || {}),
           title: editingPost.openGraph?.title || finalSeoTitle,
@@ -3537,6 +3595,9 @@ export default function App() {
                                 onChange={(updatedSchemas) => setEditingPost((prev) => ({ ...prev, schemas: updatedSchemas }))}
                                 postTitle={editingPost.title}
                                 postSlug={editingPost.slug}
+                                postContent={editingPost.content}
+                                postExcerpt={editingPost.excerpt}
+                                postKeywords={editingPost.focusKeywords}
                               />
 
                               {/* Coprocessor assistant */}
