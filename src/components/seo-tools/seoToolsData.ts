@@ -1,4 +1,7 @@
 export interface SeoToolDef {
+  primaryKeyword?: string;
+  secondaryKeywords?: string[];
+  focusKeyphrase?: string;
   id: string;
   slug: string;
   name: string;
@@ -38,13 +41,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-1",
     "slug": "seo-audit-checker",
     "name": "SEO Audit Checker",
+    "primaryKeyword": "free seo audit checker",
+    "secondaryKeywords": ["website seo audit tool","technical seo checker online","on page seo checkup","seo site audit free"],
+    "focusKeyphrase": "free seo audit checker online",
+    "tags": ["SEO Audit","Technical SEO","Crawl Errors","On-Page SEO","Meta Tags"],
     "shortDesc": "Comprehensive on-page and technical website health inspection with actionable fix guidelines.",
     "category": "Technical & Audit",
     "badge": "Real Engine",
     "iconName": "ShieldCheck",
     "popular": true,
-    "metaTitle": "Free SEO Audit Checker Online | Metazivo SEO Tools",
-    "metaDescription": "Free online SEO Audit Checker by Metazivo. Check technical and on-page SEO issues, fix crawl errors, and get actionable ranking recommendations instantly.",
+    "metaTitle": "Free SEO Audit Checker Online | Website SEO Health Test",
+    "metaDescription": "Audit your website health with our free SEO Audit Checker. Inspect technical tags, crawl errors, headings, mobile vitals & get prioritized ranking fixes.",
     "intro": "Analyze any web page for critical technical errors, missing meta tags, heading hierarchies, mobile viewport issues, structured data, and crawlability blockers.",
     "howToUse": [
       {
@@ -94,6 +101,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Does this audit check both mobile and desktop signals?",
         "a": "Yes, it verifies mobile viewport declarations, touch-friendly layouts, HTTPS encryption, and desktop indexability signals."
+      },
+      {
+        "q": "Can this SEO Audit Checker help fix Google Search Console indexing errors?",
+        "a": "Yes. By identifying crawl errors, duplicate canonical declarations, and broken links, our audit highlights the root causes behind Google Search Console's 'Crawled - currently not indexed' or 'Discovered - currently not indexed' statuses."
+      },
+      {
+        "q": "Does running this audit slow down my live website or consume bandwidth?",
+        "a": "No. The audit executes a lightweight HTTP GET request similar to a standard browser visit, placing negligible load on your web host or CDN."
       }
     ],
     "relatedSlugs": [
@@ -106,13 +121,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-2",
     "slug": "keyword-clustering-tool",
     "name": "Keyword Clustering Tool",
+    "primaryKeyword": "keyword clustering tool free",
+    "secondaryKeywords": ["keyword grouping tool online","topical cluster generator","serp keyword cluster","content hub clustering"],
+    "focusKeyphrase": "free keyword clustering tool online",
+    "tags": ["Keyword Clustering","Topic Clusters","Topical Authority","Keyword Strategy","Content Pillars"],
     "shortDesc": "Group large keyword lists into topical clusters with primary targets, search intent, and page architecture.",
     "category": "Keywords & Strategy",
     "badge": "Algorithm",
     "iconName": "Network",
     "popular": true,
-    "metaTitle": "Free Keyword Clustering Tool Online | Metazivo Tools",
-    "metaDescription": "Free online Keyword Clustering Tool by Metazivo. Group search queries into high-converting topical clusters to build authoritative content hubs easily.",
+    "metaTitle": "Free Keyword Clustering Tool Online | Topical Cluster Builder",
+    "metaDescription": "Group hundreds of keywords into high-ranking topical clusters. Build authoritative pillar pages, eliminate keyword cannibalization & scale content hubs.",
     "intro": "Transform hundreds of scattered search queries into high-converting topical clusters to build comprehensive content hubs without keyword cannibalization.",
     "howToUse": [
       {
@@ -162,6 +181,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Does it keep keyword variations?",
         "a": "Yes, meaningful syntactic variations are preserved while punctuation and redundant casing are normalized."
+      },
+      {
+        "q": "How does keyword clustering prevent keyword cannibalization?",
+        "a": "Keyword cannibalization occurs when multiple URLs on your site compete for identical queries. Clustering aggregates semantically similar search terms to assign them to a single canonical URL."
+      },
+      {
+        "q": "How do I turn a clustered keyword group into a high-ranking article?",
+        "a": "Use the primary cluster keyword as your main H1 title and URL slug, then turn supporting keyword variations into H2 and H3 subheadings and FAQ entries."
       }
     ],
     "relatedSlugs": [
@@ -174,13 +201,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-3",
     "slug": "search-intent-checker",
     "name": "Search Intent Checker",
+    "primaryKeyword": "search intent checker",
+    "secondaryKeywords": ["search intent analyzer online","keyword intent classification","informational vs transactional keywords","serp intent tool"],
+    "focusKeyphrase": "search intent checker online free",
+    "tags": ["Search Intent","SERP Intent","Keyword Intent","Intent Classification","Conversion SEO"],
     "shortDesc": "Classify keywords into Informational, Commercial, Transactional, Navigational, Local, or Comparison.",
     "category": "Keywords & Strategy",
     "badge": "Smart Intent",
     "iconName": "Compass",
     "popular": true,
-    "metaTitle": "Free Search Intent Checker Online | Metazivo SEO Tools",
-    "metaDescription": "Free online Search Intent Checker by Metazivo. Classify search queries into informational, commercial, or transactional intent to boost ranking success.",
+    "metaTitle": "Free Search Intent Checker | Keyword Intent Analyzer Online",
+    "metaDescription": "Classify search queries into informational, navigational, commercial & transactional intent. Optimize landing pages to match Google searcher intent.",
     "intro": "Identify the psychological intention behind search queries to select the exact page structure, format, and call-to-action that matches user expectations.",
     "howToUse": [
       {
@@ -230,6 +261,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Can a keyword have mixed intent?",
         "a": "Some keywords show hybrid intent; our tool highlights the dominant primary intent along with the recommended content blueprint."
+      },
+      {
+        "q": "Why is matching search intent critical for ranking on Google?",
+        "a": "Google aims to satisfy searchers instantly. Even with strong backlinks, if your content format (e.g., a sales page) mismatches the searcher's intent (e.g., a free tutorial), your rankings will decline."
+      },
+      {
+        "q": "What should I do if a search query has mixed or fractured intent?",
+        "a": "Analyze the top 3 ranking results in Google. If two are informational guides and one is a tool, target the primary format while providing a lightweight interactive element or download."
       }
     ],
     "relatedSlugs": [
@@ -242,13 +281,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-4",
     "slug": "schema-markup-generator",
     "name": "Schema Markup Generator",
+    "primaryKeyword": "schema markup generator json ld",
+    "secondaryKeywords": ["structured data generator online","schema org rich snippet generator","json ld code maker","article schema generator"],
+    "focusKeyphrase": "schema markup generator json ld online",
+    "tags": ["Schema Markup","JSON-LD","Structured Data","Rich Snippets","Google SERP"],
     "shortDesc": "Generate error-free Schema.org JSON-LD for Articles, Products, Services, FAQ, HowTo, and Organizations.",
     "category": "Schema & Structured Data",
     "badge": "JSON-LD",
     "iconName": "Code",
     "popular": true,
-    "metaTitle": "Free Schema Markup Generator Tool | Metazivo SEO Tools",
-    "metaDescription": "Free online Schema Markup Generator by Metazivo. Build valid Schema.org JSON-LD code for articles, FAQs, products, and local businesses in seconds.",
+    "metaTitle": "Free Schema Markup Generator (JSON-LD) | Rich Snippets Tool",
+    "metaDescription": "Generate valid Schema.org JSON-LD structured data for Articles, FAQs, Local Businesses, and Products. Win Google rich snippets and boost SERP click-through rates.",
     "intro": "Build pristine structured data that search engines use to display rich snippets, star ratings, FAQs, author credentials, and enhanced search listings.",
     "howToUse": [
       {
@@ -298,6 +341,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Is JSON-LD preferred over Microdata?",
         "a": "Yes, Google officially recommends JSON-LD because it is cleaner, decoupled from HTML markup, and easier to maintain."
+      },
+      {
+        "q": "Where should I paste the generated JSON-LD script on my website?",
+        "a": "Paste the complete <script type='application/ld+json'> code inside the <head> section of your HTML, or use a header injection plugin in WordPress, Shopify, or Webflow."
+      },
+      {
+        "q": "Can I combine multiple schema entities on a single page?",
+        "a": "Yes. For example, a blog post can contain Article schema, BreadcrumbList schema, and FAQPage schema simultaneously within a unified @graph array."
       }
     ],
     "relatedSlugs": [
@@ -310,12 +361,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-5",
     "slug": "local-seo-audit-tool",
     "name": "Local SEO Audit Tool",
+    "primaryKeyword": "local seo audit tool free",
+    "secondaryKeywords": ["local business seo checker","google business profile audit","local citations checker","local map pack ranking audit"],
+    "focusKeyphrase": "free local seo audit tool online",
+    "tags": ["Local SEO","Google Business Profile","NAP Consistency","Local Schema","Map Pack"],
     "shortDesc": "Audit business NAP consistency, Google Business Profile signals, and local landing page targeting.",
     "category": "Technical & Audit",
     "badge": "Local Signals",
     "iconName": "MapPin",
-    "metaTitle": "Free Local SEO Audit Tool Online | Metazivo SEO Tools",
-    "metaDescription": "Free online Local SEO Audit Tool by Metazivo. Audit business NAP consistency, Google Business Profile signals, and local landing page rankings instantly.",
+    "metaTitle": "Free Local SEO Audit Tool Online | Google Map Pack Checker",
+    "metaDescription": "Audit your local SEO performance instantly. Check NAP consistency, Google Business Profile signals, local landing page schema, and geo-targeted ranking factors.",
     "intro": "Verify local search signals including Name, Address, Phone (NAP) uniformity, LocalBusiness schema, geo coordinates, and city landing page targeting.",
     "howToUse": [
       {
@@ -365,6 +420,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Can I audit service-area businesses without a physical storefront?",
         "a": "Yes, you can specify your service cities and area served radius."
+      },
+      {
+        "q": "What is NAP consistency and why does it affect map pack rankings?",
+        "a": "NAP stands for Name, Address, and Phone Number. Having identical NAP formatting across your website, Google Business Profile, and local directories establishes strong algorithmic trust."
+      },
+      {
+        "q": "Should multi-location businesses create separate landing pages for each city?",
+        "a": "Yes. Every physical location or primary service territory should have a dedicated landing page with unique localized content and LocalBusiness JSON-LD markup."
       }
     ],
     "relatedSlugs": [
@@ -377,12 +440,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-6",
     "slug": "internal-link-finder",
     "name": "Internal Link Finder",
+    "primaryKeyword": "internal link finder tool",
+    "secondaryKeywords": ["internal linking tool free","contextual link opportunity finder","page rank siloing checker","anchor text optimizer"],
+    "focusKeyphrase": "free internal link finder tool online",
+    "tags": ["Internal Linking","PageRank Flow","Link Architecture","Anchor Text","Topic Silos"],
     "shortDesc": "Discover contextual internal link opportunities and optimized anchor text between pages.",
     "category": "Keywords & Strategy",
     "badge": "Site Architecture",
     "iconName": "Link2",
-    "metaTitle": "Free Internal Link Finder Tool | Metazivo SEO Suite",
-    "metaDescription": "Free online Internal Link Finder by Metazivo. Discover contextual internal linking opportunities and optimized anchor text to pass PageRank authority.",
+    "metaTitle": "Free Internal Link Finder Tool | Anchor Text & Link Silos",
+    "metaDescription": "Find relevant contextual internal linking opportunities across your content. Distribute PageRank, build semantic topic silos, and boost Google crawl depth.",
     "intro": "Strengthen your site architecture and PageRank distribution by identifying high-value internal link relationships and natural keyword anchors.",
     "howToUse": [
       {
@@ -432,6 +499,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Do internal links help with crawl budget?",
         "a": "Yes, they provide explicit crawl paths for Googlebot to navigate without getting trapped."
+      },
+      {
+        "q": "Can I use exact match anchor text for internal links?",
+        "a": "Yes. Unlike external backlinks—where exact matches can trigger spam filters—Google recommends descriptive, keyword-rich anchor text for internal site navigation."
+      },
+      {
+        "q": "What is an orphaned page in SEO and why is it harmful?",
+        "a": "An orphaned page has zero internal links pointing to it. Search engines struggle to discover, crawl, and rank orphaned pages because no PageRank flows to them."
       }
     ],
     "relatedSlugs": [
@@ -444,13 +519,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-7",
     "slug": "meta-title-description-generator",
     "name": "Meta Title & Description Generator",
+    "primaryKeyword": "meta title and description generator",
+    "secondaryKeywords": ["free meta tag generator","serp snippet preview tool","seo title generator online","google snippet character counter"],
+    "focusKeyphrase": "meta title and description generator online free",
+    "tags": ["Meta Tags","Title Tags","Meta Description","SERP Preview","CTR Optimization"],
     "shortDesc": "Generate high-converting, SERP-safe meta titles (50-60 chars) and meta descriptions (140-155 chars).",
     "category": "Content & On-Page",
     "badge": "SERP Optimizer",
     "iconName": "Type",
     "popular": true,
-    "metaTitle": "Free Meta Title & Description Generator | Metazivo Tools",
-    "metaDescription": "Free online Meta Title & Description Generator by Metazivo. Create click-worthy, search-optimized meta tags with live Google snippet character counters.",
+    "metaTitle": "Free Meta Title & Description Generator | Live SERP Snippets",
+    "metaDescription": "Generate high-CTR meta titles and descriptions optimized for Google search. Includes live desktop & mobile SERP preview, pixel counter & character limits.",
     "intro": "Craft natural, compelling meta titles and descriptions designed to strictly avoid Google SERP truncation while maximizing organic click-through rates.",
     "howToUse": [
       {
@@ -500,6 +579,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Can I edit the generated snippets before copying?",
         "a": "Yes, all suggestions are fully editable in real time with live character counting."
+      },
+      {
+        "q": "What is the optimal character length for a Google title tag?",
+        "a": "Aim for 50 to 60 characters (under 580 pixels). Titles longer than 60 characters are typically truncated with an ellipsis ('...') by Google."
+      },
+      {
+        "q": "Why does Google sometimes rewrite my meta description in search results?",
+        "a": "Google rewrites meta descriptions in roughly 60% of searches if it determines a direct text snippet from the page better matches the specific query typed by the user."
       }
     ],
     "relatedSlugs": [
@@ -512,13 +599,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-8",
     "slug": "website-speed-test",
     "name": "Website Speed Test",
+    "primaryKeyword": "free website speed test",
+    "secondaryKeywords": ["core web vitals audit online","test site speed free","page load speed test","lcp checker ttfb audit"],
+    "focusKeyphrase": "free website speed test online",
+    "tags": ["Website Speed","Core Web Vitals","PageSpeed Test","TTFB","LCP Optimization"],
     "shortDesc": "Real-time Core Web Vitals, TTFB, and PageSpeed performance diagnostics with code-level fix guidelines.",
     "category": "Speed & Performance",
     "badge": "Speed Test",
     "iconName": "Activity",
     "popular": true,
-    "metaTitle": "Free Website Speed Test Online | Metazivo Performance",
-    "metaDescription": "Free online Website Speed Test by Metazivo. Test real-time page loading speed, Core Web Vitals, TTFB, and get actionable performance fixes instantly.",
+    "metaTitle": "Free Website Speed Test & Core Web Vitals Audit | Metazivo",
+    "metaDescription": "Audit your website speed instantly. Get genuine Core Web Vitals (LCP, INP, CLS, TTFB), server response time, live asset inspection, and actionable speed fixes.",
     "intro": "Test real-world website loading speeds, measure Time to First Byte (TTFB) and Core Web Vitals (LCP, INP, CLS), and get exact code fixes to rank higher on Google.",
     "howToUse": [
       {
@@ -568,6 +659,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "What is considered a passing Core Web Vitals score?",
         "a": "LCP under 2.5s, INP under 200ms, and Cumulative Layout Shift (CLS) under 0.1."
+      },
+      {
+        "q": "What is a good Time to First Byte (TTFB) benchmark for SEO?",
+        "a": "Google recommends a server TTFB under 200 milliseconds. A TTFB above 600ms is classified as poor and directly delays subsequent asset rendering."
+      },
+      {
+        "q": "How do Core Web Vitals affect mobile rankings?",
+        "a": "Core Web Vitals (LCP, INP, CLS) are confirmed Google ranking signals. Sites passing Core Web Vitals get preferential ranking treatment in mobile search results."
       }
     ],
     "relatedSlugs": [
@@ -580,13 +679,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-9",
     "slug": "robots-txt-generator",
     "name": "Robots.txt Generator",
+    "primaryKeyword": "robots txt generator online",
+    "secondaryKeywords": ["robots txt tester free","create robots txt for googlebot","robots txt file maker","crawl directive builder"],
+    "focusKeyphrase": "free robots txt generator and tester online",
+    "tags": ["Robots.txt","Crawl Directives","Googlebot","Crawl Budget","Technical SEO"],
     "shortDesc": "Build and test clean robots.txt directives for Googlebot, Bingbot, and generative AI web scrapers.",
     "category": "Technical & Audit",
     "badge": "Crawler Control",
     "iconName": "FileCode",
     "popular": true,
-    "metaTitle": "Free Robots.txt Generator & Tester | Metazivo Tools",
-    "metaDescription": "Free online Robots.txt Generator by Metazivo. Create and test error-free robots.txt files with custom crawl rules for Googlebot and search engines.",
+    "metaTitle": "Free Robots.txt Generator & Tester | Googlebot Directives",
+    "metaDescription": "Create and test Google-compliant robots.txt files in seconds. Define custom user-agent rules, disallow private directories, specify sitemap URLs, and validate crawl directives.",
     "intro": "Generate customized robots.txt files with Allow, Disallow, Sitemap, and Crawl-delay rules, plus test whether specific URLs are allowed or blocked.",
     "howToUse": [
       {
@@ -636,6 +739,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Can I block AI scrapers like GPTBot?",
         "a": "Yes, you can add custom `User-agent: GPTBot` directives with `Disallow: /`."
+      },
+      {
+        "q": "Does robots.txt stop a page from appearing in Google search?",
+        "a": "No. Robots.txt prevents crawling, but if other websites link to that URL, Google can still index it without a snippet. Use a 'noindex' meta robots tag for complete de-indexing."
+      },
+      {
+        "q": "Where must the robots.txt file be located on the web server?",
+        "a": "It must be uploaded to the root web directory so that it is accessible at the exact path https://yourdomain.com/robots.txt."
       }
     ],
     "relatedSlugs": [
@@ -648,13 +759,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-10",
     "slug": "xml-sitemap-generator",
     "name": "XML Sitemap Generator",
+    "primaryKeyword": "free xml sitemap generator",
+    "secondaryKeywords": ["google sitemap xml generator online","create sitemap for website","xml sitemap builder","sitemap protocol validator"],
+    "focusKeyphrase": "free xml sitemap generator tool online",
+    "tags": ["XML Sitemap","Sitemap Generator","Crawlability","Indexation","Google Search Console"],
     "shortDesc": "Create valid, deduplicated XML sitemaps ready for submission to Google Search Console.",
     "category": "Technical & Audit",
     "badge": "Indexing",
     "iconName": "FileSpreadsheet",
     "popular": true,
-    "metaTitle": "Free XML Sitemap Generator Tool | Metazivo SEO Suite",
-    "metaDescription": "Free online XML Sitemap Generator by Metazivo. Generate Google-compliant XML sitemaps with custom change frequencies and priority tags in seconds.",
+    "metaTitle": "Free XML Sitemap Generator Tool | Google Compliant Sitemaps",
+    "metaDescription": "Generate Google-compliant XML sitemaps instantly. Specify change frequency, priority scores, and last modified timestamps to accelerate search indexation.",
     "intro": "Build standards-compliant XML sitemaps with loc, lastmod, changefreq, and priority attributes to ensure prompt search engine discovery.",
     "howToUse": [
       {
@@ -704,6 +819,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Can I download the sitemap directly?",
         "a": "Yes, you can copy the XML or download the file as `sitemap.xml` with one click."
+      },
+      {
+        "q": "Should 404 pages or 301 redirects be included in an XML sitemap?",
+        "a": "No. Only canonical, indexable URLs returning an HTTP 200 OK status should be included in your XML sitemap."
+      },
+      {
+        "q": "How many URLs can a single XML sitemap file hold?",
+        "a": "Under the sitemaps.org protocol, a single XML sitemap can hold up to 50,000 URLs and must not exceed 50MB uncompressed. Larger sites must use a sitemap index."
       }
     ],
     "relatedSlugs": [
@@ -716,13 +839,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-11",
     "slug": "broken-link-checker",
     "name": "Broken Link Checker",
+    "primaryKeyword": "broken link checker free",
+    "secondaryKeywords": ["find 404 dead links online","website link error checker","bad link detector","http status checker 404"],
+    "focusKeyphrase": "free broken link checker online",
+    "tags": ["Broken Links","404 Error","Dead Link Checker","Crawl Budget","Link Audit"],
     "shortDesc": "Scan web pages for dead links, 404 HTTP errors, and broken redirects to protect search crawlability.",
     "category": "Technical & Audit",
     "badge": "Link Health",
     "iconName": "Unlink",
     "popular": true,
-    "metaTitle": "Free Broken Link Checker Online | Metazivo SEO Tools",
-    "metaDescription": "Free online Broken Link Checker by Metazivo. Scan web pages for dead links, 404 errors, and broken redirects to protect search crawlability and UX.",
+    "metaTitle": "Free Broken Link Checker Online | Find 404 Dead Links Fast",
+    "metaDescription": "Scan your web pages for dead links, 404 errors, and broken redirects. Protect your organic rankings, user experience, and crawl budget with instant link diagnostics.",
     "intro": "Detect dead hyperlinks, 404 page-not-found errors, and broken external links on any page to safeguard your user experience and search engine rankings.",
     "howToUse": [
       {
@@ -772,6 +899,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Is a 404 error bad for SEO?",
         "a": "Occasional 404s are normal, but widespread broken links on key pages frustrate users and disrupt search bot traversal."
+      },
+      {
+        "q": "Do broken links hurt your Google SEO rankings?",
+        "a": "Yes. Broken links waste crawl budget, interrupt PageRank flow, and create a frustrating user experience that increases bounce rates and reduces search trust."
+      },
+      {
+        "q": "How do I fix a broken internal link?",
+        "a": "Update the anchor link in your HTML to point directly to the correct new URL, or implement a 301 permanent redirect if the original URL was permanently moved."
       }
     ],
     "relatedSlugs": [
@@ -784,12 +919,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-12",
     "slug": "redirect-checker",
     "name": "Redirect Checker",
+    "primaryKeyword": "301 redirect checker tool",
+    "secondaryKeywords": ["url redirect trace online","http redirect chain checker","301 302 status checker","redirect loop detector"],
+    "focusKeyphrase": "free 301 redirect checker tool online",
+    "tags": ["Redirect Checker","301 Redirect","Redirect Chains","HTTP Status","PageRank Equity"],
     "shortDesc": "Trace HTTP redirect paths, detect redirect loops, and verify 301, 302, and 307 status codes.",
     "category": "Technical & Audit",
     "badge": "Chain Tracer",
     "iconName": "Repeat",
-    "metaTitle": "Free URL Redirect Checker Online | Metazivo SEO Tools",
-    "metaDescription": "Free online Redirect Checker by Metazivo. Inspect 301, 302, 307 redirect chains, identify redirect loops, and trace final destination URLs instantly.",
+    "metaTitle": "Free URL Redirect Checker & Chain Tracer | 301 302 Inspect",
+    "metaDescription": "Trace URL redirect chains, detect redirect loops, and verify 301/302 status codes. Preserve PageRank equity and prevent crawl budget waste with full path inspection.",
     "intro": "Trace full HTTP redirect paths, detect multi-hop redirect chains, and verify whether redirects return permanent 301 or temporary 302 headers.",
     "howToUse": [
       {
@@ -839,6 +978,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "How many redirect hops does Google tolerate?",
         "a": "Google recommends a maximum of one hop, and crawlers will usually abandon chains exceeding 4 to 5 hops."
+      },
+      {
+        "q": "What is a redirect chain and why is it an SEO issue?",
+        "a": "A redirect chain occurs when URL A redirects to URL B, which redirects to URL C. Each redirect hop adds latency, dilutes PageRank, and risks Googlebot dropping the crawl."
+      },
+      {
+        "q": "What is the difference between a 301 and 302 redirect for SEO?",
+        "a": "A 301 indicates a permanent move and transfers 99% of PageRank equity to the target URL. A 302 is temporary and tells search engines to keep the old URL in the index."
       }
     ],
     "relatedSlugs": [
@@ -851,12 +998,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-13",
     "slug": "canonical-tag-checker",
     "name": "Canonical Tag Checker",
+    "primaryKeyword": "canonical tag checker online",
+    "secondaryKeywords": ["rel canonical tag validator","duplicate content checker","canonical url inspect tool","self referencing canonical audit"],
+    "focusKeyphrase": "free canonical tag checker online",
+    "tags": ["Canonical Tag","Rel Canonical","Duplicate Content","Indexation Control","Technical SEO"],
     "shortDesc": "Verify rel=canonical declarations, detect self-referencing links, and resolve duplicate content issues.",
     "category": "Technical & Audit",
     "badge": "Duplicate Fix",
     "iconName": "CheckCheck",
-    "metaTitle": "Free Canonical Tag Checker Online | Metazivo SEO Tools",
-    "metaDescription": "Free online Canonical Tag Checker by Metazivo. Verify rel=canonical link tags, eliminate duplicate content risks, and ensure proper URL indexation.",
+    "metaTitle": "Free Canonical Tag Checker | Rel=Canonical URL Validator",
+    "metaDescription": "Verify rel=canonical link tags across web pages to prevent duplicate content penalties. Inspect self-referencing canonicals and ensure Google indexes the preferred URL.",
     "intro": "Inspect webpage canonical declarations to ensure search engines index the authoritative master version of your page and ignore duplicate URL parameters.",
     "howToUse": [
       {
@@ -906,6 +1057,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Is canonical a directive or a hint?",
         "a": "Google treats canonical tags as strong hints, but may ignore them if they conflict with sitemaps, internal links, or 301 redirects."
+      },
+      {
+        "q": "Should every indexable page have a self-referencing canonical tag?",
+        "a": "Yes. Google strongly recommends self-referencing canonical tags to prevent duplicate content issues caused by UTM parameters, session IDs, or trailing slashes."
+      },
+      {
+        "q": "Does Google always obey the canonical tag?",
+        "a": "No. The canonical tag is a strong hint rather than an absolute directive. If Google detects contradictory signals (e.g. internal links pointing elsewhere), it may choose its own canonical."
       }
     ],
     "relatedSlugs": [
@@ -918,13 +1077,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-14",
     "slug": "open-graph-generator",
     "name": "Open Graph Generator",
+    "primaryKeyword": "open graph generator",
+    "secondaryKeywords": ["og meta tag generator free","social share preview maker","facebook meta tags generator","og image preview tool"],
+    "focusKeyphrase": "open graph meta tag generator online",
+    "tags": ["Open Graph","OG Tags","Social Metadata","Facebook Preview","Social CTR"],
     "shortDesc": "Generate rich Open Graph meta tags for Facebook, LinkedIn, Discord, and Slack social share cards.",
     "category": "Content & On-Page",
     "badge": "Social Graph",
     "iconName": "Share2",
     "popular": true,
-    "metaTitle": "Free Open Graph Meta Tag Generator | Metazivo Tools",
-    "metaDescription": "Free online Open Graph Generator by Metazivo. Create rich social preview meta tags for Facebook, LinkedIn, and social media platforms in seconds.",
+    "metaTitle": "Free Open Graph Generator | Social Preview Meta Tags Maker",
+    "metaDescription": "Generate valid Open Graph (OG) meta tags for Facebook, LinkedIn, Pinterest, and WhatsApp. Preview live card thumbnails and drive higher social click-through rates.",
     "intro": "Create beautiful, click-attracting social share cards with custom Open Graph titles, descriptions, image dimensions, and site ownership tags.",
     "howToUse": [
       {
@@ -974,6 +1137,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Do Open Graph tags affect Google search rankings?",
         "a": "Not directly, but higher social sharing drives real visitors, brand mentions, and organic backlinks."
+      },
+      {
+        "q": "What is the ideal image size for an og:image tag?",
+        "a": "The recommended resolution for og:image is 1200 x 630 pixels (1.91:1 aspect ratio), which renders crisply on high-DPI displays across Facebook, LinkedIn, and Twitter."
+      },
+      {
+        "q": "How does Open Graph metadata impact SEO?",
+        "a": "While not a direct ranking factor, compelling Open Graph tags increase social shares, engagement, and referral traffic, driving secondary natural backlink acquisition."
       }
     ],
     "relatedSlugs": [
@@ -986,13 +1157,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-15",
     "slug": "ai-aeo-geo-checker",
     "name": "AI / AEO / GEO SEO Checker",
+    "primaryKeyword": "ai aeo geo seo checker",
+    "secondaryKeywords": ["answer engine optimization tool","generative engine optimization checker","chatgpt perplexity search audit","ai citation readiness"],
+    "focusKeyphrase": "ai aeo geo seo checker tool free",
+    "tags": ["AEO","GEO","AI Search","Google AI Overviews","Perplexity SEO"],
     "shortDesc": "Evaluate content visibility in ChatGPT, Google Gemini, Perplexity, and Google AI Overviews.",
     "category": "AI, AEO & GEO",
     "badge": "Next-Gen AI",
     "iconName": "Sparkles",
     "popular": true,
-    "metaTitle": "Free AI / AEO / GEO SEO Checker Tool | Metazivo Suite",
-    "metaDescription": "Free online AI / AEO / GEO SEO Checker by Metazivo. Evaluate content visibility for ChatGPT, Perplexity, and Google AI Overviews with actionable tips.",
+    "metaTitle": "Free AI / AEO / GEO SEO Checker | Answer Engine Optimization",
+    "metaDescription": "Audit your website's readiness for Google AI Overviews, ChatGPT Search, and Perplexity. Optimize content structures, direct quote extracts, and synthetic citations.",
     "intro": "Audit your content for Answer Engine Optimization (AEO) and Generative Engine Optimization (GEO) readiness, entity clarity, and authoritative citation potential.",
     "howToUse": [
       {
@@ -1042,6 +1217,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Can any tool guarantee AI citations?",
         "a": "No tool can guarantee rankings or AI citations, but structuring content around entity clarity and authoritative definitions significantly increases selection probability."
+      },
+      {
+        "q": "What is Answer Engine Optimization (AEO)?",
+        "a": "AEO is the practice of structuring content into concise, factual answers so conversational AI engines and voice assistants quote your website as the definitive source."
+      },
+      {
+        "q": "How does Generative Engine Optimization (GEO) differ from traditional SEO?",
+        "a": "Traditional SEO optimizes for keyword rank lists in blue links. GEO optimizes for citation inclusion, statistical density, and entity authority within AI-synthesized responses."
       }
     ],
     "relatedSlugs": [
@@ -1054,12 +1237,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-16",
     "slug": "seo-slug-generator",
     "name": "SEO Slug Generator",
+    "primaryKeyword": "seo slug generator online",
+    "secondaryKeywords": ["url slug maker free","search friendly url generator","clean permalink converter","stop word slug optimizer"],
+    "focusKeyphrase": "free seo url slug generator online",
+    "tags": ["URL Slugs","Permalinks","On-Page SEO","Clean URLs","Keyword in URL"],
     "shortDesc": "Generate clean, hyphenated, search-friendly URL slugs free of stopwords and noisy characters.",
     "category": "Content & On-Page",
     "badge": "URL Formatting",
     "iconName": "Hash",
-    "metaTitle": "Free SEO URL Slug Generator Tool | Metazivo SEO Suite",
-    "metaDescription": "Free online SEO Slug Generator by Metazivo. Convert article headlines and product titles into clean, keyword-rich, search-engine-friendly URL slugs.",
+    "metaTitle": "Free SEO URL Slug Generator | Clean Search-Friendly URLs",
+    "metaDescription": "Convert article titles and product names into clean, keyword-rich SEO URL slugs. Automatically strips punctuation, converts special characters, and removes stop words.",
     "intro": "Convert blog titles and product names into clean, keyword-focused URL slugs following search engine best practices and strict character filtering.",
     "howToUse": [
       {
@@ -1109,6 +1296,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Are hyphens better than underscores in slugs?",
         "a": "Yes, Google officially recommends hyphens over underscores as word separators in web addresses."
+      },
+      {
+        "q": "Should stop words (a, the, in, and) be removed from URL slugs?",
+        "a": "Removing unnecessary stop words creates shorter, cleaner, and more scannable URLs that users are more likely to click and share."
+      },
+      {
+        "q": "Should URL slugs contain underscores or hyphens?",
+        "a": "Always use hyphens (-). Google's search algorithms treat hyphens as word separators, whereas underscores (_) blend words together."
       }
     ],
     "relatedSlugs": [
@@ -1121,12 +1316,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-17",
     "slug": "image-alt-text-generator",
     "name": "Image Alt Text Generator",
+    "primaryKeyword": "image alt text generator free",
+    "secondaryKeywords": ["alt tag generator for seo","image accessibility alt text tool","alt attribute writer online","google image seo optimizer"],
+    "focusKeyphrase": "free image alt text generator online",
+    "tags": ["Alt Text","Image SEO","WCAG Accessibility","Google Images","Alt Tags"],
     "shortDesc": "Create descriptive, accessibility-compliant alt text for web images and Google Image SEO rankings.",
     "category": "Content & On-Page",
     "badge": "Accessibility",
     "iconName": "Image",
-    "metaTitle": "Free Image Alt Text Generator Tool | Metazivo Tools",
-    "metaDescription": "Free online Image Alt Text Generator by Metazivo. Create descriptive, keyword-optimized alt attributes for accessibility and Google Image rankings.",
+    "metaTitle": "Free Image Alt Text Generator | SEO & Accessibility Alt Tags",
+    "metaDescription": "Create descriptive, keyword-optimized image alt text for accessibility (WCAG) and Google Image search rankings. Avoid keyword stuffing with context-aware tags.",
     "intro": "Generate descriptive, context-aware alt text for your website photos and graphics to boost accessibility ratings and capture organic Google Images traffic.",
     "howToUse": [
       {
@@ -1176,6 +1375,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Can alt text improve my normal web page rankings?",
         "a": "Yes, relevant alt text reinforces the overall topical relevance of the page for search algorithms."
+      },
+      {
+        "q": "How long should image alt text be?",
+        "a": "Keep alt text under 125 characters so screen readers for visually impaired users can read the description smoothly without interruption."
+      },
+      {
+        "q": "Should decorative images have alt text?",
+        "a": "Purely decorative images (borders, abstract shapes) should have an empty alt attribute (alt='') so screen readers skip them."
       }
     ],
     "relatedSlugs": [
@@ -1188,12 +1395,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-18",
     "slug": "301-redirect-generator",
     "name": "301 Redirect Generator",
+    "primaryKeyword": "301 redirect generator htaccess nginx",
+    "secondaryKeywords": ["301 redirect code maker online","apache htaccess redirect generator","nginx redirect rule builder","url rewrite generator"],
+    "focusKeyphrase": "free 301 redirect generator htaccess nginx",
+    "tags": ["301 Redirects",".htaccess","NGINX Config","URL Migration","Link Equity"],
     "shortDesc": "Generate error-free Apache .htaccess, NGINX, and Cloudflare rewrite rules for site migrations.",
     "category": "Technical & Audit",
     "badge": "Server Rules",
     "iconName": "CornerDownRight",
-    "metaTitle": "Free 301 Redirect Generator Tool | Metazivo SEO Suite",
-    "metaDescription": "Free online 301 Redirect Generator by Metazivo. Generate ready-to-use Apache .htaccess and NGINX redirect rules to safely preserve search rankings.",
+    "metaTitle": "Free 301 Redirect Generator (.htaccess & NGINX Rules)",
+    "metaDescription": "Generate clean, ready-to-use 301 permanent redirect syntax for Apache .htaccess and NGINX servers. Preserve backlink equity and migrate URLs without losing rankings.",
     "intro": "Create instant, syntax-tested 301 redirection rules for Apache (.htaccess), NGINX, and web servers to preserve link equity during site migrations.",
     "howToUse": [
       {
@@ -1243,6 +1454,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Does a 301 redirect pass full PageRank?",
         "a": "Google has confirmed that 301 redirects pass PageRank without link authority dampening."
+      },
+      {
+        "q": "Does a 301 redirect pass full Google PageRank equity?",
+        "a": "Yes. Google representatives have confirmed that 301 redirects pass virtually 100% of PageRank authority to the destination URL."
+      },
+      {
+        "q": "Where do I paste .htaccess redirect rules?",
+        "a": "Paste the generated Redirect 301 or RewriteRule lines at the top of your .htaccess file located in the root web directory of your Apache or LiteSpeed server."
       }
     ],
     "relatedSlugs": [
@@ -1255,12 +1474,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-19",
     "slug": "hreflang-generator",
     "name": "Hreflang Generator",
+    "primaryKeyword": "hreflang tag generator tool",
+    "secondaryKeywords": ["international seo hreflang maker","multi language hreflang builder","x-default hreflang generator","geo targeting language tags"],
+    "focusKeyphrase": "free hreflang tag generator tool online",
+    "tags": ["Hreflang","International SEO","Multi-Language","Geo-Targeting","x-default"],
     "shortDesc": "Create valid ISO language and country hreflang tags for international, multi-regional websites.",
     "category": "Technical & Audit",
     "badge": "International",
     "iconName": "Globe2",
-    "metaTitle": "Free Hreflang Tag Generator Tool | Metazivo SEO Suite",
-    "metaDescription": "Free online Hreflang Generator by Metazivo. Generate accurate multi-language and multi-regional hreflang tags to prevent international SEO conflicts.",
+    "metaTitle": "Free Hreflang Tag Generator Tool | International SEO Markup",
+    "metaDescription": "Generate valid multi-language and multi-regional hreflang HTML tags, HTTP headers, and XML sitemaps. Target international Google users without duplicate content risks.",
     "intro": "Generate correct hreflang annotations with ISO 639-1 language codes and ISO 3166-1 country codes to serve the right regional pages to global visitors.",
     "howToUse": [
       {
@@ -1310,6 +1533,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "What happens if I forget bi-directional tags?",
         "a": "Google will ignore the annotation if the target page does not confirm the relationship with a return tag."
+      },
+      {
+        "q": "What is the purpose of the x-default hreflang attribute?",
+        "a": "The x-default tag specifies the fallback page for international users whose language or country does not match any of your explicitly targeted regional variants."
+      },
+      {
+        "q": "Do hreflang tags need to be reciprocal?",
+        "a": "Yes! If Page A links to Page B as its French alternate, Page B MUST link back to Page A as its English alternate, or Google will ignore both annotations."
       }
     ],
     "relatedSlugs": [
@@ -1322,12 +1553,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-20",
     "slug": "twitter-card-generator",
     "name": "Twitter Card Generator",
+    "primaryKeyword": "twitter card meta tag generator",
+    "secondaryKeywords": ["x card generator free","twitter summary large image card maker","twitter preview tool","x social card meta tags"],
+    "focusKeyphrase": "free twitter x card generator online",
+    "tags": ["Twitter Cards","X Meta Tags","Social Media SEO","Card Preview","Social CTR"],
     "shortDesc": "Generate summary and large image Twitter/X Card meta tags for rich social media sharing.",
     "category": "Content & On-Page",
     "badge": "X / Twitter",
     "iconName": "Twitter",
-    "metaTitle": "Free Twitter / X Card Generator Tool | Metazivo Tools",
-    "metaDescription": "Free online Twitter/X Card Generator by Metazivo. Build summary and large image card tags to ensure eye-catching link previews on Twitter and X.",
+    "metaTitle": "Free Twitter / X Card Generator | Social Share Meta Tags",
+    "metaDescription": "Build and preview Summary and Summary Large Image Twitter/X Card tags. Ensure high-resolution image thumbnails and engaging titles when your links are shared on X.",
     "intro": "Design eye-catching summary and summary_large_image Twitter/X Cards to drive maximum engagement and referral traffic from social posts.",
     "howToUse": [
       {
@@ -1377,6 +1612,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Why is my Twitter card image not updating?",
         "a": "Twitter caches card data for up to 7 days; you can force a refresh by running the URL through the card validator."
+      },
+      {
+        "q": "What is the difference between summary and summary_large_image cards?",
+        "a": "A 'summary' card shows a small square thumbnail next to the title, while 'summary_large_image' features a prominent 2:1 ratio banner that drives significantly higher click rates."
+      },
+      {
+        "q": "Where should Twitter Card meta tags be placed?",
+        "a": "Place all <meta name='twitter:...'> tags within the <head> element of your HTML document."
       }
     ],
     "relatedSlugs": [
@@ -1389,13 +1632,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-21",
     "slug": "keyword-cannibalization-checker",
     "name": "Keyword Cannibalization Checker",
+    "primaryKeyword": "keyword cannibalization checker tool",
+    "secondaryKeywords": ["detect keyword cannibalization free","competing urls checker seo","ranking cannibalization audit","serp overlap analyzer"],
+    "focusKeyphrase": "free keyword cannibalization checker online",
+    "tags": ["Keyword Cannibalization","SERP Overlap","Content Consolidation","PageRank","Ranking Drop"],
     "shortDesc": "Detect conflicting URLs on your domain competing for the same search queries and diluting rankings.",
     "category": "Keywords & Strategy",
     "badge": "SERP Conflict",
     "iconName": "CopyCheck",
     "popular": true,
-    "metaTitle": "Free Keyword Cannibalization Checker | Metazivo Tools",
-    "metaDescription": "Free online Keyword Cannibalization Checker by Metazivo. Identify competing URLs fighting for the same search terms to consolidate ranking authority.",
+    "metaTitle": "Free Keyword Cannibalization Checker | Detect Competing URLs",
+    "metaDescription": "Identify multiple web pages on your website competing for the exact same target keywords. Consolidate ranking authority, eliminate split PageRank, and boost rankings.",
     "intro": "Identify internal cannibalization conflicts where multiple URLs on your site compete against each other for the exact same keywords, splitting ranking authority.",
     "howToUse": [
       {
@@ -1445,6 +1692,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "How do I fix cannibalization without deleting posts?",
         "a": "You can update one article's keyword focus to a different sub-angle or add a canonical tag pointing to the primary post."
+      },
+      {
+        "q": "How do I fix keyword cannibalization once identified?",
+        "a": "The most effective fixes are: merging competing articles into one comprehensive master guide and 301 redirecting the duplicate, or de-optimizing the secondary page for that specific query."
+      },
+      {
+        "q": "Why does keyword cannibalization cause rankings to fluctuate?",
+        "a": "Google cannot determine which page is the authoritative source for the query, causing it to alternate between the two URLs and splitting backlink equity."
       }
     ],
     "relatedSlugs": [
@@ -1457,13 +1712,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-22",
     "slug": "topical-map-generator",
     "name": "Topical Map Generator",
+    "primaryKeyword": "topical map generator seo",
+    "secondaryKeywords": ["semantic content map builder","topical authority planner online","pillar cluster generator","seo content hierarchy maker"],
+    "focusKeyphrase": "free topical map generator online",
+    "tags": ["Topical Map","Topical Authority","Semantic SEO","Content Pillars","Content Strategy"],
     "shortDesc": "Build comprehensive semantic content hubs with pillar articles, cluster sub-topics, and internal links.",
     "category": "Keywords & Strategy",
     "badge": "Authority Hub",
     "iconName": "GitFork",
     "popular": true,
-    "metaTitle": "Free Topical Map Generator Tool | Metazivo SEO Suite",
-    "metaDescription": "Free online Topical Map Generator by Metazivo. Structure semantic content hubs and pillar clusters to establish undeniable topical authority in Google.",
+    "metaTitle": "Free Topical Map Generator | Semantic SEO Content Clusters",
+    "metaDescription": "Generate comprehensive semantic topical maps to build undeniable domain authority in your niche. Plan pillar guides, supporting sub-topics, and internal link silos.",
     "intro": "Structure authoritative topic clusters, pillar pages, and supporting sub-topics to demonstrate complete topical depth to Google's semantic algorithms.",
     "howToUse": [
       {
@@ -1513,6 +1772,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "How long does it take to establish topical authority?",
         "a": "Publishing a complete cluster of 8-15 high-quality connected articles typically demonstrates topical authority within 2 to 4 months."
+      },
+      {
+        "q": "What is topical authority in modern Google SEO?",
+        "a": "Topical authority is a measure of a website's expertise and depth on a specific subject. Covering all related sub-topics establishes your site as an authoritative source that Google trusts."
+      },
+      {
+        "q": "How many supporting articles should a pillar guide have?",
+        "a": "A typical topic cluster contains 1 comprehensive pillar guide linked bidirectionally to 6 to 15 supporting cluster articles addressing specific long-tail queries."
       }
     ],
     "relatedSlugs": [
@@ -1525,12 +1792,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-23",
     "slug": "content-gap-analyzer",
     "name": "Content Gap Analyzer",
+    "primaryKeyword": "content gap analyzer free",
+    "secondaryKeywords": ["seo content gap checker online","competitor keyword gap tool","missing semantic subheadings","content coverage audit"],
+    "focusKeyphrase": "free content gap analyzer tool online",
+    "tags": ["Content Gap","Competitor SEO","Topical Depth","Semantic Coverage","On-Page SEO"],
     "shortDesc": "Discover missing keywords, semantic subheadings, and questions your competitors rank for.",
     "category": "Content & On-Page",
     "badge": "Competitor Gap",
     "iconName": "Search",
-    "metaTitle": "Free Content Gap Analyzer Tool | Metazivo SEO Tools",
-    "metaDescription": "Free online Content Gap Analyzer by Metazivo. Uncover missing topics, semantic subheadings, and unanswered user questions your competitors rank for.",
+    "metaTitle": "Free Content Gap Analyzer Tool | Find Missing SEO Topics",
+    "metaDescription": "Uncover high-value semantic keywords, subtopics, and questions your competitors rank for that are missing from your content. Expand topical coverage and win higher rankings.",
     "intro": "Uncover missing topics, unaddressed sub-headings, and high-ranking search entities that your top-ranking competitors cover but your article omits.",
     "howToUse": [
       {
@@ -1580,6 +1851,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "How often should I perform content gap analysis?",
         "a": "Review top-performing articles every 6 months to keep them updated with fresh competitor developments."
+      },
+      {
+        "q": "How does closing content gaps improve search rankings?",
+        "a": "Covering missing entities, questions, and semantic subtopics satisfies Google's Helpful Content criteria by providing the most thorough, all-in-one resource on the topic."
+      },
+      {
+        "q": "How often should I conduct a content gap analysis?",
+        "a": "Review your top 10 traffic-driving articles every 3 to 6 months to ensure competitors haven't introduced new angles, data, or subtopics that you lack."
       }
     ],
     "relatedSlugs": [
@@ -1592,12 +1871,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-24",
     "slug": "faq-schema-generator",
     "name": "FAQ Schema Generator",
+    "primaryKeyword": "faq schema generator json ld",
+    "secondaryKeywords": ["frequently asked questions schema maker","google faq rich snippet generator","faqpage structured data tool","faq json ld builder"],
+    "focusKeyphrase": "faq schema generator json ld online free",
+    "tags": ["FAQ Schema","FAQPage","Rich Snippets","JSON-LD","SERP Real Estate"],
     "shortDesc": "Generate valid FAQPage Schema.org JSON-LD structured data to claim rich snippet real estate.",
     "category": "Schema & Structured Data",
     "badge": "FAQ Schema",
     "iconName": "HelpCircle",
-    "metaTitle": "Free FAQ Schema Generator Tool | Metazivo SEO Tools",
-    "metaDescription": "Free online FAQ Schema Generator by Metazivo. Create valid JSON-LD structured data for frequently asked questions to claim rich snippet SERP real estate.",
+    "metaTitle": "Free FAQ Schema Generator (JSON-LD) | Google Rich Snippets",
+    "metaDescription": "Generate valid Schema.org FAQPage JSON-LD code for your web pages. Claim prominent accordion drop-downs in Google search results and increase organic click-through rates.",
     "intro": "Generate error-free FAQPage JSON-LD code for your website's frequently asked questions to earn visual rich snippets in Google search results.",
     "howToUse": [
       {
@@ -1647,6 +1930,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Is there a limit on how many FAQs I can add?",
         "a": "There is no strict technical limit, but 3 to 7 relevant questions per page is standard practice."
+      },
+      {
+        "q": "Can I use FAQ schema on commercial or product pages?",
+        "a": "Google's guidelines permit FAQPage schema on pages with frequently asked questions, but restrict visual accordion snippets primarily to well-known authority sites and government/health domains."
+      },
+      {
+        "q": "Must the questions and answers in FAQ schema be visible on the web page?",
+        "a": "Yes! Including FAQ schema with text not visibly displayed to human readers violates Google's structured data policies and can trigger a manual action penalty."
       }
     ],
     "relatedSlugs": [
@@ -1659,12 +1950,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-25",
     "slug": "howto-schema-generator",
     "name": "HowTo Schema Generator",
+    "primaryKeyword": "howto schema generator online",
+    "secondaryKeywords": ["how to structured data json ld","how to rich snippet generator","instructional schema markup tool","step by step schema builder"],
+    "focusKeyphrase": "free howto schema generator json ld",
+    "tags": ["HowTo Schema","Step-by-Step Markup","Rich Results","JSON-LD","Instructional SEO"],
     "shortDesc": "Generate step-by-step HowTo JSON-LD structured data with materials, tools, and visual instructions.",
     "category": "Schema & Structured Data",
     "badge": "HowTo Schema",
     "iconName": "ListOrdered",
-    "metaTitle": "Free HowTo Schema Generator Tool | Metazivo SEO Tools",
-    "metaDescription": "Free online HowTo Schema Generator by Metazivo. Build step-by-step instructional JSON-LD markup to earn rich instructional snippets in Google search.",
+    "metaTitle": "Free HowTo Schema Generator (JSON-LD) | Step-by-Step Markup",
+    "metaDescription": "Build valid Schema.org HowTo structured data markup in JSON-LD format. Format step-by-step guides with supply requirements, tools, and visual steps for Google rich results.",
     "intro": "Create instructional HowTo JSON-LD structured data with preparation time, required tools, supply lists, and sequential numbered steps for Google rich results.",
     "howToUse": [
       {
@@ -1714,6 +2009,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "What happens if my steps are missing text?",
         "a": "Google requires both a name and text description for each step to qualify for rich snippet treatment."
+      },
+      {
+        "q": "What types of content qualify for HowTo structured data?",
+        "a": "Articles that walk users through a sequential, step-by-step task (e.g. 'How to change a tire' or 'How to configure Cloudflare DNS') are ideal for HowTo schema."
+      },
+      {
+        "q": "Can recipe steps use HowTo schema?",
+        "a": "No. Recipes have their own dedicated Recipe schema type in Schema.org that supports cooking times, nutritional info, and ingredients."
       }
     ],
     "relatedSlugs": [
@@ -1726,12 +2029,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-26",
     "slug": "local-business-schema",
     "name": "Local Business Schema Generator",
+    "primaryKeyword": "local business schema generator json ld",
+    "secondaryKeywords": ["localbusiness structured data maker","google map local schema builder","nap schema markup tool","opening hours schema generator"],
+    "focusKeyphrase": "free local business schema generator json ld",
+    "tags": ["Local Business Schema","Local SEO","JSON-LD","NAP Markup","Geo Coordinates"],
     "shortDesc": "Generate rich LocalBusiness JSON-LD schema with NAP, geo coordinates, opening hours, and price ranges.",
     "category": "Schema & Structured Data",
     "badge": "Local Schema",
     "iconName": "Building2",
-    "metaTitle": "Free Local Business Schema Generator | Metazivo Tools",
-    "metaDescription": "Free online Local Business Schema Generator by Metazivo. Create verified LocalBusiness JSON-LD markup with NAP, geo-coordinates, and opening hours.",
+    "metaTitle": "Free Local Business Schema Generator | JSON-LD Local SEO",
+    "metaDescription": "Create validated LocalBusiness Schema.org JSON-LD structured data. Specify exact NAP details, geo-coordinates, price ranges, and opening hours for local Google rankings.",
     "intro": "Generate verified LocalBusiness Schema.org markup with exact business name, address, telephone, opening hours, price range, and geographic coordinates.",
     "howToUse": [
       {
@@ -1781,6 +2088,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Should I put LocalBusiness schema on every page?",
         "a": "Place your primary LocalBusiness schema on your homepage, contact page, and specific location landing pages."
+      },
+      {
+        "q": "Which specific subtype of LocalBusiness should I select?",
+        "a": "Use the most specific subtype available (e.g. 'Dentist', 'Restaurant', 'Plumber', 'LegalService') rather than generic 'LocalBusiness' for stronger entity recognition."
+      },
+      {
+        "q": "Why should geo-coordinates (latitude and longitude) be included?",
+        "a": "Exact latitude and longitude coordinates help Google Maps verify your physical address and align your business with nearby mobile searchers."
       }
     ],
     "relatedSlugs": [
@@ -1793,13 +2108,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-27",
     "slug": "core-web-vitals-checker",
     "name": "Core Web Vitals Checker",
+    "primaryKeyword": "core web vitals checker free",
+    "secondaryKeywords": ["lcp inp cls audit tool","measure core web vitals online","real user metrics checker","google page experience audit"],
+    "focusKeyphrase": "free core web vitals checker online",
+    "tags": ["Core Web Vitals","LCP","INP","CLS","Page Experience"],
     "shortDesc": "Measure LCP, INP, CLS, and TTFB scores with Google Lighthouse optimization benchmarks.",
     "category": "Speed & Performance",
     "badge": "Vitals Benchmark",
     "iconName": "Activity",
     "popular": true,
-    "metaTitle": "Free Core Web Vitals Checker Tool | Metazivo Performance",
-    "metaDescription": "Free online Core Web Vitals Checker by Metazivo. Measure real-world LCP, INP, CLS, and TTFB scores with actionable performance diagnostic guidelines.",
+    "metaTitle": "Free Core Web Vitals Checker | Measure LCP, INP & CLS Online",
+    "metaDescription": "Check your website's Core Web Vitals (Largest Contentful Paint, Interaction to Next Paint, Cumulative Layout Shift). Get clear technical diagnostics to pass Google thresholds.",
     "intro": "Measure your website's Core Web Vitals against Google's official thresholds: Largest Contentful Paint (LCP), Interaction to Next Paint (INP), and Cumulative Layout Shift (CLS).",
     "howToUse": [
       {
@@ -1849,6 +2168,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "How does CLS affect rankings?",
         "a": "Cumulative Layout Shift measures visual jumping. High CLS frustrates users and counts against your Google Page Experience ranking score."
+      },
+      {
+        "q": "What replaced First Input Delay (FID) in Core Web Vitals?",
+        "a": "Interaction to Next Paint (INP) officially replaced FID in March 2024 to measure overall page responsiveness throughout the entire lifespan of a user session."
+      },
+      {
+        "q": "How do I fix Cumulative Layout Shift (CLS)?",
+        "a": "Always include explicit width and height attributes on images and video embeds, and reserve layout space for dynamic ads and web font loading."
       }
     ],
     "relatedSlugs": [
@@ -1861,12 +2188,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-28",
     "slug": "pagespeed-fix-recommendation-tool",
     "name": "PageSpeed Fix Recommendation Tool",
+    "primaryKeyword": "pagespeed fix recommendation tool",
+    "secondaryKeywords": ["fix slow website loading speed","lighthouse performance fixes online","css js render blocking fix generator","speed optimization checklist"],
+    "focusKeyphrase": "pagespeed fix recommendation tool online free",
+    "tags": ["PageSpeed Fixes","Web Performance","Render-Blocking Assets","Caching Rules","Lighthouse 90+"],
     "shortDesc": "Get prioritized code, caching, image, and server solutions to achieve 90+ Lighthouse scores.",
     "category": "Speed & Performance",
     "badge": "Speed Fixes",
     "iconName": "Cpu",
-    "metaTitle": "Free PageSpeed Fix Recommendation Tool | Metazivo Tools",
-    "metaDescription": "Free online PageSpeed Fix Recommendation Tool by Metazivo. Get prioritized code, caching, image, and server solutions to achieve 90+ Lighthouse scores.",
+    "metaTitle": "Free PageSpeed Fix Recommendations | Solve Slow Web Speed",
+    "metaDescription": "Diagnose slow loading times and generate developer-ready code fixes for render-blocking assets, next-gen image compression, browser caching, and TTFB latency.",
     "intro": "Diagnose specific performance bottlenecks and generate ready-to-use code snippets, caching headers, image compression tips, and server configurations.",
     "howToUse": [
       {
@@ -1916,6 +2247,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Does page speed affect Google Ads CPC?",
         "a": "Yes, landing page speed directly influences your Google Ads Quality Score, reducing the cost-per-click required to win ad auctions."
+      },
+      {
+        "q": "How do I eliminate render-blocking resources in WordPress?",
+        "a": "Use plugins or build configurations that inline critical above-the-fold CSS and add 'defer' or 'async' to non-critical JavaScript files."
+      },
+      {
+        "q": "How much speed improvement does enabling Brotli compression provide?",
+        "a": "Brotli compresses text assets (HTML, CSS, JS) 15% to 25% smaller than traditional Gzip, significantly reducing network transfer times."
       }
     ],
     "relatedSlugs": [
@@ -1928,13 +2267,17 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-29",
     "slug": "featured-snippet-optimizer",
     "name": "Featured Snippet Optimizer",
+    "primaryKeyword": "featured snippet optimizer tool",
+    "secondaryKeywords": ["win position zero google","featured snippet formatter online","paragraph list table snippet optimizer","quick answer box seo"],
+    "focusKeyphrase": "featured snippet optimizer tool free",
+    "tags": ["Featured Snippets","Position Zero","Quick Answer Box","CTR Maximizer","On-Page Formatting"],
     "shortDesc": "Format paragraph, list, and table answers to win Google Position Zero and maximize organic CTR.",
     "category": "Content & On-Page",
     "badge": "Position Zero",
     "iconName": "Award",
     "popular": true,
-    "metaTitle": "Free Featured Snippet Optimizer Tool | Metazivo Tools",
-    "metaDescription": "Free online Featured Snippet Optimizer by Metazivo. Format paragraph, list, and table answers to win Google Position Zero and maximize organic CTR.",
+    "metaTitle": "Free Featured Snippet Optimizer | Win Google Position Zero",
+    "metaDescription": "Format your headings, concise definitions, step-by-step lists, and comparison tables to win Google Featured Snippets (Position 0). Outrank #1 positions instantly.",
     "intro": "Structure paragraph definitions, step-by-step lists, and comparison tables calibrated to Google's snippet extraction algorithms to claim Position Zero.",
     "howToUse": [
       {
@@ -1984,6 +2327,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Can a page have both rank #1 and the featured snippet?",
         "a": "Under Google's deduplication update, a page awarded the featured snippet no longer repeats as a regular blue link on page 1."
+      },
+      {
+        "q": "What is the optimal character length for a paragraph featured snippet?",
+        "a": "Provide a direct, factual answer between 40 and 55 words (roughly 250 to 300 characters) placed directly underneath the target query H2 heading."
+      },
+      {
+        "q": "Can I win a featured snippet if my page ranks on page 2 of Google?",
+        "a": "In roughly 99% of cases, Google only awards featured snippets to pages already ranking on page one (positions 1 through 10) for the target query."
       }
     ],
     "relatedSlugs": [
@@ -1996,12 +2347,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-30",
     "slug": "ai-citation-mention-checker",
     "name": "AI Citation / Mention Checker",
+    "primaryKeyword": "ai citation checker chatgpt perplexity",
+    "secondaryKeywords": ["ai brand mention checker online","generative ai citation audit","llm citation visibility tool","track brand in perplexity claude"],
+    "focusKeyphrase": "ai citation checker chatgpt perplexity online",
+    "tags": ["AI Citations","Brand Mentions","ChatGPT Search","Perplexity Citations","LLM SEO"],
     "shortDesc": "Track brand citations and authority mentions across generative AI models like ChatGPT and Claude.",
     "category": "AI, AEO & GEO",
     "badge": "Brand Citations",
     "iconName": "Sparkles",
-    "metaTitle": "Free AI Citation & Mention Checker | Metazivo SEO Tools",
-    "metaDescription": "Free online AI Citation & Mention Checker by Metazivo. Track brand citations and authority mentions across generative AI models like ChatGPT and Claude.",
+    "metaTitle": "Free AI Citation & Mention Checker | ChatGPT & Perplexity SEO",
+    "metaDescription": "Audit how generative AI models (ChatGPT, Perplexity, Claude, Gemini) perceive and cite your brand. Uncover synthetic brand visibility, citation gaps, and authority mentions.",
     "intro": "Monitor whether generative AI models, ChatGPT, Perplexity, and Claude cite your brand name, domain, or proprietary research when synthesizing industry answers.",
     "howToUse": [
       {
@@ -2051,6 +2406,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Can I optimize specifically for Perplexity citations?",
         "a": "Yes, Perplexity indexes the live web in real time, rewarding clear factual summaries, recent publication dates, and authoritative backlinks."
+      },
+      {
+        "q": "How do generative AI engines decide which sources to cite?",
+        "a": "LLMs prioritize sources with high entity authority, verifiable statistical claims, clear authorship credentials, and frequent mentions across trusted third-party publications."
+      },
+      {
+        "q": "Can traditional SEO help my brand get cited in ChatGPT Search and Perplexity?",
+        "a": "Yes! High-ranking pages in Google and Bing provide the training and live search retrieval corpora used by AI engines when synthesizing answers."
       }
     ],
     "relatedSlugs": [
@@ -2063,12 +2426,16 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
     "id": "tool-31",
     "slug": "geo-content-optimizer",
     "name": "GEO Content Optimizer",
+    "primaryKeyword": "geo content optimizer tool",
+    "secondaryKeywords": ["generative engine optimization tool","optimize content for ai search engines","direct quote extraction seo","llm content optimizer"],
+    "focusKeyphrase": "geo content optimizer tool online free",
+    "tags": ["GEO","Generative Engine Optimization","AI Search Optimization","Factual Quotations","LLM Authority"],
     "shortDesc": "Optimize website copy for Generative Engine Optimization, direct AI citations, and synthetic search.",
     "category": "AI, AEO & GEO",
     "badge": "GEO Engine",
     "iconName": "Sparkles",
-    "metaTitle": "Free GEO Content Optimizer Tool | Metazivo SEO Suite",
-    "metaDescription": "Free online GEO Content Optimizer by Metazivo. Optimize website copy for Generative Engine Optimization, direct AI citations, and synthetic search.",
+    "metaTitle": "Free GEO Content Optimizer | Generative Engine Optimization",
+    "metaDescription": "Optimize your web copy for Generative Engine Optimization (GEO). Structure factual claims, statistical citations, and authoritative quotes so AI models quote and link to you.",
     "intro": "Refactor your website articles with statistical citation density, clear entity definitions, and structured key takeaways to maximize inclusion in AI syntheses.",
     "howToUse": [
       {
@@ -2118,6 +2485,14 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "What is statistical citation density?",
         "a": "It refers to the frequency of verifiable facts, figures, and research references that demonstrate genuine subject matter authority."
+      },
+      {
+        "q": "What formatting techniques maximize AI extractability?",
+        "a": "Use concise definitions, numbered step lists, statistical benchmarks, and clear attribution statements ('According to research by...') that LLM parsers easily extract."
+      },
+      {
+        "q": "Why is statistical density crucial for Generative Engine Optimization?",
+        "a": "Academic research shows that content featuring relevant statistics, verified data points, and expert quotations experiences up to a 40% higher citation rate in AI-generated answers."
       }
     ],
     "relatedSlugs": [

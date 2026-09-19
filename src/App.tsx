@@ -819,10 +819,21 @@ export default function App() {
       if (toolDef) {
         targetTitle = toolDef.metaTitle || `${toolDef.name} – Free Online SEO Tool | Metazivo`;
         targetDescription = toolDef.metaDescription || toolDef.shortDesc || toolDef.shortDescription || "";
+        targetKeywords = [
+          toolDef.primaryKeyword,
+          ...(toolDef.secondaryKeywords || []),
+          toolDef.focusKeyphrase,
+          ...(toolDef.tags || []),
+          toolDef.name.toLowerCase(),
+          "free seo tool",
+          toolDef.category.toLowerCase(),
+          "metazivo"
+        ].filter(Boolean).join(", ");
         canonicalPath = `/tools/${toolDef.slug}`;
       } else {
         targetTitle = "31 Free SEO Tools & AI Optimization Suite (2026) | Metazivo";
         targetDescription = "Access 31 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.";
+        targetKeywords = "free seo tools, website audit tool, schema generator, meta tag generator, aeo geo checker, keyword clustering, technical seo tools, metazivo";
         canonicalPath = "/seo-tools";
       }
     } else if (currentTab === "free-tools" || currentTab === "tools/meta-title-description-generator") {
@@ -1325,7 +1336,7 @@ export default function App() {
   // -----------------------------------------------------------------------------
   // MEDIA CMS HANDLERS
   // -----------------------------------------------------------------------------
-  const handleUploadAsset = async (assetData: Partial<MediaAsset>) => {
+  const handleUploadAsset = async (assetData: Partial<MediaAsset>): Promise<MediaAsset | null> => {
     try {
       const isEdit = !!assetData.id;
       const url = "/api/media";
@@ -1334,24 +1345,42 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(assetData)
       });
-      if (res.ok) {
-        loadAllData();
-        logActivity(`${isEdit ? "Updated" : "Uploaded"} media asset`);
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Upload failed with status ${res.status}`);
       }
-    } catch (err) {
-      console.error(err);
+      const savedAsset: MediaAsset = await res.json();
+      setMediaAssets(prev => {
+        const idx = prev.findIndex(a => a.id === savedAsset.id);
+        if (idx >= 0) {
+          const updated = [...prev];
+          updated[idx] = savedAsset;
+          return updated;
+        }
+        return [savedAsset, ...prev];
+      });
+      logActivity(`${isEdit ? "Updated" : "Uploaded"} media asset: ${savedAsset.name || savedAsset.id}`);
+      return savedAsset;
+    } catch (err: any) {
+      console.error("handleUploadAsset error:", err);
+      throw err;
     }
   };
 
   const handleDeleteAsset = async (id: string) => {
     try {
+      // Optimistic instant delete from UI state
+      setMediaAssets(prev => prev.filter(a => a.id !== id));
       const res = await fetch(`/api/media/${id}`, { method: "DELETE" });
       if (res.ok) {
-        loadAllData();
         logActivity("Deleted media asset");
+      } else {
+        // Rollback on failure
+        const fallbackRes = await fetch("/api/media").catch(() => null);
+        if (fallbackRes?.ok) setMediaAssets(await fallbackRes.json());
       }
     } catch (err) {
-      console.error(err);
+      console.error("handleDeleteAsset error:", err);
     }
   };
 

@@ -950,12 +950,51 @@ app.delete("/api/posts/:id", async (req, res) => {
   }
 });
 
-// Media Library Endpoints (WebP Conversion Mock & direct support for base64 saving)
+// Media Library Endpoints with high-performance WebP disk caching & fast loading
+const mediaUploadsDir = path.join(process.cwd(), "public", "uploads");
+if (!fs.existsSync(mediaUploadsDir)) {
+  try { fs.mkdirSync(mediaUploadsDir, { recursive: true }); } catch (e) {}
+}
+app.use("/uploads", express.static(mediaUploadsDir, { maxAge: "30d", etag: true }));
+
 app.get("/api/media", async (req, res) => {
   try {
     const snapshot = await getDocs(collection(firestoreDb, "media"));
-    res.json(snapshot.docs.map(d => d.data()));
-  } catch(e) { res.status(500).json([]); }
+    const items = snapshot.docs.map(d => {
+      const data = d.data();
+      // If legacy asset has inline base64, save to disk on the fly to shrink response by 99%
+      if (typeof data.url === "string" && data.url.startsWith("data:image/")) {
+        try {
+          const matches = data.url.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
+          if (matches) {
+            const rawExt = matches[1].toLowerCase();
+            const ext = rawExt === "jpeg" ? "jpg" : (rawExt === "svg+xml" ? "svg" : rawExt);
+            const fileName = `${data.id || d.id}.${ext}`;
+            const diskPath = path.join(mediaUploadsDir, fileName);
+            if (!fs.existsSync(diskPath)) {
+              fs.writeFileSync(diskPath, Buffer.from(matches[2], "base64"));
+            }
+            data.url = `/uploads/${fileName}`;
+          }
+        } catch (e) {
+          // ignore disk caching error
+        }
+      }
+      return data;
+    });
+
+    // Sort newest first
+    items.sort((a: any, b: any) => {
+      const tA = a.createdAt ? new Date(a.createdAt).getTime() : (parseInt(a.id?.replace(/\D/g, "") || "0") || 0);
+      const tB = b.createdAt ? new Date(b.createdAt).getTime() : (parseInt(b.id?.replace(/\D/g, "") || "0") || 0);
+      return tB - tA;
+    });
+
+    res.json(items);
+  } catch(e) {
+    console.error("GET /api/media error:", e);
+    res.status(500).json([]);
+  }
 });
 
 app.post("/api/media", async (req, res) => {
@@ -971,12 +1010,31 @@ app.post("/api/media", async (req, res) => {
     }
     
     const newId = `media-${Date.now()}`;
+    let finalUrl = req.body.url || req.body.fileData || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80";
+
+    // If incoming image is base64, save to disk
+    if (typeof finalUrl === "string" && finalUrl.startsWith("data:image/")) {
+      try {
+        const matches = finalUrl.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
+        if (matches) {
+          const rawExt = matches[1].toLowerCase();
+          const ext = rawExt === "jpeg" ? "jpg" : (rawExt === "svg+xml" ? "svg" : rawExt);
+          const fileName = `${newId}.${ext}`;
+          const diskPath = path.join(mediaUploadsDir, fileName);
+          fs.writeFileSync(diskPath, Buffer.from(matches[2], "base64"));
+          finalUrl = `/uploads/${fileName}`;
+        }
+      } catch (fileErr) {
+        console.warn("Could not save image to disk, keeping url as is:", fileErr);
+      }
+    }
+
     const newAsset = {
       id: newId,
-      name: req.body.name || "uploaded_asset.png",
-      url: req.body.url || req.body.fileData || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80",
+      name: req.body.name || "uploaded_asset.webp",
+      url: finalUrl,
       size: req.body.size || 1024,
-      mimeType: req.body.mimeType || "image/png",
+      mimeType: req.body.mimeType || "image/webp",
       folder: req.body.folder || "general",
       altText: req.body.altText || "",
       caption: req.body.caption || "",
@@ -986,14 +1044,24 @@ app.post("/api/media", async (req, res) => {
     
     await setDoc(doc(firestoreDb, "media", newId), newAsset);
     res.json(newAsset);
-  } catch(e) {
-    res.status(500).json({ error: "Failed to upload media" });
+  } catch(e: any) {
+    console.error("Failed to upload media:", e);
+    res.status(500).json({ error: e?.message || "Failed to upload media" });
   }
 });
 
 app.delete("/api/media/:id", async (req, res) => {
   try {
-    await deleteDoc(doc(firestoreDb, "media", req.params.id));
+    const id = req.params.id;
+    await deleteDoc(doc(firestoreDb, "media", id));
+    // Try to remove disk file if present
+    try {
+      const possibleExts = ["webp", "png", "jpg", "jpeg", "svg"];
+      for (const ext of possibleExts) {
+        const p = path.join(mediaUploadsDir, `${id}.${ext}`);
+        if (fs.existsSync(p)) fs.unlinkSync(p);
+      }
+    } catch (e) {}
     res.json({ success: true });
   } catch(e) { res.status(500).json({error: "Failed"}); }
 });
@@ -3308,11 +3376,12 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
   if (p.startsWith("/tools/") || p.startsWith("/seo-tools/")) {
     const toolSubSlug = p.replace(/^\/(?:tools|seo-tools)\/?/i, "").replace(/\/+$/, "");
     const tool = getToolBySlug(toolSubSlug);
-    if (tool && toolSubSlug !== "website-speed-test") {
+    if (tool) {
       const bestPracticesHtml = (tool.explanation?.bestPractices || []).map(bp => `<li>${bp}</li>`).join("");
-      const faqsHtml = (tool.faqs || []).map(f => `<h3>${f.q}</h3><p>${f.a}</p>`).join("");
+      const faqsHtml = (tool.faqs || []).map(f => `<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"><h3 itemprop="name">${f.q}</h3><div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><p itemprop="text">${f.a}</p></div></div>`).join("");
       const howToUseHtml = (tool.howToUse || []).map(h => `<li><strong>Step ${h.step}: ${h.title}</strong> - ${h.desc}</li>`).join("");
       const benefitsHtml = (tool.benefits || []).map(b => `<li><strong>${b.title}</strong>: ${b.desc}</li>`).join("");
+      const tagsHtml = (tool.tags || []).map(t => `<span>#${t}</span>`).join(" ");
       const relatedHtml = (tool.relatedSlugs || []).map(rs => {
         const rel = getToolBySlug(rs);
         return rel ? `<li><a href="/tools/${rel.slug}">${rel.name}</a> - ${rel.shortDesc}</li>` : "";
@@ -3320,29 +3389,48 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
 
       const title = tool.metaTitle || `${tool.name} – Free Online SEO Tool | Metazivo`;
       const description = tool.metaDescription || `${tool.shortDesc} 100% free with instant diagnostic checks and Google-compliant output.`;
+      const toolKeywordsList = [
+        tool.primaryKeyword,
+        ...(tool.secondaryKeywords || []),
+        tool.focusKeyphrase,
+        ...(tool.tags || []),
+        tool.name.toLowerCase(),
+        "free seo tool",
+        tool.category.toLowerCase(),
+        tool.slug.replace(/-/g, " "),
+        "metazivo"
+      ].filter(Boolean);
 
       return {
         title,
         description,
-        keywords: `${tool.name.toLowerCase()}, free seo tool, ${tool.category.toLowerCase()}, ${tool.slug.replace(/-/g, " ")}, seo optimization, google ranking, metazivo`,
+        keywords: Array.from(new Set(toolKeywordsList)).join(", "),
         ogTitle: title,
         ogDescription: description,
         url: `https://metazivo.com/tools/${tool.slug}`,
         html: `
           <main>
-            <article>
-              <h1>${tool.name}</h1>
-              <p>${tool.intro || tool.shortDesc}</p>
-              ${howToUseHtml ? `<section><h2>How to Use the ${tool.name}</h2><ol>${howToUseHtml}</ol></section>` : ""}
-              ${benefitsHtml ? `<section><h2>Benefits of Using ${tool.name}</h2><ul>${benefitsHtml}</ul></section>` : ""}
+            <article itemscope itemtype="https://schema.org/WebApplication">
+              <nav aria-label="Breadcrumb">
+                <ol>
+                  <li><a href="/">Home</a></li>
+                  <li><a href="/seo-tools">SEO Tools</a></li>
+                  <li aria-current="page">${tool.name}</li>
+                </ol>
+              </nav>
+              <h1 itemprop="name">${tool.name}</h1>
+              <p itemprop="description">${tool.intro || tool.shortDesc}</p>
+              ${tagsHtml ? `<aside aria-label="Topics">${tagsHtml}</aside>` : ""}
+              ${howToUseHtml ? `<section><h2>How to Use the ${tool.name} (Step-by-Step Guide)</h2><ol>${howToUseHtml}</ol></section>` : ""}
+              ${benefitsHtml ? `<section><h2>Key Features & Benefits of ${tool.name}</h2><ul>${benefitsHtml}</ul></section>` : ""}
               <section>
-                <h2>What Is the ${tool.name}?</h2>
+                <h2>Technical Guide: What Is the ${tool.name}?</h2>
                 <p>${tool.explanation?.whatIsIt || tool.shortDesc}</p>
-                <h2>Why It Matters for Organic Rankings</h2>
+                <h2>Why It Matters for Search Rankings & Googlebot Crawling</h2>
                 <p>${tool.explanation?.whyItMatters || ""}</p>
-                ${bestPracticesHtml ? `<h2>SEO Best Practices & Recommendations</h2><ul>${bestPracticesHtml}</ul>` : ""}
-                ${faqsHtml ? `<h2>Frequently Asked Questions</h2>${faqsHtml}` : ""}
-                ${relatedHtml ? `<h2>Related SEO Tools</h2><ul>${relatedHtml}</ul>` : ""}
+                ${bestPracticesHtml ? `<h2>Recommended SEO Best Practices Checklist</h2><ul>${bestPracticesHtml}</ul>` : ""}
+                ${faqsHtml ? `<section itemscope itemtype="https://schema.org/FAQPage"><h2>Frequently Asked Questions About ${tool.name}</h2>${faqsHtml}</section>` : ""}
+                ${relatedHtml ? `<h2>Related Free SEO & AI Tools</h2><ul>${relatedHtml}</ul>` : ""}
               </section>
             </article>
           </main>`

@@ -105,11 +105,19 @@ export default function ToolShell({
 
       {/* Hero Header */}
       <header className="space-y-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase font-mono bg-orange-50 border border-orange-200/80 text-[#FF5722]">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>{tool.badge}</span>
-          <span className="text-slate-300">•</span>
-          <span className="text-slate-500 lowercase font-normal">Free Pro SEO Utility</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase font-mono bg-orange-50 border border-orange-200/80 text-[#FF5722]">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>{tool.badge}</span>
+            <span className="text-slate-300">•</span>
+            <span className="text-slate-500 lowercase font-normal">Free Pro SEO Utility</span>
+          </div>
+          {tool.primaryKeyword && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium font-mono bg-slate-100 border border-slate-200 text-slate-700">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              Focus: {tool.primaryKeyword}
+            </span>
+          )}
         </div>
 
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-950 tracking-tight leading-tight">
@@ -119,6 +127,20 @@ export default function ToolShell({
         <p className="text-base sm:text-lg text-slate-600 max-w-3xl leading-relaxed font-light font-sans">
           {tool.intro}
         </p>
+
+        {tool.tags && tool.tags.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase mr-1">Topics:</span>
+            {tool.tags.map((tag, tIdx) => (
+              <span
+                key={tIdx}
+                className="text-[11px] px-2.5 py-0.5 rounded-md bg-slate-100 hover:bg-orange-50 hover:text-[#FF5722] text-slate-600 border border-slate-200/70 transition-colors font-mono"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
       </header>
 
       {/* Main Tool Interactive Interface Container */}
@@ -252,11 +274,11 @@ export default function ToolShell({
 
       {/* Frequently Asked Questions */}
       {tool.faqs && tool.faqs.length > 0 && (
-        <section className="space-y-6">
+        <section itemScope itemType="https://schema.org/FAQPage" className="space-y-6">
           <div className="space-y-1">
             <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest">Common Questions</span>
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-950">
-              Frequently Asked Questions
+              Frequently Asked Questions About {tool.name}
             </h2>
           </div>
 
@@ -266,13 +288,16 @@ export default function ToolShell({
               return (
                 <div
                   key={index}
+                  itemScope
+                  itemProp="mainEntity"
+                  itemType="https://schema.org/Question"
                   className="border border-slate-200/80 rounded-2xl overflow-hidden bg-white shadow-xs transition-all"
                 >
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : index)}
                     className="w-full text-left px-5 py-4 flex items-center justify-between gap-4 font-semibold text-sm text-slate-900 hover:text-[#FF5722] transition-colors cursor-pointer"
                   >
-                    <span>{faq.q}</span>
+                    <span itemProp="name">{faq.q}</span>
                     <ChevronDown
                       className={`w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0 ${
                         isOpen ? "rotate-180 text-[#FF5722]" : ""
@@ -280,8 +305,13 @@ export default function ToolShell({
                     />
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs text-slate-600 leading-relaxed font-sans border-t border-slate-100 animate-fade-in">
-                      {faq.a}
+                    <div
+                      itemScope
+                      itemProp="acceptedAnswer"
+                      itemType="https://schema.org/Answer"
+                      className="px-5 pb-5 pt-1 text-xs text-slate-600 leading-relaxed font-sans border-t border-slate-100 animate-fade-in"
+                    >
+                      <div itemProp="text">{faq.a}</div>
                     </div>
                   )}
                 </div>
