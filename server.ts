@@ -352,6 +352,23 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
+// High-performance static uploads directory & public serving
+const mediaUploadsDir = path.join(process.cwd(), "public", "uploads");
+if (!fs.existsSync(mediaUploadsDir)) {
+  try { fs.mkdirSync(mediaUploadsDir, { recursive: true }); } catch (e) {}
+}
+app.use("/uploads", express.static(mediaUploadsDir, { maxAge: "30d", etag: true }));
+
+function escapeHtml(str: any): string {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 // Default Seed Data
 const defaultDb = {
   posts: [],
@@ -679,22 +696,54 @@ export function invalidateGlobalCaches() {
   ssrCache.clear();
 }
 
-// Optimize post payload by removing duplicated massive base64 strings in openGraph and twitterCard while preserving featuredImage
+// Optimize post payload: converts any inline base64 images to static WebP files, generates clean absolute URLs for SEO/crawlers, and prevents MBs of payload bloat
 function optimizePostPayload(post: any) {
   if (!post) return post;
   const p = { ...post };
+
+  // Convert Base64 featuredImage to high-speed WebP/static file URL
+  if (typeof p.featuredImage === "string" && p.featuredImage.startsWith("data:image/")) {
+    try {
+      const matches = p.featuredImage.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
+      if (matches) {
+        const rawExt = matches[1].toLowerCase();
+        const ext = rawExt === "jpeg" ? "jpg" : (rawExt === "svg+xml" ? "svg" : rawExt);
+        const cleanPostSlug = (p.slug || p.id || `post-${Date.now()}`).replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
+        const fileName = `post-${cleanPostSlug}-featured.${ext}`;
+        const diskPath = path.join(mediaUploadsDir, fileName);
+        if (!fs.existsSync(diskPath)) {
+          fs.writeFileSync(diskPath, Buffer.from(matches[2], "base64"));
+        }
+        p.featuredImage = `/uploads/${fileName}`;
+      }
+    } catch (e) {
+      console.warn("Could not cache featured image to disk:", e);
+    }
+  }
+
+  // Canonical absolute image URL for Google Rich Results, Facebook OpenGraph, and Twitter Cards
+  const validImageUrl = (typeof p.featuredImage === "string" && p.featuredImage && !p.featuredImage.startsWith("data:"))
+    ? (p.featuredImage.startsWith("http") ? p.featuredImage : `https://metazivo.com${p.featuredImage.startsWith("/") ? "" : "/"}${p.featuredImage}`)
+    : "https://metazivo.com/og-image.jpg";
+
   if (p.openGraph && typeof p.openGraph === "object") {
     const ogImg = p.openGraph.image;
-    if (typeof ogImg === "string" && ogImg.startsWith("data:")) {
-      p.openGraph = { ...p.openGraph, image: "" };
+    if (!ogImg || (typeof ogImg === "string" && ogImg.startsWith("data:"))) {
+      p.openGraph = { ...p.openGraph, image: validImageUrl };
     }
+  } else {
+    p.openGraph = { title: p.seoTitle || p.title || "Metazivo", description: p.seoDescription || p.excerpt || "", image: validImageUrl };
   }
+
   if (p.twitterCard && typeof p.twitterCard === "object") {
     const twImg = p.twitterCard.image;
-    if (typeof twImg === "string" && twImg.startsWith("data:")) {
-      p.twitterCard = { ...p.twitterCard, image: "" };
+    if (!twImg || (typeof twImg === "string" && twImg.startsWith("data:"))) {
+      p.twitterCard = { ...p.twitterCard, image: validImageUrl };
     }
+  } else {
+    p.twitterCard = { cardType: "summary_large_image", title: p.seoTitle || p.title || "Metazivo", description: p.seoDescription || p.excerpt || "", image: validImageUrl };
   }
+
   return p;
 }
 
@@ -951,12 +1000,6 @@ app.delete("/api/posts/:id", async (req, res) => {
 });
 
 // Media Library Endpoints with high-performance WebP disk caching & fast loading
-const mediaUploadsDir = path.join(process.cwd(), "public", "uploads");
-if (!fs.existsSync(mediaUploadsDir)) {
-  try { fs.mkdirSync(mediaUploadsDir, { recursive: true }); } catch (e) {}
-}
-app.use("/uploads", express.static(mediaUploadsDir, { maxAge: "30d", etag: true }));
-
 app.get("/api/media", async (req, res) => {
   try {
     const snapshot = await getDocs(collection(firestoreDb, "media"));
@@ -3284,6 +3327,43 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
       postsList = (db?.posts || []).map(optimizePostPayload);
     }
 
+    const publishedPosts = postsList.filter((b: any) => !b.status || b.status.toLowerCase() === "published");
+    const postsHtml = publishedPosts.map((post: any) => {
+      const cleanSlug = (post.slug || post.id || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      const postUrl = `/blog/${cleanSlug}`;
+      const imgUrl = post.featuredImage
+        ? (post.featuredImage.startsWith("http") ? post.featuredImage : `https://metazivo.com${post.featuredImage.startsWith("/") ? "" : "/"}${post.featuredImage}`)
+        : "https://metazivo.com/og-image.jpg";
+      const publishDateStr = post.publishDate ? new Date(post.publishDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recent";
+      const readingTime = post.readingTime || 3;
+      const category = post.categories?.[0] || "SEO";
+      return `
+        <article class="metazivo-blog-card" style="margin-bottom: 2rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1.5rem; overflow: hidden; display: flex; flex-direction: column;">
+          <a href="${postUrl}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; height: 100%;">
+            <div style="aspect-ratio: 16/9; overflow: hidden; position: relative; background: #f1f5f9; border-bottom: 1px solid #f1f5f9;">
+              <img src="${imgUrl}" alt="${escapeHtml(post.title || '')}" width="600" height="338" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>
+            <div style="padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">
+              <div style="display: flex; gap: 0.5rem; align-items: center; font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">
+                <time datetime="${post.publishDate || ''}">${publishDateStr}</time>
+                <span>•</span>
+                <span>${readingTime} min read</span>
+              </div>
+              <h2 style="font-size: 1.125rem; font-weight: 700; color: #0f172a; margin: 0 0 0.5rem 0; line-height: 1.4;">
+                ${escapeHtml(post.title || '')}
+              </h2>
+              <p style="font-size: 0.8125rem; color: #475569; line-height: 1.6; margin: 0 0 1rem 0; flex-grow: 1;">
+                ${escapeHtml(post.excerpt || '')}
+              </p>
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 1rem; margin-top: auto;">
+                <span style="font-size: 0.6875rem; font-weight: bold; text-transform: uppercase; color: #64748b; font-family: monospace;">${escapeHtml(category)}</span>
+                <span style="font-size: 0.75rem; font-weight: 700; color: #ff5722;">Read Blueprint &rarr;</span>
+              </div>
+            </div>
+          </a>
+        </article>`;
+    }).join("\n");
+
     return {
       title: "Blog | SEO, AEO & GEO Insights by Metazivo",
       description: "Expert articles on SEO, Answer Engine Optimization, Generative Engine Optimization, WordPress tips and digital marketing strategies from Metazivo.",
@@ -3292,11 +3372,21 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
       ogDescription: "Expert articles on SEO, Answer Engine Optimization, Generative Engine Optimization, WordPress tips and digital marketing strategies from Metazivo.",
       url: "https://metazivo.com/blog",
       html: `
-        <main>
-          <article>
-            <h1>Blog | SEO, AEO & GEO Insights by Metazivo</h1>
-            <p>Expert articles on SEO, Answer Engine Optimization, Generative Engine Optimization, WordPress tips and digital marketing strategies from Metazivo.</p>
-          </article>
+        <main id="main-blog-content" style="max-width: 64rem; margin: 0 auto; padding: 4rem 1rem;">
+          <header style="text-align: center; margin-bottom: 3rem;">
+            <span style="font-size: 0.75rem; font-family: monospace; font-weight: bold; color: #ff5722; text-transform: uppercase; letter-spacing: 0.1em; background: #fff7ed; border: 1px solid #ffedd5; padding: 0.35rem 0.85rem; border-radius: 9999px; display: inline-block;">
+              Grow Knowledge
+            </span>
+            <h1 style="font-size: 2.25rem; font-weight: 900; color: #020617; margin-top: 1rem; margin-bottom: 0.5rem;">
+              SEO, Ads, and Speed Playbooks
+            </h1>
+            <p style="font-size: 0.875rem; color: #475569; max-width: 36rem; margin: 0 auto; font-weight: 300;">
+              Read specialized tutorials compiled by Mehar Ali Hassan to audit and accelerate organic conversion channels.
+            </p>
+          </header>
+          <section class="metazivo-blog-grid" aria-label="Published Technical Guides" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
+            ${postsHtml}
+          </section>
         </main>`,
       initialPosts: postsList
     };
@@ -3523,7 +3613,7 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
         const q = query(collection(firestoreDb, "posts"), where("slug", "==", slug));
         const snap = await getDocs(q);
         if (!snap.empty) {
-          matchedPost = snap.docs[0].data();
+          matchedPost = optimizePostPayload(snap.docs[0].data());
         }
       } catch (err) {
         console.warn("Firestore error in getSEOData for slug:", slug, err);
@@ -3536,6 +3626,7 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
         const itemSlug = (item.slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
         return itemSlug === slug || item.id === slug;
       });
+      if (matchedPost) matchedPost = optimizePostPayload(matchedPost);
     }
 
     if (matchedPost) {
@@ -3592,7 +3683,7 @@ async function generateSchema(pathname: string, preloadedPost?: any): Promise<st
         const q = query(collection(firestoreDb, "posts"), where("slug", "==", slug));
         const snap = await getDocs(q);
         if (!snap.empty) {
-          post = snap.docs[0].data();
+          post = optimizePostPayload(snap.docs[0].data());
         }
       } catch (e) {
         console.warn("Schema post fetch fallback:", e);
@@ -3603,6 +3694,7 @@ async function generateSchema(pathname: string, preloadedPost?: any): Promise<st
         const itemSlug = (item.slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
         return itemSlug === slug || item.id === slug;
       });
+      if (post) post = optimizePostPayload(post);
     }
   }
 

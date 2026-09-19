@@ -2584,48 +2584,107 @@ export default function App() {
             </div>
 
             {/* List active published posts */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {blogs.filter(b => b.status === "published").map((post) => (
-                <div key={post.id} className="bg-white border border-slate-200/80 rounded-[32px] overflow-hidden hover:border-[#FF5722]/30 transition-all flex flex-col justify-between shadow-sm" id={`blog-card-${post.slug}`}>
-                  <div>
-                    {post.featuredImage && (
-                      <div className="aspect-video w-full overflow-hidden relative border-b border-slate-100">
-                        <img src={post.featuredImage} alt={post.title} referrerPolicy="no-referrer" loading="lazy" className="w-full h-full object-cover" />
-                        {post.sticky && (
-                          <span className="absolute top-3 left-3 bg-[#FF5722] text-white text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full shadow">
-                            Sticky Post
-                          </span>
-                        )}
-                      </div>
-                    )}
-                    <div className="p-6 space-y-3">
-                      <div className="flex gap-4 items-center text-[11px] text-slate-500">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5" />
-                          <span>{new Date(post.publishDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
-                        </span>
-                        <span>•</span>
-                        <span>{post.readingTime} min read</span>
-                      </div>
-                      <h3 className="text-base font-bold text-slate-900 hover:text-[#FF5722] transition-colors cursor-pointer" onClick={() => handleOpenBlog(post.slug)}>
-                        {post.title}
-                      </h3>
-                      <p className="text-xs text-slate-600 leading-relaxed font-light">{post.excerpt}</p>
-                    </div>
+            {blogs.length === 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8" aria-label="Loading articles">
+                {[1, 2, 3, 4].map((n) => (
+                  <div key={n} className="bg-white border border-slate-200/80 rounded-[32px] overflow-hidden p-6 space-y-4 animate-pulse shadow-sm">
+                    <div className="aspect-video w-full bg-slate-100 rounded-2xl"></div>
+                    <div className="h-4 bg-slate-100 rounded w-1/3"></div>
+                    <div className="h-6 bg-slate-100 rounded w-3/4"></div>
+                    <div className="h-4 bg-slate-100 rounded w-full"></div>
+                    <div className="h-4 bg-slate-100 rounded w-2/3"></div>
                   </div>
-                  <div className="p-6 pt-0 flex justify-between items-center border-t border-slate-100 mt-4">
-                    <span className="text-[10px] text-slate-500 font-mono font-bold uppercase">{post.categories?.[0] || "SEO"}</span>
-                    <button
-                      onClick={() => handleOpenBlog(post.slug)}
-                      className="text-xs font-bold text-[#FF5722] hover:text-[#FF7043] transition-colors inline-flex items-center gap-1 cursor-pointer"
-                    >
-                      <span>Read Blueprint</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
+                ))}
+              </div>
+            ) : (() => {
+              const publishedPosts = blogs.filter(b => !b.status || b.status.toLowerCase() === "published");
+              if (publishedPosts.length === 0) {
+                return (
+                  <div className="text-center py-16 px-4 bg-white border border-slate-200/80 rounded-[32px] shadow-sm max-w-xl mx-auto space-y-4">
+                    <FileText className="w-12 h-12 text-slate-300 mx-auto" />
+                    <h3 className="text-lg font-bold text-slate-900">New Technical Guides Arriving Soon</h3>
+                    <p className="text-xs text-slate-500">Our engineering and SEO playbooks are currently being updated. Check back shortly or explore our core services.</p>
+                    <button onClick={() => loadPublicData()} className="px-5 py-2.5 bg-[#FF5722] text-white rounded-full text-xs font-bold uppercase tracking-wider hover:bg-[#FF7043] transition-colors cursor-pointer">
+                      Refresh Articles
                     </button>
                   </div>
+                );
+              }
+
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {publishedPosts.map((post) => (
+                    <div key={post.id || post.slug} className="group bg-white border border-slate-200/80 rounded-[32px] overflow-hidden hover:border-[#FF5722]/30 transition-all flex flex-col justify-between shadow-sm hover:shadow-md" id={`blog-card-${post.slug}`}>
+                      <div>
+                        <div className="aspect-video w-full overflow-hidden relative border-b border-slate-100 bg-slate-100">
+                          {post.featuredImage ? (
+                            <img
+                              src={post.featuredImage}
+                              alt={post.title}
+                              referrerPolicy="no-referrer"
+                              loading="lazy"
+                              decoding="async"
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              onError={(e) => {
+                                (e.target as HTMLElement).style.display = "none";
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-50 to-slate-100 text-[#FF5722]">
+                              <FileText className="w-8 h-8 opacity-40" />
+                            </div>
+                          )}
+                          {post.sticky && (
+                            <span className="absolute top-3 left-3 bg-[#FF5722] text-white text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full shadow">
+                              Sticky Post
+                            </span>
+                          )}
+                        </div>
+                        <div className="p-6 space-y-3">
+                          <div className="flex gap-4 items-center text-[11px] text-slate-500">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3.5 h-3.5" />
+                              <span>{new Date(post.publishDate || Date.now()).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                            </span>
+                            <span>•</span>
+                            <span>{post.readingTime || 3} min read</span>
+                          </div>
+                          <a
+                            href={`/blog/${post.slug}`}
+                            onClick={(e) => {
+                              if (!e.ctrlKey && !e.metaKey) {
+                                e.preventDefault();
+                                handleOpenBlog(post.slug);
+                              }
+                            }}
+                            className="block text-base font-bold text-slate-900 group-hover:text-[#FF5722] transition-colors leading-snug"
+                          >
+                            {post.title}
+                          </a>
+                          <p className="text-xs text-slate-600 leading-relaxed font-light line-clamp-3">{post.excerpt}</p>
+                        </div>
+                      </div>
+                      <div className="p-6 pt-0 flex justify-between items-center border-t border-slate-100 mt-4">
+                        <span className="text-[10px] text-slate-500 font-mono font-bold uppercase">{post.categories?.[0] || "SEO"}</span>
+                        <a
+                          href={`/blog/${post.slug}`}
+                          onClick={(e) => {
+                            if (!e.ctrlKey && !e.metaKey) {
+                              e.preventDefault();
+                              handleOpenBlog(post.slug);
+                            }
+                          }}
+                          className="text-xs font-bold text-[#FF5722] group-hover:text-[#FF7043] transition-colors inline-flex items-center gap-1 cursor-pointer"
+                        >
+                          <span>Read Blueprint</span>
+                          <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                        </a>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              );
+            })()}
           </div>
         )}
 

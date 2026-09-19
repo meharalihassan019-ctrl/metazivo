@@ -402,12 +402,15 @@ export function buildPageSchemaGraph(
     }
 
     // If no custom Article/BlogPosting was provided, generate standard rich Article
+    const cleanImage = (post?.featuredImage && typeof post.featuredImage === "string" && !post.featuredImage.startsWith("data:"))
+      ? (post.featuredImage.startsWith("http") ? post.featuredImage : `${DOMAIN}${post.featuredImage.startsWith("/") ? "" : "/"}${post.featuredImage}`)
+      : `${DOMAIN}/og-image.jpg`;
+    const authorName = (typeof post?.author === "object" ? post?.author?.name : post?.author) || "Mehar Ali Hassan";
+
     if (!hasCustomArticle) {
       const headline = post?.title || cleanSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
       const description = post?.seoDescription || post?.excerpt || `Read complete guide on ${headline} by Metazivo.`;
       const publishDate = post?.publishDate || "2026-07-10T08:00:00+00:00";
-      const authorName = post?.author?.name || "Mehar Ali Hassan";
-      const image = post?.featuredImage || `${DOMAIN}/og-image.jpg`;
 
       graph.push({
         "@type": "BlogPosting",
@@ -416,7 +419,7 @@ export function buildPageSchemaGraph(
         "mainEntityOfPage": postUrl,
         "headline": headline,
         "description": description,
-        "image": image,
+        "image": cleanImage,
         "author": {
           "@type": "Person",
           "name": authorName,
@@ -426,6 +429,31 @@ export function buildPageSchemaGraph(
         "datePublished": publishDate,
         "dateModified": publishDate
       });
+    }
+
+    // Sanitize any existing custom Article schemas to guarantee 100% Google Rich Results compliance
+    for (const item of graph) {
+      if (item && item["@type"]) {
+        const typeStr = Array.isArray(item["@type"]) ? item["@type"].join(" ") : String(item["@type"]);
+        if (/Article|BlogPosting|NewsArticle/i.test(typeStr)) {
+          if (!item.image || typeof item.image !== "string" || item.image.startsWith("data:")) {
+            item.image = cleanImage;
+          }
+          if (!item.publisher) {
+            item.publisher = { "@id": `${DOMAIN}/#organization` };
+          }
+          if (!item.author || (typeof item.author === "object" && !item.author.name)) {
+            item.author = {
+              "@type": "Person",
+              "name": authorName,
+              "url": `${DOMAIN}/about`
+            };
+          }
+          if (!item.mainEntityOfPage) {
+            item.mainEntityOfPage = postUrl;
+          }
+        }
+      }
     }
 
     // Always ensure BreadcrumbList exists
