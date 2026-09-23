@@ -179,7 +179,7 @@ export const baseOrganizationSchema = {
     "@type": "ContactPoint",
     "telephone": "+923288518557",
     "contactType": "customer service",
-    "email": "mai@metazivo.com",
+    "email": "mail@metazivo.com",
     "areaServed": "Global"
   },
   "address": {

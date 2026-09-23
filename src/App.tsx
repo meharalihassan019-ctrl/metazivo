@@ -146,6 +146,20 @@ const getServiceImage = (slug: string) => {
   }
 };
 
+// Realistic dynamic reading time calculation bounded between 1 and 15 minutes
+export function calculatePostReadingTime(post?: { readingTime?: number; content?: string; excerpt?: string } | null): number {
+  if (!post) return 5;
+  const rawTime = Number(post.readingTime);
+  // If post already has an explicit custom readingTime between 1 and 15 (other than old hardcoded 3)
+  if (rawTime && !isNaN(rawTime) && rawTime >= 1 && rawTime <= 15 && rawTime !== 3) {
+    return rawTime;
+  }
+  const text = ((post.content || "") + " " + (post.excerpt || "")).replace(/<[^>]+>/g, " ").trim();
+  const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+  const minutes = Math.ceil(words / 180);
+  return Math.max(1, Math.min(15, minutes || (rawTime >= 1 && rawTime <= 15 ? rawTime : 5)));
+}
+
 // Comprehensive service slug and alias resolver to ensure 100% resilient routing
 export const resolveService = (rawSlug: string): AgencyService | undefined => {
   if (!rawSlug) return undefined;
@@ -298,7 +312,9 @@ export default function App() {
     }
   }, [siteSettings?.customHeadTags]);
 
-  const displayEmail = contactInfo?.email || "mai@metazivo.com";
+  const displayEmail = (!contactInfo?.email || contactInfo.email.trim() === "mai@metazivo.com") 
+    ? "mail@metazivo.com" 
+    : contactInfo.email;
   const displayPhone = contactInfo?.phone || "+92 328 8518557";
 
   const getWhatsAppLink = (slug: string) => {
@@ -403,7 +419,11 @@ export default function App() {
     safeFetch("/api/contact").then(async (contactRes) => {
       if (contactRes?.ok) {
         try {
-          setContactInfo(await contactRes.json());
+          const raw = await contactRes.json();
+          if (raw && (!raw.email || raw.email.trim() === "mai@metazivo.com")) {
+            raw.email = "mail@metazivo.com";
+          }
+          setContactInfo(raw);
         } catch (e) {
           console.warn("Failed parsing contact", e);
         }
@@ -1131,7 +1151,7 @@ export default function App() {
       status: "draft",
       featuredImage: "",
       gallery: [],
-      readingTime: 3,
+      readingTime: 5,
       featured: false,
       sticky: false,
       categories: ["SEO Blogging"],
@@ -2647,7 +2667,7 @@ export default function App() {
                               <span>{new Date(post.publishDate || Date.now()).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
                             </span>
                             <span>•</span>
-                            <span>{post.readingTime || 3} min read</span>
+                            <span>{calculatePostReadingTime(post)} min read</span>
                           </div>
                           <a
                             href={`/blog/${post.slug}`}
@@ -2699,7 +2719,7 @@ export default function App() {
               <div className="flex items-center gap-4 text-xs text-slate-500 font-mono">
                 <span>{activeBlog.categories?.join(" / ")}</span>
                 <span>•</span>
-                <span>{activeBlog.readingTime} Min Read</span>
+                <span>{calculatePostReadingTime(activeBlog)} Min Read</span>
               </div>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-950 leading-tight tracking-tight">
                 {activeBlog.title}
@@ -2842,8 +2862,8 @@ export default function App() {
                 </div>
                 <div className="flex gap-2 items-center">
                   <Mail className="w-4 h-4 text-[#FF5722]" />
-                  <a href={`mailto:${contactInfo?.email || "mai@metazivo.com"}`} className="hover:text-[#FF5722] transition-colors">
-                    {contactInfo?.email || "mai@metazivo.com"}
+                  <a href={`mailto:${displayEmail}`} className="hover:text-[#FF5722] transition-colors">
+                    {displayEmail}
                   </a>
                 </div>
                 <div className="flex gap-2 items-start">
@@ -3088,7 +3108,7 @@ export default function App() {
                         <p className="text-[11px] text-slate-400">Restore permissions to the Metazivo core database.</p>
                       </div>
                       <p className="text-xs text-slate-300 leading-relaxed">
-                        An administrative password reset email has been dispatched to the default address <strong>mai@metazivo.com</strong>. Complete the recovery guidelines from that inbox.
+                        An administrative password reset email has been dispatched to the default address <strong>mail@metazivo.com</strong>. Complete the recovery guidelines from that inbox.
                       </p>
                       <button
                         onClick={() => setLoginStep("login")}
@@ -4219,7 +4239,7 @@ export default function App() {
                               <input
                                 type="email"
                                 name="email"
-                                defaultValue={contactInfo?.email || "mai@metazivo.com"}
+                                defaultValue={displayEmail}
                                 className="bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-white focus:outline-none w-full"
                                 required
                               />

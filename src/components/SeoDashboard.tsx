@@ -147,7 +147,7 @@ export default function SeoDashboard({
     businessType: "LocalBusiness",
     name: "Metazivo Digital Agency HQ",
     phone: "+92 328 8518557",
-    email: "mai@metazivo.com",
+    email: "mail@metazivo.com",
     address: "Islamabad / Lahore, Pakistan",
     latitude: "33.6844",
     longitude: "73.0479",

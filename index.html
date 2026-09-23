@@ -97,7 +97,7 @@
             "url": "https://metazivo.com/og-image.jpg"
           },
           "telephone": "+92 328 8518557",
-          "email": "mai@metazivo.com",
+          "email": "mail@metazivo.com",
           "priceRange": "$$",
           "currenciesAccepted": "USD, PKR, EUR, GBP",
           "paymentAccepted": "Cash, Credit Card, Bank Transfer, PayPal",
@@ -146,11 +146,50 @@
       ]
     }
     </script>
+    <!-- Instant Critical Shell Styles: Prevents unstyled text flash (FOUC) and ensures instant dark branding -->
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #020617;
+        color: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      #root {
+        min-height: 100vh;
+      }
+      .preloader-shell {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #020617;
+        z-index: 9999;
+      }
+      .preloader-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255, 87, 34, 0.15);
+        border-top-color: #FF5722;
+        border-radius: 50%;
+        animation: spinPreloader 0.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+      @keyframes spinPreloader {
+        to { transform: rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1182390899982440&ev=PageView&noscript=1" alt="" /></noscript>
     <div id="root">
-      <!-- Semantic initial crawler DOM (Immediately crawlable by Googlebot, SEOptimer, and search indexers) -->
+      <div class="preloader-shell">
+        <div class="preloader-spinner"></div>
+      </div>
+    </div>
+    <noscript>
+      <!-- Semantic initial crawler DOM (Immediately crawlable by Googlebot, SEOptimer, and search indexers without JS) -->
       <header>
         <nav aria-label="Main Navigation">
           <a href="/">Metazivo Growth Engine</a>
@@ -212,7 +251,7 @@
               <strong>Metazivo Digital Agency</strong><br />
               Office 402, Metazivo Heights, Sector F-5, Islamabad, 44000, Pakistan<br />
               Phone: <a href="tel:+923288518557">+92 328 8518557</a><br />
-              Email: <a href="mailto:mai@metazivo.com">mai@metazivo.com</a>
+              Email: <a href="mailto:mail@metazivo.com">mail@metazivo.com</a>
             </address>
           </section>
         </article>
@@ -239,7 +278,7 @@
         </section>
         <p>&copy; 2026 Metazivo. All rights reserved.</p>
       </footer>
-    </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

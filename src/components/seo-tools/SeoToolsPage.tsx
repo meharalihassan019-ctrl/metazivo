@@ -17,6 +17,10 @@ import TechnicalSeoToolkit from "./TechnicalSeoToolkit";
 import ContentSeoToolkit from "./ContentSeoToolkit";
 import PerformanceAndIndexTools from "./PerformanceAndIndexTools";
 import WebsiteSpeedTest from "../WebsiteSpeedTest";
+import KeywordCannibalizationTool from "./KeywordCannibalizationTool";
+import IncomingLinksCheckerTool from "./IncomingLinksCheckerTool";
+import HreflangGeneratorTool from "./HreflangGeneratorTool";
+import BrokenLinkCheckerTool from "./BrokenLinkCheckerTool";
 
 interface Props {
   activeToolSlug?: string;
@@ -60,10 +64,32 @@ export default function SeoToolsPage({ activeToolSlug, onNavigateTool, onNavigat
 
     case "keyword-clustering":
     case "keyword-clustering-tool":
-    case "keyword-cannibalization-checker":
     case "topical-map-generator":
       return (
         <KeywordClusteringTool
+          tool={toolDef}
+          onNavigateTool={onNavigateTool}
+          onNavigateHome={onNavigateHome}
+        />
+      );
+
+    case "keyword-cannibalization-checker":
+    case "keyword-cannibalization-tool":
+    case "keyword-cannibalization":
+      return (
+        <KeywordCannibalizationTool
+          tool={toolDef}
+          onNavigateTool={onNavigateTool}
+          onNavigateHome={onNavigateHome}
+        />
+      );
+
+    case "incoming-links-checker":
+    case "backlink-checker":
+    case "inbound-links-checker":
+    case "incoming-links":
+      return (
+        <IncomingLinksCheckerTool
           tool={toolDef}
           onNavigateTool={onNavigateTool}
           onNavigateHome={onNavigateHome}
@@ -178,7 +204,28 @@ export default function SeoToolsPage({ activeToolSlug, onNavigateTool, onNavigat
       );
 
     case "hreflang-generator":
+    case "hreflang-tag-generator":
+    case "hreflang-tags-generator":
+      return (
+        <HreflangGeneratorTool
+          tool={toolDef}
+          onNavigateTool={onNavigateTool}
+          onNavigateHome={onNavigateHome}
+        />
+      );
+
     case "broken-link-checker":
+    case "404-link-checker":
+    case "404-checker":
+    case "broken-links-checker":
+      return (
+        <BrokenLinkCheckerTool
+          tool={toolDef}
+          onNavigateTool={onNavigateTool}
+          onNavigateHome={onNavigateHome}
+        />
+      );
+
     case "canonical-checker":
     case "canonical-url-checker":
     case "http-headers-checker":

@@ -40,7 +40,9 @@ export default function Header({ currentTab, onNavigate, contactInfo, customPage
 
   const formattedPhoneLink = contactInfo?.phone ? `tel:${contactInfo.phone.replace(/[^+\d]/g, "")}` : "tel:+923288518557";
   const displayPhone = contactInfo?.phone || "+92 328 8518557";
-  const displayEmail = contactInfo?.email || "mai@metazivo.com";
+  const displayEmail = (!contactInfo?.email || contactInfo.email.trim() === "mai@metazivo.com") 
+    ? "mail@metazivo.com" 
+    : contactInfo.email;
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm" id="app-header">

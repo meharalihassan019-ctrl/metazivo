@@ -16,7 +16,9 @@ export default function Footer({ onNavigate, contactInfo }: FooterProps) {
   };
 
   const displayPhone = contactInfo?.phone || "+92 328 8518557";
-  const displayEmail = contactInfo?.email || "mai@metazivo.com";
+  const displayEmail = (!contactInfo?.email || contactInfo.email.trim() === "mai@metazivo.com") 
+    ? "mail@metazivo.com" 
+    : contactInfo.email;
   const displayAddress = contactInfo?.address || "Office 402, Metazivo Heights, Sector F-5, Islamabad, 44000, Pakistan";
   const formattedPhoneLink = `tel:${displayPhone.replace(/[^+\d]/g, "")}`;
 

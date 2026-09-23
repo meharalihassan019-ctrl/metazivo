@@ -110,6 +110,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "Does running this audit slow down my live website or consume bandwidth?",
         "a": "No. The audit executes a lightweight HTTP GET request similar to a standard browser visit, placing negligible load on your web host or CDN."
       }
+    ,
+      {
+        "q": "How does a technical SEO audit improve visibility in AI search engines like Perplexity and ChatGPT?",
+        "a": "AI search bots rely on fast HTTP responses, clean HTML hierarchy, and unblocked robots.txt directives to retrieve and summarize pages. If an audit detects broken links, render-blocking scripts, or slow server response times, AI search engines skip your page and cite faster competitors instead."
+      },
+      {
+        "q": "How do technical health audits tie into Google's E-E-A-T quality framework?",
+        "a": "Technical reliability is a prerequisite for trustworthiness. A website plagued by 404 errors, broken SSL certificates, or missing author contact info raises immediate red flags with Google's Quality Raters and search algorithms, eroding your domain's credibility before your content is even evaluated."
+      }
     ],
     "relatedSlugs": [
       "broken-link-checker",
@@ -189,6 +198,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "How do I turn a clustered keyword group into a high-ranking article?",
         "a": "Use the primary cluster keyword as your main H1 title and URL slug, then turn supporting keyword variations into H2 and H3 subheadings and FAQ entries."
+      }
+    ,
+      {
+        "q": "How does keyword clustering help with Answer Engine Optimization (AEO) and Featured Snippets?",
+        "a": "Clustering reveals all the natural question variations and long-tail subqueries surrounding a core topic. By grouping these together, you can design clear FAQ sections and dedicated answer boxes on a single page, capturing multiple Featured Snippets and 'People Also Ask' positions without publishing fragmented content."
+      },
+      {
+        "q": "Why is topical clustering essential for Generative Engine Optimization (GEO) in models like Gemini and Claude?",
+        "a": "Large language models build knowledge graphs based on semantic completeness. When your site covers an entire cluster comprehensively with tight interlinking, AI engines recognize your domain as a primary topical entity, drastically increasing the likelihood of being cited as the source in generative AI responses."
       }
     ],
     "relatedSlugs": [
@@ -270,6 +288,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "What should I do if a search query has mixed or fractured intent?",
         "a": "Analyze the top 3 ranking results in Google. If two are informational guides and one is a tool, target the primary format while providing a lightweight interactive element or download."
       }
+    ,
+      {
+        "q": "How does matching search intent influence Generative Engine Optimization (GEO)?",
+        "a": "Generative AI engines like ChatGPT and Perplexity analyze intent to formulate their answers. If a query is commercial, they look for comparison matrices and user reviews. If informational, they synthesize direct factual definitions. Categorizing intent ensures you provide the exact format AI engines need to quote your site."
+      },
+      {
+        "q": "What role does search intent play in satisfying Google's E-E-A-T standards?",
+        "a": "Satisfying intent proves real-world experience and expertise. When a visitor arrives seeking hands-on advice and finds genuine step-by-step guidance rather than fluff or pushy sales pitches, user engagement signals validate your page as an authoritative, trustworthy destination."
+      }
     ],
     "relatedSlugs": [
       "keyword-clustering-tool",
@@ -350,6 +377,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "Can I combine multiple schema entities on a single page?",
         "a": "Yes. For example, a blog post can contain Article schema, BreadcrumbList schema, and FAQPage schema simultaneously within a unified @graph array."
       }
+    ,
+      {
+        "q": "How does structured data power Answer Engine Optimization (AEO) and voice search?",
+        "a": "Answer engines don't read web pages like humans; they parse machine-readable data. JSON-LD schemas like FAQPage, HowTo, and Speakable feed exact answers directly to Google Assistant, Siri, and Google's Answer Box, giving you direct access to voice search results."
+      },
+      {
+        "q": "Can schema markup directly strengthen our site's E-E-A-T profile?",
+        "a": "Yes. By implementing Person, Organization, and ItemReviewed schemas with sameAs links to verified social profiles, Wikipedia entries, and professional associations, you programmatically declare your credentials, authors, and physical business legitimacy to Google's Knowledge Graph."
+      }
     ],
     "relatedSlugs": [
       "faq-schema-generator",
@@ -429,6 +465,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "Should multi-location businesses create separate landing pages for each city?",
         "a": "Yes. Every physical location or primary service territory should have a dedicated landing page with unique localized content and LocalBusiness JSON-LD markup."
       }
+    ,
+      {
+        "q": "How does local SEO optimization affect recommendations in AI assistants and ChatGPT Search?",
+        "a": "When users ask ChatGPT or Perplexity for 'the best agency near me', these models cross-reference verified NAP data, localized landing pages, and geographic proximity signals. Consistent local signals ensure AI assistants confidently recommend your local business."
+      },
+      {
+        "q": "Why is local E-E-A-T so critical for ranking in Google's Local Map Pack?",
+        "a": "Google verifies real-world presence and authentic community reputation. Having local business schemas, verified Google Business Profile sync, real customer reviews, and localized case studies proves to both algorithms and human raters that your business genuinely operates in the community."
+      }
     ],
     "relatedSlugs": [
       "local-business-schema",
@@ -507,6 +552,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "What is an orphaned page in SEO and why is it harmful?",
         "a": "An orphaned page has zero internal links pointing to it. Search engines struggle to discover, crawl, and rank orphaned pages because no PageRank flows to them."
+      }
+    ,
+      {
+        "q": "How do internal links help AI search engines and LLM crawlers map your site's authority?",
+        "a": "Generative search engines need to understand how concepts relate across your domain. Descriptive internal links with contextual anchor text act like semantic bridges, helping AI crawlers index supporting evidence and establish topical authority across your entire content ecosystem."
+      },
+      {
+        "q": "Can poor internal linking hurt my site's E-E-A-T signals?",
+        "a": "Yes. Orphaned pages and buried author profiles make it difficult for search evaluators to verify the credibility of your content. Linking from authoritative articles back to expert bios, editorial policies, and core case studies directly reinforces your site's authoritativeness and trust."
       }
     ],
     "relatedSlugs": [
@@ -588,6 +642,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "Why does Google sometimes rewrite my meta description in search results?",
         "a": "Google rewrites meta descriptions in roughly 60% of searches if it determines a direct text snippet from the page better matches the specific query typed by the user."
       }
+    ,
+      {
+        "q": "Do meta titles and descriptions matter for Generative AI search (GEO)?",
+        "a": "Yes. Generative search platforms frequently use page meta descriptions as quick summary snippets when compiling source citations. A concise, factual description that states your core thesis makes it easier for AI models to understand and quote your page accurately."
+      },
+      {
+        "q": "How do you write meta tags that satisfy both human readers and search algorithms without sounding robotic?",
+        "a": "Lead with the exact primary search intent in the first 40 characters of your title, follow with your unique value proposition, and write a description that reads like an expert recommendation rather than a keyword dump. Real humans click clarity and benefit, not stuffed jargon."
+      }
     ],
     "relatedSlugs": [
       "open-graph-generator",
@@ -667,6 +730,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "How do Core Web Vitals affect mobile rankings?",
         "a": "Core Web Vitals (LCP, INP, CLS) are confirmed Google ranking signals. Sites passing Core Web Vitals get preferential ranking treatment in mobile search results."
+      }
+    ,
+      {
+        "q": "Does website speed affect how AI crawlers and answer engines index my content?",
+        "a": "Yes. Real-time answer engines like Perplexity and AI Overviews have strict scraping timeout limits. If your page takes more than 2 seconds to deliver rendered HTML, AI engines will abandon your URL and fetch the answer from a faster competing site."
+      },
+      {
+        "q": "How does page speed impact user trust and Google's E-E-A-T assessment?",
+        "a": "A sluggish, jittery website with high Cumulative Layout Shift (CLS) immediately undermines user confidence. Google's Search Quality Guidelines emphasize page experience as an essential component of Trustworthiness (the 'T' in E-E-A-T)—users will not trust an insecure or clunky site with their time or money."
       }
     ],
     "relatedSlugs": [
@@ -748,6 +820,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "Where must the robots.txt file be located on the web server?",
         "a": "It must be uploaded to the root web directory so that it is accessible at the exact path https://yourdomain.com/robots.txt."
       }
+    ,
+      {
+        "q": "How should I configure robots.txt for AI search crawlers like GPTBot, ClaudeBot, and PerplexityBot?",
+        "a": "If you want your brand cited in ChatGPT, Claude, and Perplexity search answers, allow GPTBot, ClaudeBot, and PerplexityBot access to your public content while disallowing sensitive internal routes like admin panels and checkout endpoints."
+      },
+      {
+        "q": "Can a misconfigured robots.txt destroy your search rankings overnight?",
+        "a": "Absolutely. A single accidental 'Disallow: /' directive blocks Googlebot from crawling your entire domain. Search engines will de-index your pages, wiping out your organic rankings, traffic, and revenue until the directive is corrected and recrawled."
+      }
     ],
     "relatedSlugs": [
       "xml-sitemap-generator",
@@ -827,6 +908,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "How many URLs can a single XML sitemap file hold?",
         "a": "Under the sitemaps.org protocol, a single XML sitemap can hold up to 50,000 URLs and must not exceed 50MB uncompressed. Larger sites must use a sitemap index."
+      }
+    ,
+      {
+        "q": "How do XML sitemaps assist in rapid indexation for Answer Engines and AI search?",
+        "a": "XML sitemaps provide search bots and AI indexers with a fresh timestamp of when content was last updated (lastmod). This tells Googlebot and AI crawlers to re-crawl your updated guides immediately, ensuring your latest data is available for instant answer synthesis."
+      },
+      {
+        "q": "What is the best practice for maintaining sitemaps under Google's E-E-A-T standards?",
+        "a": "Only include canonical, indexable 200 OK URLs in your sitemap. Strip out 404 pages, redirect chains, and thin noindexed pages. A clean sitemap demonstrates technical discipline and ensures search engines spend crawl budget only on high-value, authoritative content."
       }
     ],
     "relatedSlugs": [
@@ -908,6 +998,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "How do I fix a broken internal link?",
         "a": "Update the anchor link in your HTML to point directly to the correct new URL, or implement a 301 permanent redirect if the original URL was permanently moved."
       }
+    ,
+      {
+        "q": "How do 404 broken links damage your site's GEO and AI citations?",
+        "a": "When an AI engine attempts to verify a citation or fact by following a backlink to your page, landing on a 404 error breaks the verification loop. The AI engine will immediately flag the source as unreliable and replace your citation with a working competitor URL."
+      },
+      {
+        "q": "Why is fixing broken links critical for Google E-E-A-T and user trust?",
+        "a": "Broken links directly violate Google's Quality Rater expectations for page maintenance. A site with neglected links signals abandonment and lack of editorial oversight, directly degrading the Trustworthiness score of the domain."
+      }
     ],
     "relatedSlugs": [
       "redirect-checker",
@@ -987,6 +1086,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "What is the difference between a 301 and 302 redirect for SEO?",
         "a": "A 301 indicates a permanent move and transfers 99% of PageRank equity to the target URL. A 302 is temporary and tells search engines to keep the old URL in the index."
       }
+    ,
+      {
+        "q": "Why do redirect loops and chains harm AEO and voice search performance?",
+        "a": "Voice search and answer engines demand instant latency (under 300ms). Redirect chains add multiple HTTP roundtrips, increasing TTFB and often causing voice assistants to timeout before delivering the answer."
+      },
+      {
+        "q": "How do clean 301 redirects preserve PageRank and historical E-E-A-T authority?",
+        "a": "A direct single-hop 301 redirect passes nearly 100% of accumulated link equity, historical trust, and ranking signals to the new URL. Redirect chains, by contrast, bleed PageRank with every hop and confuse search crawlers."
+      }
     ],
     "relatedSlugs": [
       "301-redirect-generator",
@@ -1065,6 +1173,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Does Google always obey the canonical tag?",
         "a": "No. The canonical tag is a strong hint rather than an absolute directive. If Google detects contradictory signals (e.g. internal links pointing elsewhere), it may choose its own canonical."
+      }
+    ,
+      {
+        "q": "How does canonicalization prevent duplicate content confusion in AI search engines?",
+        "a": "Generative search engines synthesize answers by cross-referencing authoritative entities. If multiple URLs present duplicate or near-identical text without a canonical tag, AI models struggle to determine the definitive source, diluting your brand's citation frequency."
+      },
+      {
+        "q": "What is the consequence of missing or incorrect canonical tags under Google's E-E-A-T guidelines?",
+        "a": "Missing canonical tags lead to duplicate page indexing, self-competition, and diluted backlink equity. Google may pick an arbitrary parameter URL as the canonical version, hurting the perceived authority and clean presentation of your primary content."
       }
     ],
     "relatedSlugs": [
@@ -1146,6 +1263,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "How does Open Graph metadata impact SEO?",
         "a": "While not a direct ranking factor, compelling Open Graph tags increase social shares, engagement, and referral traffic, driving secondary natural backlink acquisition."
       }
+    ,
+      {
+        "q": "Do Open Graph tags have an indirect impact on AEO and GEO search engines?",
+        "a": "Yes. Many AI agents and chat interfaces (including Discord, Slack, and conversational search platforms) extract Open Graph metadata to build visual rich cards for users. Well-formatted OG cards generate social shares and referral traffic, which indirectly reinforce brand search volume."
+      },
+      {
+        "q": "How do professional social preview cards build brand trust and E-E-A-T?",
+        "a": "When your links are shared on LinkedIn, X, or Facebook with crisp high-resolution images, brand logos, and accurate titles, it signals polished professionalism. Broken or missing preview cards look spammy and discourage clicks from discerning users."
+      }
     ],
     "relatedSlugs": [
       "twitter-card-generator",
@@ -1226,6 +1352,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "How does Generative Engine Optimization (GEO) differ from traditional SEO?",
         "a": "Traditional SEO optimizes for keyword rank lists in blue links. GEO optimizes for citation inclusion, statistical density, and entity authority within AI-synthesized responses."
       }
+    ,
+      {
+        "q": "What is the fundamental difference between traditional SEO, AEO, and GEO?",
+        "a": "SEO focuses on ranking blue links on Google's search result pages. AEO optimizes concise answers to capture Featured Snippets and voice assistant queries. GEO optimizes entity structure, factual data, and citations so generative models (ChatGPT, Perplexity, Gemini) recommend your brand in conversational answers."
+      },
+      {
+        "q": "How do you prove genuine human E-E-A-T when optimizing for AI search engines?",
+        "a": "Include first-person testing insights ('In our benchmark of 50 websites...'), proprietary data, direct quotes from verified experts, and step-by-step screenshots. Generic AI-written text lacks unique experiential proof, making it vulnerable to automated de-indexing."
+      }
     ],
     "relatedSlugs": [
       "geo-content-optimizer",
@@ -1304,6 +1439,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Should URL slugs contain underscores or hyphens?",
         "a": "Always use hyphens (-). Google's search algorithms treat hyphens as word separators, whereas underscores (_) blend words together."
+      }
+    ,
+      {
+        "q": "How do clean URL slugs assist Answer Engines and voice search devices?",
+        "a": "Clean, human-readable slugs clearly define the page's core topic in plain language. Voice assistants and answer engines inspect the URL path as a relevance check when verifying whether a page directly answers a spoken question."
+      },
+      {
+        "q": "What are the key rules for crafting SEO-friendly slugs that build user trust?",
+        "a": "Keep it under 5 words, use lowercase letters separated by single hyphens, eliminate stop words ('and', 'the', 'of'), and lead with your primary target keyword. Avoid cryptic database IDs, query parameters, or date stamps that make URLs look dated."
       }
     ],
     "relatedSlugs": [
@@ -1384,6 +1528,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "Should decorative images have alt text?",
         "a": "Purely decorative images (borders, abstract shapes) should have an empty alt attribute (alt='') so screen readers skip them."
       }
+    ,
+      {
+        "q": "How does descriptive alt text help generative AI engines and Google Gemini understand visual content?",
+        "a": "Multimodal AI engines like Google Gemini and GPT-4o analyze both images and text to answer user queries. Accurate alt text provides clear semantic context, allowing AI engines to reference your visual charts, infographics, and product diagrams in their responses."
+      },
+      {
+        "q": "Why is image alt text vital for accessibility and Google's E-E-A-T evaluation?",
+        "a": "Alt text is fundamentally an accessibility feature for visually impaired users relying on screen readers. Demonstrating digital accessibility reflects high ethical standards and user-centric design, which Google explicitly rewards under its site quality and usability guidelines."
+      }
     ],
     "relatedSlugs": [
       "core-web-vitals-checker",
@@ -1462,6 +1615,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Where do I paste .htaccess redirect rules?",
         "a": "Paste the generated Redirect 301 or RewriteRule lines at the top of your .htaccess file located in the root web directory of your Apache or LiteSpeed server."
+      }
+    ,
+      {
+        "q": "How does a clean server-level redirect rule improve AI crawler efficiency?",
+        "a": "Server-level 301 rules (in .htaccess or Nginx) execute in microseconds before application code loads. This eliminates latency for AI search crawlers that need to verify cited pages, ensuring your migrated URLs are re-indexed without delay."
+      },
+      {
+        "q": "What is the biggest risk of using JavaScript redirects instead of server-level 301 redirects?",
+        "a": "JavaScript redirects require search engine crawlers to fully render the page before discovering the destination, which wastes crawl budget and often fails to pass PageRank. Server-level 301 redirects immediately inform search engines of permanent URL migrations."
       }
     ],
     "relatedSlugs": [
@@ -1542,6 +1704,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "Do hreflang tags need to be reciprocal?",
         "a": "Yes! If Page A links to Page B as its French alternate, Page B MUST link back to Page A as its English alternate, or Google will ignore both annotations."
       }
+    ,
+      {
+        "q": "How does correct hreflang implementation guide AI search engines for international users?",
+        "a": "When international users query ChatGPT or Google in different languages, correct hreflang tags instruct AI models which regional variation of your content to cite, preventing European users from receiving US dollar pricing or English-only advice."
+      },
+      {
+        "q": "What happens if return hreflang tags are missing or misconfigured?",
+        "a": "Google requires bidirectional return tags: if page A points to page B as its Spanish alternate, page B must point back to page A. Missing return tags cause Google to ignore the annotations entirely, resulting in incorrect language versions ranking in regional search results."
+      }
     ],
     "relatedSlugs": [
       "xml-sitemap-generator",
@@ -1620,6 +1791,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Where should Twitter Card meta tags be placed?",
         "a": "Place all <meta name='twitter:...'> tags within the <head> element of your HTML document."
+      }
+    ,
+      {
+        "q": "How do Twitter / X Cards influence modern brand discovery in AI-driven search?",
+        "a": "Real-time AI search engines like Grok and Perplexity frequently index high-engagement tweets and links. Having well-structured Twitter Cards ensures your shared content renders with high-impact visuals, driving the engagement and citation signals that AI engines monitor."
+      },
+      {
+        "q": "What is the ideal aspect ratio and file size for Summary Large Image Twitter Cards?",
+        "a": "Use a 2:1 aspect ratio (recommended 1200x600 or 1200x628 pixels) and keep file sizes under 2MB for snappy CDN delivery. Ensure your branding and key headline text stay within the central 80% safe zone to avoid awkward mobile cropping."
       }
     ],
     "relatedSlugs": [
@@ -1701,6 +1881,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "Why does keyword cannibalization cause rankings to fluctuate?",
         "a": "Google cannot determine which page is the authoritative source for the query, causing it to alternate between the two URLs and splitting backlink equity."
       }
+    ,
+      {
+        "q": "How does keyword cannibalization degrade your visibility in AI-generated overviews (GEO)?",
+        "a": "When multiple pages on your site discuss the same topic with overlapping intent, AI models get conflicting signals about which page is your authoritative source. This leads to fragmented citations or AI engines choosing a third-party competitor that has a single, definitive guide."
+      },
+      {
+        "q": "What is the best way to consolidate cannibalized pages to boost overall domain E-E-A-T?",
+        "a": "Identify the strongest ranking URL, merge the best unique sections, data points, and case studies from the weaker URLs into the primary article, and implement 301 redirects from the redundant URLs. This consolidates link equity and creates a comprehensive, authoritative masterpiece."
+      }
     ],
     "relatedSlugs": [
       "keyword-clustering-tool",
@@ -1781,6 +1970,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "How many supporting articles should a pillar guide have?",
         "a": "A typical topic cluster contains 1 comprehensive pillar guide linked bidirectionally to 6 to 15 supporting cluster articles addressing specific long-tail queries."
       }
+    ,
+      {
+        "q": "Why are topical maps the single most powerful strategy for dominating Generative Engine Optimization (GEO)?",
+        "a": "Large language models do not evaluate pages in isolation; they evaluate entity graphs. A topical map ensures your site covers every sub-topic, question, and semantic variant in your niche, establishing your domain as the undisputed topical authority that AI engines cite automatically."
+      },
+      {
+        "q": "How do topical maps prove first-hand expertise and authority under Google's E-E-A-T criteria?",
+        "a": "A site with just 3 superficial blog posts cannot claim industry authority. When you publish an interconnected web of beginner guides, advanced technical breakdowns, real-world case studies, and comparison teardowns, Google's algorithms recognize genuine institutional expertise."
+      }
     ],
     "relatedSlugs": [
       "keyword-clustering-tool",
@@ -1859,6 +2057,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "How often should I conduct a content gap analysis?",
         "a": "Review your top 10 traffic-driving articles every 3 to 6 months to ensure competitors haven't introduced new angles, data, or subtopics that you lack."
+      }
+    ,
+      {
+        "q": "How can content gap analysis help you win Google's Answer Boxes (AEO)?",
+        "a": "Content gap analysis uncovers specific questions and micro-topics that top competitors answer but your site omits. By adding crisp, concise 50-word answer boxes targeting these gaps, you can capture Featured Snippets that competitors have held for months."
+      },
+      {
+        "q": "What should you avoid when filling content gaps to maintain high E-E-A-T quality?",
+        "a": "Do not simply rephrase competitor content using an AI generator. Fill content gaps with unique original data, proprietary benchmarks, client case study metrics, or hands-on contrarian insights that competitors lack. Uniqueness and depth drive real search superiority."
       }
     ],
     "relatedSlugs": [
@@ -1939,6 +2146,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "Must the questions and answers in FAQ schema be visible on the web page?",
         "a": "Yes! Including FAQ schema with text not visibly displayed to human readers violates Google's structured data policies and can trigger a manual action penalty."
       }
+    ,
+      {
+        "q": "Can FAQ schema help your content appear directly in conversational AI search results?",
+        "a": "Yes. FAQPage schema structures question-and-answer pairs into semantic JSON-LD format. Conversational AI search engines like Perplexity, ChatGPT Search, and Google AI Overviews ingest this structured data to formulate their direct answers, crediting your site as the source."
+      },
+      {
+        "q": "What are Google's current strict rules for displaying FAQ rich snippets in search results?",
+        "a": "Google now reserves FAQ rich snippets primarily for well-known, high-authority government and health websites on mobile, but all sites still benefit from search engine understanding and AEO parsing. The FAQ content must be fully visible to users on the page and cannot contain promotional marketing copy."
+      }
     ],
     "relatedSlugs": [
       "schema-markup-generator",
@@ -2018,6 +2234,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "Can recipe steps use HowTo schema?",
         "a": "No. Recipes have their own dedicated Recipe schema type in Schema.org that supports cooking times, nutritional info, and ingredients."
       }
+    ,
+      {
+        "q": "How does HowTo schema optimize your tutorials for smart displays and voice assistants?",
+        "a": "HowTo schema breaks your guide into sequential, machine-readable steps with duration, tools, and images. Smart displays like Google Nest Hub and Amazon Echo Show read these steps aloud one by one, giving your brand exclusive voice search placement."
+      },
+      {
+        "q": "How do structured how-to guides reinforce your site's E-E-A-T credentials?",
+        "a": "A vague, theoretical guide signals inexperienced writing. A step-by-step HowTo with clear prerequisites, required tools, estimated completion times, and warning tips proves that the author has actually performed the task first-hand."
+      }
     ],
     "relatedSlugs": [
       "schema-markup-generator",
@@ -2096,6 +2321,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Why should geo-coordinates (latitude and longitude) be included?",
         "a": "Exact latitude and longitude coordinates help Google Maps verify your physical address and align your business with nearby mobile searchers."
+      }
+    ,
+      {
+        "q": "How does LocalBusiness schema feed accurate data into AI search engines and map apps?",
+        "a": "AI agents answering questions like 'Where can I find an emergency plumber in Dallas?' parse LocalBusiness schema to verify physical address, opening hours, geographic coordinates, and accepted payment methods before recommending a vendor."
+      },
+      {
+        "q": "What specific schema fields are most critical for establishing local trust and verification?",
+        "a": "Always include @type (use specific types like LegalService or Plumber instead of generic LocalBusiness), name, address, telephone, geo coordinates, openingHoursSpecification, and priceRange. Adding sameAs links to your Google Business Profile and Better Business Bureau page verifies institutional trust."
       }
     ],
     "relatedSlugs": [
@@ -2177,6 +2411,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "How do I fix Cumulative Layout Shift (CLS)?",
         "a": "Always include explicit width and height attributes on images and video embeds, and reserve layout space for dynamic ads and web font loading."
       }
+    ,
+      {
+        "q": "Why are Core Web Vitals critical for passing Google's Page Experience threshold?",
+        "a": "Google uses Largest Contentful Paint (LCP under 2.5s), Interaction to Next Paint (INP under 200ms), and Cumulative Layout Shift (CLS under 0.1) as direct ranking factors. Failing these metrics can demote your page behind faster competitors even if your content is superior."
+      },
+      {
+        "q": "How does good Core Web Vitals performance influence conversion rates and user trust?",
+        "a": "When a page loads instantaneously, buttons respond without delay, and layouts do not unexpectedly jump around, users feel secure and engaged. Studies consistently show that every 100ms improvement in page speed lifts eCommerce conversion rates by up to 8%."
+      }
     ],
     "relatedSlugs": [
       "website-speed-test",
@@ -2255,6 +2498,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "How much speed improvement does enabling Brotli compression provide?",
         "a": "Brotli compresses text assets (HTML, CSS, JS) 15% to 25% smaller than traditional Gzip, significantly reducing network transfer times."
+      }
+    ,
+      {
+        "q": "What is the single most common cause of poor LCP and how do I fix it?",
+        "a": "Unoptimized hero images or banner videos are the primary culprits for slow LCP. Convert hero images to WebP or AVIF format, set explicit width/height dimensions, apply fetchpriority='high', and ensure critical CSS is inlined while deferring non-essential JavaScript."
+      },
+      {
+        "q": "How does eliminating render-blocking resources help both users and search bots?",
+        "a": "Render-blocking CSS and third-party tracking scripts delay the browser from painting initial content. Eliminating render-blocking allows search engine crawlers to parse your critical HTML in milliseconds and ensures mobile users see your content immediately."
       }
     ],
     "relatedSlugs": [
@@ -2336,6 +2588,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "Can I win a featured snippet if my page ranks on page 2 of Google?",
         "a": "In roughly 99% of cases, Google only awards featured snippets to pages already ranking on page one (positions 1 through 10) for the target query."
       }
+    ,
+      {
+        "q": "What is the exact anatomy of a paragraph that wins Google's Featured Snippet (Position Zero)?",
+        "a": "Start with an H2 phrased exactly as the user's question (e.g., 'What is Answer Engine Optimization?'). Directly beneath it, provide a crisp 40-55 word direct definition stating the 'what' and 'why' clearly, followed by an ordered list or comparison table."
+      },
+      {
+        "q": "How does capturing Featured Snippets accelerate your brand citations in Generative AI (GEO)?",
+        "a": "AI Overviews and generative search models heavily reuse the same training sources and algorithmic extractors that power Google's Featured Snippets. Winning position zero makes your paragraph the primary candidate for synthesis in AI-generated overviews."
+      }
     ],
     "relatedSlugs": [
       "meta-title-description-generator",
@@ -2414,6 +2675,15 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
       {
         "q": "Can traditional SEO help my brand get cited in ChatGPT Search and Perplexity?",
         "a": "Yes! High-ranking pages in Google and Bing provide the training and live search retrieval corpora used by AI engines when synthesizing answers."
+      }
+    ,
+      {
+        "q": "How do AI search engines like Perplexity, ChatGPT, and Gemini decide which brands to cite?",
+        "a": "AI models select sources that possess clear entity authority, cite original statistical data, maintain structured schema markup, and are frequently mentioned across reputable third-party publications and industry forums like Reddit and GitHub."
+      },
+      {
+        "q": "What steps should I take if my competitors are being cited by AI search engines but my brand is omitted?",
+        "a": "Conduct an entity gap analysis. Publish original research reports, secure unlinked brand mentions on high-authority industry blogs, format your core service pages with clear semantic definitions, and ensure your robots.txt does not block AI crawlers like GPTBot and PerplexityBot."
       }
     ],
     "relatedSlugs": [
@@ -2494,11 +2764,110 @@ export const SEO_TOOLS_LIST: SeoToolDef[] = [
         "q": "Why is statistical density crucial for Generative Engine Optimization?",
         "a": "Academic research shows that content featuring relevant statistics, verified data points, and expert quotations experiences up to a 40% higher citation rate in AI-generated answers."
       }
+    ,
+      {
+        "q": "What content formatting works best for Generative Engine Optimization (GEO)?",
+        "a": "Generative models excel at parsing structured facts: bulleted summaries, definition callouts, side-by-side comparison tables, step-by-step numbered workflows, and clear causal statements ('Because of X, Y occurs'). Dense walls of generic promotional text are ignored."
+      },
+      {
+        "q": "How does GEO optimization differ from traditional keyword stuffing?",
+        "a": "Keyword stuffing repeats queries unnaturally and leads to algorithmic penalties. GEO focuses on entity depth, answering the entire spectrum of related conceptual questions with verifiable facts, verified author insights, and high information density."
+      }
     ],
     "relatedSlugs": [
       "ai-aeo-geo-checker",
       "ai-citation-mention-checker",
       "featured-snippet-optimizer"
+    ]
+  },
+  {
+    "id": "tool-32",
+    "slug": "incoming-links-checker",
+    "name": "Incoming Links Checker",
+    "primaryKeyword": "incoming links checker tool",
+    "secondaryKeywords": ["free backlink checker online", "inbound link analyzer", "referring domains checker", "check inbound backlinks free", "toxic backlink detector"],
+    "focusKeyphrase": "free incoming links and backlink checker online",
+    "tags": ["Incoming Links", "Backlinks", "Inbound SEO", "Link Authority", "Referring Domains", "PageRank", "Anchor Text"],
+    "shortDesc": "Analyze incoming backlinks and inbound referral profiles to measure domain authority, anchor text distribution, and link toxicity.",
+    "category": "Technical & Audit",
+    "badge": "Backlink Engine",
+    "iconName": "Link2",
+    "popular": true,
+    "metaTitle": "Free Incoming Links Checker | Inbound Backlink & Referral Audit",
+    "metaDescription": "Audit your website's incoming backlinks, inbound referral domains, and anchor text profile for free. Identify toxic links, check DoFollow ratios, and boost Google ranking authority.",
+    "intro": "Inspect external incoming links and inbound referring domains pointing to your website. Audit anchor text diversity, identify spammy toxic links, and strengthen your off-page SEO foundation.",
+    "howToUse": [
+      {
+        "step": 1,
+        "title": "Enter Target Domain or URL",
+        "desc": "Paste your domain (e.g. metazivo.com) or a specific webpage URL into the diagnostic field."
+      },
+      {
+        "step": 2,
+        "title": "Run Inbound Diagnostic Scan",
+        "desc": "Click Analyze Incoming Links to extract referring domains, anchor texts, and DoFollow/NoFollow attributes."
+      },
+      {
+        "step": 3,
+        "title": "Audit Quality & Export Disavow",
+        "desc": "Review toxicity alerts, examine high-authority referring sources, and export a Google-formatted disavow.txt file if spam links are detected."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "Track Inbound Link Growth",
+        "desc": "Monitor fresh referring domains and backlinks that push your organic keywords into top Google positions."
+      },
+      {
+        "title": "Detect Toxic & Spam Links Early",
+        "desc": "Catch algorithmic penalty threats from automated link farms before Google Penguin demotes your domain."
+      },
+      {
+        "title": "Optimize Anchor Text Diversity",
+        "desc": "Ensure healthy distribution of branded, exact match, and natural long-tail anchors to avoid over-optimization penalties."
+      }
+    ],
+    "explanation": {
+      "whatIsIt": "The Incoming Links Checker analyzes all inbound hyperlinks (backlinks) pointing to your domain or specific URLs from external websites across the web.",
+      "whyItMatters": "Google treats high-quality incoming links as authoritative third-party votes of confidence (PageRank). Quality backlinks from relevant industry domains remain one of the strongest organic search ranking factors.",
+      "bestPractices": [
+        "Maintain a natural link profile with 60-80% DoFollow links and organic NoFollow/UGC citations.",
+        "Keep exact match anchor text below 15-20% to avoid Google algorithmic over-optimization penalties.",
+        "Disavow toxic scraper links, PBN spam, and link farms using Google Search Console.",
+        "Earn editorial incoming citations by publishing original research, industry benchmarks, and authoritative digital tools."
+      ]
+    },
+    "faqs": [
+      {
+        "q": "What is an incoming link in SEO?",
+        "a": "An incoming link (also called an inbound link or backlink) is a hyperlink on an external third-party website that points directly to a page on your website."
+      },
+      {
+        "q": "Why are incoming links important for Google rankings?",
+        "a": "Search engines like Google rely on inbound links as core signals of trust, authority, and relevance under PageRank algorithms. Pages with authoritative backlinks rank significantly higher."
+      },
+      {
+        "q": "What is the difference between DoFollow and NoFollow incoming links?",
+        "a": "DoFollow links pass search equity (PageRank) to the destination page, directly improving rankings. NoFollow, UGC, and Sponsored links provide referral traffic and natural brand visibility without directly passing PageRank."
+      },
+      {
+        "q": "How do I remove or disavow toxic incoming links?",
+        "a": "Use this tool to identify suspicious spam domains, export a formatted disavow.txt file, and submit it through Google Search Console's official Disavow Tool."
+      },
+      {
+        "q": "How does AI Search (AEO & GEO) treat incoming links?",
+        "a": "AI search engines like ChatGPT, Perplexity, and Google AI Overviews prioritize citing websites that have authoritative inbound links and credible digital brand mentions across the web."
+      }
+    ,
+      {
+        "q": "How do incoming backlinks influence how AI search engines assess your domain's credibility?",
+        "a": "Generative AI engines use link graphs and citation co-occurrences as fundamental trust metrics. When high-authority industry publications, universities, or news outlets link to your research, AI engines recognize your domain as a primary source of truth, directly boosting your citation rate in AI Overviews."
+      }
+    ],
+    "relatedSlugs": [
+      "internal-link-finder",
+      "broken-link-checker",
+      "seo-audit-checker"
     ]
   }
 ];
@@ -2515,6 +2884,21 @@ export function getToolBySlug(slug?: string): SeoToolDef | undefined {
   if (direct) return direct;
 
   const aliasMap: Record<string, string> = {
+    "keyword-cannibalization-tool": "keyword-cannibalization-checker",
+    "keyword-cannibalization": "keyword-cannibalization-checker",
+    "cannibalization-checker": "keyword-cannibalization-checker",
+    "cannibalization-tool": "keyword-cannibalization-checker",
+    "incoming-links-checker": "incoming-links-checker",
+    "incoming-links": "incoming-links-checker",
+    "inbound-links-checker": "incoming-links-checker",
+    "inbound-link-checker": "incoming-links-checker",
+    "backlink-checker": "incoming-links-checker",
+    "backlinks-checker": "incoming-links-checker",
+    "404-link-checker": "broken-link-checker",
+    "404-checker": "broken-link-checker",
+    "broken-links-checker": "broken-link-checker",
+    "hreflang-tag-generator": "hreflang-generator",
+    "hreflang-tags-generator": "hreflang-generator",
     "keyword-clustering": "keyword-clustering-tool",
     "search-intent-analyzer": "search-intent-checker",
     "robots-txt-generator-tester": "robots-txt-generator",
