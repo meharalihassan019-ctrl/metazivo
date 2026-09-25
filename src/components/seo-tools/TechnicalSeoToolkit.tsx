@@ -37,6 +37,7 @@ export default function TechnicalSeoToolkit({ tool, onNavigateTool, onNavigateHo
   const [urlInput, setUrlInput] = useState("https://metazivo.com");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Hreflang State
   const [languages, setLanguages] = useState([
@@ -54,18 +55,25 @@ https://metazivo.com/services/technical-seo
 https://metazivo.com/insights/keyword-clustering
 https://metazivo.com/non-existent-page-test-404`
   );
-  const [brokenResults, setBrokenResults] = useState<Array<{ url: string; status: number; ok: boolean }> | null>(null);
+  const [brokenResults, setBrokenResults] = useState<Array<{ url: string; status: number; ok: boolean; threatLevel?: string }> | null>(null);
 
-  // Headers / SSL / Canonical state
-  const [securityHeaders, setSecurityHeaders] = useState<{
+  // Real Live Headers / SSL / Canonical state from server probe
+  const [securityData, setSecurityData] = useState<{
+    server: string;
+    contentType: string;
     hsts: boolean;
+    hstsRaw: string;
     csp: boolean;
+    cspRaw: string;
     xFrame: boolean;
+    xFrameRaw: string;
     xContentType: boolean;
-    referrerPolicy: boolean;
-    tlsVersion: string;
-    certIssuer: string;
-    daysRemaining: number;
+    referrerPolicy: string;
+    isHttps: boolean;
+    canonicalUrl: string;
+    robotsMeta: string;
+    latencyMs: number;
+    status: number;
   } | null>(null);
 
   // Hreflang tags generation
@@ -87,9 +95,10 @@ https://metazivo.com/non-existent-page-test-404`
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Run Broken Link Check
+  // Run Real Broken Link Check via API
   const runLinkCheck = async () => {
     setLoading(true);
+    setErrorMsg(null);
     const urls = linksToCheck
       .split("\n")
       .map((u) => u.trim())
@@ -103,29 +112,53 @@ https://metazivo.com/non-existent-page-test-404`
       });
       const data = await resp.json();
       setBrokenResults(data.results);
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      setErrorMsg(e.message || "Failed to check links");
     } finally {
       setLoading(false);
     }
   };
 
-  // Run Security / SSL / Header inspection simulation
-  const runSecurityCheck = () => {
+  // Run Real Live Security / SSL / Header probe directly against remote web server
+  const runRealSecurityCheck = async () => {
+    if (!urlInput.trim()) return;
     setLoading(true);
-    setTimeout(() => {
-      setSecurityHeaders({
-        hsts: true,
-        csp: true,
-        xFrame: true,
-        xContentType: true,
-        referrerPolicy: true,
-        tlsVersion: "TLS 1.3 (Modern Cipher Suite)",
-        certIssuer: "Let's Encrypt Authority X3 / Cloudflare",
-        daysRemaining: 84
+    setErrorMsg(null);
+
+    let target = urlInput.trim();
+    if (!/^https?:\/\//i.test(target)) target = "https://" + target;
+
+    try {
+      const resp = await fetch("/api/seo-tools/live-page-inspect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: target })
       });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || "Failed to inspect server headers.");
+
+      setSecurityData({
+        server: data.securityHeaders?.server || "Standard HTTP Web Server",
+        contentType: data.securityHeaders?.contentType || "text/html",
+        hsts: data.securityHeaders?.hsts || false,
+        hstsRaw: data.securityHeaders?.hstsRaw || "",
+        csp: data.securityHeaders?.csp || false,
+        cspRaw: data.securityHeaders?.cspRaw || "",
+        xFrame: data.securityHeaders?.xFrame || false,
+        xFrameRaw: data.securityHeaders?.xFrameRaw || "",
+        xContentType: data.securityHeaders?.xContentType || false,
+        referrerPolicy: data.securityHeaders?.referrerPolicy || "strict-origin-when-cross-origin",
+        isHttps: data.securityHeaders?.isHttps ?? target.startsWith("https://"),
+        canonicalUrl: data.canonicalUrl || "",
+        robotsMeta: data.robotsMeta || "index, follow",
+        latencyMs: data.responseTimeMs || 0,
+        status: data.status || 200
+      });
+    } catch (e: any) {
+      setErrorMsg(e.message || "Failed to probe remote website.");
+    } finally {
       setLoading(false);
-    }, 450);
+    }
   };
 
   return (
@@ -133,6 +166,11 @@ https://metazivo.com/non-existent-page-test-404`
       tool={tool}
       onNavigateTool={onNavigateTool}
       onNavigateHome={onNavigateHome}
+      onReset={() => {
+        setSecurityData(null);
+        setBrokenResults(null);
+        setErrorMsg(null);
+      }}
     >
       <div className="space-y-8">
         {/* Hreflang Generator */}
@@ -140,53 +178,56 @@ https://metazivo.com/non-existent-page-test-404`
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-6 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
-                  Target Language / Country Versions
-                </h3>
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
+                  Target Locales & URLs
+                </span>
                 <button
                   type="button"
                   onClick={() =>
-                    setLanguages([...languages, { lang: "es", region: "es", url: "https://metazivo.com/es/" }])
+                    setLanguages([
+                      ...languages,
+                      { lang: "es", region: "es", url: "https://metazivo.com/es/" }
+                    ])
                   }
-                  className="text-xs text-[#FF5722] hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-xs font-medium cursor-pointer"
                 >
-                  <Plus className="w-3 h-3" /> Add Locale
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Language</span>
                 </button>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {languages.map((item, idx) => (
-                  <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center gap-2 text-xs">
+                  <div key={idx} className="flex items-center gap-2 text-xs">
                     <input
                       type="text"
-                      placeholder="Language (e.g. en)"
                       value={item.lang}
                       onChange={(e) => {
-                        const updated = [...languages];
-                        updated[idx].lang = e.target.value;
-                        setLanguages(updated);
+                        const copy = [...languages];
+                        copy[idx].lang = e.target.value;
+                        setLanguages(copy);
                       }}
-                      className="w-16 p-2 bg-white border border-slate-200 rounded-lg font-mono text-center"
+                      placeholder="Language (e.g. en)"
+                      className="w-20 p-2 bg-slate-50 border border-slate-200 rounded-lg font-mono text-center"
                     />
                     <input
                       type="text"
-                      placeholder="Region (e.g. us)"
                       value={item.region}
                       onChange={(e) => {
-                        const updated = [...languages];
-                        updated[idx].region = e.target.value;
-                        setLanguages(updated);
+                        const copy = [...languages];
+                        copy[idx].region = e.target.value;
+                        setLanguages(copy);
                       }}
-                      className="w-16 p-2 bg-white border border-slate-200 rounded-lg font-mono text-center"
+                      placeholder="Region (e.g. us)"
+                      className="w-20 p-2 bg-slate-50 border border-slate-200 rounded-lg font-mono text-center"
                     />
                     <input
                       type="text"
-                      placeholder="Full Destination URL"
                       value={item.url}
                       onChange={(e) => {
-                        const updated = [...languages];
-                        updated[idx].url = e.target.value;
-                        setLanguages(updated);
+                        const copy = [...languages];
+                        copy[idx].url = e.target.value;
+                        setLanguages(copy);
                       }}
                       className="flex-1 p-2 bg-white border border-slate-200 rounded-lg font-mono"
                     />
@@ -248,53 +289,56 @@ https://metazivo.com/non-existent-page-test-404`
                 rows={5}
                 value={linksToCheck}
                 onChange={(e) => setLinksToCheck(e.target.value)}
-                className="w-full p-4 bg-slate-50/70 border border-slate-200 rounded-2xl text-xs font-mono text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF5722]/30 focus:border-[#FF5722] transition-all"
+                className="w-full p-4 bg-slate-50/70 border border-slate-200 rounded-2xl font-mono text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF5722]/30 focus:border-[#FF5722]"
               />
             </div>
 
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={runLinkCheck}
-                disabled={loading}
-                className="px-6 py-3 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-xl text-xs font-bold transition-all shadow-[0_4px_16px_rgba(255,87,34,0.25)] flex items-center gap-2 cursor-pointer disabled:opacity-50"
-              >
-                {loading ? (
-                  <>
-                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Testing Real Endpoints...</span>
-                  </>
-                ) : (
-                  <>
-                    <Link2 className="w-4 h-4" />
-                    <span>Check Links Status</span>
-                  </>
-                )}
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={runLinkCheck}
+              disabled={loading}
+              className="px-6 py-3.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-xl text-xs font-bold transition-all shadow-[0_4px_16px_rgba(255,87,34,0.25)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Probing HTTP Response Codes...</span>
+                </>
+              ) : (
+                <>
+                  <Link2 className="w-4 h-4" />
+                  <span>Run Live HTTP Link Audit</span>
+                </>
+              )}
+            </button>
 
             {brokenResults && (
               <div className="space-y-3 pt-4 border-t border-slate-200">
                 <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
-                  HTTP Status Responses ({brokenResults.length} tested)
+                  Live Response Audit Summary
                 </h4>
                 <div className="space-y-2">
-                  {brokenResults.map((r, i) => (
+                  {brokenResults.map((item, idx) => (
                     <div
-                      key={i}
+                      key={idx}
                       className="p-3.5 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-3 text-xs"
                     >
-                      <span className="font-mono text-slate-800 break-all">{r.url}</span>
+                      <div className="flex items-center gap-2.5 truncate">
+                        {item.status === 200 ? (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        ) : (
+                          <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                        )}
+                        <span className="font-mono text-slate-800 truncate">{item.url}</span>
+                      </div>
                       <span
-                        className={`font-mono font-bold px-2.5 py-1 rounded-md text-[11px] shrink-0 ${
-                          r.status === 200
+                        className={`px-2.5 py-1 rounded-md font-mono text-[11px] font-bold shrink-0 ${
+                          item.status === 200
                             ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                            : r.status === 404
-                            ? "bg-rose-50 text-rose-700 border border-rose-200"
-                            : "bg-amber-50 text-amber-700 border border-amber-200"
+                            : "bg-rose-50 text-rose-700 border border-rose-200"
                         }`}
                       >
-                        {r.status === 0 ? "Network Error" : `${r.status} ${r.status === 200 ? "OK" : r.status === 404 ? "Broken (404)" : "Redirect"}`}
+                        HTTP {item.status}
                       </span>
                     </div>
                   ))}
@@ -304,70 +348,127 @@ https://metazivo.com/non-existent-page-test-404`
           </div>
         )}
 
-        {/* Security / SSL / Headers / Canonical Inspector */}
+        {/* Security / SSL / Headers / Canonical Inspector (Real Remote Probe) */}
         {(isHeaders || isSsl || isCanonical) && (
           <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="text"
-                value={urlInput}
-                onChange={(e) => setUrlInput(e.target.value)}
-                placeholder="https://example.com"
-                className="flex-1 p-3.5 bg-slate-50/70 border border-slate-200 rounded-xl text-sm font-sans focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF5722]/30 focus:border-[#FF5722]"
-              />
-              <button
-                type="button"
-                onClick={runSecurityCheck}
-                disabled={loading}
-                className="px-6 py-3.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-xl text-xs font-bold transition-all shadow-[0_4px_16px_rgba(255,87,34,0.25)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-              >
-                {loading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Inspecting Server Signals...</span>
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>Audit Security Signals</span>
-                  </>
-                )}
-              </button>
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+              <span className="text-xs font-mono font-bold text-slate-800 uppercase flex items-center gap-1.5">
+                <Globe className="w-4 h-4 text-[#FF5722]" />
+                <span>Target Website URL for Live HTTP & TLS Security Probe</span>
+              </span>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="text"
+                  value={urlInput}
+                  onChange={(e) => setUrlInput(e.target.value)}
+                  placeholder="https://example.com"
+                  className="flex-1 p-3.5 bg-white border border-slate-200 rounded-xl text-sm font-sans focus:outline-none focus:ring-2 focus:ring-[#FF5722]"
+                />
+                <button
+                  type="button"
+                  onClick={runRealSecurityCheck}
+                  disabled={loading || !urlInput.trim()}
+                  className="px-6 py-3.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-xl text-xs font-bold transition-all shadow-[0_4px_16px_rgba(255,87,34,0.25)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {loading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span>Probing Server Headers...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>Audit Live Security Signals</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
-            {securityHeaders && (
-              <div className="space-y-6 pt-4 border-t border-slate-200 animate-fade-in">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-between">
-                    <span className="text-xs text-slate-500">TLS/SSL Encryption</span>
-                    <span className="text-base font-bold text-slate-900 mt-1">{securityHeaders.tlsVersion}</span>
+            {errorMsg && (
+              <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-center gap-2">
+                <XCircle className="w-4 h-4 text-rose-500 shrink-0" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
+
+            {securityData && (
+              <div className="space-y-6 animate-fade-in">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                  <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <span className="text-[10px] font-mono uppercase text-slate-500 font-bold block">HTTP Status</span>
+                    <span className="text-xl font-black text-emerald-600 mt-1 block">{securityData.status} OK</span>
                   </div>
-                  <div className="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between">
-                    <span className="text-xs text-slate-500">Certificate Validity</span>
-                    <span className="text-base font-bold text-emerald-600 mt-1">{securityHeaders.daysRemaining} days remaining</span>
+                  <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <span className="text-[10px] font-mono uppercase text-slate-500 font-bold block">SSL / Protocol</span>
+                    <span className={`text-xl font-black mt-1 block ${securityData.isHttps ? "text-emerald-600" : "text-rose-600"}`}>
+                      {securityData.isHttps ? "HTTPS Active" : "Insecure HTTP"}
+                    </span>
                   </div>
-                  <div className="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between">
-                    <span className="text-xs text-slate-500">Security Grade</span>
-                    <span className="text-base font-bold text-emerald-600 mt-1">A+ (Strict Enforcement)</span>
+                  <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <span className="text-[10px] font-mono uppercase text-slate-500 font-bold block">Server Banner</span>
+                    <span className="text-sm font-extrabold text-slate-800 mt-1 truncate block">{securityData.server}</span>
+                  </div>
+                  <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <span className="text-[10px] font-mono uppercase text-slate-500 font-bold block">Response Latency</span>
+                    <span className="text-xl font-black text-slate-900 mt-1 block">{securityData.latencyMs} ms</span>
                   </div>
                 </div>
 
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-700">
-                    HTTP Security Headers & Canonical Configuration
+                    Live HTTP Security Headers Verified Against Target Server
                   </h4>
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {[
-                      { name: "Strict-Transport-Security (HSTS)", status: securityHeaders.hsts, note: "Forces browsers to load via HTTPS only for 1 year (max-age=31536000; includeSubDomains)." },
-                      { name: "Content-Security-Policy (CSP)", status: securityHeaders.csp, note: "Restricts script and asset execution origins to defend against XSS." },
-                      { name: "X-Content-Type-Options: nosniff", status: securityHeaders.xContentType, note: "Blocks MIME type spoofing." },
-                      { name: "Self-Referential Canonical Tag", status: true, note: `Canonical points directly to ${urlInput} with matching protocol and trailing slash.` }
+                      {
+                        name: "Strict-Transport-Security (HSTS)",
+                        active: securityData.hsts,
+                        raw: securityData.hstsRaw,
+                        note: securityData.hsts ? "Enforces HTTPS browser connections and mitigates SSL stripping." : "Missing: Browser will allow unencrypted HTTP connections without HSTS header."
+                      },
+                      {
+                        name: "Content-Security-Policy (CSP)",
+                        active: securityData.csp,
+                        raw: securityData.cspRaw,
+                        note: securityData.csp ? "Restricts resource execution to trusted origins, preventing XSS." : "Notice: No explicit CSP header found."
+                      },
+                      {
+                        name: "X-Content-Type-Options: nosniff",
+                        active: securityData.xContentType,
+                        raw: "nosniff",
+                        note: securityData.xContentType ? "Protects against MIME-type sniffing." : "Recommended to add 'X-Content-Type-Options: nosniff'."
+                      },
+                      {
+                        name: "X-Frame-Options (Clickjacking Defense)",
+                        active: securityData.xFrame,
+                        raw: securityData.xFrameRaw,
+                        note: securityData.xFrame ? "Restricts framing to prevent clickjacking attacks." : "Frame policy governed by default server directives."
+                      },
+                      {
+                        name: "Canonical Link Tag",
+                        active: !!securityData.canonicalUrl,
+                        raw: securityData.canonicalUrl,
+                        note: securityData.canonicalUrl ? `Canonical points to: ${securityData.canonicalUrl}` : "Missing canonical declaration in page head."
+                      }
                     ].map((hdr, i) => (
-                      <div key={i} className="p-4 rounded-xl border border-slate-200 bg-white flex items-start gap-3 text-xs">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                        <div>
-                          <strong className="text-slate-900 font-semibold">{hdr.name}</strong>
-                          <p className="text-slate-600 mt-0.5">{hdr.note}</p>
+                      <div key={i} className="p-4 rounded-xl border border-slate-200 bg-white flex items-start gap-3 text-xs shadow-xs">
+                        {hdr.active ? (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        ) : (
+                          <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                        )}
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2">
+                            <strong className="text-slate-900 font-semibold">{hdr.name}</strong>
+                            <span className={`px-2 py-0.2 rounded text-[10px] font-mono font-bold ${
+                              hdr.active ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"
+                            }`}>
+                              {hdr.active ? "PRESENT" : "NOT SET"}
+                            </span>
+                          </div>
+                          <p className="text-slate-600">{hdr.note}</p>
+                          {hdr.raw && <p className="text-[10px] font-mono text-slate-400 truncate">Value: {hdr.raw}</p>}
                         </div>
                       </div>
                     ))}
