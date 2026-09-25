@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Sparkles,
   Copy,
@@ -16,17 +16,24 @@ import {
   MousePointerClick,
   Code2,
   Eye,
-  ArrowRight
+  ArrowRight,
+  Wand2,
+  CheckCircle2,
+  Layers
 } from "lucide-react";
+import { analyzeArticleForCta, SmartCtaRecommendation } from "../utils/smartCtaAnalyzer";
+import { CtaBoxAttributes, CtaTheme } from "./tiptap-cta-box";
 
-export type CtaTheme = "metazivo-orange" | "pro-indigo" | "emerald-growth" | "amber-warning" | "clean-bordered";
 export type CtaLayout = "horizontal" | "vertical" | "compact";
 export type DevicePreview = "laptop" | "tablet" | "mobile";
 
-interface CtaBoxBuilderProps {
+export interface CtaBoxBuilderProps {
   isOpen: boolean;
   onClose: () => void;
-  onInsertCta: (html: string) => void;
+  onInsertCta: (html: string, attrs?: CtaBoxAttributes) => void;
+  initialValues?: Partial<CtaBoxAttributes>;
+  articleContent?: string;
+  articleTitle?: string;
 }
 
 interface CtaPreset {
@@ -99,35 +106,77 @@ const PRESETS: CtaPreset[] = [
 ];
 
 const COMMON_METAZIVO_TOOLS = [
-  { label: "Broken Link Checker", url: "/tools/broken-link-checker" },
-  { label: "SEO Audit Checker", url: "/tools/seo-audit-checker" },
-  { label: "Schema Markup Generator", url: "/tools/schema-markup-generator" },
-  { label: "Redirect Checker", url: "/tools/redirect-checker" },
-  { label: "Website Speed Test", url: "/tools/website-speed-test" },
-  { label: "Robots.txt Generator", url: "/tools/robots-txt-generator" },
-  { label: "XML Sitemap Generator", url: "/tools/xml-sitemap-generator" },
-  { label: "Keyword Clustering Tool", url: "/tools/keyword-clustering-tool" },
-  { label: "Internal Link Finder", url: "/tools/internal-link-finder" },
-  { label: "Agency Contact / Audit", url: "/contact" },
-  { label: "Core Agency Services", url: "/services" }
+  { label: "Broken Link Checker & Threats", url: "/tools/broken-link-checker" },
+  { label: "Website Speed & Core Web Vitals", url: "/tools/website-speed-test" },
+  { label: "SEO Audit Checker (360°)", url: "/tools/seo-audit-checker" },
+  { label: "Schema Markup Generator (JSON-LD)", url: "/tools/schema-markup-generator" },
+  { label: "Redirect Checker & Path Tracer", url: "/tools/redirect-checker" },
+  { label: "XML Sitemap Generator & Validator", url: "/tools/xml-sitemap-generator" },
+  { label: "Robots.txt Generator & Auditor", url: "/tools/robots-txt-generator" },
+  { label: "Keyword Clustering & Topical Authority", url: "/tools/keyword-clustering-tool" },
+  { label: "Internal Link Finder & Orphan Auditor", url: "/tools/internal-link-finder" },
+  { label: "Heading Structure & H1-H6 Auditor", url: "/tools/heading-structure-tool" },
+  { label: "Local SEO & NAP Auditor", url: "/tools/local-seo-audit" },
+  { label: "Incoming Backlinks & Anchor Auditor", url: "/tools/incoming-links-checker" },
+  { label: "Agency Contact & Free Strategy Session", url: "/contact" },
+  { label: "Core Agency Growth Services", url: "/services" }
 ];
 
-export default function CtaBoxBuilder({ isOpen, onClose, onInsertCta }: CtaBoxBuilderProps) {
-  const [theme, setTheme] = useState<CtaTheme>("metazivo-orange");
-  const [layout, setLayout] = useState<CtaLayout>("horizontal");
-  const [badge, setBadge] = useState("⚡ 100% Free SEO Diagnostic");
-  const [title, setTitle] = useState("Want to scan your website right now?");
+export default function CtaBoxBuilder({
+  isOpen,
+  onClose,
+  onInsertCta,
+  initialValues,
+  articleContent = "",
+  articleTitle = ""
+}: CtaBoxBuilderProps) {
+  const [theme, setTheme] = useState<CtaTheme>(initialValues?.theme || "metazivo-orange");
+  const [layout, setLayout] = useState<CtaLayout>(initialValues?.layout || "horizontal");
+  const [badge, setBadge] = useState(initialValues?.badge ?? "⚡ 100% Free SEO Diagnostic");
+  const [title, setTitle] = useState(initialValues?.title || "Want to scan your website right now?");
   const [description, setDescription] = useState(
-    "Run Metazivo's instant broken link checker to detect 404 dead links, broken redirects, and security threats before they harm your rankings."
+    initialValues?.description ||
+      "Run Metazivo's instant broken link checker to detect 404 dead links, broken redirects, and security threats before they harm your rankings."
   );
-  const [buttonText, setButtonText] = useState("Launch Free Scanner →");
-  const [buttonUrl, setButtonUrl] = useState("/tools/broken-link-checker");
-  const [footerNote, setFooterNote] = useState("✓ No Signup Required  ✓ Instant Real-Time Crawl  ✓ Direct Export");
+  const [buttonText, setButtonText] = useState(initialValues?.buttonText || "Launch Free Scanner →");
+  const [buttonUrl, setButtonUrl] = useState(initialValues?.buttonUrl || "/tools/broken-link-checker");
+  const [footerNote, setFooterNote] = useState(
+    initialValues?.footerNote ?? "✓ No Signup Required  ✓ Instant Real-Time Crawl  ✓ Direct Export"
+  );
   const [device, setDevice] = useState<DevicePreview>("laptop");
   const [viewTab, setViewTab] = useState<"preview" | "code">("preview");
   const [copied, setCopied] = useState(false);
 
-  if (!isOpen) return null;
+  // Sync initial values if provided
+  useEffect(() => {
+    if (initialValues) {
+      if (initialValues.theme) setTheme(initialValues.theme);
+      if (initialValues.layout) setLayout(initialValues.layout);
+      if (initialValues.badge !== undefined) setBadge(initialValues.badge);
+      if (initialValues.title) setTitle(initialValues.title);
+      if (initialValues.description) setDescription(initialValues.description);
+      if (initialValues.buttonText) setButtonText(initialValues.buttonText);
+      if (initialValues.buttonUrl) setButtonUrl(initialValues.buttonUrl);
+      if (initialValues.footerNote !== undefined) setFooterNote(initialValues.footerNote);
+    }
+  }, [initialValues]);
+
+  // Run Smart Article Analysis
+  const smartAnalysis = useMemo(() => {
+    if (!articleContent || articleContent.trim().length < 50) return null;
+    return analyzeArticleForCta(articleContent, articleTitle);
+  }, [articleContent, articleTitle]);
+
+  const applyRecommendation = (rec: SmartCtaRecommendation) => {
+    setTheme(rec.theme);
+    setLayout(rec.layout);
+    setBadge(rec.badge);
+    setTitle(rec.title);
+    setDescription(rec.description);
+    setButtonText(rec.buttonText);
+    setButtonUrl(rec.buttonUrl);
+    setFooterNote(rec.footerNote);
+  };
 
   const loadPreset = (preset: CtaPreset) => {
     setTheme(preset.theme);
@@ -141,12 +190,11 @@ export default function CtaBoxBuilder({ isOpen, onClose, onInsertCta }: CtaBoxBu
   };
 
   // Generate ultra-clean, bulletproof, responsive HTML
-  // Contains both Tailwind classes AND robust inline styles so it looks flawless anywhere (in-app, SSR, and copied externally)
   const compiledHtml = useMemo(() => {
-    let containerBg = "#FFF5F2";
+    let containerBg = "#FFF7ED";
     let borderColor = "#FF5722";
-    let badgeBg = "#FFECE5";
-    let badgeText = "#D84315";
+    let badgeBg = "#FFEDD5";
+    let badgeText = "#C2410C";
     let titleColor = "#1E293B";
     let descColor = "#475569";
     let btnBg = "linear-gradient(135deg, #FF5722 0%, #E64A19 100%)";
@@ -202,17 +250,17 @@ export default function CtaBoxBuilder({ isOpen, onClose, onInsertCta }: CtaBoxBu
 
     const isHorizontal = layout === "horizontal";
 
-    return `<aside class="metazivo-cta-box not-prose my-8 p-6 md:p-7 rounded-2xl border transition-all" style="background: ${containerBg}; border: 1.5px solid ${borderColor}; border-radius: 1.25rem; margin: 2rem 0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); font-family: system-ui, -apple-system, sans-serif;">
+    return `<aside class="metazivo-cta-box not-prose my-8 p-6 md:p-7 rounded-2xl border transition-all" data-type="cta-box" data-badge="${badge.replace(/"/g, '&quot;')}" data-title="${title.replace(/"/g, '&quot;')}" data-description="${description.replace(/"/g, '&quot;')}" data-button-text="${buttonText.replace(/"/g, '&quot;')}" data-button-url="${buttonUrl}" data-footer-note="${footerNote.replace(/"/g, '&quot;')}" data-theme="${theme}" data-layout="${layout}" style="background: ${containerBg}; border: 1.5px solid ${borderColor}; border-radius: 1.25rem; margin: 2rem 0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); font-family: system-ui, -apple-system, sans-serif;">
   <div class="flex flex-col ${isHorizontal ? "md:flex-row md:items-center md:justify-between" : ""} gap-5">
     <div class="space-y-2.5 max-w-xl">
-      ${badge ? `<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase" style="background: ${badgeBg}; color: ${badgeText};">${badge}</div>` : ""}
-      <h3 class="text-lg md:text-xl font-extrabold tracking-tight m-0" style="color: ${titleColor}; line-height: 1.3;">
+      ${badge ? `<div class="cta-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase" style="background: ${badgeBg}; color: ${badgeText};">${badge}</div>` : ""}
+      <h3 class="cta-title text-lg md:text-xl font-extrabold tracking-tight m-0" style="color: ${titleColor}; line-height: 1.3; margin: 0 0 8px 0;">
         ${title}
       </h3>
-      <p class="text-sm leading-relaxed m-0" style="color: ${descColor};">
+      <p class="cta-desc text-sm leading-relaxed m-0" style="color: ${descColor}; margin: 0 0 8px 0; line-height: 1.5;">
         ${description}
       </p>
-      ${footerNote ? `<p class="text-xs font-medium m-0 pt-1" style="color: ${footerColor};">${footerNote}</p>` : ""}
+      ${footerNote ? `<p class="cta-footer text-xs font-medium m-0 pt-1" style="color: ${footerColor}; margin: 4px 0 0 0;">${footerNote}</p>` : ""}
     </div>
     <div class="shrink-0 ${isHorizontal ? "md:self-center" : "pt-2"}">
       <a href="${buttonUrl}" class="metazivo-cta-btn inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm tracking-wide transition-transform hover:scale-[1.02] active:scale-[0.98] text-center" style="background: ${btnBg}; color: ${btnText}; box-shadow: ${btnShadow}; text-decoration: none; border-radius: 0.75rem; display: inline-block;">
@@ -230,87 +278,159 @@ export default function CtaBoxBuilder({ isOpen, onClose, onInsertCta }: CtaBoxBu
   };
 
   const handleInsert = () => {
-    onInsertCta(compiledHtml);
+    const ctaAttrs: CtaBoxAttributes = {
+      badge,
+      title,
+      description,
+      buttonText,
+      buttonUrl,
+      footerNote,
+      theme,
+      layout: layout === "compact" ? "horizontal" : layout
+    };
+    onInsertCta(compiledHtml, ctaAttrs);
     onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in font-sans">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md animate-fade-in font-sans">
       <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/60">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FF5722]/15 border border-[#FF5722]/30 flex items-center justify-center text-[#FF5722]">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#FF5722] to-orange-600 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
+              <Zap className="w-5 h-5" />
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                WordPress-Style CTA Callout Box Builder
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-[#FF5722]/20 text-[#FF5722] border border-[#FF5722]/30">
+                WordPress Gutenberg CTA Box Builder
+                <span className="px-2 py-0.5 rounded-md bg-[#FF5722]/20 border border-[#FF5722]/40 text-[#FF5722] text-[10px] font-bold uppercase tracking-wider">
                   High-Converting
                 </span>
               </h2>
               <p className="text-xs text-slate-400">
-                Design custom action callout boxes and notice banners for articles to drive tool clicks & conversions.
+                Create visually stunning, Googlebot-friendly CTA callouts linked to your tools or services.
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Preset Ribbon */}
-        <div className="px-6 py-2.5 bg-slate-950/40 border-b border-slate-800/80 flex items-center gap-2 overflow-x-auto scrollbar-none text-xs">
-          <span className="text-slate-400 font-semibold whitespace-nowrap mr-1 flex items-center gap-1">
-            <Zap className="w-3.5 h-3.5 text-[#FF5722]" /> Quick Presets:
+        {/* Smart Article Auto-Detection Banner (if article content is present) */}
+        {smartAnalysis && (
+          <div className="px-6 py-3 bg-gradient-to-r from-orange-950/40 via-amber-950/30 to-slate-900 border-b border-orange-500/30 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-[#FF5722] text-white animate-pulse">
+                <Wand2 className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <span>Smart Article Detector:</span>
+                  <span className="text-orange-400 font-extrabold underline decoration-orange-500/60">
+                    {smartAnalysis.detectedTopic}
+                  </span>
+                  <span className="px-1.5 py-0.2 rounded bg-green-500/20 text-green-400 text-[10px]">
+                    {smartAnalysis.bestMatch.confidenceScore > 0 ? "High Relevance" : "General Topic"}
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-400">
+                  Target Tool: <code className="text-orange-300 font-mono">{smartAnalysis.bestMatch.buttonUrl}</code>
+                  {smartAnalysis.bestMatch.matchedKeywords.length > 0 && (
+                    <span className="ml-2 text-slate-500 hidden md:inline">
+                      (Keywords: {smartAnalysis.bestMatch.matchedKeywords.join(", ")})
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => applyRecommendation(smartAnalysis.bestMatch)}
+                className="px-3 py-1.5 rounded-xl bg-[#FF5722] hover:bg-orange-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-orange-500/20 cursor-pointer transition-all active:scale-95"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Auto-Apply Recommended CTA</span>
+              </button>
+
+              {smartAnalysis.alternatives.length > 0 && (
+                <div className="hidden sm:flex items-center gap-1">
+                  {smartAnalysis.alternatives.map((alt) => (
+                    <button
+                      key={alt.topicId}
+                      type="button"
+                      onClick={() => applyRecommendation(alt)}
+                      className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium border border-slate-700 cursor-pointer transition-colors"
+                      title={alt.title}
+                    >
+                      {alt.detectedTopicName.split(" ")[0]}...
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Presets Quick Strip */}
+        <div className="px-6 py-2.5 bg-slate-950/40 border-b border-slate-800/80 flex items-center gap-2 overflow-x-auto scrollbar-none">
+          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap flex items-center gap-1 mr-1">
+            <Sparkles className="w-3 h-3 text-[#FF5722]" /> Quick Presets:
           </span>
-          {PRESETS.map((preset) => (
+          {PRESETS.map((p) => (
             <button
-              key={preset.id}
+              key={p.id}
               type="button"
-              onClick={() => loadPreset(preset)}
-              className="px-3 py-1.5 rounded-lg bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700/60 text-slate-200 hover:text-white transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer text-xs"
+              onClick={() => loadPreset(p)}
+              className="px-3 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/50 whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer"
             >
-              <span>{preset.icon}</span>
-              <span>{preset.name.replace(/^[^\s]+\s*/, "")}</span>
+              <span>{p.icon}</span>
+              <span>{p.name.replace(/^[^\s]+\s*/, "")}</span>
             </button>
           ))}
         </div>
 
-        {/* Main Body: 2 Columns (Form Controls & Live Preview) */}
-        <div className="flex-1 overflow-y-auto grid grid-cols-1 lg:grid-cols-12 gap-6 p-6">
-          {/* Left Panel: Form Controls (5 cols) */}
-          <div className="lg:col-span-5 space-y-4">
+        {/* Main 2-Column Work Area */}
+        <div className="flex-1 overflow-y-auto grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-800">
+          {/* Left Column: Form Controls (5 cols) */}
+          <div className="lg:col-span-5 p-6 space-y-5 overflow-y-auto">
             {/* Theme Selector */}
             <div>
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                Color & Aesthetic Theme
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                Color Theme & Persona
               </label>
-              <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {[
-                  { id: "metazivo-orange", label: "Metazivo Orange", border: "border-[#FF5722]" },
-                  { id: "pro-indigo", label: "Pro Indigo Notice", border: "border-indigo-500" },
-                  { id: "emerald-growth", label: "Emerald Growth", border: "border-emerald-500" },
-                  { id: "amber-warning", label: "Amber Warning", border: "border-amber-500" },
-                  { id: "clean-bordered", label: "Clean Bordered", border: "border-slate-300" }
+                  { id: "metazivo-orange", name: "Flame Coral", bg: "#FF5722" },
+                  { id: "pro-indigo", name: "Pro Indigo", bg: "#6366F1" },
+                  { id: "emerald-growth", name: "Emerald Growth", bg: "#10B981" },
+                  { id: "amber-warning", name: "Amber Warning", bg: "#F59E0B" },
+                  { id: "clean-bordered", name: "Clean Minimal", bg: "#475569" }
                 ].map((th) => (
                   <button
                     key={th.id}
                     type="button"
                     onClick={() => setTheme(th.id as CtaTheme)}
-                    className={`p-2.5 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
+                    className={`p-2.5 rounded-xl border text-left flex items-center gap-2 transition-all cursor-pointer ${
                       theme === th.id
-                        ? "bg-slate-800 border-[#FF5722] text-white shadow-sm"
-                        : "bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200"
+                        ? "border-[#FF5722] bg-[#FF5722]/10 text-white font-bold"
+                        : "border-slate-800 bg-slate-950/40 text-slate-400 hover:text-slate-200"
                     }`}
                   >
-                    <span>{th.label}</span>
-                    <span className={`w-3 h-3 rounded-full border-2 ${th.border}`} />
+                    <span
+                      className="w-3.5 h-3.5 rounded-full shrink-0 shadow-sm"
+                      style={{ background: th.bg }}
+                    />
+                    <span className="text-xs truncate">{th.name}</span>
                   </button>
                 ))}
               </div>
@@ -318,241 +438,252 @@ export default function CtaBoxBuilder({ isOpen, onClose, onInsertCta }: CtaBoxBu
 
             {/* Layout Orientation */}
             <div>
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                Layout Arrangement
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                Layout Alignment
               </label>
-              <div className="flex gap-2 text-xs">
+              <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setLayout("horizontal")}
-                  className={`flex-1 py-2 px-3 rounded-xl border text-center font-medium transition-colors cursor-pointer ${
+                  className={`p-2 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all ${
                     layout === "horizontal"
-                      ? "bg-[#FF5722]/15 border-[#FF5722] text-white font-bold"
-                      : "bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200"
+                      ? "border-[#FF5722] bg-[#FF5722]/10 text-white"
+                      : "border-slate-800 bg-slate-950/40 text-slate-400 hover:text-slate-200"
                   }`}
                 >
-                  Side-by-Side (Row)
+                  <span>Horizontal (Headline Left, Button Right)</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setLayout("vertical")}
-                  className={`flex-1 py-2 px-3 rounded-xl border text-center font-medium transition-colors cursor-pointer ${
+                  className={`p-2 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all ${
                     layout === "vertical"
-                      ? "bg-[#FF5722]/15 border-[#FF5722] text-white font-bold"
-                      : "bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200"
+                      ? "border-[#FF5722] bg-[#FF5722]/10 text-white"
+                      : "border-slate-800 bg-slate-950/40 text-slate-400 hover:text-slate-200"
                   }`}
                 >
-                  Stacked (Column)
+                  <span>Stacked Vertical</span>
                 </button>
               </div>
             </div>
 
-            {/* Badge Input */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Badge / Tag (e.g. ⚡ Free Tool, 💡 Pro Tip)
-              </label>
-              <input
-                type="text"
-                value={badge}
-                onChange={(e) => setBadge(e.target.value)}
-                placeholder="⚡ Free SEO Tool"
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-xs focus:outline-none focus:border-[#FF5722]"
-              />
-            </div>
-
-            {/* Title Input */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Headline / Title <span className="text-[#FF5722]">*</span>
-              </label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Want to scan your website right now?"
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-xs font-bold focus:outline-none focus:border-[#FF5722]"
-              />
-            </div>
-
-            {/* Description Textarea */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Description / Benefit Copy
-              </label>
-              <textarea
-                rows={3}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Explain why the reader should click this tool right now..."
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-xs leading-relaxed focus:outline-none focus:border-[#FF5722]"
-              />
-            </div>
-
-            {/* Button Label & URL */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Content Fields */}
+            <div className="space-y-3.5">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">
-                  Button Text <span className="text-[#FF5722]">*</span>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Eyebrow Badge (Optional)
                 </label>
                 <input
                   type="text"
-                  value={buttonText}
-                  onChange={(e) => setButtonText(e.target.value)}
-                  placeholder="Launch Scanner →"
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-xs font-semibold focus:outline-none focus:border-[#FF5722]"
+                  value={badge}
+                  onChange={(e) => setBadge(e.target.value)}
+                  placeholder="e.g. ⚡ 100% Free SEO Diagnostic"
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-[#FF5722]"
                 />
               </div>
+
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">
-                  Target Link (URL) <span className="text-[#FF5722]">*</span>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Main Headline / Title <span className="text-[#FF5722]">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Want to scan your website right now?"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-bold focus:outline-none focus:border-[#FF5722]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Description Text <span className="text-[#FF5722]">*</span>
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={3}
+                  placeholder="Compelling reason to click the tool or link..."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs leading-relaxed focus:outline-none focus:border-[#FF5722] resize-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                    Button Text <span className="text-[#FF5722]">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={buttonText}
+                    onChange={(e) => setButtonText(e.target.value)}
+                    placeholder="Launch Free Scanner →"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-semibold focus:outline-none focus:border-[#FF5722]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                    Quick Link Destination
+                  </label>
+                  <select
+                    value={buttonUrl}
+                    onChange={(e) => setButtonUrl(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-[#FF5722]"
+                  >
+                    {COMMON_METAZIVO_TOOLS.map((t) => (
+                      <option key={t.url} value={t.url}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Custom Destination URL (or internal path)
                 </label>
                 <input
                   type="text"
                   value={buttonUrl}
                   onChange={(e) => setButtonUrl(e.target.value)}
-                  placeholder="/tools/broken-link-checker"
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-xs focus:outline-none focus:border-[#FF5722]"
+                  placeholder="/tools/broken-link-checker or https://..."
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-xs font-mono focus:outline-none focus:border-[#FF5722]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Footer Trust Note (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={footerNote}
+                  onChange={(e) => setFooterNote(e.target.value)}
+                  placeholder="e.g. ✓ No Signup Required ✓ Instant Crawl"
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 text-xs focus:outline-none focus:border-[#FF5722]"
                 />
               </div>
             </div>
-
-            {/* Quick Link Selector */}
-            <div>
-              <label className="block text-[11px] font-semibold text-slate-400 mb-1">
-                Quick Insert Metazivo Internal Tool URL:
-              </label>
-              <select
-                onChange={(e) => {
-                  if (e.target.value) setButtonUrl(e.target.value);
-                }}
-                defaultValue=""
-                className="w-full px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-xs cursor-pointer focus:outline-none focus:border-[#FF5722]"
-              >
-                <option value="" disabled>
-                  -- Select Metazivo internal tool / service --
-                </option>
-                {COMMON_METAZIVO_TOOLS.map((t) => (
-                  <option key={t.url} value={t.url}>
-                    {t.label} ({t.url})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Footer Trust Note */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">
-                Footer Checklist / Trust Note (Optional)
-              </label>
-              <input
-                type="text"
-                value={footerNote}
-                onChange={(e) => setFooterNote(e.target.value)}
-                placeholder="✓ No Signup Required  ✓ Instant Real-Time Crawl"
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-xs focus:outline-none focus:border-[#FF5722]"
-              />
-            </div>
           </div>
 
-          {/* Right Panel: Live Preview & HTML Code (7 cols) */}
-          <div className="lg:col-span-7 flex flex-col space-y-4">
-            {/* Top Toolbar: View Switcher (Preview vs Code) + Device View */}
-            <div className="flex flex-wrap items-center justify-between gap-3 p-2 bg-slate-950/70 border border-slate-800 rounded-2xl">
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setViewTab("preview")}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    viewTab === "preview" ? "bg-blue-600 text-white shadow" : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  <Eye className="w-3.5 h-3.5" /> Live Preview
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewTab("code")}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    viewTab === "code" ? "bg-[#FF5722] text-white shadow" : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  <Code2 className="w-3.5 h-3.5" /> HTML Code
-                </button>
+          {/* Right Column: Live Responsive Preview (7 cols) */}
+          <div className="lg:col-span-7 flex flex-col bg-slate-950/60 p-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  Live View
+                </span>
+                <span className="text-[11px] text-slate-500">
+                  (Rendered as Gutenberg Visual Block)
+                </span>
               </div>
 
-              {viewTab === "preview" && (
-                <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+              {/* View Switch & Device Emulation */}
+              <div className="flex items-center gap-2">
+                <div className="flex items-center bg-slate-900 p-0.5 rounded-lg border border-slate-800">
                   <button
                     type="button"
-                    onClick={() => setDevice("laptop")}
-                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                      device === "laptop" ? "bg-slate-800 text-white" : "text-slate-400 hover:text-slate-200"
+                    onClick={() => setViewTab("preview")}
+                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                      viewTab === "preview"
+                        ? "bg-[#FF5722] text-white"
+                        : "text-slate-400 hover:text-white"
                     }`}
-                    title="Laptop / Desktop (100% wide)"
                   >
-                    <Laptop className="w-4 h-4" />
+                    <Eye className="w-3.5 h-3.5 inline mr-1" />
+                    Preview
                   </button>
                   <button
                     type="button"
-                    onClick={() => setDevice("tablet")}
-                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                      device === "tablet" ? "bg-slate-800 text-white" : "text-slate-400 hover:text-slate-200"
+                    onClick={() => setViewTab("code")}
+                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                      viewTab === "code"
+                        ? "bg-[#FF5722] text-white"
+                        : "text-slate-400 hover:text-white"
                     }`}
-                    title="Tablet (720px)"
                   >
-                    <Tablet className="w-4 h-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDevice("mobile")}
-                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                      device === "mobile" ? "bg-slate-800 text-white" : "text-slate-400 hover:text-slate-200"
-                    }`}
-                    title="Mobile (380px)"
-                  >
-                    <Smartphone className="w-4 h-4" />
+                    <Code2 className="w-3.5 h-3.5 inline mr-1" />
+                    HTML
                   </button>
                 </div>
-              )}
+
+                {viewTab === "preview" && (
+                  <div className="flex items-center bg-slate-900 p-0.5 rounded-lg border border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setDevice("laptop")}
+                      className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                        device === "laptop" ? "bg-slate-800 text-white" : "text-slate-500 hover:text-white"
+                      }`}
+                      title="Desktop View"
+                    >
+                      <Laptop className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDevice("tablet")}
+                      className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                        device === "tablet" ? "bg-slate-800 text-white" : "text-slate-500 hover:text-white"
+                      }`}
+                      title="Tablet View"
+                    >
+                      <Tablet className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDevice("mobile")}
+                      className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                        device === "mobile" ? "bg-slate-800 text-white" : "text-slate-500 hover:text-white"
+                      }`}
+                      title="Mobile View"
+                    >
+                      <Smartphone className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Preview Box Container */}
-            <div className="flex-1 min-h-[360px] bg-slate-950/90 border border-slate-800 rounded-2xl p-4 flex flex-col justify-center items-center overflow-auto relative">
+            {/* Preview Body */}
+            <div className="flex-1 flex items-center justify-center p-4 min-h-[340px] overflow-y-auto">
               {viewTab === "preview" ? (
                 <div
-                  className="transition-all duration-300 w-full"
-                  style={{
-                    maxWidth: device === "mobile" ? "380px" : device === "tablet" ? "680px" : "100%"
-                  }}
+                  className={`w-full transition-all duration-300 ${
+                    device === "mobile"
+                      ? "max-w-sm"
+                      : device === "tablet"
+                      ? "max-w-xl"
+                      : "max-w-3xl"
+                  }`}
                 >
-                  <div className="text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex items-center justify-between">
-                    <span>Frontend Blog Rendering Preview ({device}):</span>
-                    <span>Self-Contained Responsive HTML</span>
+                  <div className="p-2 sm:p-4 bg-slate-900/50 border border-dashed border-slate-800 rounded-3xl">
+                    <div
+                      dangerouslySetInnerHTML={{ __html: compiledHtml }}
+                      className="transition-all"
+                    />
                   </div>
-                  {/* Directly Render the Compiled HTML */}
-                  <div
-                    dangerouslySetInnerHTML={{ __html: compiledHtml }}
-                    className="w-full"
-                  />
                 </div>
               ) : (
-                <div className="w-full h-full flex flex-col space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono text-slate-400">
-                      Copy & Paste this clean HTML snippet into any WordPress / AI Studio website:
-                    </span>
+                <div className="w-full h-full flex flex-col">
+                  <div className="flex items-center justify-between pb-2 text-xs text-slate-400">
+                    <span>Generated Clean HTML:</span>
                     <button
                       type="button"
                       onClick={handleCopy}
-                      className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                      className="text-orange-400 hover:text-orange-300 flex items-center gap-1 font-mono text-[11px] cursor-pointer"
                     >
-                      {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      {copied ? "Copied!" : "Copy HTML"}
+                      {copied ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+                      <span>{copied ? "Copied!" : "Copy Code"}</span>
                     </button>
                   </div>
-                  <pre className="flex-1 p-4 bg-slate-900 border border-slate-800 rounded-xl font-mono text-xs text-orange-200/90 overflow-x-auto whitespace-pre-wrap select-all">
-                    {compiledHtml}
-                  </pre>
+                  <textarea
+                    readOnly
+                    value={compiledHtml}
+                    className="w-full flex-1 p-3 bg-slate-950 font-mono text-xs text-orange-300/90 rounded-xl border border-slate-800 resize-none focus:outline-none"
+                    rows={12}
+                  />
                 </div>
               )}
             </div>
@@ -562,27 +693,27 @@ export default function CtaBoxBuilder({ isOpen, onClose, onInsertCta }: CtaBoxBu
         {/* Footer Actions */}
         <div className="px-6 py-4 border-t border-slate-800 bg-slate-950/80 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span>Ready to inject into article body at current cursor position.</span>
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-ping" />
+            <span>Valid Gutenberg Block + Semantic HTML Output</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <button
               type="button"
               onClick={handleCopy}
-              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
             >
-              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-              <span>{copied ? "Copied HTML!" : "Copy HTML Code"}</span>
+              {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copied ? "Copied HTML!" : "Copy HTML"}</span>
             </button>
 
             <button
               type="button"
               onClick={handleInsert}
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#FF5722] to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-orange-500/20 transition-all cursor-pointer"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#FF5722] to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-orange-500/25 transition-all cursor-pointer active:scale-95"
             >
-              <Sparkles className="w-4 h-4" />
-              <span>Insert CTA Box into Article</span>
+              <Zap className="w-3.5 h-3.5" />
+              <span>Insert Gutenberg CTA Block</span>
             </button>
           </div>
         </div>

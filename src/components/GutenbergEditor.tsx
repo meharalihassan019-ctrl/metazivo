@@ -21,12 +21,14 @@ import {
   Minus, Undo, Redo, Link as LinkIcon, Image as ImageIcon,
   Youtube as YoutubeIcon, AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Table as TableIcon, CheckSquare, HelpCircle, Sparkles, Plus, Trash2,
-  Zap, Code2, Eye, Search, Copy, Check
+  Zap, Code2, Eye, Search, Copy, Check, Wand2, X, CheckCircle2, ArrowRight
 } from "lucide-react";
 import { MediaAsset } from "../types";
 import { FaqBlock, FaqItem, FaqQuestion, FaqAnswer } from "./tiptap-faq";
+import { CtaBoxNode, CtaBoxAttributes, setGlobalOnEditCta } from "./tiptap-cta-box";
 import ResponsiveTableBuilder from "./ResponsiveTableBuilder";
 import CtaBoxBuilder from "./CtaBoxBuilder";
+import { analyzeArticleForCta, SmartCtaRecommendation } from "../utils/smartCtaAnalyzer";
 
 interface WordEditorProps {
   value: string;
@@ -40,6 +42,7 @@ const MenuBar = ({
   onOpenMediaSelector,
   onOpenTableBuilder,
   onOpenCtaBuilder,
+  onOpenSmartCta,
   editorMode,
   onToggleMode
 }: {
@@ -47,6 +50,7 @@ const MenuBar = ({
   onOpenMediaSelector: any;
   onOpenTableBuilder: () => void;
   onOpenCtaBuilder: () => void;
+  onOpenSmartCta: () => void;
   editorMode: "visual" | "code";
   onToggleMode: (mode: "visual" | "code") => void;
 }) => {
@@ -80,8 +84,8 @@ const MenuBar = ({
     editor.chain().focus().extendMarkRange("link").setLink({ href: url, target: "_blank" }).run();
   };
 
-  const btnClass = "p-1.5 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors";
-  const activeBtnClass = "p-1.5 rounded bg-blue-600 text-white transition-colors";
+  const btnClass = "p-1.5 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer";
+  const activeBtnClass = "p-1.5 rounded bg-blue-600 text-white transition-colors cursor-pointer";
   const isTableActive = editor.isActive("table");
 
   return (
@@ -127,24 +131,36 @@ const MenuBar = ({
         ) : (
           <div className="flex items-center gap-2 text-xs text-orange-400 font-mono py-1 px-2 bg-orange-950/30 rounded-lg border border-orange-500/20">
             <Code2 className="w-4 h-4 text-[#FF5722]" />
-            <span>Raw HTML / Code Mode: You can search, edit tags, or paste WordPress CTA code directly below.</span>
+            <span>Raw HTML / Code Mode: Search, edit tags, or view clean markup directly below.</span>
           </div>
         )}
 
-        {/* Right Side: High-Value WordPress Builders & Visual/Code Mode Switch */}
+        {/* Right Side: WordPress Gutenberg High-Converting Builders & Mode Switch */}
         <div className="flex items-center gap-2 ml-auto">
+          {/* Smart CTA (Auto-Analyze Article) Button */}
+          <button
+            type="button"
+            onClick={onOpenSmartCta}
+            className="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-400 hover:text-amber-300 flex items-center gap-1.5 text-xs font-bold transition-all cursor-pointer shadow-sm animate-pulse"
+            title="Auto-detect topic from article and generate related CTA box"
+          >
+            <Wand2 className="w-3.5 h-3.5 text-amber-400" />
+            <span className="hidden sm:inline">Smart CTA</span>
+            <span className="sm:hidden">Auto</span>
+          </button>
+
           {/* CTA Callout Box Builder Button */}
           <button
             type="button"
             onClick={onOpenCtaBuilder}
             className="px-2.5 py-1 rounded-lg bg-[#FF5722]/15 hover:bg-[#FF5722]/25 border border-[#FF5722]/40 text-[#FF5722] hover:text-[#ff7043] flex items-center gap-1.5 text-xs font-bold transition-all cursor-pointer shadow-sm"
-            title="Open WordPress-Style CTA Callout Box Builder (High-Converting)"
+            title="Open WordPress Gutenberg CTA Callout Box Builder"
           >
             <Zap className="w-3.5 h-3.5 text-[#FF5722]" />
             <span>CTA Box</span>
           </button>
 
-          {/* Dedicated Responsive Table Builder Trigger Button */}
+          {/* Table Builder Trigger Button */}
           <button
             type="button"
             onClick={onOpenTableBuilder}
@@ -165,7 +181,7 @@ const MenuBar = ({
                   ? "bg-slate-800 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
               }`}
-              title="Visual Editor (Rendered preview in English)"
+              title="Visual Editor (WordPress Gutenberg WYSIWYG Mode)"
             >
               <Eye className="w-3.5 h-3.5" />
               <span>Visual</span>
@@ -178,7 +194,7 @@ const MenuBar = ({
                   ? "bg-[#FF5722] text-white shadow-sm font-bold"
                   : "text-slate-400 hover:text-slate-200"
               }`}
-              title="HTML Code Mode (Search and paste raw HTML)"
+              title="HTML Code Mode (Search and edit raw HTML)"
             >
               <Code2 className="w-3.5 h-3.5" />
               <span>HTML</span>
@@ -218,7 +234,8 @@ function SlashMenu({
   onClose,
   onOpenMediaSelector,
   onOpenTableBuilder,
-  onOpenCtaBuilder
+  onOpenCtaBuilder,
+  onOpenSmartCta
 }: {
   editor: any;
   position: any;
@@ -227,11 +244,13 @@ function SlashMenu({
   onOpenMediaSelector: (onSelect: (url: string, altText?: string) => void) => void;
   onOpenTableBuilder: () => void;
   onOpenCtaBuilder: () => void;
+  onOpenSmartCta: () => void;
 }) {
   if (!position) return null;
 
   const options = [
-    { id: "cta", label: "⚡ CTA Callout Box (WordPress Style)", icon: <Zap className="w-4 h-4 mr-2 text-[#FF5722]" />, action: () => onOpenCtaBuilder() },
+    { id: "smart-cta", label: "🪄 Auto-Generate Smart CTA from Article", icon: <Wand2 className="w-4 h-4 mr-2 text-amber-400" />, action: () => onOpenSmartCta() },
+    { id: "cta", label: "⚡ CTA Callout Box (WordPress Gutenberg)", icon: <Zap className="w-4 h-4 mr-2 text-[#FF5722]" />, action: () => onOpenCtaBuilder() },
     { id: "h1", label: "Heading 1", icon: <Heading1 className="w-4 h-4 mr-2" />, action: () => editor.chain().focus().toggleHeading({ level: 1 }).run() },
     { id: "h2", label: "Heading 2", icon: <Heading2 className="w-4 h-4 mr-2" />, action: () => editor.chain().focus().toggleHeading({ level: 2 }).run() },
     { id: "h3", label: "Heading 3", icon: <Heading3 className="w-4 h-4 mr-2" />, action: () => editor.chain().focus().toggleHeading({ level: 3 }).run() },
@@ -270,7 +289,7 @@ function SlashMenu({
 
   return (
     <div
-      className="absolute z-50 w-72 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden py-1"
+      className="absolute z-50 w-80 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden py-1"
       style={{ top: position.top + 24, left: position.left }}
     >
       {filteredOptions.map((opt) => (
@@ -296,11 +315,35 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
   const [isReady, setIsReady] = useState(false);
   const [showTableBuilder, setShowTableBuilder] = useState(false);
   const [showCtaBuilder, setShowCtaBuilder] = useState(false);
+  const [ctaBuilderInitialValues, setCtaBuilderInitialValues] = useState<Partial<CtaBoxAttributes> | undefined>(undefined);
   const [editorMode, setEditorMode] = useState<"visual" | "code">("visual");
   const [rawHtml, setRawHtml] = useState(value || "");
   const [htmlSearch, setHtmlSearch] = useState("");
   const [slashPos, setSlashPos] = useState<any>(null);
   const isFirstRender = useRef(true);
+
+  // Smart Article CTA Detection States
+  const [smartSuggestion, setSmartSuggestion] = useState<SmartCtaRecommendation | null>(null);
+  const [smartAlternatives, setSmartAlternatives] = useState<SmartCtaRecommendation[]>([]);
+  const [showSmartBanner, setShowSmartBanner] = useState(false);
+  const [showSmartModal, setShowSmartModal] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  // Wire up global edit handler for in-editor Gutenberg CTA blocks
+  useEffect(() => {
+    setGlobalOnEditCta((attrs) => {
+      setCtaBuilderInitialValues(attrs);
+      setShowCtaBuilder(true);
+    });
+    return () => {
+      setGlobalOnEditCta(null);
+    };
+  }, []);
 
   const editor = useEditor({
     extensions: [
@@ -317,6 +360,7 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
       FaqItem,
       FaqQuestion,
       FaqAnswer,
+      CtaBoxNode,
       Link.configure({ openOnClick: false, HTMLAttributes: { class: "text-blue-400 underline" } }),
       Image.configure({ HTMLAttributes: { class: "max-w-full h-auto rounded-xl my-4 mx-auto" } }),
       Youtube.configure({ HTMLAttributes: { class: "w-full aspect-video rounded-xl my-4" } }),
@@ -326,7 +370,7 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
       TableRow,
       TableHeader.configure({ HTMLAttributes: { class: "border border-slate-700 p-2 bg-slate-800 font-bold" } }),
       TableCell.configure({ HTMLAttributes: { class: "border border-slate-700 p-2" } }),
-      Placeholder.configure({ placeholder: "Start typing or type / for quick blocks (CTA Box, Heading, Table, FAQ)..." })
+      Placeholder.configure({ placeholder: "Start writing, paste your article, or type / for Gutenberg blocks (CTA Box, Smart CTA, Table, FAQ)..." })
     ],
     content: value,
     onUpdate: ({ editor }) => {
@@ -382,6 +426,19 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
           return false;
         }
         return false;
+      },
+      // Smart Auto-Detection on Paste: examine pasted article and detect relevant tool CTA
+      handlePaste: (view, event) => {
+        const text = event.clipboardData?.getData("text/plain") || "";
+        if (text && text.trim().split(/\s+/).length >= 30) {
+          const analysis = analyzeArticleForCta(text);
+          if (analysis && analysis.bestMatch) {
+            setSmartSuggestion(analysis.bestMatch);
+            setSmartAlternatives(analysis.alternatives);
+            setShowSmartBanner(true);
+          }
+        }
+        return false; // let normal paste proceed into the editor
       }
     }
   });
@@ -421,24 +478,165 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
     onChange(val);
   };
 
+  // Run Smart CTA Analysis on Current Editor Content
+  const handleRunSmartCtaAnalysis = () => {
+    const currentText = editor?.getText() || rawHtml;
+    if (!currentText || currentText.trim().split(/\s+/).length < 20) {
+      // Fallback for short content: default to Broken Link Checker
+      const fallbackAnalysis = analyzeArticleForCta("seo audit website links speed performance");
+      setSmartSuggestion(fallbackAnalysis.bestMatch);
+      setSmartAlternatives(fallbackAnalysis.alternatives);
+      setShowSmartModal(true);
+      return;
+    }
+
+    const analysis = analyzeArticleForCta(currentText);
+    setSmartSuggestion(analysis.bestMatch);
+    setSmartAlternatives(analysis.alternatives);
+    setShowSmartModal(true);
+  };
+
+  // Insert a smart CTA recommendation into the editor
+  const handleInsertSmartCta = (rec: SmartCtaRecommendation) => {
+    if (editorMode === "visual" && editor) {
+      editor
+        .chain()
+        .focus()
+        .insertContent({
+          type: "ctaBox",
+          attrs: {
+            badge: rec.badge,
+            title: rec.title,
+            description: rec.description,
+            buttonText: rec.buttonText,
+            buttonUrl: rec.buttonUrl,
+            footerNote: rec.footerNote,
+            theme: rec.theme,
+            layout: rec.layout
+          }
+        })
+        .run();
+    } else {
+      // Code mode fallback: compile HTML string
+      const ctaHtml = `<aside class="metazivo-cta-box not-prose my-8 p-6 md:p-7 rounded-2xl border transition-all" data-type="cta-box" data-badge="${rec.badge}" data-title="${rec.title}" data-description="${rec.description}" data-button-text="${rec.buttonText}" data-button-url="${rec.buttonUrl}" data-footer-note="${rec.footerNote}" data-theme="${rec.theme}" data-layout="${rec.layout}">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+    <div class="space-y-2.5 max-w-xl">
+      <div class="cta-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase">${rec.badge}</div>
+      <h3 class="cta-title text-lg md:text-xl font-extrabold tracking-tight m-0">${rec.title}</h3>
+      <p class="cta-desc text-sm leading-relaxed m-0">${rec.description}</p>
+      <p class="cta-footer text-xs font-medium m-0 pt-1">${rec.footerNote}</p>
+    </div>
+    <div class="shrink-0 md:self-center">
+      <a href="${rec.buttonUrl}" class="metazivo-cta-btn inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm tracking-wide text-white">${rec.buttonText}</a>
+    </div>
+  </div>
+</aside>`;
+      const updated = rawHtml + "\n\n" + ctaHtml;
+      setRawHtml(updated);
+      onChange(updated);
+    }
+
+    setShowSmartBanner(false);
+    setShowSmartModal(false);
+    showToast(`✓ Inserted Gutenberg CTA Block for "${rec.detectedTopicName}"!`);
+  };
+
   if (!editor) {
     return (
       <div className="min-h-[500px] flex items-center justify-center bg-slate-900 border border-slate-800 rounded-2xl animate-pulse text-slate-400">
-        Loading Editor...
+        Loading WordPress Gutenberg Editor...
       </div>
     );
   }
 
   return (
     <div className="flex flex-col bg-slate-950 border border-slate-800 rounded-2xl shadow-xl overflow-hidden tiptap-container relative">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="absolute top-14 right-4 z-50 bg-emerald-500 text-slate-950 px-4 py-2 rounded-xl text-xs font-bold shadow-2xl flex items-center gap-2 animate-bounce">
+          <CheckCircle2 className="w-4 h-4" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       <MenuBar
         editor={editor}
         onOpenMediaSelector={onOpenMediaSelector}
         onOpenTableBuilder={() => setShowTableBuilder(true)}
-        onOpenCtaBuilder={() => setShowCtaBuilder(true)}
+        onOpenCtaBuilder={() => {
+          setCtaBuilderInitialValues(undefined);
+          setShowCtaBuilder(true);
+        }}
+        onOpenSmartCta={handleRunSmartCtaAnalysis}
         editorMode={editorMode}
         onToggleMode={handleToggleMode}
       />
+
+      {/* Floating Smart Article Analysis Banner (shown automatically when user pastes article) */}
+      {showSmartBanner && smartSuggestion && (
+        <div className="bg-gradient-to-r from-orange-950/90 via-slate-900 to-amber-950/90 border-b border-orange-500/40 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-lg animate-fade-in z-20">
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-xl bg-gradient-to-br from-[#FF5722] to-amber-500 text-white shadow-md">
+              <Wand2 className="w-4 h-4 animate-spin-slow" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-white flex items-center gap-1.5 flex-wrap">
+                <span>🪄 Smart Article Detected:</span>
+                <span className="text-orange-400 underline decoration-orange-500/60 font-extrabold">
+                  {smartSuggestion.detectedTopicName}
+                </span>
+                <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px]">
+                  Suggested Tool: {smartSuggestion.buttonUrl}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-300 mt-0.5">
+                Automatically generate a high-converting CTA card matching your article's topic.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => handleInsertSmartCta(smartSuggestion)}
+              className="px-3.5 py-1.5 rounded-xl bg-[#FF5722] hover:bg-orange-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-orange-500/20 cursor-pointer transition-all active:scale-95"
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>Insert Matching CTA Box</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setCtaBuilderInitialValues({
+                  badge: smartSuggestion.badge,
+                  title: smartSuggestion.title,
+                  description: smartSuggestion.description,
+                  buttonText: smartSuggestion.buttonText,
+                  buttonUrl: smartSuggestion.buttonUrl,
+                  footerNote: smartSuggestion.footerNote,
+                  theme: smartSuggestion.theme,
+                  layout: smartSuggestion.layout
+                });
+                setShowCtaBuilder(true);
+                setShowSmartBanner(false);
+              }}
+              className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 cursor-pointer"
+            >
+              Customize
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowSmartBanner(false)}
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+              title="Dismiss"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {editorMode === "visual" ? (
         <div className="flex-1 overflow-y-auto max-h-[800px] scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent p-4 relative">
@@ -450,7 +648,11 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
             onClose={() => setSlashPos(null)}
             onOpenMediaSelector={onOpenMediaSelector}
             onOpenTableBuilder={() => setShowTableBuilder(true)}
-            onOpenCtaBuilder={() => setShowCtaBuilder(true)}
+            onOpenCtaBuilder={() => {
+              setCtaBuilderInitialValues(undefined);
+              setShowCtaBuilder(true);
+            }}
+            onOpenSmartCta={handleRunSmartCtaAnalysis}
           />
         </div>
       ) : (
@@ -476,7 +678,19 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setShowCtaBuilder(true)}
+                onClick={handleRunSmartCtaAnalysis}
+                className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Wand2 className="w-3.5 h-3.5" />
+                <span>🪄 Auto-Detect CTA from Article</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCtaBuilderInitialValues(undefined);
+                  setShowCtaBuilder(true);
+                }}
                 className="px-3 py-1.5 rounded-lg bg-[#FF5722] hover:bg-orange-600 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Zap className="w-3.5 h-3.5" />
@@ -504,7 +718,7 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
 
           <div className="flex items-center justify-between text-[11px] text-slate-500 pt-2 font-mono">
             <span>Length: {rawHtml.length} characters</span>
-            <span>Switch to "Visual" above to see the styled layout in English.</span>
+            <span>Switch to 'Visual' above to see the WordPress Gutenberg visual block layout.</span>
           </div>
         </div>
       )}
@@ -513,18 +727,155 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
       {showCtaBuilder && (
         <CtaBoxBuilder
           isOpen={showCtaBuilder}
-          onClose={() => setShowCtaBuilder(false)}
-          onInsertCta={(ctaHtml) => {
+          initialValues={ctaBuilderInitialValues}
+          articleContent={editor?.getText() || rawHtml}
+          onClose={() => {
+            setShowCtaBuilder(false);
+            setCtaBuilderInitialValues(undefined);
+          }}
+          onInsertCta={(ctaHtml, attrs) => {
             if (editorMode === "code") {
               const updated = rawHtml + "\n\n" + ctaHtml;
               setRawHtml(updated);
               onChange(updated);
+            } else if (attrs) {
+              editor.chain().focus().insertContent({ type: "ctaBox", attrs }).run();
             } else {
               editor.chain().focus().insertContent(ctaHtml).run();
             }
             setShowCtaBuilder(false);
+            setCtaBuilderInitialValues(undefined);
+            showToast("✓ Gutenberg CTA Callout Box added!");
           }}
         />
+      )}
+
+      {/* Smart Article CTA Selector Modal (Triggered by Toolbar Button) */}
+      {showSmartModal && smartSuggestion && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md animate-fade-in font-sans">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-3xl flex flex-col shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/60">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg">
+                  <Wand2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    Auto-Detected Smart CTA for Article
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Our semantic analyzer examined your article content and picked the most relevant MetaZivo tool.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSmartModal(false)}
+                className="p-2 text-slate-400 hover:text-white rounded-xl cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5 overflow-y-auto max-h-[70vh]">
+              {/* Primary Match Card */}
+              <div className="p-5 rounded-2xl bg-slate-950 border-2 border-[#FF5722]/60 shadow-xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#FF5722]/20 border border-[#FF5722]/40 text-[#FF5722] text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+                    <Zap className="w-3 h-3" /> Best Recommendation (99% Match)
+                  </span>
+                  <span className="text-xs text-slate-400 font-mono">
+                    Topic: {smartSuggestion.detectedTopicName}
+                  </span>
+                </div>
+
+                <div className="p-4 rounded-xl bg-orange-950/20 border border-orange-500/30">
+                  <div className="text-xs font-bold text-orange-400 uppercase tracking-wide">
+                    {smartSuggestion.badge}
+                  </div>
+                  <h4 className="text-base font-extrabold text-white mt-1">
+                    {smartSuggestion.title}
+                  </h4>
+                  <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                    {smartSuggestion.description}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-[#FF5722] text-white text-xs font-bold">
+                      <span>{smartSuggestion.buttonText}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </span>
+                    <span className="text-[11px] text-slate-400 font-mono">
+                      Destination: {smartSuggestion.buttonUrl}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCtaBuilderInitialValues(smartSuggestion);
+                      setShowSmartModal(false);
+                      setShowCtaBuilder(true);
+                    }}
+                    className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 cursor-pointer"
+                  >
+                    Customize in Builder
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInsertSmartCta(smartSuggestion)}
+                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#FF5722] to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-orange-500/25 cursor-pointer active:scale-95"
+                  >
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>Insert This CTA Block</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Alternative Recommendations */}
+              {smartAlternatives.length > 0 && (
+                <div className="space-y-3 pt-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    Alternative Related Tools for this Article:
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {smartAlternatives.map((alt) => (
+                      <div
+                        key={alt.topicId}
+                        className="p-4 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 flex flex-col justify-between transition-all"
+                      >
+                        <div>
+                          <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wide">
+                            {alt.badge}
+                          </span>
+                          <h5 className="text-xs font-bold text-white mt-1">
+                            {alt.title}
+                          </h5>
+                          <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">
+                            {alt.description}
+                          </p>
+                        </div>
+                        <div className="mt-3 flex items-center justify-between pt-2 border-t border-slate-800">
+                          <span className="text-[10px] font-mono text-slate-500 truncate max-w-[140px]">
+                            {alt.buttonUrl}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleInsertSmartCta(alt)}
+                            className="px-2.5 py-1 rounded-lg bg-blue-600/30 hover:bg-blue-600/50 border border-blue-500/40 text-blue-300 text-xs font-semibold cursor-pointer"
+                          >
+                            Insert →
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Responsive Table Builder Modal */}
@@ -541,6 +892,7 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
               editor.chain().focus().insertContent(html).run();
             }
             setShowTableBuilder(false);
+            showToast("✓ Responsive Theme Table added!");
           }}
         />
       )}
@@ -598,9 +950,11 @@ export default function GutenbergEditor({ value, onChange, mediaAssets, onOpenMe
           color: #f8fafc !important;
         }
 
-        /* In-Editor Preview styling for Metazivo CTA Box */
+        /* In-Editor Preview styling for Metazivo CTA Box Node */
+        .tiptap-container .ProseMirror .gutenberg-cta-block-node {
+          margin: 1.75rem 0;
+        }
         .tiptap-container .ProseMirror .metazivo-cta-box {
-          margin: 1.5rem 0;
           color: #0f172a !important;
         }
         .tiptap-container .ProseMirror .metazivo-cta-box * {
