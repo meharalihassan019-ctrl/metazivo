@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from "react";
-import { Check, ShieldAlert, Loader2, RefreshCw } from "lucide-react";
+import { Check, ShieldAlert, Loader2, RefreshCw, MapPin } from "lucide-react";
 
 interface ContactFormProps {
   onSuccess?: () => void;
@@ -121,9 +121,15 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4" id="contact-form">
-          <div className="text-center sm:text-left mb-4">
-            <h3 className="text-lg font-bold text-slate-900 tracking-wide font-sans">Grow Your Business Today</h3>
-            <p className="text-xs text-slate-500 mt-0.5 font-light">Let us build a customized digital solution for your company.</p>
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4 border-b border-slate-100 pb-3">
+            <div className="text-center sm:text-left">
+              <h3 className="text-lg font-bold text-slate-900 tracking-wide font-sans">Grow Your Business Today</h3>
+              <p className="text-xs text-slate-500 mt-0.5 font-light">Let us build a customized digital solution for your company.</p>
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-200/60 text-[11px] font-mono font-bold text-[#FF5722] shadow-sm">
+              <MapPin className="w-3.5 h-3.5 text-[#FF5722]" />
+              <span>Chungi Gujjar Pura, Lahore</span>
+            </div>
           </div>
 
           {errorMsg && (

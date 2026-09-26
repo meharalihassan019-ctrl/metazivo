@@ -184,8 +184,8 @@ export const baseOrganizationSchema = {
   },
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "Gulberg",
-    "addressLocality": "Lahore / Islamabad",
+    "streetAddress": "Chungi Gujjar Pura",
+    "addressLocality": "Lahore",
     "addressRegion": "Punjab",
     "postalCode": "54000",
     "addressCountry": "PK"

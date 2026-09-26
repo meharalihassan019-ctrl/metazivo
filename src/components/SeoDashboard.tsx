@@ -148,12 +148,12 @@ export default function SeoDashboard({
     name: "Metazivo Digital Agency HQ",
     phone: "+92 328 8518557",
     email: "mail@metazivo.com",
-    address: "Islamabad / Lahore, Pakistan",
-    latitude: "33.6844",
-    longitude: "73.0479",
-    businessHours: "Mon-Fri: 09:00 AM - 06:00 PM",
-    googleBusinessProfileUrl: "https://business.google.com/r/metazivo",
-    serviceAreas: ["Islamabad", "Lahore", "Dubai", "New York", "Remote / Global"]
+    address: "Chungi Gujjar Pura, Lahore, Punjab, Pakistan",
+    latitude: "31.5820",
+    longitude: "74.3800",
+    businessHours: "Mon-Sat: 09:00 AM - 08:00 PM",
+    googleBusinessProfileUrl: "https://maps.google.com/maps?q=Chungi+Gujjar+Pura+Lahore+Pakistan",
+    serviceAreas: ["Lahore", "Islamabad", "Dubai", "New York", "Remote / Global"]
   });
 
   const [schemaTemplates, setSchemaTemplates] = useState<SchemaConfig[]>([
@@ -165,7 +165,7 @@ export default function SeoDashboard({
     {
       id: "tpl-local",
       type: "LocalBusiness",
-      jsonData: `{\n  "@context": "https://schema.org",\n  "@type": "LocalBusiness",\n  "name": "Metazivo",\n  "image": "https://metazivo.com/og-image.jpg",\n  "address": {\n    "@type": "PostalAddress",\n    "addressLocality": "Islamabad",\n    "addressCountry": "PK"\n  }\n}`
+      jsonData: `{\n  "@context": "https://schema.org",\n  "@type": "LocalBusiness",\n  "name": "Metazivo",\n  "image": "https://metazivo.com/og-image.jpg",\n  "address": {\n    "@type": "PostalAddress",\n    "streetAddress": "Chungi Gujjar Pura",\n    "addressLocality": "Lahore",\n    "addressRegion": "Punjab",\n    "postalCode": "54000",\n    "addressCountry": "PK"\n  }\n}`
     }
   ]);
 

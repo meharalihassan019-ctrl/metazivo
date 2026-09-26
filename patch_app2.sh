@@ -1,1 +1,0 @@
-sed -i 's|console.log("Called showMediaSelectorForEditor", url, altText); showMediaSelectorForEditor(url, altText);|console.log("Called showMediaSelectorForEditor", url, altText); if (typeof showMediaSelectorForEditor === "function") showMediaSelectorForEditor(url, altText);|g' src/App.tsx

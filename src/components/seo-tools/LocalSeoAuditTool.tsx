@@ -51,12 +51,12 @@ export default function LocalSeoAuditTool({ tool, onNavigateTool, onNavigateHome
     category: "ProfessionalService",
     website: "https://metazivo.com",
     phone: "+92 328 8518557",
-    streetAddress: "Main Boulevard, Gulberg III",
+    streetAddress: "Chungi Gujjar Pura",
     city: "Lahore",
     state: "Punjab",
     postalCode: "54000",
     country: "PK",
-    gmbUrl: "https://maps.google.com/?cid=metazivo"
+    gmbUrl: "https://maps.google.com/maps?q=Chungi+Gujjar+Pura+Lahore+Pakistan"
   });
 
   const [copiedSchema, setCopiedSchema] = useState(false);

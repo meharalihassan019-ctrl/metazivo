@@ -1,1 +1,0 @@
-sed -i 's|  const handleSelectAsset = (asset: MediaAsset) => {|  const handleSelectAsset = (asset: MediaAsset) => {\n    console.log("Selected asset:", asset);\n    if (!asset.id) {\n      console.error("ASSET HAS NO ID!", asset);\n      asset.id = asset.url; // fallback\n    }|g' src/components/MediaLibrary.tsx

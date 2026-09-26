@@ -1,1 +1,0 @@
-sed -i 's|onClick={() => handleSelectAsset(asset)}|onClick={(e) => { e.preventDefault(); e.stopPropagation(); console.log("DIV CLICKED", asset.id); handleSelectAsset(asset); }}|g' src/components/MediaLibrary.tsx

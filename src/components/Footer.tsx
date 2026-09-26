@@ -19,7 +19,7 @@ export default function Footer({ onNavigate, contactInfo }: FooterProps) {
   const displayEmail = (!contactInfo?.email || contactInfo.email.trim() === "mai@metazivo.com") 
     ? "mail@metazivo.com" 
     : contactInfo.email;
-  const displayAddress = contactInfo?.address || "Office 402, Metazivo Heights, Sector F-5, Islamabad, 44000, Pakistan";
+  const displayAddress = contactInfo?.address || "Chungi Gujjar Pura, Lahore, Punjab 54000, Pakistan";
   const formattedPhoneLink = `tel:${displayPhone.replace(/[^+\d]/g, "")}`;
 
   const facebookUrl = contactInfo?.facebook || "https://www.facebook.com/share/1DLnu9iaHK/";

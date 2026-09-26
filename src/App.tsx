@@ -45,6 +45,9 @@ import {
   Sparkles,
   Globe,
   MapPin,
+  Navigation,
+  Clock,
+  Building2,
   Table as TableIcon,
   Image as ImageIcon
 } from "lucide-react";
@@ -2180,18 +2183,31 @@ export default function App() {
                   Have questions about SEO strategies, customized WordPress builds, or Facebook & Instagram ad blueprints? Fill out our form and our team will design your conversion optimization blueprint.
                 </p>
                 
-                <div className="p-5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-3 font-mono text-xs">
-                  <div className="flex justify-between">
+                <div className="p-5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-3 font-mono text-xs shadow-sm">
+                  <div className="flex justify-between items-center">
                     <span className="text-slate-500">Contact Email:</span>
                     <a href={`mailto:${displayEmail}`} className="text-[#FF5722] hover:underline font-bold">{displayEmail}</a>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-slate-500">Hotline Number:</span>
                     <a href={`tel:${displayPhone.replace(/[^+\d]/g, "")}`} className="text-[#FF5722] hover:underline font-bold">{displayPhone}</a>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Coordinate:</span>
-                    <span className="text-slate-700">{contactInfo?.address || "Pakistan"}</span>
+                  <div className="flex justify-between items-start pt-1 border-t border-slate-200/60">
+                    <span className="text-slate-500 flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5 text-[#FF5722] shrink-0" />
+                      Studio:
+                    </span>
+                    <div className="text-right">
+                      <span className="text-slate-800 font-sans font-semibold block">{contactInfo?.address || "Chungi Gujjar Pura, Lahore, Punjab 54000, Pakistan"}</span>
+                      <a
+                        href="https://www.google.com/maps/search/?api=1&query=Chungi+Gujjar+Pura+Lahore+Pakistan"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] text-[#FF5722] hover:underline inline-flex items-center gap-1 font-bold mt-0.5"
+                      >
+                        <ExternalLink className="w-3 h-3" /> View on Google Maps
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2846,37 +2862,196 @@ export default function App() {
 
         {/* VIEW 9: CONTACT PAGE & CALLBACKS */}
         {currentTab === "contact" && (
-          <div id="view-contact" className="max-w-4xl mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center animate-fade-in text-slate-800">
-            <div className="space-y-6">
-              <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full">Connect with Us</span>
-              <h1 className="text-4xl font-extrabold text-slate-950">Let's Discuss Your Project</h1>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-light font-sans">
-                We design fully responsive speed-hardened portfolios, optimize WordPress theme pipelines, and drive conversion metrics. WhatsApp us or send an inquiry directly to set up your principal consultation.
-              </p>
-              <div className="space-y-4 font-mono text-xs text-slate-700 bg-slate-50 border border-slate-200/80 p-5 rounded-2xl">
-                <div className="flex gap-2 items-center">
-                  <Phone className="w-4 h-4 text-[#FF5722]" />
-                  <a href={`tel:${(contactInfo?.phone || "+92 328 8518557").replace(/[^+\d]/g, "")}`} className="hover:text-[#FF5722] transition-colors">
-                    {contactInfo?.phone || "+92 328 8518557"}
+          <div id="view-contact" className="max-w-6xl mx-auto px-4 py-16 space-y-12 animate-fade-in text-slate-800">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+              {/* Left Column: Contact details & intro (5 cols) */}
+              <div className="lg:col-span-5 space-y-6">
+                <span className="text-xs font-mono font-bold text-[#FF5722] uppercase tracking-widest bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722] animate-ping" />
+                  Connect with Us
+                </span>
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
+                  Let's Discuss Your Project
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-light font-sans">
+                  We design responsive speed-hardened web platforms, optimize WordPress theme pipelines, and drive high-intent conversion metrics. WhatsApp us, call our team directly, or visit our studio in Lahore.
+                </p>
+
+                {/* Contact Quick Info Cards */}
+                <div className="space-y-3 font-mono text-xs text-slate-700 bg-slate-50 border border-slate-200/80 p-5 rounded-2xl shadow-sm">
+                  <div className="flex gap-3 items-center">
+                    <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-200/60 flex items-center justify-center shrink-0 text-[#FF5722]">
+                      <Phone className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="block text-[10px] text-slate-400 uppercase font-sans font-semibold">Phone / WhatsApp</span>
+                      <a href={`tel:${(contactInfo?.phone || "+92 328 8518557").replace(/[^+\d]/g, "")}`} className="hover:text-[#FF5722] transition-colors font-bold text-slate-900">
+                        {contactInfo?.phone || "+92 328 8518557"}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 items-center">
+                    <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-200/60 flex items-center justify-center shrink-0 text-[#FF5722]">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="block text-[10px] text-slate-400 uppercase font-sans font-semibold">Official Email</span>
+                      <a href={`mailto:${displayEmail}`} className="hover:text-[#FF5722] transition-colors font-bold text-slate-900">
+                        {displayEmail}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 items-start">
+                    <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-200/60 flex items-center justify-center shrink-0 text-[#FF5722] mt-0.5">
+                      <MapPin className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="block text-[10px] text-slate-400 uppercase font-sans font-semibold">Studio &amp; Office Location</span>
+                      <address className="not-italic font-sans text-xs text-slate-800 font-semibold leading-relaxed">
+                        {contactInfo?.address || "Chungi Gujjar Pura, Lahore, Punjab 54000, Pakistan"}
+                      </address>
+                    </div>
+                  </div>
+                </div>
+
+                {/* WhatsApp & Location Quick Actions */}
+                <div className="flex flex-wrap items-center gap-3 pt-1">
+                  <a
+                    href="https://wa.me/923288518557?text=Hi%20Metazivo,%20I%20would%20like%20to%20discuss%20an%20SEO%20or%20web%20project."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 min-w-[150px] px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all active:scale-95 cursor-pointer"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span>WhatsApp Chat</span>
+                  </a>
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=Chungi+Gujjar+Pura+Lahore+Pakistan"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 min-w-[150px] px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
+                  >
+                    <Navigation className="w-4 h-4 text-[#FF5722]" />
+                    <span>View on Maps</span>
                   </a>
                 </div>
-                <div className="flex gap-2 items-center">
-                  <Mail className="w-4 h-4 text-[#FF5722]" />
-                  <a href={`mailto:${displayEmail}`} className="hover:text-[#FF5722] transition-colors">
-                    {displayEmail}
-                  </a>
-                </div>
-                <div className="flex gap-2 items-start">
-                  <MapPin className="w-4 h-4 text-[#FF5722] shrink-0 mt-0.5" />
-                  <address className="not-italic font-sans text-xs text-slate-600 leading-relaxed">
-                    {contactInfo?.address || "Office 402, Metazivo Heights, Sector F-5, Islamabad, 44000, Pakistan"}
-                  </address>
+              </div>
+
+              {/* Right Column: Contact Form (7 cols) */}
+              <div className="lg:col-span-7">
+                <div className="p-1 rounded-3xl bg-gradient-to-tr from-orange-100/50 via-slate-100/30 to-orange-50/20 border border-orange-200/50 shadow-xl shadow-orange-500/5">
+                  <ContactForm />
                 </div>
               </div>
             </div>
 
-            <div>
-              <ContactForm />
+            {/* FULL LOCATION BAR & INTERACTIVE GOOGLE MAPS SECTION */}
+            <div className="p-6 sm:p-8 bg-slate-900 text-white rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden space-y-6">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-[#FF5722]/10 blur-[100px] rounded-full pointer-events-none" />
+
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 relative z-10 border-b border-slate-800 pb-5">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2.5">
+                    <span className="p-2 rounded-xl bg-[#FF5722]/20 text-[#FF5722] border border-[#FF5722]/30">
+                      <MapPin className="w-5 h-5" />
+                    </span>
+                    <div>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#FF5722] font-bold block">
+                        Verified Physical Studio &amp; Office
+                      </span>
+                      <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                        Chungi Gujjar Pura, Lahore
+                      </h3>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-400 font-sans pl-11">
+                    Punjab 54000, Pakistan • In-person client strategy meetings and technical workshops available by appointment.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2.5 pl-11 md:pl-0">
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=Chungi+Gujjar+Pura+Lahore+Pakistan"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2.5 rounded-xl bg-[#FF5722] hover:bg-orange-600 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-orange-500/25 transition-all active:scale-95 cursor-pointer"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Open in Google Maps</span>
+                  </a>
+                  <a
+                    href="https://www.google.com/maps/dir/?api=1&destination=Chungi+Gujjar+Pura+Lahore+Pakistan"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-2 border border-slate-700 transition-colors cursor-pointer"
+                  >
+                    <Navigation className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Get Directions</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Map + Hours Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10 items-stretch">
+                {/* Embedded Interactive Google Map (8 cols) */}
+                <div className="lg:col-span-8 rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-inner relative min-h-[300px]">
+                  <iframe
+                    title="Metazivo Office Location - Chungi Gujjar Pura Lahore"
+                    src="https://maps.google.com/maps?q=Chungi+Gujjar+Pura+Lahore+Pakistan&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                    className="w-full h-full min-h-[300px] sm:min-h-[340px] border-0"
+                    loading="lazy"
+                    allowFullScreen
+                  />
+                  <div className="absolute bottom-3 left-3 bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700/60 text-[11px] text-slate-300 font-mono shadow-md flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                    <span>Live GPS Pin: Chungi Gujjar Pura, Lahore</span>
+                  </div>
+                </div>
+
+                {/* Location Details & Timing Box (4 cols) */}
+                <div className="lg:col-span-4 bg-slate-950/80 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between space-y-4">
+                  <div className="space-y-3">
+                    <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-[#FF5722]" /> Operating Hours
+                    </h4>
+                    <div className="space-y-1.5 text-xs">
+                      <div className="flex justify-between py-1 border-b border-slate-800/80 text-slate-300">
+                        <span>Monday – Friday:</span>
+                        <span className="font-mono font-bold text-white">9:00 AM – 8:00 PM</span>
+                      </div>
+                      <div className="flex justify-between py-1 border-b border-slate-800/80 text-slate-300">
+                        <span>Saturday:</span>
+                        <span className="font-mono font-bold text-white">10:00 AM – 6:00 PM</span>
+                      </div>
+                      <div className="flex justify-between py-1 text-slate-400">
+                        <span>Sunday:</span>
+                        <span className="text-amber-400 font-mono text-[11px]">Emergency Calls Only</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-[11px] text-slate-400 space-y-1">
+                    <div className="font-bold text-white flex items-center gap-1">
+                      <Building2 className="w-3.5 h-3.5 text-[#FF5722]" /> Local Accessibility
+                    </div>
+                    <p className="leading-relaxed">
+                      Near Gujjar Pura, easily accessible via Lahore Ring Road and Grand Trunk (GT) Road corridor.
+                    </p>
+                  </div>
+
+                  <a
+                    href="https://wa.me/923288518557?text=Hello%20Metazivo,%20I%20am%20heading%20to%20your%20office%20at%20Chungi%20Gujjar%20Pura%20Lahore."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-400 font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>Notify Arrival via WhatsApp</span>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         )}
