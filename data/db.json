@@ -2,114 +2,114 @@
   "posts": [],
   "media": [
     {
+      "url": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80",
       "size": 45200,
+      "folder": "branding",
       "id": "media-1",
+      "caption": "Metazivo Main Brand Mark",
+      "mimeType": "image/png",
       "createdAt": "2026-07-11T00:00:00Z",
       "name": "metazivo_logo.png",
-      "folder": "branding",
-      "altText": "Metazivo Digital Agency Minimalist Premium Brand Identity",
-      "mimeType": "image/png",
-      "url": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80",
-      "caption": "Metazivo Main Brand Mark"
+      "altText": "Metazivo Digital Agency Minimalist Premium Brand Identity"
     },
     {
-      "createdAt": "2026-07-11T01:30:00Z",
-      "id": "media-2",
-      "url": "",
       "folder": "website-development",
+      "mimeType": "image/jpeg",
+      "createdAt": "2026-07-11T01:30:00Z",
+      "url": "",
       "name": "web_dev_banner.jpg",
       "altText": "Modern website performance dashboard displaying speed metrics",
       "size": 245000,
-      "mimeType": "image/jpeg",
+      "id": "media-2",
       "caption": "High Conversion Website Architecture"
     },
     {
-      "altText": "Google Search Console performance analysis graphics",
-      "id": "media-3",
       "size": 198000,
-      "name": "seo_dashboard.png",
-      "folder": "seo",
-      "caption": "Comprehensive Technical SEO Auditing Dashboard",
-      "createdAt": "2026-07-11T02:15:00Z",
       "mimeType": "image/png",
-      "url": "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=800&q=80"
+      "altText": "Google Search Console performance analysis graphics",
+      "url": "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=800&q=80",
+      "createdAt": "2026-07-11T02:15:00Z",
+      "id": "media-3",
+      "caption": "Comprehensive Technical SEO Auditing Dashboard",
+      "folder": "seo",
+      "name": "seo_dashboard.png"
     }
   ],
   "leads": [
     {
-      "phone": "+1 415 882 1930",
-      "id": "lead-1",
-      "email": "sarah@luminahealth.com",
-      "notes": "",
+      "message": "Hello Metazivo, we want to redesign our clinic website. Our current site is extremely slow and has terrible SEO. Please let us know your pricing and timelines.",
       "name": "Sarah Jenkins",
-      "createdAt": "2026-07-11T04:22:15Z",
-      "service": "Website Redesign & Speed Optimization",
       "status": "unread",
-      "message": "Hello Metazivo, we want to redesign our clinic website. Our current site is extremely slow and has terrible SEO. Please let us know your pricing and timelines."
+      "notes": "",
+      "email": "sarah@luminahealth.com",
+      "createdAt": "2026-07-11T04:22:15Z",
+      "phone": "+1 415 882 1930",
+      "service": "Website Redesign & Speed Optimization",
+      "id": "lead-1"
     },
     {
       "createdAt": "2026-07-10T15:10:00Z",
-      "id": "lead-2",
-      "status": "replied",
-      "notes": "Called him. Shared quotation. Scheduled follow up for next Tuesday.",
-      "message": "We need an elegant Shopify store for our luxury apparel brand and we are looking for Metazivo to run Facebook and Meta ad campaigns.",
-      "phone": "+92 300 1234567",
       "service": "Shopify Development & Meta Ads",
+      "status": "replied",
+      "id": "lead-2",
       "name": "Ahmed Khan",
-      "email": "ahmed@khan-ecom.co"
+      "notes": "Called him. Shared quotation. Scheduled follow up for next Tuesday.",
+      "email": "ahmed@khan-ecom.co",
+      "message": "We need an elegant Shopify store for our luxury apparel brand and we are looking for Metazivo to run Facebook and Meta ad campaigns.",
+      "phone": "+92 300 1234567"
     }
   ],
   "redirects": [
     {
-      "fromPath": "/old-services",
-      "id": "redir-1",
-      "toPath": "/services",
-      "createdAt": "2026-07-11T03:00:00Z",
       "statusCode": 301,
-      "hits": 41
+      "createdAt": "2026-07-11T03:00:00Z",
+      "hits": 41,
+      "toPath": "/services",
+      "fromPath": "/old-services",
+      "id": "redir-1"
     }
   ],
-  "views": 12614,
+  "views": 12640,
   "visitors": 4850,
   "viewsHistory": [
     {
+      "date": "Jul 5",
       "visitors": 650,
-      "views": 1800,
-      "date": "Jul 5"
+      "views": 1800
     },
     {
+      "views": 2100,
       "date": "Jul 6",
-      "visitors": 780,
-      "views": 2100
+      "visitors": 780
     },
     {
-      "date": "Jul 7",
       "views": 1950,
+      "date": "Jul 7",
       "visitors": 720
     },
     {
-      "date": "Jul 8",
       "visitors": 910,
+      "date": "Jul 8",
       "views": 2400
     },
     {
-      "visitors": 820,
       "views": 2050,
+      "visitors": 820,
       "date": "Jul 9"
     },
     {
+      "visitors": 1100,
       "date": "Jul 10",
-      "views": 2900,
-      "visitors": 1100
+      "views": 2900
     },
     {
       "date": "Jul 11",
-      "visitors": 480,
-      "views": 1250
+      "views": 1250,
+      "visitors": 480
     },
     {
-      "views": 2,
       "visitors": 1,
+      "views": 2,
       "date": "Jul 30"
     },
     {
@@ -118,34 +118,34 @@
       "views": 8
     },
     {
+      "visitors": 1,
       "views": 6,
-      "date": "Aug 7",
-      "visitors": 1
+      "date": "Aug 7"
     },
     {
-      "visitors": 1,
       "views": 9,
-      "date": "Aug 8"
-    },
-    {
-      "views": 10,
-      "visitors": 1,
-      "date": "Sep 19"
-    },
-    {
-      "visitors": 1,
-      "date": "Sep 20",
-      "views": 15
-    },
-    {
-      "views": 7,
-      "visitors": 1,
-      "date": "Sep 21"
-    },
-    {
-      "views": 10,
-      "date": "Sep 22",
+      "date": "Aug 8",
       "visitors": 1
+    },
+    {
+      "views": 10,
+      "date": "Sep 19",
+      "visitors": 1
+    },
+    {
+      "views": 15,
+      "visitors": 1,
+      "date": "Sep 20"
+    },
+    {
+      "date": "Sep 21",
+      "visitors": 1,
+      "views": 7
+    },
+    {
+      "visitors": 1,
+      "views": 10,
+      "date": "Sep 22"
     },
     {
       "visitors": 1,
@@ -153,24 +153,24 @@
       "date": "Sep 23"
     },
     {
-      "visitors": 1,
+      "date": "Sep 24",
       "views": 4,
-      "date": "Sep 24"
-    },
-    {
-      "views": 18,
-      "visitors": 1,
-      "date": "Sep 25"
-    },
-    {
-      "views": 32,
-      "date": "Sep 26",
       "visitors": 1
     },
     {
-      "views": 3,
       "visitors": 1,
-      "date": "Sep 27"
+      "date": "Sep 25",
+      "views": 18
+    },
+    {
+      "date": "Sep 26",
+      "views": 32,
+      "visitors": 1
+    },
+    {
+      "visitors": 1,
+      "date": "Sep 27",
+      "views": 3
     },
     {
       "visitors": 1,
@@ -178,20 +178,34 @@
       "views": 5
     },
     {
-      "views": 5,
       "date": "Sep 29",
+      "views": 13,
+      "visitors": 1
+    },
+    {
+      "views": 4,
+      "visitors": 1,
+      "date": "Sep 30"
+    },
+    {
+      "views": 2,
+      "visitors": 1,
+      "date": "Oct 1"
+    },
+    {
+      "views": 1,
+      "date": "Oct 2",
+      "visitors": 1
+    },
+    {
+      "date": "Oct 3",
+      "views": 11,
       "visitors": 1
     }
   ],
   "tags": [],
   "pages": [
     {
-      "content": "<h2>Metazivo Agency Core</h2><p>Our custom-built, optimized landing page architecture.</p>",
-      "slug": "home",
-      "seoDescription": "Metazivo builds custom high-performance websites, optimized WordPress stores, Shopify websites, and runs advanced Meta and Google Ads campaigns.",
-      "id": "page-home",
-      "seoTitle": "Metazivo | Premium Digital Agency for High-Performance Architectures",
-      "isSystem": true,
       "seoKeywords": [
         "digital agency",
         "web development",
@@ -199,96 +213,96 @@
         "Shopify",
         "Meta Ads"
       ],
-      "title": "Home"
+      "title": "Home",
+      "slug": "home",
+      "content": "<h2>Metazivo Agency Core</h2><p>Our custom-built, optimized landing page architecture.</p>",
+      "seoDescription": "Metazivo builds custom high-performance websites, optimized WordPress stores, Shopify websites, and runs advanced Meta and Google Ads campaigns.",
+      "seoTitle": "Metazivo | Premium Digital Agency for High-Performance Architectures",
+      "id": "page-home",
+      "isSystem": true
     },
     {
+      "isSystem": true,
       "seoTitle": "About Metazivo | Enterprise Digital Architects",
-      "id": "page-about",
-      "slug": "about",
+      "title": "About",
       "seoKeywords": [
         "about agency",
         "metazivo developers",
         "technical agency team"
       ],
-      "title": "About",
       "seoDescription": "Metazivo's history, mission, and technical values designed to scale software operations globally.",
-      "content": "<h2>We are Metazivo</h2><p>A full-stack engineered agency with global roots.</p>",
-      "isSystem": true
+      "slug": "about",
+      "id": "page-about",
+      "content": "<h2>We are Metazivo</h2><p>A full-stack engineered agency with global roots.</p>"
     },
     {
-      "seoDescription": "Web Development, WordPress Custom Themes, Shopify Stores, Advanced SEO audits, and High-ROI Meta advertising.",
-      "title": "Services",
       "content": "<h2>Premium Agency Services</h2><p>Explore our engineering capabilities.</p>",
       "seoTitle": "Our Services | Custom Systems & Marketing Funnels | Metazivo",
+      "slug": "services",
+      "isSystem": true,
       "seoKeywords": [
         "services list",
         "agency services",
         "seo development",
         "shop themes"
       ],
-      "slug": "services",
-      "isSystem": true,
-      "id": "page-services"
+      "title": "Services",
+      "id": "page-services",
+      "seoDescription": "Web Development, WordPress Custom Themes, Shopify Stores, Advanced SEO audits, and High-ROI Meta advertising."
     },
     {
-      "content": "<h2>Transparent Enterprise Packages</h2><p>Select a budget plan suited to your velocity.</p>",
-      "seoTitle": "Pricing Packages & CMS Retainers | Metazivo",
+      "title": "Pricing",
+      "slug": "pricing",
       "seoKeywords": [
         "agency pricing",
         "monthly retainer fee",
         "web design pricing"
       ],
       "isSystem": true,
-      "title": "Pricing",
-      "seoDescription": "High-performance services tailored to scale starting at competitive rates. Choose Web development or marketing campaigns.",
+      "content": "<h2>Transparent Enterprise Packages</h2><p>Select a budget plan suited to your velocity.</p>",
       "id": "page-pricing",
-      "slug": "pricing"
+      "seoDescription": "High-performance services tailored to scale starting at competitive rates. Choose Web development or marketing campaigns.",
+      "seoTitle": "Pricing Packages & CMS Retainers | Metazivo"
     },
     {
-      "seoTitle": "Privacy Policy & GDPR Compliance | Metazivo Digital Agency",
-      "seoDescription": "Read Metazivo's Privacy Policy. Learn how we protect your data, handle cookies, respect GDPR & CCPA rights, and maintain zero-sale privacy standards.",
+      "seoDescription": "Understand cookies, analytical node monitoring, and lead verification data storage policies.",
+      "title": "Privacy Policy",
+      "content": "<h2>Privacy and Cookie Management</h2><p>Your privacy and GDPR security protocol details.</p>",
       "seoKeywords": [
-        "privacy policy",
-        "GDPR compliance",
-        "cookie policy",
-        "data protection",
-        "CCPA privacy rights",
-        "Metazivo privacy"
+        "privacy policies",
+        "cookies terms",
+        "gdpr compliance data"
       ],
-      "title": "Privacy Policy & GDPR Compliance",
       "slug": "privacy",
+      "seoTitle": "Privacy Policy & GDPR Compliance | Metazivo",
       "id": "page-privacy",
-      "content": "<p class=\"lead text-slate-700 text-sm leading-relaxed mb-6\">At Metazivo Digital Agency (accessible from https://metazivo.com), we take your privacy and data protection seriously. This Privacy Policy outlines the types of information we collect, how it is processed and protected, and your statutory rights under the General Data Protection Regulation (GDPR), California Consumer Privacy Act (CCPA), and global data privacy standards.</p><h3 class=\"text-lg font-bold text-slate-900 mt-6 mb-2\">1. Data Controller Information</h3><p class=\"text-slate-600 mb-4\">The data controller responsible for your personal data on this website is:</p><ul class=\"list-disc pl-5 text-slate-600 space-y-1 mb-4\"><li><strong>Agency:</strong> Metazivo Digital Agency</li><li><strong>Principal / Founder:</strong> Mehar Ali Hassan</li><li><strong>Official Contact Email:</strong> meharalihassan019@gmail.com</li><li><strong>Website URL:</strong> https://metazivo.com</li></ul><h3 class=\"text-lg font-bold text-slate-900 mt-6 mb-2\">2. Information We Collect</h3><p class=\"text-slate-600 mb-2\">We only collect personal information when there is a legitimate business or service delivery reason:</p><ul class=\"list-disc pl-5 text-slate-600 space-y-2 mb-4\"><li><strong>Contact & Consultation Forms:</strong> Name, business email, phone/WhatsApp number, website URL, and project specifications provided when requesting an SEO audit or project proposal.</li><li><strong>Free Diagnostic SEO Tools Usage:</strong> URLs, domain queries, or technical inputs entered into our free utilities (e.g. Website Speed Test, Broken Link Checker, Toxic Links Checker). These inputs are processed in real-time to generate diagnostic feedback and are never sold or rented.</li><li><strong>Technical Server Logs:</strong> IP address, browser type, device operating system, referring URL, and timestamps collected automatically for rate-limiting, bot attack defense, and server health.</li></ul><h3 class=\"text-lg font-bold text-slate-900 mt-6 mb-2\">3. How We Use Your Data</h3><p class=\"text-slate-600 mb-2\">Your information is used strictly for legitimate operational purposes:</p><ul class=\"list-disc pl-5 text-slate-600 space-y-1 mb-4\"><li>To deliver digital marketing, technical SEO, AEO/GEO, web engineering, and advertising services.</li><li>To respond to your inquiries, schedule technical consultations, and send requested project quotes.</li><li>To maintain, protect, and optimize the security and performance of our web infrastructure.</li><li>We operate a strict <strong>Zero-Sale Policy</strong>: We never sell, rent, or trade your personal data to third parties, data aggregators, or advertising brokers.</li></ul><h3 class=\"text-lg font-bold text-slate-900 mt-6 mb-2\">4. Cookies & Analytical Technologies</h3><p class=\"text-slate-600 mb-4\">We use essential cookies to maintain secure sessions and standard analytics (e.g. Google Analytics 4) to monitor aggregate traffic patterns, Core Web Vitals, and bounce rates. You can freely disable cookies at any time via your browser settings without losing access to core public content.</p><h3 class=\"text-lg font-bold text-slate-900 mt-6 mb-2\">5. Data Security & Storage</h3><p class=\"text-slate-600 mb-4\">We implement industry-standard encryption protocols (HTTPS with TLS 1.3 encryption in transit) and restricted-access cloud environments to safeguard your records against unauthorized access, alteration, or disclosure.</p><h3 class=\"text-lg font-bold text-slate-900 mt-6 mb-2\">6. Your GDPR & CCPA Privacy Rights</h3><p class=\"text-slate-600 mb-2\">Under applicable international privacy regulations, you retain full ownership of your data, including:</p><ul class=\"list-disc pl-5 text-slate-600 space-y-1 mb-4\"><li><strong>Right of Access:</strong> Request a copy of the personal records we hold regarding you.</li><li><strong>Right to Rectification:</strong> Request correction of inaccurate or incomplete records.</li><li><strong>Right to Erasure (\"Right to Be Forgotten\"):</strong> Request immediate permanent deletion of your contact records.</li><li><strong>Right to Restrict or Object to Processing:</strong> Limit how we process your communication records.</li></ul><p class=\"text-slate-600 mb-4\">To exercise any of these rights, please email us directly at <strong>meharalihassan019@gmail.com</strong> with your request.</p><h3 class=\"text-lg font-bold text-slate-900 mt-6 mb-2\">7. Policy Updates</h3><p class=\"text-slate-600\">This policy was last updated in 2026. Any future revisions will be published directly on this page with an updated timestamp.</p>",
       "isSystem": true
     },
     {
+      "content": "<h2>Terms of Service Agreement</h2><p>The rules governing the use of the Metazivo network portal.</p>",
+      "seoDescription": "Review intellectual property guidelines, payment gateways terms, and service liabilities.",
+      "seoTitle": "Terms & Conditions Agreement | Metazivo",
       "id": "page-terms",
-      "seoTitle": "Terms & Conditions Agreement | Metazivo Digital Agency",
-      "title": "Terms & Conditions",
-      "slug": "terms",
-      "seoDescription": "Review the Terms of Service for Metazivo Digital Agency. Understand client agreements, intellectual property rights, and free tool usage policies.",
       "seoKeywords": [
-        "terms and conditions",
-        "terms of service",
-        "user agreement",
-        "intellectual property",
-        "client contract",
-        "Metazivo terms"
+        "terms and services",
+        "user license agreement",
+        "client liability terms"
       ],
-      "isSystem": true,
-      "content": "<p class=\"lead text-slate-700 text-sm leading-relaxed mb-6\">Welcome to Metazivo Digital Agency. By accessing or using our website, services, and online SEO tools at https://metazivo.com, you agree to be bound by these Terms and Conditions.</p><h3 class=\"text-lg font-bold text-slate-900 mt-6 mb-2\">1. Agency Services & Client Agreements</h3><p class=\"text-slate-600 mb-4\">Metazivo provides professional digital growth services including Search Engine Optimization (SEO), Answer Engine Optimization (AEO), Generative Engine Optimization (GEO), custom WordPress development, and Meta Advertising management. Specific project deliverables, milestone schedules, and scope parameters are governed by formal service proposals agreed upon between Metazivo and the client.</p><h3 class=\"text-lg font-bold text-slate-900 mt-6 mb-2\">2. Free Online SEO Tools & Acceptable Use</h3><p class=\"text-slate-600 mb-4\">Our complimentary SEO diagnostic tools (Speed Test, Audit Checker, Toxic Links Checker, Schema Generator, etc.) are provided for legitimate webmaster analysis. You agree not to abuse these tools through automated high-frequency scraping, denial-of-service attempts, or reverse-engineering of backend diagnostic engines.</p><h3 class=\"text-lg font-bold text-slate-900 mt-6 mb-2\">3. Intellectual Property Rights</h3><p class=\"text-slate-600 mb-4\">All proprietary code, branding, custom UI components, illustrations, and original software engines on Metazivo are the intellectual property of Metazivo Digital Agency. Upon full settlement of invoices, clients retain complete ownership rights over custom websites, creative deliverables, and digital assets produced specifically for their contracted campaigns.</p><h3 class=\"text-lg font-bold text-slate-900 mt-6 mb-2\">4. Payment Terms & Invoicing</h3><p class=\"text-slate-600 mb-4\">Consulting and development retainers are invoiced as outlined in individual service agreements. Payments are processed securely via approved international payment gateways or direct wire transfers.</p><h3 class=\"text-lg font-bold text-slate-900 mt-6 mb-2\">5. Limitation of Liability</h3><p class=\"text-slate-600 mb-4\">While Metazivo applies industry-leading best practices to maximize search engine rankings and advertising performance, search engine algorithms (Google, Bing) and advertising platforms (Meta) operate under third-party discretion. Metazivo cannot be held liable for third-party algorithmic updates or indirect business losses.</p><h3 class=\"text-lg font-bold text-slate-900 mt-6 mb-2\">6. Contact & Legal Inquiries</h3><p class=\"text-slate-600\">For questions regarding these terms, please contact Mehar Ali Hassan at <strong>meharalihassan019@gmail.com</strong>.</p>"
+      "slug": "terms",
+      "title": "Terms & Conditions",
+      "isSystem": true
     }
   ],
   "settings": {
     "customHeadTags": ""
   },
   "contact": {
+    "facebook": "https://www.facebook.com/share/1DLnu9iaHK/",
+    "linkedin": "https://www.linkedin.com/in/ali-hassan-a5011240a",
+    "email": "mail@metazivo.com",
     "address": "Office 402, Metazivo Heights, Lahore, Pakistan",
     "phone": "+92 328 8518557",
-    "facebook": "https://www.facebook.com/share/1DLnu9iaHK/",
-    "email": "mail@metazivo.com",
-    "whatsapp": "+923288518557",
-    "linkedin": "https://www.linkedin.com/in/ali-hassan-a5011240a",
-    "instagram": "https://instagram.com/metazivo"
+    "instagram": "https://instagram.com/metazivo",
+    "whatsapp": "+923288518557"
   }
 }

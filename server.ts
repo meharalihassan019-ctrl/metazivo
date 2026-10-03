@@ -378,6 +378,21 @@ if (!fs.existsSync(mediaUploadsDir)) {
 }
 app.use("/uploads", express.static(mediaUploadsDir, { maxAge: "30d", etag: true }));
 
+// Resilient media fallback: If an image in /uploads/ is requested but missing on disk,
+// serve an authoritative fallback WebP image instead of letting it fall through to HTML!
+app.use("/uploads", (req, res, next) => {
+  const fileExt = path.extname(req.path).toLowerCase();
+  if ([".webp", ".png", ".jpg", ".jpeg", ".svg"].includes(fileExt)) {
+    const defaultFallback = path.join(mediaUploadsDir, "post-on-page-seo-aeo-geo-featured.webp");
+    if (fs.existsSync(defaultFallback)) {
+      res.setHeader("Content-Type", fileExt === ".jpg" || fileExt === ".jpeg" ? "image/jpeg" : "image/webp");
+      res.setHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+      return res.sendFile(defaultFallback);
+    }
+  }
+  next();
+});
+
 function escapeHtml(str: any): string {
   if (!str) return "";
   return String(str)
@@ -527,28 +542,114 @@ if (process.env.GEMINI_API_KEY) {
 // -----------------------------------------------------------------------------
 
 
-// Chatbot API Endpoint
-app.post("/api/gemini/chat", async (req, res) => {
-  if (!ai) {
-    return res.status(500).json({ error: "Gemini API is not configured on the server." });
-  }
+// Versatile Gemini AI Assistant System Instruction
+const METAZIVO_GEMINI_SYSTEM_INSTRUCTION = `You are an intelligent, versatile, and highly capable AI assistant powered by Google Gemini, embedded on the Metazivo website (https://metazivo.com).
+
+Core Capabilities:
+1. Answer ANY question the user asks with deep intelligence, accuracy, and clarity — including general knowledge, technical programming, code debugging, science, business ideas, creative writing, history, mathematics, and everyday life questions.
+2. You also represent Metazivo Digital Agency and its founder:
+   - Founder & Principal Software Engineer: Mehar Ali Hassan (Senior Full-Stack & Technical SEO Engineer).
+   - WhatsApp & Direct Call: +92 328 8518557 (Direct chat available via the WhatsApp button on the site).
+   - Email: mail@metazivo.com
+   - Office: Chungi Gujjar Pura, Lahore, Punjab 54000, Pakistan.
+   - Core Services: High-Performance Custom Websites (React/TypeScript), WordPress & WooCommerce, SEO/AEO/GEO Search Domination, Paid Meta Ads (Facebook/Instagram), Mobile App Development (iOS/Android), Gemini AI integrations, and 32 Free Online SEO & Audit Tools at metazivo.com/seo-tools.
+   - We offer 100% Free Initial Website & SEO Audits.
+
+Language & Style:
+- Automatically match the user's language:
+  * If the user writes or speaks in Roman Urdu (e.g. "Bhai suno...", "Pakistan ka capital kya hai?", "Mujhe website banwani hai kitna kharcha aayega?", "Python mein loop kaise chalta hai?"), respond warmly, naturally, and helpfully in Roman Urdu!
+  * If the user writes in English, reply in crisp, professional English.
+  * If the user writes in Urdu script, reply in Urdu.
+- Formatting: Provide clean, well-structured answers using bullet points, bold keyphrases, and short paragraphs so it is easy to read on mobile and desktop.`;
+
+// Chatbot API Endpoint (Direct Google Gemini 3.8 Flash Integration)
+const handleChatRequest = async (req: express.Request, res: express.Response) => {
   try {
-    const { messages } = req.body;
-    
-    const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
-      contents: messages,
-      config: {
-        systemInstruction: "You are a helpful AI assistant for Metazivo, a premier digital engineering agency. Provide concise, friendly, and professional answers."
-      }
+    const rawMessages = req.body.messages || req.body.history || [];
+    let userMessage = req.body.message || "";
+    if (!userMessage && Array.isArray(rawMessages) && rawMessages.length > 0) {
+      userMessage = rawMessages[rawMessages.length - 1]?.content || rawMessages[rawMessages.length - 1]?.parts?.[0]?.text || rawMessages[rawMessages.length - 1]?.text || "";
+    }
+
+    if (!userMessage && (!rawMessages || rawMessages.length === 0)) {
+      return res.status(400).json({ error: "Message is required." });
+    }
+
+    const client = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      httpOptions: { headers: { "User-Agent": "aistudio-build" } }
     });
+
+    let contents: any[] = [];
+    if (Array.isArray(rawMessages) && rawMessages.length > 0) {
+      contents = rawMessages
+        .map((m: any) => ({
+          role: m.role === "assistant" || m.role === "model" ? "model" : "user",
+          parts: [{ text: typeof m.content === "string" ? m.content : (m.parts?.[0]?.text || m.text || "") }]
+        }))
+        .filter((c: any) => c.parts?.[0]?.text && String(c.parts[0].text).trim().length > 0);
+    }
+
+    if (contents.length === 0 && userMessage) {
+      contents = [{ role: "user", parts: [{ text: String(userMessage) }] }];
+    }
+
+    // Ensure conversation starts with user turn for Gemini multiturn protocol
+    if (contents.length > 0 && contents[0].role === "model") {
+      contents.shift();
+    }
+    if (contents.length === 0 && userMessage) {
+      contents = [{ role: "user", parts: [{ text: String(userMessage) }] }];
+    }
+
+    let responseText = "";
+    try {
+      const response = await client.models.generateContent({
+        model: "gemini-3.8-flash",
+        contents,
+        config: {
+          systemInstruction: METAZIVO_GEMINI_SYSTEM_INSTRUCTION,
+          temperature: 0.7
+        }
+      });
+      responseText = response.text || "";
+    } catch (primaryErr: any) {
+      console.warn("Primary gemini-3.8-flash busy, using fast fallback model:", primaryErr?.message || primaryErr);
+      const fallbackResponse = await client.models.generateContent({
+        model: "gemini-3.1-flash-lite",
+        contents,
+        config: {
+          systemInstruction: METAZIVO_GEMINI_SYSTEM_INSTRUCTION,
+          temperature: 0.7
+        }
+      });
+      responseText = fallbackResponse.text || "";
+    }
+
+    if (responseText) {
+      return res.json({ text: responseText });
+    }
+
+    return res.json({ text: "Hello! I am ready to answer any question." });
+  } catch (error: any) {
+    console.error("Gemini API Error in /api/chat:", error?.message || error);
     
-    res.json({ text: response.text });
-  } catch (error) {
-    console.error("Error in /api/gemini/chat:", error);
-    res.status(500).json({ error: "Failed to generate response." });
+    // Resilient fallback in case of temporary network glitch
+    const userQ = (req.body.message || "").toLowerCase();
+    if (userQ.includes("service") || userQ.includes("website") || userQ.includes("seo") || userQ.includes("price") || userQ.includes("cost") || userQ.includes("whatsapp")) {
+      return res.json({ 
+        text: "Metazivo provides Custom Web Development, WordPress/WooCommerce, SEO/AEO/GEO rankings, and Mobile Apps. You can get an instant project quote and free consultation directly from Founder & Lead Engineer Mehar Ali Hassan on WhatsApp: +92 328 8518557!" 
+      });
+    }
+
+    return res.json({ 
+      text: "I am your AI Assistant powered by Google Gemini. Please re-send your question or ask anything you would like to know!" 
+    });
   }
-});
+};
+
+app.post("/api/gemini/chat", handleChatRequest);
+app.post("/api/chat", handleChatRequest);
 
 // Post view tracking incrementer
 app.post("/api/analytics/hit", (req, res) => {

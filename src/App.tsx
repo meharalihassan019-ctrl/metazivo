@@ -58,6 +58,7 @@ import SeoScoreAnalyzer from "./components/SeoScoreAnalyzer";
 import Floating3DRing from "./components/Floating3DRing";
 import ParallaxBentoCard from "./components/ParallaxBentoCard";
 import HeroVisual from "./components/HeroVisual";
+import FloatingAiChat from "./components/FloatingAiChat";
 import { servicesData, pricingPlans, portfolioItems, workProcessTimeline, faqList, testimonials, trustedCompanies } from "./data";
 import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary, ContactInfo, CustomPage, SiteSettings, AgencyService } from "./types";
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
@@ -2649,7 +2650,7 @@ export default function App() {
 
               return (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {publishedPosts.map((post) => (
+                  {publishedPosts.map((post, postIdx) => (
                     <div key={post.id || post.slug} className="group bg-white border border-slate-200/80 rounded-[32px] overflow-hidden hover:border-[#FF5722]/30 transition-all flex flex-col justify-between shadow-sm hover:shadow-md" id={`blog-card-${post.slug}`}>
                       <div>
                         <div className="aspect-video w-full overflow-hidden relative border-b border-slate-100 bg-slate-100">
@@ -2658,11 +2659,17 @@ export default function App() {
                               src={post.featuredImage}
                               alt={post.title}
                               referrerPolicy="no-referrer"
-                              loading="lazy"
+                              loading={postIdx < 4 ? "eager" : "lazy"}
                               decoding="async"
+                              // @ts-ignore - fetchPriority is standard in modern HTML
+                              fetchpriority={postIdx < 4 ? "high" : "auto"}
                               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                               onError={(e) => {
-                                (e.target as HTMLElement).style.display = "none";
+                                const img = e.currentTarget;
+                                if (!img.dataset.hasFailed) {
+                                  img.dataset.hasFailed = "true";
+                                  img.src = "/uploads/post-on-page-seo-aeo-geo-featured.webp";
+                                }
                               }}
                             />
                           ) : (
@@ -2752,8 +2759,22 @@ export default function App() {
             </header>
 
             {activeBlog.featuredImage && (
-              <div className="w-full aspect-video rounded-2xl overflow-hidden border border-slate-200">
-                <img src={activeBlog.featuredImage} alt={activeBlog.title} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+              <div className="w-full aspect-video rounded-2xl overflow-hidden border border-slate-200 bg-slate-100">
+                <img
+                  src={activeBlog.featuredImage}
+                  alt={activeBlog.title}
+                  referrerPolicy="no-referrer"
+                  loading="eager"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const img = e.currentTarget;
+                    if (!img.dataset.hasFailed) {
+                      img.dataset.hasFailed = "true";
+                      img.src = "/uploads/post-on-page-seo-aeo-geo-featured.webp";
+                    }
+                  }}
+                />
               </div>
             )}
 
@@ -4670,6 +4691,9 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Floating AI Assistant Chat Widget (Positioned Directly Above WhatsApp Button) */}
+      <FloatingAiChat />
 
       {/* Premium Floating WhatsApp Action Button */}
       <a
