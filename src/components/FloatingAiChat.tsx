@@ -167,7 +167,7 @@ export default function FloatingAiChat() {
         {
           id: `bot-${Date.now()}`,
           role: "assistant",
-          text: "Thank you for reaching out! Metazivo provides top-tier SEO, Custom Web Development, and Mobile Apps. For instant project quotes and timeline discussions, you can chat directly with Mehar Ali Hassan on WhatsApp (+92 328 8518557).",
+          text: "Maaf kijiye ga, network connection mein thori der ke liye rukawat aayi hai. Baraye meherbani apna sawal dobara bhein, main abhi tafseeli jawab deta hoon!",
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
         }
       ]);
@@ -257,7 +257,7 @@ export default function FloatingAiChat() {
                 <div className="flex items-center gap-1.5">
                   <h3 className="font-bold text-sm text-white leading-tight">Metazivo AI Assistant</h3>
                   <span className="text-[9px] font-mono font-bold uppercase tracking-wider bg-orange-500/20 text-[#FF5722] border border-orange-500/30 px-1.5 py-0.5 rounded">
-                    Gemini 3.8
+                    Google Gemini
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-300 font-sans flex items-center gap-1">

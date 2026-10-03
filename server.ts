@@ -583,70 +583,101 @@ const handleChatRequest = async (req: express.Request, res: express.Response) =>
       httpOptions: { headers: { "User-Agent": "aistudio-build" } }
     });
 
+    // Sanitize conversation into strictly alternating Gemini turns
     let contents: any[] = [];
     if (Array.isArray(rawMessages) && rawMessages.length > 0) {
-      contents = rawMessages
-        .map((m: any) => ({
-          role: m.role === "assistant" || m.role === "model" ? "model" : "user",
-          parts: [{ text: typeof m.content === "string" ? m.content : (m.parts?.[0]?.text || m.text || "") }]
-        }))
-        .filter((c: any) => c.parts?.[0]?.text && String(c.parts[0].text).trim().length > 0);
+      for (const m of rawMessages) {
+        const text = typeof m.content === "string" 
+          ? m.content 
+          : (m.parts?.[0]?.text || m.text || "");
+        if (!text || !String(text).trim()) continue;
+
+        const role = m.role === "assistant" || m.role === "model" ? "model" : "user";
+        if (contents.length > 0 && contents[contents.length - 1].role === role) {
+          contents[contents.length - 1].parts[0].text += "\n\n" + String(text).trim();
+        } else {
+          contents.push({ role, parts: [{ text: String(text).trim() }] });
+        }
+      }
     }
 
-    if (contents.length === 0 && userMessage) {
-      contents = [{ role: "user", parts: [{ text: String(userMessage) }] }];
-    }
-
-    // Ensure conversation starts with user turn for Gemini multiturn protocol
-    if (contents.length > 0 && contents[0].role === "model") {
+    // Multiturn protocol must begin with a user turn
+    while (contents.length > 0 && contents[0].role === "model") {
       contents.shift();
     }
-    if (contents.length === 0 && userMessage) {
-      contents = [{ role: "user", parts: [{ text: String(userMessage) }] }];
+
+    // Ensure the conversation ends with the current user question
+    const cleanUserText = String(userMessage).trim();
+    if (cleanUserText) {
+      if (contents.length === 0) {
+        contents = [{ role: "user", parts: [{ text: cleanUserText }] }];
+      } else {
+        const lastTurn = contents[contents.length - 1];
+        if (lastTurn.role === "user") {
+          if (!lastTurn.parts[0].text.includes(cleanUserText)) {
+            lastTurn.parts[0].text += "\n" + cleanUserText;
+          }
+        } else {
+          contents.push({ role: "user", parts: [{ text: cleanUserText }] });
+        }
+      }
     }
 
     let responseText = "";
-    try {
-      const response = await client.models.generateContent({
-        model: "gemini-3.8-flash",
-        contents,
-        config: {
-          systemInstruction: METAZIVO_GEMINI_SYSTEM_INSTRUCTION,
-          temperature: 0.7
+    const modelsToTry = ["gemini-flash-latest", "gemini-3.8-flash", "gemini-3.1-flash-lite"];
+
+    for (const modelName of modelsToTry) {
+      try {
+        const response = await client.models.generateContent({
+          model: modelName,
+          contents,
+          config: {
+            systemInstruction: METAZIVO_GEMINI_SYSTEM_INSTRUCTION,
+            temperature: 0.7
+          }
+        });
+        if (response.text && response.text.trim()) {
+          responseText = response.text.trim();
+          break;
         }
-      });
-      responseText = response.text || "";
-    } catch (primaryErr: any) {
-      console.warn("Primary gemini-3.8-flash busy, using fast fallback model:", primaryErr?.message || primaryErr);
-      const fallbackResponse = await client.models.generateContent({
-        model: "gemini-3.1-flash-lite",
-        contents,
-        config: {
-          systemInstruction: METAZIVO_GEMINI_SYSTEM_INSTRUCTION,
-          temperature: 0.7
+      } catch (err: any) {
+        console.warn(`Model ${modelName} attempt failed (${err?.message || err}), trying next option...`);
+      }
+    }
+
+    // Single-turn fallback if multiturn history had any structure conflicts
+    if (!responseText && cleanUserText) {
+      for (const modelName of ["gemini-flash-latest", "gemini-3.8-flash"]) {
+        try {
+          const directResponse = await client.models.generateContent({
+            model: modelName,
+            contents: cleanUserText,
+            config: {
+              systemInstruction: METAZIVO_GEMINI_SYSTEM_INSTRUCTION,
+              temperature: 0.7
+            }
+          });
+          if (directResponse.text && directResponse.text.trim()) {
+            responseText = directResponse.text.trim();
+            break;
+          }
+        } catch (singleTurnErr: any) {
+          console.warn(`Single-turn fallback with ${modelName} failed:`, singleTurnErr?.message || singleTurnErr);
         }
-      });
-      responseText = fallbackResponse.text || "";
+      }
     }
 
     if (responseText) {
       return res.json({ text: responseText });
     }
 
-    return res.json({ text: "Hello! I am ready to answer any question." });
+    return res.status(500).json({ 
+      error: "Unable to reach Gemini right now. Please try again in a few moments." 
+    });
   } catch (error: any) {
     console.error("Gemini API Error in /api/chat:", error?.message || error);
-    
-    // Resilient fallback in case of temporary network glitch
-    const userQ = (req.body.message || "").toLowerCase();
-    if (userQ.includes("service") || userQ.includes("website") || userQ.includes("seo") || userQ.includes("price") || userQ.includes("cost") || userQ.includes("whatsapp")) {
-      return res.json({ 
-        text: "Metazivo provides Custom Web Development, WordPress/WooCommerce, SEO/AEO/GEO rankings, and Mobile Apps. You can get an instant project quote and free consultation directly from Founder & Lead Engineer Mehar Ali Hassan on WhatsApp: +92 328 8518557!" 
-      });
-    }
-
-    return res.json({ 
-      text: "I am your AI Assistant powered by Google Gemini. Please re-send your question or ask anything you would like to know!" 
+    return res.status(500).json({ 
+      error: "Unable to reach Gemini right now. Please re-send your message." 
     });
   }
 };
