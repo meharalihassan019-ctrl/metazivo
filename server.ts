@@ -104,7 +104,10 @@ const portIdx = process.argv.indexOf("--port");
 if (portIdx !== -1 && process.argv[portIdx + 1]) {
   portArg = Number(process.argv[portIdx + 1]) || 3000;
 }
-const PORT = Number(process.env.PORT) || portArg;
+// Prioritize CLI port flag and default to 3000 for dev server
+const PORT = portIdx !== -1 
+  ? portArg 
+  : (process.env.NODE_ENV === "production" ? (Number(process.env.PORT) || 3000) : 3000);
 
 let hostArg = "0.0.0.0";
 const hostIdx = process.argv.indexOf("--host");
@@ -4927,9 +4930,15 @@ async function initializeServer() {
   if (!isProd) {
     const isHmrDisabled = process.env.DISABLE_HMR === "true";
     const vite = await createViteServer({
+      configFile: path.resolve(process.cwd(), "vite.config.ts"),
       server: {
         middlewareMode: true,
         hmr: isHmrDisabled ? false : undefined,
+      },
+      optimizeDeps: {
+        esbuildOptions: {
+          target: "es2022"
+        }
       },
       appType: "custom"
     });

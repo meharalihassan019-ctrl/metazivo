@@ -2661,8 +2661,7 @@ export default function App() {
                               referrerPolicy="no-referrer"
                               loading={postIdx < 4 ? "eager" : "lazy"}
                               decoding="async"
-                              // @ts-ignore - fetchPriority is standard in modern HTML
-                              fetchpriority={postIdx < 4 ? "high" : "auto"}
+                              fetchPriority={postIdx < 4 ? "high" : "auto"}
                               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                               onError={(e) => {
                                 const img = e.currentTarget;

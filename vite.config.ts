@@ -16,6 +16,17 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    esbuild: {
+      target: 'es2022'
+    },
+    optimizeDeps: {
+      esbuildOptions: {
+        target: 'es2022'
+      }
+    },
+    build: {
+      target: 'es2022'
+    },
     server: {
       port: 3000,
       host: '0.0.0.0',
