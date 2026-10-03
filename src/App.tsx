@@ -854,8 +854,8 @@ export default function App() {
         ].filter(Boolean).join(", ");
         canonicalPath = `/tools/${toolDef.slug}`;
       } else {
-        targetTitle = "31 Free SEO Tools & AI Optimization Suite (2026) | Metazivo";
-        targetDescription = "Access 31 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.";
+        targetTitle = "32 Free SEO Tools & AI Optimization Suite (2026) | Metazivo";
+        targetDescription = "Access 32 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.";
         targetKeywords = "free seo tools, website audit tool, schema generator, meta tag generator, aeo geo checker, keyword clustering, technical seo tools, metazivo";
         canonicalPath = "/seo-tools";
       }
@@ -3057,35 +3057,186 @@ export default function App() {
         )}
         {/* VIEW 10: PRIVACY COMPLIANCE */}
         {currentTab === "privacy" && (
-          <div id="view-privacy" className="max-w-3xl mx-auto px-6 py-10 bg-slate-50 border border-slate-200 rounded-[32px] space-y-6 text-xs text-slate-600 leading-relaxed animate-fade-in font-sans shadow-sm my-16">
-            <h1 className="text-2xl font-bold text-slate-950 mb-2">{activeCustomPage?.title || "Privacy Policy & GDPR Compliance"}</h1>
-            {activeCustomPage?.content ? (
-              <div className="prose prose-slate max-w-none text-slate-600 space-y-4" dangerouslySetInnerHTML={{ __html: activeCustomPage.content }} />
+          <div id="view-privacy" className="max-w-4xl mx-auto px-6 py-12 bg-white border border-slate-200/80 rounded-[32px] space-y-8 text-sm text-slate-700 leading-relaxed animate-fade-in font-sans shadow-sm my-16">
+            <div className="border-b border-slate-100 pb-6">
+              <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-orange-600 bg-orange-50 px-3 py-1 rounded-full border border-orange-200/60 inline-block mb-3">
+                Legal & Data Protection
+              </span>
+              <h1 className="text-3xl font-extrabold text-slate-950 tracking-tight">
+                {activeCustomPage?.title || "Privacy Policy & GDPR Compliance"}
+              </h1>
+              <p className="text-xs text-slate-400 mt-2">
+                Last updated: September 2026 • Effective Date: January 1, 2026 • Official Metazivo Digital Agency Policy
+              </p>
+            </div>
+
+            {activeCustomPage?.content && activeCustomPage.content.length > 200 ? (
+              <div className="prose prose-slate max-w-none text-slate-700 space-y-4" dangerouslySetInnerHTML={{ __html: activeCustomPage.content }} />
             ) : (
-              <>
-                <p>At Metazivo Digital Agency, accessible from https://metazivo.com, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Metazivo and how we use it.</p>
-                <h2 className="text-base font-bold text-slate-900 mt-4 font-sans">1. Data Collection & Cookie Logs</h2>
-                <p>Like any other website, Metazivo uses 'cookies' to store information including visitors' preferences, and the pages on the website that the visitor accessed or visited. The information is used to optimize the users' experience by customizing our web page content based on visitors' browser type and/or other information.</p>
-                <h2 className="text-base font-bold text-slate-200 mt-4 font-sans">2. DoubleClick DART Cookies</h2>
-                <p>Google is one of a third-party vendor on our site. It also uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to our site and other sites on the internet.</p>
-              </>
+              <div className="space-y-6 text-slate-600 text-xs sm:text-sm">
+                <p>
+                  At <strong>Metazivo Digital Agency</strong> (accessible via <code>https://metazivo.com</code>), protecting the privacy, confidentiality, and security of our visitors and clients is a paramount priority. This Privacy Policy document outlines the categories of data collected and recorded by Metazivo and details precisely how we process, protect, and handle your information in accordance with global data protection frameworks, including the <strong>General Data Protection Regulation (GDPR)</strong> and the <strong>California Consumer Privacy Act (CCPA)</strong>.
+                </p>
+
+                <div className="bg-slate-50 border border-slate-200/70 rounded-2xl p-4 sm:p-5 space-y-2">
+                  <h2 className="text-base font-bold text-slate-900">1. Consent & Agreement</h2>
+                  <p>
+                    By accessing or using Metazivo, utilizing our free webmaster diagnostics and SEO tools suite, or submitting inquiries through our contact forms, you hereby consent to our Privacy Policy and agree to its terms. If you do not agree with any provision of this policy, please discontinue the use of our services immediately.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <h2 className="text-base font-bold text-slate-900">2. Information We Collect</h2>
+                  <p>
+                    We collect information to provide high-quality digital agency services, technical SEO evaluations, and responsive customer support:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
+                    <li><strong>Voluntary Contact Information:</strong> When you submit a project brief or schedule a consultation, we may request your name, business email address, company name, phone number, and details regarding your website needs.</li>
+                    <li><strong>Diagnostic Tool Input Data:</strong> When running our free SEO, speed test, or backlink tools, you submit domain URLs or diagnostic code snippets. These inputs are used in real-time to compute audits and are not sold to third parties.</li>
+                    <li><strong>Automated Device & Usage Data:</strong> We automatically record technical browser identifiers, internet protocol (IP) addresses, operating system types, referring/exit pages, date/time stamps, and on-site click paths.</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-3">
+                  <h2 className="text-base font-bold text-slate-900">3. How We Utilize Your Data</h2>
+                  <p>
+                    Metazivo uses the collected data for legitimate operational and business purposes, including:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
+                    <li>Delivering, operating, and maintaining our website and digital tools platform.</li>
+                    <li>Generating real-time technical audits, speed reports, and SEO recommendations.</li>
+                    <li>Communicating with you regarding service inquiries, quotes, and project updates.</li>
+                    <li>Analyzing web traffic trends, user navigation patterns, and Core Web Vitals to improve performance.</li>
+                    <li>Preventing malicious traffic, automated scrapers, and cybersecurity vulnerabilities.</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-3">
+                  <h2 className="text-base font-bold text-slate-900">4. Cookies & Web Beacons</h2>
+                  <p>
+                    Metazivo uses industry-standard cookies to remember visitor preferences, track user session state, and compile aggregated site interaction metrics. You can choose to disable or selectively turn off cookies in your browser settings. However, disabling essential cookies may impact certain interactive diagnostic features.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <h2 className="text-base font-bold text-slate-900">5. Third-Party Analytics & Advertising Technologies</h2>
+                  <p>
+                    We collaborate with trusted third-party providers to enhance our service delivery and measurement:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
+                    <li><strong>Google Analytics 4 & Search Console:</strong> Used to understand anonymous visitor traffic volumes, search queries, and engagement benchmarks.</li>
+                    <li><strong>Google DoubleClick / AdSense:</strong> Google, as a third-party vendor, may use cookies (such as DART cookies) to serve ads based on prior visits to our site and other destinations across the web. You may opt out of personalized advertising by visiting Google's Ads Settings.</li>
+                    <li><strong>Meta Pixel & Conversions API:</strong> Used strictly to measure aggregate effectiveness of marketing campaigns and verify conversion events without exposing personal identifiable records.</li>
+                  </ul>
+                </div>
+
+                <div className="bg-emerald-50/70 border border-emerald-200/60 rounded-2xl p-4 sm:p-5 space-y-2">
+                  <h2 className="text-base font-bold text-emerald-950">6. GDPR Data Protection Rights (European Users)</h2>
+                  <p className="text-emerald-900/90">
+                    Under the EU General Data Protection Regulation, every user is entitled to the following rights:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1 text-emerald-900/90 text-xs sm:text-sm">
+                    <li><strong>The Right to Access:</strong> You can request copies of your personal data held by Metazivo.</li>
+                    <li><strong>The Right to Rectification:</strong> You can request correction of inaccurate or incomplete information.</li>
+                    <li><strong>The Right to Erasure ("Right to be Forgotten"):</strong> You can request that we delete your personal data under certain conditions.</li>
+                    <li><strong>The Right to Restrict Processing & Data Portability:</strong> You can request limits on how your data is processed or request transfer to another service provider.</li>
+                  </ul>
+                </div>
+
+                <div className="bg-blue-50/70 border border-blue-200/60 rounded-2xl p-4 sm:p-5 space-y-2">
+                  <h2 className="text-base font-bold text-blue-950">7. CCPA Privacy Rights (California Residents)</h2>
+                  <p className="text-blue-900/90">
+                    Under the California Consumer Privacy Act (CCPA), California consumers have the right to request disclosure of categories of personal information collected, request deletion of collected personal records, and exercise the right to opt-out of the sale of personal information. <strong>Metazivo does NOT sell personal information to third parties.</strong>
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <h2 className="text-base font-bold text-slate-900">8. Children's Privacy (COPPA)</h2>
+                  <p>
+                    Protecting children's privacy online is paramount. Metazivo does not knowingly collect any Personal Identifiable Information from children under the age of 13. If you believe your child has submitted personal details on our site, please contact us immediately, and we will promptly remove the records from our servers.
+                  </p>
+                </div>
+
+                <div className="border-t border-slate-100 pt-5 space-y-2">
+                  <h2 className="text-base font-bold text-slate-900">9. Contact Our Data Protection Officer</h2>
+                  <p>
+                    If you have questions, feedback, or wish to exercise your data privacy rights, please reach out directly:
+                  </p>
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs font-mono space-y-1 text-slate-700">
+                    <p><strong>Agency:</strong> Metazivo Digital Agency</p>
+                    <p><strong>Primary Lead:</strong> Mehar Ali Hassan</p>
+                    <p><strong>Email:</strong> meharalihassan019@gmail.com</p>
+                    <p><strong>Official Website:</strong> https://metazivo.com</p>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         )}
 
         {/* VIEW 11: TERMS COMPLIANCE */}
         {currentTab === "terms" && (
-          <div id="view-terms" className="max-w-3xl mx-auto px-6 py-10 bg-slate-50 border border-slate-200 rounded-[32px] space-y-6 text-xs text-slate-600 leading-relaxed animate-fade-in font-sans shadow-sm my-16">
-            <h1 className="text-2xl font-bold text-slate-950 mb-2">{activeCustomPage?.title || "Terms & Conditions"}</h1>
-            {activeCustomPage?.content ? (
-              <div className="prose prose-slate max-w-none text-slate-600 space-y-4" dangerouslySetInnerHTML={{ __html: activeCustomPage.content }} />
+          <div id="view-terms" className="max-w-4xl mx-auto px-6 py-12 bg-white border border-slate-200/80 rounded-[32px] space-y-8 text-sm text-slate-700 leading-relaxed animate-fade-in font-sans shadow-sm my-16">
+            <div className="border-b border-slate-100 pb-6">
+              <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-orange-600 bg-orange-50 px-3 py-1 rounded-full border border-orange-200/60 inline-block mb-3">
+                Terms & Conditions
+              </span>
+              <h1 className="text-3xl font-extrabold text-slate-950 tracking-tight">
+                {activeCustomPage?.title || "Terms of Service & User Agreement"}
+              </h1>
+              <p className="text-xs text-slate-400 mt-2">
+                Last updated: September 2026 • Official Service Terms for Metazivo Digital Agency
+              </p>
+            </div>
+
+            {activeCustomPage?.content && activeCustomPage.content.length > 200 ? (
+              <div className="prose prose-slate max-w-none text-slate-700 space-y-4" dangerouslySetInnerHTML={{ __html: activeCustomPage.content }} />
             ) : (
-              <>
-                <p>Welcome to Metazivo! These terms and conditions outline the rules and regulations for the use of Metazivo's Website, located at https://metazivo.com.</p>
-                <p>By accessing this website we assume you accept these terms and conditions. Do not continue to use Metazivo if you do not agree to take all of the terms and conditions stated on this page.</p>
-                <h2 className="text-base font-bold text-slate-900 mt-4 font-sans">1. Intellectual Property Rights</h2>
-                <p>Unless otherwise stated, Metazivo and/or its licensors own the intellectual property rights for all material on Metazivo. All intellectual property rights are reserved. You may access this from Metazivo for your own personal use subjected to restrictions set in these terms and conditions.</p>
-              </>
+              <div className="space-y-6 text-slate-600 text-xs sm:text-sm">
+                <p>
+                  Welcome to <strong>Metazivo Digital Agency</strong>. These Terms of Service outline the rules, obligations, and regulations governing the use of Metazivo's website, consulting services, and digital SEO tools platform accessible via <code>https://metazivo.com</code>.
+                </p>
+
+                <div className="space-y-3">
+                  <h2 className="text-base font-bold text-slate-900">1. Acceptance of Terms</h2>
+                  <p>
+                    By accessing this website, utilizing our free diagnostics, or hiring Metazivo for custom development or SEO retainers, you acknowledge that you have read, understood, and agreed to be bound by these terms. If you do not accept these terms in their entirety, you must not use our website or services.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <h2 className="text-base font-bold text-slate-900">2. Intellectual Property Rights</h2>
+                  <p>
+                    Unless otherwise explicitly indicated, Metazivo and its licensors own all intellectual property rights for the platform's proprietary code, visual designs, copywriting, audit algorithms, brand marks, and technical frameworks. All rights are strictly reserved. You may not republish, sell, rent, or duplicate material from Metazivo without prior written consent.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <h2 className="text-base font-bold text-slate-900">3. Permitted & Prohibited Use</h2>
+                  <p>
+                    You agree to use our website and tools strictly for lawful purposes. You must not:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
+                    <li>Launch denial-of-service (DoS) attacks or automated scraping loops that degrade server response times.</li>
+                    <li>Reverse-engineer or exploit security vulnerabilities in the platform's API endpoints.</li>
+                    <li>Submit fraudulent or deceptive URL entries through our diagnostic audit forms.</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-3">
+                  <h2 className="text-base font-bold text-slate-900">4. Limitation of Liability & Warranties</h2>
+                  <p>
+                    All diagnostic tools, speed audits, and free utilities are provided on an "as-is" and "as-available" basis without warranties of any kind. While Metazivo strives for 100% diagnostic accuracy based on Google's live criteria, search rankings depend on multiple algorithmic variables beyond any agency's unilateral control.
+                  </p>
+                </div>
+
+                <div className="border-t border-slate-100 pt-5 space-y-2">
+                  <h2 className="text-base font-bold text-slate-900">5. Governing Law & Inquiries</h2>
+                  <p>
+                    These terms are governed by and construed in accordance with applicable laws. If you have questions concerning our service agreements, contact us at <strong>meharalihassan019@gmail.com</strong>.
+                  </p>
+                </div>
+              </div>
             )}
           </div>
         )}

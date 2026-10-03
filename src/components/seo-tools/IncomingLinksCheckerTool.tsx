@@ -18,7 +18,10 @@ import {
   Globe,
   RefreshCw,
   SlidersHorizontal,
-  Info
+  Info,
+  ShieldAlert,
+  ListPlus,
+  Compass
 } from "lucide-react";
 import { SeoToolDef } from "./seoToolsData";
 import ToolShell from "./ToolShell";
@@ -30,10 +33,11 @@ interface BacklinkRecord {
   anchorText: string;
   sourceDomainRating: number;
   linkType: "DoFollow" | "NoFollow" | "Sponsored" | "UGC";
-  status: 200 | 301 | 404;
+  status: number;
   firstSeen: string;
   toxicityRisk: "Safe" | "Low" | "High";
   isSpam: boolean;
+  hasLiveAnchor?: boolean;
 }
 
 interface IncomingLinkSummary {
@@ -43,6 +47,7 @@ interface IncomingLinkSummary {
   dofollowRatio: number;
   averageDomainRating: number;
   toxicityIndex: number; // 0 to 100
+  isCleanNewProfile?: boolean;
   anchorDistribution: {
     branded: number;
     exactMatch: number;
@@ -54,9 +59,9 @@ interface IncomingLinkSummary {
 }
 
 const BENCHMARK_SITES = [
-  { label: "Metazivo Official (Production Clean)", url: "https://metazivo.com" },
-  { label: "Tech SaaS Blog Benchmark", url: "https://github.com" },
-  { label: "E-Commerce Storefront Benchmark", url: "https://shopify.com" }
+  { label: "My Website (metazivo.com)", url: "https://metazivo.com" },
+  { label: "Wikipedia (High Authority)", url: "https://wikipedia.org" },
+  { label: "GitHub (Global Tech)", url: "https://github.com" }
 ];
 
 interface Props {
@@ -66,7 +71,9 @@ interface Props {
 }
 
 export default function IncomingLinksCheckerTool({ tool, onNavigateTool, onNavigateHome }: Props) {
+  const [activeTab, setActiveTab] = useState<"domain_search" | "verify_links">("domain_search");
   const [targetUrl, setTargetUrl] = useState("https://metazivo.com");
+  const [customLinksText, setCustomLinksText] = useState("");
   const [isScanning, setIsScanning] = useState(false);
   const [data, setData] = useState<IncomingLinkSummary | null>(null);
   const [filterType, setFilterType] = useState<"All" | "DoFollow" | "NoFollow" | "Toxic" | "High Authority">("All");
@@ -74,144 +81,45 @@ export default function IncomingLinksCheckerTool({ tool, onNavigateTool, onNavig
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const runBacklinkScan = async () => {
-    if (!targetUrl.trim()) return;
+    if (!targetUrl.trim() && !customLinksText.trim()) {
+      setErrorMsg("Please enter a target domain or paste backlink URLs to inspect.");
+      return;
+    }
     setIsScanning(true);
     setErrorMsg(null);
 
     let cleanUrl = targetUrl.trim();
-    if (!/^https?:\/\//i.test(cleanUrl)) {
+    if (cleanUrl && !/^https?:\/\//i.test(cleanUrl)) {
       cleanUrl = "https://" + cleanUrl;
       setTargetUrl(cleanUrl);
     }
 
+    const customLinksList = customLinksText
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => /^https?:\/\//i.test(l));
+
     try {
-      // Call real backend endpoint
       const res = await fetch("/api/seo-tools/incoming-links", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: cleanUrl })
+        body: JSON.stringify({
+          url: cleanUrl,
+          customLinks: customLinksList
+        })
       });
 
       if (res.ok) {
         const json = await res.json();
         setData(json);
       } else {
-        // Fallback to algorithmic simulation if backend network is restricted
-        generateAlgorithmicProfile(cleanUrl);
+        const errJson = await res.json().catch(() => ({}));
+        setErrorMsg(errJson.error || "Failed to inspect backlinks. Please try again.");
       }
     } catch (e: any) {
-      // Offline fallback
-      generateAlgorithmicProfile(cleanUrl);
+      setErrorMsg("Network error communicating with live backlink engine: " + (e.message || "Unknown error"));
     } finally {
       setIsScanning(false);
-    }
-  };
-
-  const generateAlgorithmicProfile = (url: string) => {
-    try {
-      const parsed = new URL(url);
-      const host = parsed.hostname;
-      const isMetazivo = host.includes("metazivo");
-
-      const totalBacklinks = isMetazivo ? 1420 : 860;
-      const referringDomains = isMetazivo ? 312 : 184;
-      const dofollowRatio = 74;
-      const averageDomainRating = isMetazivo ? 52 : 44;
-      const toxicityIndex = 8; // Very clean
-
-      const sampleLinks: BacklinkRecord[] = [
-        {
-          id: "link-1",
-          sourceUrl: "https://techcrunch.com/features/modern-web-development-trends",
-          targetUrl: `${url}/services/technical-seo`,
-          anchorText: "Metazivo Digital Agency",
-          sourceDomainRating: 92,
-          linkType: "DoFollow",
-          status: 200,
-          firstSeen: "2026-04-12",
-          toxicityRisk: "Safe",
-          isSpam: false
-        },
-        {
-          id: "link-2",
-          sourceUrl: "https://searchengineland.com/seo-audits-and-core-web-vitals",
-          targetUrl: `${url}/tools/website-speed-test`,
-          anchorText: "speed audit diagnostic tool",
-          sourceDomainRating: 88,
-          linkType: "DoFollow",
-          status: 200,
-          firstSeen: "2026-05-18",
-          toxicityRisk: "Safe",
-          isSpam: false
-        },
-        {
-          id: "link-3",
-          sourceUrl: "https://medium.com/@devdigest/top-web-agencies-2026",
-          targetUrl: `${url}/`,
-          anchorText: "https://metazivo.com",
-          sourceDomainRating: 78,
-          linkType: "NoFollow",
-          status: 200,
-          firstSeen: "2026-06-01",
-          toxicityRisk: "Safe",
-          isSpam: false
-        },
-        {
-          id: "link-4",
-          sourceUrl: "https://free-guestposts-directory-xyz.ru/list-4929",
-          targetUrl: `${url}/blog/seo-checklist`,
-          anchorText: "cheap seo backlink ranking fast",
-          sourceDomainRating: 12,
-          linkType: "DoFollow",
-          status: 200,
-          firstSeen: "2026-08-04",
-          toxicityRisk: "High",
-          isSpam: true
-        },
-        {
-          id: "link-5",
-          sourceUrl: "https://clutch.co/profile/metazivo",
-          targetUrl: `${url}/portfolio`,
-          anchorText: "view case studies",
-          sourceDomainRating: 86,
-          linkType: "DoFollow",
-          status: 200,
-          firstSeen: "2026-02-14",
-          toxicityRisk: "Safe",
-          isSpam: false
-        },
-        {
-          id: "link-6",
-          sourceUrl: "https://github.com/awesome-seo-tools/collection",
-          targetUrl: `${url}/seo-tools`,
-          anchorText: "free online seo tools platform",
-          sourceDomainRating: 94,
-          linkType: "DoFollow",
-          status: 200,
-          firstSeen: "2026-07-22",
-          toxicityRisk: "Safe",
-          isSpam: false
-        }
-      ];
-
-      setData({
-        targetDomain: host,
-        totalBacklinks,
-        referringDomains,
-        dofollowRatio,
-        averageDomainRating,
-        toxicityIndex,
-        anchorDistribution: {
-          branded: 46,
-          exactMatch: 14,
-          partialMatch: 22,
-          generic: 10,
-          nakedUrl: 8
-        },
-        links: sampleLinks
-      });
-    } catch (e) {
-      setErrorMsg("Please enter a valid URL format (e.g. https://metazivo.com)");
     }
   };
 
@@ -241,6 +149,10 @@ export default function IncomingLinksCheckerTool({ tool, onNavigateTool, onNavig
       )
     );
 
+    if (spamDomains.length === 0) {
+      return "# Google Search Console Disavow File\n# No toxic incoming links detected for this domain. All active links appear safe.\n";
+    }
+
     return `# Google Search Console Disavow File\n# Generated by Metazivo Incoming Links Checker\n# Date: ${new Date().toISOString().split("T")[0]}\n# Target: ${data.targetDomain}\n\n${spamDomains.join("\n")}\n`;
   };
 
@@ -258,60 +170,132 @@ export default function IncomingLinksCheckerTool({ tool, onNavigateTool, onNavig
       onNavigateHome={onNavigateHome}
       onReset={() => {
         setTargetUrl("https://metazivo.com");
+        setCustomLinksText("");
         setData(null);
+        setErrorMsg(null);
       }}
     >
       <div className="space-y-8">
-        {/* URL Input Bar */}
-        <div className="space-y-3">
-          <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
-            Enter Target Website Domain or Specific Page URL:
-          </label>
-          <div className="flex flex-col sm:flex-row items-stretch gap-2">
-            <div className="relative flex-1">
-              <Globe className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="url"
-                value={targetUrl}
-                onChange={(e) => setTargetUrl(e.target.value)}
-                placeholder="https://metazivo.com"
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-sm font-mono text-slate-900 focus:bg-white focus:outline-none focus:border-[#FF5722] transition-colors"
-              />
-            </div>
-            <button
-              onClick={runBacklinkScan}
-              disabled={isScanning}
-              className="px-6 py-3 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-2xl text-sm font-bold shadow-md shadow-orange-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              {isScanning ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Auditing Backlink Graph...</span>
-                </>
-              ) : (
-                <>
-                  <Search className="w-4 h-4" />
-                  <span>Analyze Incoming Links</span>
-                </>
-              )}
-            </button>
-          </div>
+        {/* Method Selector Tabs */}
+        <div className="flex border-b border-slate-200 gap-2">
+          <button
+            onClick={() => setActiveTab("domain_search")}
+            className={`pb-3 px-4 text-xs font-mono font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
+              activeTab === "domain_search"
+                ? "border-[#FF5722] text-[#FF5722]"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            <Compass className="w-4 h-4" />
+            <span>1. Live Search Index Scan (Whole Domain)</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("verify_links")}
+            className={`pb-3 px-4 text-xs font-mono font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
+              activeTab === "verify_links"
+                ? "border-[#FF5722] text-[#FF5722]"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            <ListPlus className="w-4 h-4" />
+            <span>2. Verify Custom Backlink URLs / GSC Export</span>
+          </button>
+        </div>
 
-          {/* Quick presets */}
-          <div className="flex items-center gap-2 flex-wrap pt-1">
-            <span className="text-[11px] font-mono text-slate-400">Quick Test Domains:</span>
-            {BENCHMARK_SITES.map((b, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  setTargetUrl(b.url);
-                }}
-                className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-orange-50 hover:text-[#FF5722] text-slate-600 transition-colors cursor-pointer"
-              >
-                {b.label}
-              </button>
-            ))}
-          </div>
+        {/* Input Bar */}
+        <div className="space-y-3">
+          {activeTab === "domain_search" ? (
+            <div>
+              <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Target Domain or Webpage URL:
+              </label>
+              <div className="flex flex-col sm:flex-row items-stretch gap-2">
+                <div className="relative flex-1">
+                  <Globe className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="url"
+                    value={targetUrl}
+                    onChange={(e) => setTargetUrl(e.target.value)}
+                    placeholder="https://metazivo.com"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-sm font-mono text-slate-900 focus:bg-white focus:outline-none focus:border-[#FF5722] transition-colors"
+                  />
+                </div>
+                <button
+                  onClick={runBacklinkScan}
+                  disabled={isScanning}
+                  className="px-6 py-3 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-2xl text-sm font-bold shadow-md shadow-orange-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {isScanning ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>Scanning Web Index...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Search className="w-4 h-4" />
+                      <span>Scan Live Inbound Links</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Quick presets */}
+              <div className="flex items-center gap-2 flex-wrap pt-2">
+                <span className="text-[11px] font-mono text-slate-400">Quick Test Domains:</span>
+                {BENCHMARK_SITES.map((b, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setTargetUrl(b.url);
+                    }}
+                    className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-orange-50 hover:text-[#FF5722] text-slate-600 transition-colors cursor-pointer"
+                  >
+                    {b.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="block text-xs font-mono font-bold text-slate-700 uppercase tracking-wider">
+                  Paste Specific Backlink URLs (1 URL per line):
+                </label>
+                <span className="text-[11px] font-mono text-slate-400">
+                  Target Domain: <span className="font-bold text-slate-700">{targetUrl}</span>
+                </span>
+              </div>
+              <textarea
+                rows={4}
+                value={customLinksText}
+                onChange={(e) => setCustomLinksText(e.target.value)}
+                placeholder="https://example-blog.com/seo-article&#10;https://suspicious-directory.xyz/listing&#10;https://another-site.org/resource-page"
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-xs font-mono text-slate-900 focus:bg-white focus:outline-none focus:border-[#FF5722] transition-colors"
+              />
+              <div className="flex justify-between items-center pt-1">
+                <p className="text-[11px] text-slate-500 font-sans">
+                  The engine will visit every URL in real time, extract the anchor text pointing to your domain, test HTTP status, and flag toxic spam risks.
+                </p>
+                <button
+                  onClick={runBacklinkScan}
+                  disabled={isScanning}
+                  className="px-6 py-2.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-xl text-xs font-mono font-bold shadow-md shadow-orange-500/20 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
+                >
+                  {isScanning ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Verifying URLs...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <span>Audit Backlink Toxicity</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
 
           {errorMsg && (
             <div className="p-3 bg-red-50 text-red-700 text-xs rounded-xl border border-red-200 flex items-center gap-2">
@@ -331,7 +315,9 @@ export default function IncomingLinksCheckerTool({ tool, onNavigateTool, onNavig
                 <div className="text-2xl font-extrabold text-slate-900 font-mono">
                   {data.totalBacklinks.toLocaleString()}
                 </div>
-                <span className="text-[10px] text-emerald-600 font-mono">Indexed Backlinks</span>
+                <span className="text-[10px] text-slate-500 font-mono">
+                  {data.totalBacklinks === 0 ? "No Backlinks Found" : "Indexed Backlinks"}
+                </span>
               </div>
 
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
@@ -364,161 +350,196 @@ export default function IncomingLinksCheckerTool({ tool, onNavigateTool, onNavig
                   {data.toxicityIndex}/100
                 </div>
                 <span className="text-[10px] text-emerald-600 font-mono">
-                  {data.toxicityIndex <= 15 ? "Clean Profile" : "Warning Risk"}
+                  {data.toxicityIndex === 0 ? "100% Clean" : data.toxicityIndex <= 15 ? "Low Risk" : "High Risk"}
                 </span>
               </div>
             </div>
 
-            {/* Anchor Text Distribution & Over-optimization Check */}
-            <div className="bg-white border border-slate-200/90 rounded-3xl p-6 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="space-y-1">
-                  <span className="text-xs font-mono font-bold uppercase text-[#FF5722]">
-                    Natural Link Graph Audit
-                  </span>
-                  <h4 className="text-base font-bold text-slate-900">
-                    Anchor Text Distribution & Penguin Penalty Safety
+            {/* If 0 backlinks detected (Authentic clean new site) */}
+            {data.totalBacklinks === 0 && (
+              <div className="p-6 bg-emerald-50/80 border border-emerald-200 rounded-3xl space-y-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-emerald-950 font-sans">
+                      Clean Domain Profile — Zero Toxic Links Detected
+                    </h4>
+                    <span className="text-xs text-emerald-700 font-mono">
+                      Domain: {data.targetDomain} • Index Status: Clean / Fresh
+                    </span>
+                  </div>
+                </div>
+                <p className="text-xs text-emerald-900 font-sans leading-relaxed">
+                  Our live search index scan did not detect any external inbound links pointing to <strong>{data.targetDomain}</strong>. 
+                  If you have not built backlinks yet, having <strong>0 backlinks is completely normal, accurate, and healthy</strong>. 
+                  Your domain is 100% free of spam links, toxic PBN networks, and algorithmic Google Penguin penalties.
+                </p>
+                <div className="pt-2 text-xs text-emerald-800 font-sans flex flex-wrap gap-4">
+                  <span>💡 <strong>Tip:</strong> Earn your first authoritative backlinks by claiming your Google Business Profile, submitting to Clutch, and sharing original industry research.</span>
+                </div>
+              </div>
+            )}
+
+            {/* Anchor Text Distribution (Only shown when backlinks exist) */}
+            {data.totalBacklinks > 0 && (
+              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="space-y-1">
+                    <span className="text-xs font-mono font-bold uppercase text-[#FF5722]">
+                      Natural Link Graph Audit
+                    </span>
+                    <h4 className="text-base font-bold text-slate-900">
+                      Anchor Text Distribution & Penguin Penalty Safety
+                    </h4>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 text-xs font-mono">
+                    {data.anchorDistribution.exactMatch <= 15 ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Healthy Distribution (Low Risk)
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-semibold">
+                        <AlertTriangle className="w-3.5 h-3.5" /> Over-Optimization Risk (&gt;15% Exact Match)
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
+                    <div className="text-[11px] text-slate-500 font-mono">Branded Anchors</div>
+                    <div className="text-lg font-bold text-slate-900 font-mono">{data.anchorDistribution.branded}%</div>
+                    <div className="text-[10px] text-slate-400">Target: 40–60%</div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
+                    <div className="text-[11px] text-slate-500 font-mono">Exact Match</div>
+                    <div className="text-lg font-bold text-slate-900 font-mono">{data.anchorDistribution.exactMatch}%</div>
+                    <div className="text-[10px] text-slate-400">Target: &lt;15%</div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
+                    <div className="text-[11px] text-slate-500 font-mono">Partial Match</div>
+                    <div className="text-lg font-bold text-slate-900 font-mono">{data.anchorDistribution.partialMatch}%</div>
+                    <div className="text-[10px] text-slate-400">Target: 20–30%</div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
+                    <div className="text-[11px] text-slate-500 font-mono">Generic ("click here")</div>
+                    <div className="text-lg font-bold text-slate-900 font-mono">{data.anchorDistribution.generic}%</div>
+                    <div className="text-[10px] text-slate-400">Target: 5–15%</div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
+                    <div className="text-[11px] text-slate-500 font-mono">Naked URL</div>
+                    <div className="text-lg font-bold text-slate-900 font-mono">{data.anchorDistribution.nakedUrl}%</div>
+                    <div className="text-[10px] text-slate-400">Target: 5–15%</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Filterable Inbound Links Inventory Table (if links exist) */}
+            {data.links.length > 0 && (
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <h4 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Link2 className="w-4 h-4 text-[#FF5722]" />
+                    <span>Verified Referring Links ({filteredLinks.length} Displayed)</span>
                   </h4>
-                </div>
 
-                <div className="flex items-center gap-1.5 text-xs font-mono">
-                  {data.anchorDistribution.exactMatch <= 15 ? (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Healthy Distribution (Low Risk)
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-semibold">
-                      <AlertTriangle className="w-3.5 h-3.5" /> Over-Optimization Risk (&gt;15% Exact Match)
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-                  <div className="text-[11px] text-slate-500 font-mono">Branded Anchors</div>
-                  <div className="text-lg font-bold text-slate-900 font-mono">{data.anchorDistribution.branded}%</div>
-                  <div className="text-[10px] text-slate-400">Target: 40–60%</div>
-                </div>
-
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-                  <div className="text-[11px] text-slate-500 font-mono">Exact Match</div>
-                  <div className="text-lg font-bold text-slate-900 font-mono">{data.anchorDistribution.exactMatch}%</div>
-                  <div className="text-[10px] text-slate-400">Target: &lt;15%</div>
-                </div>
-
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-                  <div className="text-[11px] text-slate-500 font-mono">Partial Match</div>
-                  <div className="text-lg font-bold text-slate-900 font-mono">{data.anchorDistribution.partialMatch}%</div>
-                  <div className="text-[10px] text-slate-400">Target: 20–30%</div>
-                </div>
-
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-                  <div className="text-[11px] text-slate-500 font-mono">Generic ("click here")</div>
-                  <div className="text-lg font-bold text-slate-900 font-mono">{data.anchorDistribution.generic}%</div>
-                  <div className="text-[10px] text-slate-400">Target: 5–15%</div>
-                </div>
-
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-                  <div className="text-[11px] text-slate-500 font-mono">Naked URL</div>
-                  <div className="text-lg font-bold text-slate-900 font-mono">{data.anchorDistribution.nakedUrl}%</div>
-                  <div className="text-[10px] text-slate-400">Target: 5–15%</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Filterable Inbound Links Inventory Table */}
-            <div className="space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <h4 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Link2 className="w-4 h-4 text-[#FF5722]" />
-                  <span>Incoming Referring Links ({filteredLinks.length} Displayed)</span>
-                </h4>
-
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {(["All", "DoFollow", "NoFollow", "High Authority", "Toxic"] as const).map((filter) => (
-                    <button
-                      key={filter}
-                      onClick={() => setFilterType(filter)}
-                      className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-colors cursor-pointer ${
-                        filterType === filter
-                          ? "bg-[#FF5722] text-white"
-                          : "bg-slate-100 hover:bg-slate-200 text-slate-700"
-                      }`}
-                    >
-                      {filter}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="overflow-x-auto border border-slate-200 rounded-2xl">
-                <table className="w-full text-left text-xs text-slate-700">
-                  <thead className="bg-slate-50 text-slate-600 uppercase font-mono text-[10px] tracking-wider border-b border-slate-200">
-                    <tr>
-                      <th className="py-3 px-3">Referring Source URL</th>
-                      <th className="py-3 px-2 w-16 text-center">DR</th>
-                      <th className="py-3 px-3">Anchor Text</th>
-                      <th className="py-3 px-2 w-24">Link Type</th>
-                      <th className="py-3 px-2 w-16 text-center">Status</th>
-                      <th className="py-3 px-2 w-20 text-center">Risk</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-sans">
-                    {filteredLinks.map((link) => (
-                      <tr key={link.id} className="hover:bg-slate-50/70">
-                        <td className="py-2.5 px-3">
-                          <a
-                            href={link.sourceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-mono text-xs text-slate-800 hover:text-[#FF5722] font-semibold transition-colors flex items-center gap-1 line-clamp-1"
-                          >
-                            {link.sourceUrl} <ArrowUpRight className="w-3 h-3 text-slate-400 shrink-0" />
-                          </a>
-                          <div className="text-[10px] text-slate-400 font-mono mt-0.5">
-                            Points to: {link.targetUrl}
-                          </div>
-                        </td>
-                        <td className="py-2.5 px-2 text-center font-mono font-bold text-slate-800">
-                          {link.sourceDomainRating}
-                        </td>
-                        <td className="py-2.5 px-3">
-                          <span className="font-semibold text-slate-900 bg-slate-100 px-2 py-0.5 rounded text-xs">
-                            "{link.anchorText}"
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-2">
-                          <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
-                              link.linkType === "DoFollow"
-                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                : "bg-slate-100 text-slate-600"
-                            }`}
-                          >
-                            {link.linkType}
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-2 text-center font-mono font-bold text-emerald-600">
-                          {link.status}
-                        </td>
-                        <td className="py-2.5 px-2 text-center">
-                          <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
-                              link.toxicityRisk === "High"
-                                ? "bg-red-50 text-red-700 border border-red-200"
-                                : "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                            }`}
-                          >
-                            {link.toxicityRisk}
-                          </span>
-                        </td>
-                      </tr>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {(["All", "DoFollow", "NoFollow", "High Authority", "Toxic"] as const).map((filter) => (
+                      <button
+                        key={filter}
+                        onClick={() => setFilterType(filter)}
+                        className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-colors cursor-pointer ${
+                          filterType === filter
+                            ? "bg-[#FF5722] text-white"
+                            : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {filter}
+                      </button>
                     ))}
-                  </tbody>
-                </table>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto border border-slate-200 rounded-2xl">
+                  <table className="w-full text-left text-xs text-slate-700">
+                    <thead className="bg-slate-50 text-slate-600 uppercase font-mono text-[10px] tracking-wider border-b border-slate-200">
+                      <tr>
+                        <th className="py-3 px-3">Referring Source URL</th>
+                        <th className="py-3 px-2 w-16 text-center">DR</th>
+                        <th className="py-3 px-3">Anchor Text</th>
+                        <th className="py-3 px-2 w-24">Link Type</th>
+                        <th className="py-3 px-2 w-20 text-center">Status</th>
+                        <th className="py-3 px-2 w-24 text-center">Toxicity Risk</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 font-sans">
+                      {filteredLinks.map((link) => (
+                        <tr key={link.id} className="hover:bg-slate-50/70">
+                          <td className="py-2.5 px-3">
+                            <a
+                              href={link.sourceUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-mono text-xs text-slate-800 hover:text-[#FF5722] font-semibold transition-colors flex items-center gap-1 line-clamp-1"
+                            >
+                              {link.sourceUrl} <ArrowUpRight className="w-3 h-3 text-slate-400 shrink-0" />
+                            </a>
+                            <div className="text-[10px] text-slate-400 font-mono mt-0.5">
+                              {link.hasLiveAnchor ? "✅ Hyperlink verified on page" : "ℹ️ Web citation / Mention"}
+                            </div>
+                          </td>
+                          <td className="py-2.5 px-2 text-center font-mono font-bold text-slate-800">
+                            {link.sourceDomainRating}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            <span className="font-semibold text-slate-900 bg-slate-100 px-2 py-0.5 rounded text-xs">
+                              "{link.anchorText}"
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-2">
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                                link.linkType === "DoFollow"
+                                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                  : "bg-slate-100 text-slate-600"
+                              }`}
+                            >
+                              {link.linkType}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-2 text-center font-mono font-bold">
+                            <span className={link.status === 200 ? "text-emerald-600" : "text-amber-600"}>
+                              {link.status === 0 ? "Timeout" : link.status}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-2 text-center">
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                                link.toxicityRisk === "High"
+                                  ? "bg-red-50 text-red-700 border border-red-200"
+                                  : link.toxicityRisk === "Low"
+                                  ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                  : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              }`}
+                            >
+                              {link.toxicityRisk === "High" ? "🚨 Toxic" : link.toxicityRisk}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Disavow Generator Callout */}
             <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
@@ -554,7 +575,7 @@ export default function IncomingLinksCheckerTool({ tool, onNavigateTool, onNavig
               </div>
 
               <pre className="p-4 bg-slate-950 text-slate-300 rounded-2xl text-xs font-mono overflow-x-auto border border-slate-800">
-                {generateDisavowContent() || "# No toxic incoming links detected for this domain. All active links appear safe."}
+                {generateDisavowContent()}
               </pre>
             </div>
           </div>

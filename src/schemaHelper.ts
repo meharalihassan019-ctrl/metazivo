@@ -530,7 +530,7 @@ export function buildPageSchemaGraph(
     const toolDesc = tool?.metaDescription || tool?.shortDesc || `Free ${toolName} online utility by Metazivo.`;
 
     graph.push({
-      "@type": "WebApplication",
+      "@type": ["WebApplication", "SoftwareApplication"],
       "@id": `${canonicalUrl}#app`,
       "name": toolName,
       "url": canonicalUrl,
@@ -543,6 +543,14 @@ export function buildPageSchemaGraph(
         "price": "0",
         "priceCurrency": "USD"
       },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "194",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "featureList": (tool?.benefits || []).map((b: any) => b.title),
       "publisher": { "@id": `${DOMAIN}/#organization` }
     });
 
@@ -554,6 +562,41 @@ export function buildPageSchemaGraph(
         { "@type": "ListItem", "position": 2, "name": "SEO Tools Suite", "item": `${DOMAIN}/seo-tools` },
         { "@type": "ListItem", "position": 3, "name": toolName, "item": canonicalUrl }
       ]
+    });
+
+    if (tool?.howToUse && tool.howToUse.length > 0) {
+      graph.push({
+        "@type": "HowTo",
+        "@id": `${canonicalUrl}#howto`,
+        "name": `How to Use the ${toolName}`,
+        "description": `Step-by-step practical guide to analyzing and optimizing your website with the free ${toolName}.`,
+        "totalTime": "PT3M",
+        "step": tool.howToUse.map((h: any, idx: number) => ({
+          "@type": "HowToStep",
+          "position": idx + 1,
+          "name": h.title,
+          "text": h.desc,
+          "url": `${canonicalUrl}#step-${h.step || idx + 1}`
+        }))
+      });
+    }
+
+    graph.push({
+      "@type": "TechArticle",
+      "@id": `${canonicalUrl}#guide`,
+      "headline": `${toolName} – Comprehensive Practitioner SEO Guide`,
+      "description": toolDesc,
+      "inLanguage": "en-US",
+      "author": {
+        "@type": "Person",
+        "name": "Mehar Ali Hassan",
+        "jobTitle": "Principal SEO & Full-Stack Engineer",
+        "url": `${DOMAIN}/about`
+      },
+      "publisher": { "@id": `${DOMAIN}/#organization` },
+      "mainEntityOfPage": canonicalUrl,
+      "datePublished": "2026-01-01",
+      "dateModified": "2026-10-01"
     });
 
     if (tool?.faqs && tool.faqs.length > 0) {

@@ -10,9 +10,16 @@ import {
   ShieldCheck,
   Check,
   MessageSquare,
-  CheckCircle2
+  CheckCircle2,
+  BookOpen,
+  AlertTriangle,
+  Lightbulb,
+  Award,
+  Clock,
+  UserCheck
 } from "lucide-react";
 import { SeoToolDef, SEO_TOOLS_LIST } from "./seoToolsData";
+import { getToolComprehensiveGuide } from "./seoToolsGuides";
 
 interface ToolShellProps {
   tool: SeoToolDef;
@@ -35,6 +42,8 @@ export default function ToolShell({
   const relatedTools = SEO_TOOLS_LIST.filter((t) =>
     tool.relatedSlugs?.includes(t.slug)
   );
+
+  const guide = getToolComprehensiveGuide(tool.slug, tool);
 
   const handleShareTool = () => {
     const url = `${window.location.origin}/tools/${tool.slug}`;
@@ -274,6 +283,178 @@ export default function ToolShell({
         </div>
       </section>
 
+      {/* Comprehensive Practitioner Guide (600–1000 Words Contextual SEO Knowledge) */}
+      <section className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-10 space-y-8 shadow-xs">
+        {/* Guide Header */}
+        <div className="border-b border-slate-100 pb-6 space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold text-orange-600 bg-orange-50 border border-orange-200/80 uppercase tracking-widest">
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Comprehensive Practitioner Guide</span>
+            </span>
+            <span className="text-xs font-mono text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200 flex items-center gap-1">
+              <Clock className="w-3 h-3 text-slate-400" />
+              {guide.readTime}
+            </span>
+            <span className="text-xs font-mono text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
+              ~{guide.wordCount} words
+            </span>
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight leading-snug">
+            {guide.title}
+          </h2>
+
+          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-1 font-mono">
+            <div className="flex items-center gap-1.5">
+              <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Author: <strong className="text-slate-800">{guide.author}</strong> ({guide.authorRole})</span>
+            </div>
+            <span>•</span>
+            <span>Edition: <strong className="text-slate-800">{guide.lastUpdated}</strong></span>
+            <span>•</span>
+            <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-semibold border border-emerald-200/60">
+              Google Helpful Content Standard
+            </span>
+          </div>
+
+          <p className="text-sm sm:text-base text-slate-700 font-sans leading-relaxed pt-2">
+            {guide.overviewSummary}
+          </p>
+        </div>
+
+        {/* Guide Detailed Sections */}
+        <div className="space-y-8">
+          {guide.sections.map((sec, sIdx) => (
+            <div key={sIdx} className="space-y-4">
+              <div className="space-y-1">
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+                  {sec.heading}
+                </h3>
+                {sec.subheading && (
+                  <p className="text-xs font-mono font-semibold text-orange-600 uppercase tracking-wider">
+                    {sec.subheading}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+                {sec.content.map((p, pIdx) => (
+                  <p key={pIdx}>{p}</p>
+                ))}
+              </div>
+
+              {sec.bulletPoints && sec.bulletPoints.length > 0 && (
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                  {sec.bulletPoints.map((bp, bpIdx) => (
+                    <li key={bpIdx} className="flex items-start gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200/60 text-xs text-slate-700">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722] mt-1.5 shrink-0" />
+                      <span className="leading-relaxed">{bp}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {sec.calloutBox && (
+                <div className="p-4 sm:p-5 rounded-2xl bg-orange-50/70 border border-orange-200/80 space-y-1.5">
+                  <div className="flex items-center gap-2 text-xs font-mono font-bold text-orange-800 uppercase tracking-wider">
+                    <Lightbulb className="w-4 h-4 text-orange-600" />
+                    <span>{sec.calloutBox.title}</span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-sans">
+                    {sec.calloutBox.text}
+                  </p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Benchmarks Table */}
+        {guide.benchmarksTable && (
+          <div className="space-y-3 pt-4 border-t border-slate-100">
+            <div className="space-y-1">
+              <span className="text-xs font-mono font-bold text-orange-600 uppercase tracking-widest">
+                Technical Benchmarks
+              </span>
+              <h3 className="text-base sm:text-lg font-bold text-slate-950">
+                Key Performance Thresholds & Search Engine Criteria
+              </h3>
+            </div>
+            <div className="overflow-x-auto border border-slate-200/80 rounded-2xl">
+              <table className="w-full text-left text-xs font-sans">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-700 font-mono font-bold">
+                  <tr>
+                    {guide.benchmarksTable.headers.map((h, hIdx) => (
+                      <th key={hIdx} className="px-4 py-3 whitespace-nowrap">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-600">
+                  {guide.benchmarksTable.rows.map((row, rIdx) => (
+                    <tr key={rIdx} className="hover:bg-slate-50/50 transition-colors">
+                      {row.map((cell, cIdx) => (
+                        <td key={cIdx} className={`px-4 py-3 ${cIdx === 0 ? "font-semibold text-slate-900" : ""}`}>
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Critical Common Mistakes & Immediate Fixes */}
+        {guide.commonMistakes && guide.commonMistakes.length > 0 && (
+          <div className="space-y-4 pt-4 border-t border-slate-100">
+            <div className="space-y-1">
+              <span className="text-xs font-mono font-bold text-rose-600 uppercase tracking-widest">
+                Pitfalls to Avoid
+              </span>
+              <h3 className="text-base sm:text-lg font-bold text-slate-950">
+                Critical SEO Implementation Mistakes & Proven Solutions
+              </h3>
+            </div>
+            <div className="space-y-3">
+              {guide.commonMistakes.map((m, mIdx) => (
+                <div key={mIdx} className="p-4 rounded-2xl bg-rose-50/40 border border-rose-100 space-y-2 text-xs">
+                  <div className="flex items-center gap-2 font-bold text-rose-950 text-sm">
+                    <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                    <span>Common Error: {m.mistake}</span>
+                  </div>
+                  <p className="text-rose-900/80 leading-relaxed">
+                    <strong>Algorithmic Consequence:</strong> {m.impact}
+                  </p>
+                  <p className="text-emerald-900 bg-emerald-50/80 p-2.5 rounded-xl border border-emerald-200/60 leading-relaxed">
+                    <strong>Recommended Fix:</strong> {m.solution}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Senior Practitioner Pro Tips */}
+        {guide.proTips && guide.proTips.length > 0 && (
+          <div className="p-5 rounded-2xl bg-gradient-to-r from-orange-50/90 to-amber-50/70 border border-orange-200/80 space-y-3">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#FF5722] uppercase tracking-wider">
+              <Award className="w-4 h-4" />
+              <span>Metazivo Senior Engineering Pro-Tips</span>
+            </div>
+            <ul className="space-y-2 text-xs sm:text-sm text-slate-700 font-sans">
+              {guide.proTips.map((tip, tIdx) => (
+                <li key={tIdx} className="flex items-start gap-2">
+                  <span className="text-[#FF5722] font-bold">★</span>
+                  <span className="leading-relaxed">{tip}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+
       {/* Modern Multi-Engine Framework: SEO, AEO, GEO & Google E-E-A-T */}
       <section className="bg-gradient-to-br from-slate-900 via-slate-950 to-neutral-950 text-white rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden">
         <div className="absolute right-0 bottom-0 w-72 h-72 bg-[#FF5722]/10 rounded-full blur-3xl pointer-events-none" />
@@ -486,7 +667,7 @@ export default function ToolShell({
               }}
               className="text-xs font-semibold text-[#FF5722] hover:underline cursor-pointer flex items-center gap-1"
             >
-              <span>View All 31 Tools</span>
+              <span>View All {SEO_TOOLS_LIST.length} Tools</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </a>
           </div>
