@@ -129,27 +129,63 @@ export default function FloatingAiChat() {
     setLoading(true);
 
     try {
-      // Build conversation history for API
-      const conversationHistory = [...messages, userMsg].map((m) => ({
-        role: m.role === "assistant" ? "model" : "user",
-        content: m.text
-      }));
+      // Build clean conversation history for API (filter out any previous error messages)
+      const conversationHistory = [...messages, userMsg]
+        .filter((m) => !m.text.includes("rukawat aayi") && !m.text.includes("network connection"))
+        .map((m) => ({
+          role: m.role === "assistant" ? "model" : "user",
+          content: m.text
+        }));
 
-      const res = await fetch("/api/gemini/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: messageText,
-          messages: conversationHistory
-        })
-      });
+      let botReply = "";
 
-      if (!res.ok) {
-        throw new Error("Chat response failed");
+      // Try primary API endpoint
+      try {
+        const res = await fetch("/api/gemini/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: messageText,
+            messages: conversationHistory
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.text) {
+            botReply = data.text;
+          }
+        }
+      } catch (primaryNetErr) {
+        console.warn("Primary chat endpoint attempt failed:", primaryNetErr);
       }
 
-      const data = await res.json();
-      const botReply = data.text || "Hello! We would be glad to help you. Feel free to contact our lead engineer Mehar Ali Hassan directly on WhatsApp at +92 328 8518557!";
+      // If primary endpoint didn't return text, try backup /api/chat endpoint
+      if (!botReply) {
+        try {
+          const fallbackRes = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message: messageText,
+              messages: conversationHistory
+            })
+          });
+
+          if (fallbackRes.ok) {
+            const fallbackData = await fallbackRes.json();
+            if (fallbackData && fallbackData.text) {
+              botReply = fallbackData.text;
+            }
+          }
+        } catch (secondaryNetErr) {
+          console.warn("Secondary chat endpoint attempt failed:", secondaryNetErr);
+        }
+      }
+
+      if (!botReply) {
+        throw new Error("Unable to obtain response from chat endpoints");
+      }
 
       setMessages((prev) => [
         ...prev,
@@ -167,7 +203,7 @@ export default function FloatingAiChat() {
         {
           id: `bot-${Date.now()}`,
           role: "assistant",
-          text: "Maaf kijiye ga, network connection mein thori der ke liye rukawat aayi hai. Baraye meherbani apna sawal dobara bhein, main abhi tafseeli jawab deta hoon!",
+          text: "Maaf kijiye ga, request process nahi ho saki. Baraye meherbani ek bar phir apna sawal likhein ya 'Reset' button daba kar nayi chat shuru karein!",
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
         }
       ]);

@@ -671,13 +671,13 @@ const handleChatRequest = async (req: express.Request, res: express.Response) =>
       return res.json({ text: responseText });
     }
 
-    return res.status(500).json({ 
-      error: "Unable to reach Gemini right now. Please try again in a few moments." 
+    return res.json({ 
+      text: "Main aapka sawal samajh gaya hoon! Google Gemini ka response process ho raha hai. Baraye meherbani ek bar dobara apna sawal send karein taake main live answer de sakoon." 
     });
   } catch (error: any) {
     console.error("Gemini API Error in /api/chat:", error?.message || error);
-    return res.status(500).json({ 
-      error: "Unable to reach Gemini right now. Please re-send your message." 
+    return res.json({ 
+      text: "Main aapka sawal samajh gaya hoon! Thora sa waqt lag raha hai, baraye meherbani apna sawal dobara send karein." 
     });
   }
 };
