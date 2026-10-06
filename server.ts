@@ -1389,6 +1389,60 @@ app.get("/api/leads/export/csv", (req, res) => {
   res.status(200).send(csvHeaders + csvRows);
 });
 
+// Download Complete Full Source Code + Git Repository
+app.get("/api/download/codebase", (req, res) => {
+  const filePath = path.join(process.cwd(), "public", "metazivo-codebase.tar.gz");
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: "Codebase archive not found" });
+  }
+  res.download(filePath, "metazivo-codebase.tar.gz");
+});
+
+// Download Ready-to-Run Hostinger Production Deployment Package
+app.get("/api/download/hostinger-deploy", (req, res) => {
+  const filePath = path.join(process.cwd(), "public", "metazivo-hostinger-deploy.tar.gz");
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: "Hostinger deployment archive not found" });
+  }
+  res.download(filePath, "metazivo-hostinger-deploy.tar.gz");
+});
+
+// Push Code Directly to GitHub from AI Studio
+app.post("/api/git/push", async (req, res) => {
+  try {
+    const { repoUrl, token, branch = "main" } = req.body;
+    if (!repoUrl) {
+      return res.status(400).json({ error: "repoUrl is required (e.g. https://github.com/username/repository.git)" });
+    }
+
+    let authenticatedUrl = repoUrl.trim();
+    if (token) {
+      authenticatedUrl = authenticatedUrl.replace(/^https:\/\//, `https://${encodeURIComponent(token)}@`);
+    }
+
+    const { exec } = await import("child_process");
+    const execPromise = (cmd: string) => new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
+      exec(cmd, (err, stdout, stderr) => {
+        if (err) reject(new Error(`${err.message}: ${stderr}`));
+        else resolve({ stdout, stderr });
+      });
+    });
+
+    await execPromise("git remote remove origin 2>/dev/null || true");
+    await execPromise(`git remote add origin "${authenticatedUrl}"`);
+    await execPromise(`git branch -M "${branch}"`);
+    const pushResult = await execPromise(`git push -u origin "${branch}" --force`);
+
+    // Clean remote to prevent exposing token in git config
+    await execPromise("git remote remove origin 2>/dev/null || true");
+
+    res.json({ success: true, message: `Successfully pushed to GitHub branch ${branch}!`, details: pushResult.stdout || pushResult.stderr });
+  } catch (err: any) {
+    console.error("Git push error:", err);
+    res.status(500).json({ error: "Failed to push to GitHub", message: err.message });
+  }
+});
+
 // -----------------------------------------------------------------------------
 // GOOGLE SEARCH CONSOLE & GA4 REAL-TIME ANALYTICS INTEGRATION
 // -----------------------------------------------------------------------------
