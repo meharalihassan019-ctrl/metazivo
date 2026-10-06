@@ -69,7 +69,7 @@
       "id": "redir-1"
     }
   ],
-  "views": 12642,
+  "views": 12653,
   "visitors": 4850,
   "viewsHistory": [
     {
@@ -78,24 +78,24 @@
       "views": 1800
     },
     {
-      "visitors": 780,
       "views": 2100,
+      "visitors": 780,
       "date": "Jul 6"
     },
     {
-      "views": 1950,
       "visitors": 720,
-      "date": "Jul 7"
+      "date": "Jul 7",
+      "views": 1950
     },
     {
       "date": "Jul 8",
-      "views": 2400,
-      "visitors": 910
+      "visitors": 910,
+      "views": 2400
     },
     {
-      "views": 2050,
       "date": "Jul 9",
-      "visitors": 820
+      "visitors": 820,
+      "views": 2050
     },
     {
       "date": "Jul 10",
@@ -103,9 +103,9 @@
       "visitors": 1100
     },
     {
-      "visitors": 480,
       "views": 1250,
-      "date": "Jul 11"
+      "date": "Jul 11",
+      "visitors": 480
     },
     {
       "views": 2,
@@ -118,14 +118,14 @@
       "views": 8
     },
     {
+      "views": 6,
       "visitors": 1,
-      "date": "Aug 7",
-      "views": 6
+      "date": "Aug 7"
     },
     {
+      "date": "Aug 8",
       "views": 9,
-      "visitors": 1,
-      "date": "Aug 8"
+      "visitors": 1
     },
     {
       "date": "Sep 19",
@@ -133,34 +133,34 @@
       "views": 10
     },
     {
-      "views": 15,
+      "visitors": 1,
       "date": "Sep 20",
-      "visitors": 1
+      "views": 15
     },
     {
-      "date": "Sep 21",
       "views": 7,
-      "visitors": 1
+      "visitors": 1,
+      "date": "Sep 21"
     },
     {
-      "date": "Sep 22",
       "views": 10,
-      "visitors": 1
+      "visitors": 1,
+      "date": "Sep 22"
     },
     {
       "date": "Sep 23",
-      "visitors": 1,
-      "views": 30
-    },
-    {
-      "visitors": 1,
-      "date": "Sep 24",
-      "views": 4
-    },
-    {
-      "date": "Sep 25",
-      "views": 18,
+      "views": 30,
       "visitors": 1
+    },
+    {
+      "views": 4,
+      "visitors": 1,
+      "date": "Sep 24"
+    },
+    {
+      "visitors": 1,
+      "views": 18,
+      "date": "Sep 25"
     },
     {
       "views": 32,
@@ -168,24 +168,24 @@
       "date": "Sep 26"
     },
     {
-      "visitors": 1,
       "views": 3,
+      "visitors": 1,
       "date": "Sep 27"
     },
     {
-      "date": "Sep 28",
       "views": 5,
+      "date": "Sep 28",
       "visitors": 1
     },
     {
       "date": "Sep 29",
-      "visitors": 1,
-      "views": 13
+      "views": 13,
+      "visitors": 1
     },
     {
-      "views": 4,
+      "date": "Sep 30",
       "visitors": 1,
-      "date": "Sep 30"
+      "views": 4
     },
     {
       "visitors": 1,
@@ -193,14 +193,24 @@
       "date": "Oct 1"
     },
     {
-      "date": "Oct 2",
+      "views": 1,
       "visitors": 1,
-      "views": 1
+      "date": "Oct 2"
     },
     {
-      "date": "Oct 3",
       "visitors": 1,
-      "views": 13
+      "views": 14,
+      "date": "Oct 3"
+    },
+    {
+      "views": 2,
+      "date": "Oct 4",
+      "visitors": 1
+    },
+    {
+      "views": 8,
+      "date": "Oct 5",
+      "visitors": 1
     }
   ],
   "tags": [],
@@ -297,12 +307,12 @@
     "customHeadTags": ""
   },
   "contact": {
-    "address": "Office 402, Metazivo Heights, Lahore, Pakistan",
-    "whatsapp": "+923288518557",
-    "email": "mail@metazivo.com",
-    "instagram": "https://instagram.com/metazivo",
     "phone": "+92 328 8518557",
+    "address": "Office 402, Metazivo Heights, Lahore, Pakistan",
     "linkedin": "https://www.linkedin.com/in/ali-hassan-a5011240a",
-    "facebook": "https://www.facebook.com/share/1DLnu9iaHK/"
+    "instagram": "https://instagram.com/metazivo",
+    "email": "mail@metazivo.com",
+    "facebook": "https://www.facebook.com/share/1DLnu9iaHK/",
+    "whatsapp": "+923288518557"
   }
 }

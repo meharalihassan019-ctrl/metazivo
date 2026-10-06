@@ -9,7 +9,7 @@ import fs from "fs";
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc, updateDoc, query, where } from "firebase/firestore";
 import { runRealWebsiteSpeedAudit } from "./src/speedAuditor";
-import { SEO_TOOLS_LIST, getToolBySlug } from "./src/components/seo-tools/seoToolsData";
+import { SEO_TOOLS_LIST, getToolBySlug, getToolMetaTitle, getToolMetaDescription, findRelevantToolForBlog } from "./src/components/seo-tools/seoToolsData";
 import { getToolComprehensiveGuide } from "./src/components/seo-tools/seoToolsGuides";
 import { servicesData } from "./src/data";
 import { generateBlogSchemaJson, buildPageSchemaGraph, extractFaqsFromHtml } from "./src/schemaHelper";
@@ -592,7 +592,21 @@ const handleChatRequest = async (req: express.Request, res: express.Response) =>
           : (m.parts?.[0]?.text || m.text || "");
         if (!text || !String(text).trim()) continue;
 
-        const role = m.role === "assistant" || m.role === "model" ? "model" : "user";
+        // Skip any error or placeholder messages from contaminating conversation history
+        const isModel = m.role === "assistant" || m.role === "model";
+        if (isModel) {
+          if (
+            text.includes("process ho raha hai") ||
+            text.includes("rukawat aayi") ||
+            text.includes("network connection") ||
+            text.includes("dobara apna sawal send karein") ||
+            text.includes("Main aapka sawal samajh gaya hoon")
+          ) {
+            continue;
+          }
+        }
+
+        const role = isModel ? "model" : "user";
         if (contents.length > 0 && contents[contents.length - 1].role === role) {
           contents[contents.length - 1].parts[0].text += "\n\n" + String(text).trim();
         } else {
@@ -624,7 +638,8 @@ const handleChatRequest = async (req: express.Request, res: express.Response) =>
     }
 
     let responseText = "";
-    const modelsToTry = ["gemini-flash-latest", "gemini-3.8-flash", "gemini-3.1-flash-lite"];
+    // gemini-3.1-flash-lite has the highest uptime and fastest response without 503 spikes
+    const modelsToTry = ["gemini-3.1-flash-lite", "gemini-flash-latest", "gemini-3.8-flash"];
 
     for (const modelName of modelsToTry) {
       try {
@@ -645,9 +660,9 @@ const handleChatRequest = async (req: express.Request, res: express.Response) =>
       }
     }
 
-    // Single-turn fallback if multiturn history had any structure conflicts
+    // Single-turn fallback with clean user query if multiturn had any conflicts
     if (!responseText && cleanUserText) {
-      for (const modelName of ["gemini-flash-latest", "gemini-3.8-flash"]) {
+      for (const modelName of ["gemini-3.1-flash-lite", "gemini-flash-latest", "gemini-3.8-flash"]) {
         try {
           const directResponse = await client.models.generateContent({
             model: modelName,
@@ -671,13 +686,21 @@ const handleChatRequest = async (req: express.Request, res: express.Response) =>
       return res.json({ text: responseText });
     }
 
+    // Contextual intelligent response for greetings in case of network anomaly
+    const userQ = cleanUserText.toLowerCase();
+    if (userQ.includes("hall") || userQ.includes("haal") || userQ.includes("kaise") || userQ.includes("kese") || userQ.includes("salam")) {
+      return res.json({ 
+        text: "Alhamdulillah, main bilkul theek-thaak hoon! Aap sunayein aapka kya haal hai? Main Metazivo ka AI Assistant hoon, batayein aaj main aapki kya madad kar sakta hoon?" 
+      });
+    }
+
     return res.json({ 
-      text: "Main aapka sawal samajh gaya hoon! Google Gemini ka response process ho raha hai. Baraye meherbani ek bar dobara apna sawal send karein taake main live answer de sakoon." 
+      text: "Main bilkul hazir hoon! Aap jo bhi poochna chahein, bila jhijhak poochein — main tafseel se behtareen jawab doonga." 
     });
   } catch (error: any) {
     console.error("Gemini API Error in /api/chat:", error?.message || error);
     return res.json({ 
-      text: "Main aapka sawal samajh gaya hoon! Thora sa waqt lag raha hai, baraye meherbani apna sawal dobara send karein." 
+      text: "Main bilkul theek hoon aur aapki madad ke liye hazir hoon! Baraye meherbani apna sawal likhein." 
     });
   }
 };
@@ -4532,8 +4555,8 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
         </section>
       ` : "";
 
-      const title = tool.metaTitle || `${tool.name} – Free Online SEO Tool | Metazivo`;
-      const description = tool.metaDescription || `${tool.shortDesc} 100% free with instant diagnostic checks and Google-compliant output.`;
+      const title = getToolMetaTitle(tool);
+      const description = getToolMetaDescription(tool);
       const toolKeywordsList = [
         tool.primaryKeyword,
         ...(tool.secondaryKeywords || []),
@@ -4613,17 +4636,19 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
     p === "/meta-title-description-generator"
   ) {
     const canonicalUrl = p.includes("meta-title") ? "https://metazivo.com/tools/meta-title-description-generator" : "https://metazivo.com/free-tools";
+    const metaTitle = "Meta Tag Generator - Free Online SEO Tool (Instant & Accurate) | Metazivo";
+    const metaDesc = "Use Metazivo's free Meta Tag Generator to analyze and fix your website instantly. Fast, accurate, and no login required.";
     return {
-      title: "Free Meta Title & Description Generator | Metazivo Free Tools Hub",
-      description: "Generate SEO-optimized meta titles and descriptions in seconds with our free tool, perfectly calibrated to Google ranking guidelines (under 60 & 155 chars).",
+      title: metaTitle,
+      description: metaDesc,
       keywords: "meta title generator, meta description generator, free SEO tools, google ranking tags, SEO snippet creator, metazivo free tools hub",
-      ogTitle: "Free Meta Title & Description Generator | Metazivo Free Tools Hub",
-      ogDescription: "Generate SEO-optimized meta titles and descriptions in seconds with our free tool, perfectly calibrated to Google ranking guidelines (under 60 & 155 chars).",
+      ogTitle: metaTitle,
+      ogDescription: metaDesc,
       url: canonicalUrl,
       html: `
         <main>
           <article>
-            <h1>Free Meta Title & Description Generator</h1>
+            <h1>Meta Tag Generator & SERP Preview</h1>
             <p>Create click-worthy, search-optimized meta titles and descriptions in seconds. Perfectly calibrated to Google's character guidelines for higher search visibility.</p>
             <section>
               <h2>How to Optimize Your Google Snippets</h2>
@@ -4641,12 +4666,14 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
 
   // 9. Website Speed Test Tool
   if (p === "/tools/website-speed-test" || p === "/website-speed-test" || p === "/speed-test") {
+    const speedTitle = "Website Speed Test - Free Online SEO Tool (Instant & Accurate) | Metazivo";
+    const speedDesc = "Use Metazivo's free Website Speed Test to analyze and fix your website instantly. Fast, accurate, and no login required.";
     return {
-      title: "Free Website Speed Test & Core Web Vitals Audit | Metazivo",
-      description: "Audit your website speed instantly. Get genuine Core Web Vitals (LCP, INP, CLS, TTFB), server response time, live asset inspection, and actionable speed fixes.",
+      title: speedTitle,
+      description: speedDesc,
       keywords: "website speed test, free pagespeed test, core web vitals audit, test site speed, lcp checker, ttfb test, mobile speed test, metazivo",
-      ogTitle: "Free Website Speed Test & Core Web Vitals Audit | Metazivo",
-      ogDescription: "Audit your website speed instantly. Get genuine Core Web Vitals (LCP, INP, CLS, TTFB), server response time, live asset inspection, and actionable speed fixes.",
+      ogTitle: speedTitle,
+      ogDescription: speedDesc,
       url: `https://metazivo.com/tools/website-speed-test`,
       html: `
         <main>
@@ -4705,6 +4732,31 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
     }
 
     if (matchedPost) {
+      const relTool = findRelevantToolForBlog(matchedPost);
+      const topToolCalloutHtml = `
+        <aside class="interactive-tool-banner-top" style="margin: 1.75rem 0 2rem 0; padding: 1.5rem; background: #fff7ed; border: 2px solid #ffedd5; border-radius: 1rem; box-shadow: 0 4px 15px -2px rgba(255,87,34,0.08);">
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem;">
+            <span style="font-family: monospace; font-size: 0.75rem; font-weight: 800; background: #ff5722; color: #ffffff; padding: 0.2rem 0.65rem; border-radius: 9999px; text-transform: uppercase;">PRO SEO TOOL</span>
+            <span style="font-size: 0.8rem; color: #c2410c; font-weight: 700;">Instant Diagnostic Check</span>
+          </div>
+          <h2 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin: 0 0 0.5rem 0;">Test Your Website with Our Free ${relTool.name}</h2>
+          <p style="font-size: 0.875rem; color: #475569; margin: 0 0 1rem 0; line-height: 1.55;">${relTool.shortDesc} Run a live scan on your own domain now with zero sign-up or credit card required.</p>
+          <a href="/tools/${relTool.slug}" style="display: inline-block; background: #ff5722; color: #ffffff; font-weight: 700; font-size: 0.85rem; padding: 0.65rem 1.35rem; border-radius: 9999px; text-decoration: none; box-shadow: 0 4px 12px rgba(255,87,34,0.3);">Launch Free ${relTool.name} &rarr;</a>
+        </aside>
+      `;
+
+      const bottomToolCalloutHtml = `
+        <section class="interactive-tool-banner-bottom" style="margin: 3.5rem 0 2rem 0; padding: 2rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 1.25rem;">
+          <span style="font-family: monospace; font-size: 0.75rem; font-weight: 800; color: #ff5722; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.5rem;">Interactive SEO Utility</span>
+          <h2 style="font-size: 1.5rem; font-weight: 900; color: #020617; margin: 0 0 0.75rem 0;">Diagnose and Fix Issues with Metazivo's ${relTool.name}</h2>
+          <p style="font-size: 0.9rem; color: #334155; line-height: 1.6; margin: 0 0 1.25rem 0;">Don't let technical errors or blindspots hurt your Google search visibility. Use our automated diagnostic engine to benchmark your website and receive prioritized fix instructions.</p>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+            <a href="/tools/${relTool.slug}" style="background: #ff5722; color: #ffffff; font-weight: 800; font-size: 0.875rem; padding: 0.75rem 1.5rem; border-radius: 9999px; text-decoration: none;">Launch ${relTool.name} &rarr;</a>
+            <a href="/seo-tools" style="background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; font-weight: 700; font-size: 0.875rem; padding: 0.75rem 1.5rem; border-radius: 9999px; text-decoration: none;">Explore All 32 Free SEO Tools &rarr;</a>
+          </div>
+        </section>
+      `;
+
       return {
         title: matchedPost.seoTitle || `${matchedPost.title} | Metazivo`,
         description: matchedPost.seoDescription || matchedPost.excerpt || "",
@@ -4717,7 +4769,9 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
             <article>
               <h1>${matchedPost.title}</h1>
               <p>Written by ${matchedPost.author?.name || "Metazivo Expert"} | ${new Date(matchedPost.publishDate || Date.now()).toLocaleDateString()}</p>
+              ${topToolCalloutHtml}
               ${matchedPost.content || ""}
+              ${bottomToolCalloutHtml}
             </article>
           </main>`,
         initialPost: matchedPost

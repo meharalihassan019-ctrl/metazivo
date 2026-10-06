@@ -79,7 +79,7 @@ const WebsiteSpeedTest = React.lazy(() => import("./components/WebsiteSpeedTest"
 import FreeToolsHub from "./components/FreeToolsHub";
 import SeoServicePage from "./components/SeoServicePage";
 import SeoToolsPage from "./components/seo-tools/SeoToolsPage";
-import { getToolBySlug } from "./components/seo-tools/seoToolsData";
+import { getToolBySlug, getToolMetaTitle, getToolMetaDescription, findRelevantToolForBlog } from "./components/seo-tools/seoToolsData";
 import { injectSchemaToHead, generateBlogSchemaJson } from "./schemaHelper";
 
 // Premium real stock photo URLs (Not AI-generated)
@@ -837,12 +837,15 @@ export default function App() {
     } else if (currentTab === "terms") {
       canonicalPath = "/terms";
     } else if (currentTab === "tools/website-speed-test" || currentTab === "website-speed-test") {
+      const speedTool = getToolBySlug("website-speed-test");
+      targetTitle = speedTool ? getToolMetaTitle(speedTool) : "Website Speed Test - Free Online SEO Tool (Instant & Accurate) | Metazivo";
+      targetDescription = speedTool ? getToolMetaDescription(speedTool) : "Use Metazivo's free Website Speed Test to analyze and fix your website instantly. Fast, accurate, and no login required.";
       canonicalPath = "/tools/website-speed-test";
     } else if (currentTab === "seo-tools") {
       const toolDef = getToolBySlug(activeSeoToolSlug);
       if (toolDef) {
-        targetTitle = toolDef.metaTitle || `${toolDef.name} – Free Online SEO Tool | Metazivo`;
-        targetDescription = toolDef.metaDescription || toolDef.shortDesc || toolDef.shortDescription || "";
+        targetTitle = getToolMetaTitle(toolDef);
+        targetDescription = getToolMetaDescription(toolDef);
         targetKeywords = [
           toolDef.primaryKeyword,
           ...(toolDef.secondaryKeywords || []),
@@ -1534,7 +1537,20 @@ export default function App() {
                       We help growing businesses build custom websites, improve organic search visibility, and run profitable customer acquisition campaigns. No slow templates, no inflated marketing promises—just clean code and measurable results.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                    <div className="flex flex-col sm:flex-row gap-3.5 justify-center lg:justify-start pt-4 flex-wrap">
+                      <a
+                        href="/seo-tools"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleNavigate("seo-tools");
+                        }}
+                        className="group px-7 py-3.5 bg-gradient-to-r from-[#FF5722] via-[#FF7043] to-orange-600 hover:from-orange-600 hover:to-[#FF5722] text-white rounded-full text-xs font-black uppercase tracking-wider shadow-[0_4px_20px_rgba(255,87,34,0.35)] hover:shadow-[0_6px_25px_rgba(255,87,34,0.5)] flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-95 duration-150"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        <span>Free SEO Tools Suite (32)</span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </a>
+
                       <MagneticButton
                         href="#core-services"
                         onClick={(e) => {
@@ -1542,25 +1558,65 @@ export default function App() {
                           const target = document.getElementById("core-services");
                           target?.scrollIntoView({ behavior: "smooth" });
                         }}
-                        className="group px-8 py-4 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-[0_4px_20px_rgba(255,87,34,0.35)] hover:shadow-[0_6px_25px_rgba(255,87,34,0.5)] flex items-center justify-center gap-2 cursor-pointer"
+                        className="group px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300/80 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm flex items-center justify-center gap-2 cursor-pointer"
                       >
-                        <span>Discover More</span>
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        <span>Our Services</span>
                       </MagneticButton>
+
                       <MagneticButton
                         href="/contact"
                         onClick={(e) => {
                           e?.preventDefault();
                           handleNavigate("contact");
                         }}
-                        className="px-8 py-4 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200/80 rounded-full text-xs font-bold uppercase tracking-wider cursor-pointer"
+                        className="px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200/80 rounded-full text-xs font-bold uppercase tracking-wider cursor-pointer"
                       >
-                        Get Started
+                        Get Free Quote
                       </MagneticButton>
                     </div>
 
+                    {/* High-Visibility Crawlable Quick Links to Popular Tools */}
+                    <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-2 text-xs font-mono">
+                      <span className="text-slate-400 font-bold uppercase text-[10px] mr-1">Direct Tools:</span>
+                      <a
+                        href="/tools/seo-audit-checker"
+                        onClick={(e) => { e.preventDefault(); handleNavigateSeoTool("seo-audit-checker"); }}
+                        className="px-2.5 py-1 rounded-lg bg-orange-50/80 hover:bg-[#FF5722] text-slate-700 hover:text-white border border-orange-200/70 transition-all text-[11px] font-semibold flex items-center gap-1"
+                      >
+                        <span>🔍 Audit</span>
+                      </a>
+                      <a
+                        href="/tools/meta-title-description-generator"
+                        onClick={(e) => { e.preventDefault(); handleNavigateSeoTool("meta-title-description-generator"); }}
+                        className="px-2.5 py-1 rounded-lg bg-orange-50/80 hover:bg-[#FF5722] text-slate-700 hover:text-white border border-orange-200/70 transition-all text-[11px] font-semibold flex items-center gap-1"
+                      >
+                        <span>🏷️ Meta Tags</span>
+                      </a>
+                      <a
+                        href="/tools/incoming-links-checker"
+                        onClick={(e) => { e.preventDefault(); handleNavigateSeoTool("incoming-links-checker"); }}
+                        className="px-2.5 py-1 rounded-lg bg-orange-50/80 hover:bg-[#FF5722] text-slate-700 hover:text-white border border-orange-200/70 transition-all text-[11px] font-semibold flex items-center gap-1"
+                      >
+                        <span>🔗 Toxic Links</span>
+                      </a>
+                      <a
+                        href="/tools/website-speed-test"
+                        onClick={(e) => { e.preventDefault(); handleNavigateSeoTool("website-speed-test"); }}
+                        className="px-2.5 py-1 rounded-lg bg-orange-50/80 hover:bg-[#FF5722] text-slate-700 hover:text-white border border-orange-200/70 transition-all text-[11px] font-semibold flex items-center gap-1"
+                      >
+                        <span>⚡ Speed</span>
+                      </a>
+                      <a
+                        href="/tools/broken-link-checker"
+                        onClick={(e) => { e.preventDefault(); handleNavigateSeoTool("broken-link-checker"); }}
+                        className="px-2.5 py-1 rounded-lg bg-orange-50/80 hover:bg-[#FF5722] text-slate-700 hover:text-white border border-orange-200/70 transition-all text-[11px] font-semibold flex items-center gap-1"
+                      >
+                        <span>⚠️ 404 Finder</span>
+                      </a>
+                    </div>
+
                     {/* Trust Signal metrics */}
-                    <div className="grid grid-cols-3 gap-6 pt-8 border-t border-slate-200/80 max-w-md mx-auto lg:mx-0 text-left">
+                    <div className="grid grid-cols-3 gap-6 pt-6 border-t border-slate-200/80 max-w-md mx-auto lg:mx-0 text-left">
                       <div>
                         <span className="block text-2xl font-black text-slate-900 font-mono">99%</span>
                         <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">Core Web Vitals</span>
@@ -1570,8 +1626,52 @@ export default function App() {
                         <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">SEO Visibility</span>
                       </div>
                       <div>
-                        <span className="block text-2xl font-black text-slate-900 font-mono">4.8x</span>
-                        <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">Average ROAS</span>
+                        <span className="block text-2xl font-black text-slate-900 font-mono">32</span>
+                        <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">Free SEO Tools</span>
+                      </div>
+                    </div>
+
+                    {/* Live Website Diagnostic Quick Bar */}
+                    <div className="p-4 bg-white/95 backdrop-blur-md rounded-2xl border-2 border-orange-200/80 shadow-md max-w-xl mx-auto lg:mx-0 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                          Live Website Diagnostic Engine
+                        </span>
+                        <span className="text-[10px] font-mono font-bold text-[#FF5722] bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">
+                          100% Free
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <input
+                          type="url"
+                          id="quick-audit-url-input"
+                          placeholder="https://yourwebsite.com"
+                          className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono text-slate-800 focus:outline-none focus:border-[#FF5722] focus:ring-1 focus:ring-[#FF5722] bg-slate-50/50"
+                        />
+                        <button
+                          onClick={() => {
+                            const inp = document.getElementById("quick-audit-url-input") as HTMLInputElement;
+                            const targetUrl = inp?.value ? encodeURIComponent(inp.value.trim()) : "";
+                            handleNavigateSeoTool(targetUrl ? `seo-audit-checker?url=${targetUrl}` : "seo-audit-checker");
+                          }}
+                          className="px-4 py-2.5 bg-[#FF5722] hover:bg-[#FF7043] text-white text-xs font-bold rounded-xl transition-all shadow-sm cursor-pointer whitespace-nowrap flex items-center justify-center gap-1.5"
+                        >
+                          <Search className="w-3.5 h-3.5" />
+                          <span>Audit Free</span>
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-1 text-[11px] text-slate-500 font-mono">
+                        <span className="font-bold text-slate-600">Quick Test:</span>
+                        <button onClick={() => handleNavigateSeoTool("seo-audit-checker")} className="hover:text-[#FF5722] underline cursor-pointer">SEO Audit</button>
+                        <span>•</span>
+                        <button onClick={() => handleNavigate("tools/website-speed-test")} className="hover:text-[#FF5722] underline cursor-pointer">Speed Test</button>
+                        <span>•</span>
+                        <button onClick={() => handleNavigateSeoTool("incoming-links-checker")} className="hover:text-[#FF5722] underline cursor-pointer">Backlinks</button>
+                        <span>•</span>
+                        <button onClick={() => handleNavigateSeoTool("keyword-clustering")} className="hover:text-[#FF5722] underline cursor-pointer">Keyword Clusters</button>
                       </div>
                     </div>
                   </ScrollReveal>
@@ -1983,66 +2083,184 @@ export default function App() {
               </div>
             </section>
 
-            {/* 2.8 HOMEPAGE PROMOTION: FREE META TITLE & DESCRIPTION GENERATOR */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10" id="free-tools-promo">
-              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-orange-50/30 to-white border border-slate-200/90 p-8 sm:p-12 shadow-sm">
-                <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 bg-[#FF5722]/5 rounded-full blur-3xl pointer-events-none" />
+            {/* 2.8 HOMEPAGE PRIMARY SHOWCASE: FREE INTERACTIVE SEO TOOLS SUITE (32 PRO TOOLS) */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10" id="free-tools-promo">
+              <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-white via-orange-50/20 to-white border-2 border-orange-200/80 p-6 sm:p-10 lg:p-12 shadow-sm space-y-10">
+                <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 bg-[#FF5722]/5 rounded-full blur-3xl pointer-events-none" />
                 
-                <div className="relative z-10 max-w-3xl mx-auto text-center space-y-6">
+                <div className="relative z-10 max-w-3xl mx-auto text-center space-y-4">
                   <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200/80 text-[#FF5722] text-xs font-mono font-bold tracking-wide uppercase shadow-sm">
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>100% Free SEO Tool</span>
+                    <span>Free Production Suite (32 Tools)</span>
                   </div>
 
-                  <div className="space-y-3">
-                    <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                      Free Meta Title &amp; Description Generator
-                    </h2>
-                    <p className="text-base sm:text-lg text-slate-600 font-light leading-relaxed">
-                      Create SEO-friendly titles and descriptions in seconds
-                    </p>
-                  </div>
+                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-950 tracking-tight leading-tight">
+                    Interactive SEO &amp; AI Search Optimization Suite
+                  </h2>
+                  <p className="text-sm sm:text-base text-slate-600 font-light leading-relaxed max-w-2xl mx-auto">
+                    Built by Metazivo's senior software and SEO engineers. Audit your technical crawlability, benchmark Google Core Web Vitals, identify toxic links, and generate valid structured data with zero subscription fees.
+                  </p>
+                </div>
 
-                  {/* Visual micro-preview snippet */}
-                  <div className="max-w-xl mx-auto p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm text-left space-y-2">
-                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
-                      <span>https://metazivo.com › seo-agency</span>
-                      <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">54 / 60 chars</span>
+                {/* Grid of 6 Featured Interactive SEO Tools with Crawlable Anchors */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  <a 
+                    href="/tools/seo-audit-checker"
+                    onClick={(e) => { e.preventDefault(); handleNavigateSeoTool("seo-audit-checker"); }}
+                    className="p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-[#FF5722]/60 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between space-y-4"
+                  >
+                    <div className="space-y-2.5">
+                      <div className="w-10 h-10 rounded-xl bg-orange-100/80 text-[#FF5722] flex items-center justify-center font-bold text-lg">
+                        🔍
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF5722]">Technical &amp; Audit</span>
+                      <h3 className="text-base font-bold text-slate-950 group-hover:text-[#FF5722] transition-colors">
+                        SEO Audit Checker
+                      </h3>
+                      <p className="text-xs text-slate-600 leading-relaxed font-light">
+                        Full site health scan: detects crawl errors, missing canonicals, viewport bugs, and heading hierarchies with actionable Google fix instructions.
+                      </p>
                     </div>
-                    <p className="text-sm sm:text-base font-bold text-[#1a0dab] line-clamp-1">
-                      SEO Agency Services | Fast Ranking Growth | Metazivo
-                    </p>
-                    <p className="text-xs text-slate-600 font-light line-clamp-2">
-                      Looking for expert SEO agency solutions? We deliver proven Google ranking growth, higher search traffic, and real leads. Get a free quote today!
-                    </p>
-                  </div>
+                    <div className="text-xs font-bold text-[#FF5722] flex items-center gap-1.5 pt-2 border-t border-slate-100">
+                      <span>Launch SEO Audit</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </a>
 
-                  {/* Primary CTA button linking to Free Tools page */}
-                  <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a
-                      id="btn-home-free-tools"
-                      href="/free-tools"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavigate("free-tools");
-                      }}
-                      className="w-full sm:w-auto px-8 py-3.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-[0_4px_20px_rgba(255,87,34,0.3)] hover:shadow-[0_6px_25px_rgba(255,87,34,0.4)] flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.02] active:scale-95"
-                    >
-                      <span>Open Free Generator</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </a>
-                    <a
-                      href="/tools/website-speed-test"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavigate("tools/website-speed-test");
-                      }}
-                      className="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all"
-                    >
-                      <Activity className="w-4 h-4 text-[#FF5722]" />
-                      <span>Speed Audit Tool</span>
-                    </a>
-                  </div>
+                  <a 
+                    href="/tools/meta-title-description-generator"
+                    onClick={(e) => { e.preventDefault(); handleNavigateSeoTool("meta-title-description-generator"); }}
+                    className="p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-[#FF5722]/60 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between space-y-4"
+                  >
+                    <div className="space-y-2.5">
+                      <div className="w-10 h-10 rounded-xl bg-orange-100/80 text-[#FF5722] flex items-center justify-center font-bold text-lg">
+                        🏷️
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF5722]">Content &amp; On-Page</span>
+                      <h3 className="text-base font-bold text-slate-950 group-hover:text-[#FF5722] transition-colors">
+                        Meta Tag Generator &amp; Preview
+                      </h3>
+                      <p className="text-xs text-slate-600 leading-relaxed font-light">
+                        Simulate Google desktop &amp; mobile SERP snippets in real-time. Enforces pixel widths, character limits, and high-CTR phrasing.
+                      </p>
+                    </div>
+                    <div className="text-xs font-bold text-[#FF5722] flex items-center gap-1.5 pt-2 border-t border-slate-100">
+                      <span>Open SERP Generator</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </a>
+
+                  <a 
+                    href="/tools/incoming-links-checker"
+                    onClick={(e) => { e.preventDefault(); handleNavigateSeoTool("incoming-links-checker"); }}
+                    className="p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-[#FF5722]/60 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between space-y-4"
+                  >
+                    <div className="space-y-2.5">
+                      <div className="w-10 h-10 rounded-xl bg-orange-100/80 text-[#FF5722] flex items-center justify-center font-bold text-lg">
+                        🔗
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF5722]">Backlinks &amp; Off-Page</span>
+                      <h3 className="text-base font-bold text-slate-950 group-hover:text-[#FF5722] transition-colors">
+                        Toxic Links &amp; Backlink Checker
+                      </h3>
+                      <p className="text-xs text-slate-600 leading-relaxed font-light">
+                        Analyze incoming backlink profiles, detect spam anchor text patterns, audit referring domains, and safeguard against manual Google penalties.
+                      </p>
+                    </div>
+                    <div className="text-xs font-bold text-[#FF5722] flex items-center gap-1.5 pt-2 border-t border-slate-100">
+                      <span>Analyze Backlinks</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </a>
+
+                  <a 
+                    href="/tools/keyword-clustering"
+                    onClick={(e) => { e.preventDefault(); handleNavigateSeoTool("keyword-clustering"); }}
+                    className="p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-[#FF5722]/60 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between space-y-4"
+                  >
+                    <div className="space-y-2.5">
+                      <div className="w-10 h-10 rounded-xl bg-orange-100/80 text-[#FF5722] flex items-center justify-center font-bold text-lg">
+                        📊
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF5722]">Keywords &amp; Strategy</span>
+                      <h3 className="text-base font-bold text-slate-950 group-hover:text-[#FF5722] transition-colors">
+                        Keyword Clustering &amp; Topical Map
+                      </h3>
+                      <p className="text-xs text-slate-600 leading-relaxed font-light">
+                        Cluster thousands of keywords into semantic intent silos. Build structured content maps that answer search intent and prevent cannibalization.
+                      </p>
+                    </div>
+                    <div className="text-xs font-bold text-[#FF5722] flex items-center gap-1.5 pt-2 border-t border-slate-100">
+                      <span>Generate Topical Map</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </a>
+
+                  <a 
+                    href="/tools/website-speed-test"
+                    onClick={(e) => { e.preventDefault(); handleNavigateSeoTool("website-speed-test"); }}
+                    className="p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-[#FF5722]/60 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between space-y-4"
+                  >
+                    <div className="space-y-2.5">
+                      <div className="w-10 h-10 rounded-xl bg-orange-100/80 text-[#FF5722] flex items-center justify-center font-bold text-lg">
+                        ⚡
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF5722]">Speed &amp; Performance</span>
+                      <h3 className="text-base font-bold text-slate-950 group-hover:text-[#FF5722] transition-colors">
+                        Website Speed &amp; Core Web Vitals
+                      </h3>
+                      <p className="text-xs text-slate-600 leading-relaxed font-light">
+                        Live socket probe testing real TTFB latency, LCP, INP, CLS, render-blocking scripts, and asset compression with Google Lighthouse grading.
+                      </p>
+                    </div>
+                    <div className="text-xs font-bold text-[#FF5722] flex items-center gap-1.5 pt-2 border-t border-slate-100">
+                      <span>Test Website Speed</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </a>
+
+                  <a 
+                    href="/tools/broken-link-checker"
+                    onClick={(e) => { e.preventDefault(); handleNavigateSeoTool("broken-link-checker"); }}
+                    className="p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-[#FF5722]/60 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between space-y-4"
+                  >
+                    <div className="space-y-2.5">
+                      <div className="w-10 h-10 rounded-xl bg-orange-100/80 text-[#FF5722] flex items-center justify-center font-bold text-lg">
+                        ⚠️
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF5722]">Technical Crawl</span>
+                      <h3 className="text-base font-bold text-slate-950 group-hover:text-[#FF5722] transition-colors">
+                        Broken Link &amp; 404 Checker
+                      </h3>
+                      <p className="text-xs text-slate-600 leading-relaxed font-light">
+                        Scan your internal and outbound hyperlinks to catch dead 404 errors, broken image references, and leaky redirect chains instantly.
+                      </p>
+                    </div>
+                    <div className="text-xs font-bold text-[#FF5722] flex items-center gap-1.5 pt-2 border-t border-slate-100">
+                      <span>Find Broken Links</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </a>
+                </div>
+
+                {/* Primary Suite CTA Banner */}
+                <div className="pt-2 text-center flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <a
+                    href="/seo-tools"
+                    onClick={(e) => { e.preventDefault(); handleNavigate("seo-tools"); }}
+                    className="w-full sm:w-auto px-8 py-4 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-full text-xs font-extrabold uppercase tracking-wider shadow-[0_4px_20px_rgba(255,87,34,0.35)] hover:shadow-[0_6px_25px_rgba(255,87,34,0.45)] flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.02] active:scale-95"
+                  >
+                    <span>Explore All 32 Free Production SEO Tools</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
+                  <a
+                    href="/tools/seo-audit-checker"
+                    onClick={(e) => { e.preventDefault(); handleNavigateSeoTool("seo-audit-checker"); }}
+                    className="w-full sm:w-auto px-6 py-4 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200/90 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
+                  >
+                    <Search className="w-4 h-4 text-[#FF5722]" />
+                    <span>Run Full Audit</span>
+                  </a>
                 </div>
               </div>
             </section>
@@ -2620,6 +2838,38 @@ export default function App() {
               <p className="text-xs sm:text-sm text-slate-600 max-w-lg mx-auto font-light">Read specialized tutorials compiled by Mehar Ali Hassan to audit and accelerate organic conversion channels.</p>
             </div>
 
+            {/* High-Visibility Primary Callout: Launch Interactive Tools Directly */}
+            <div className="p-6 rounded-3xl bg-gradient-to-r from-orange-50 via-amber-50/50 to-orange-50/20 border-2 border-orange-200/90 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="space-y-1.5 text-center md:text-left">
+                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#FF5722] text-white text-[10px] font-mono font-bold uppercase tracking-wider">
+                  <span>✦ Direct Tool Alternative</span>
+                </div>
+                <h2 className="text-lg font-black text-slate-950">
+                  Prefer Instant Diagnosis Over Reading?
+                </h2>
+                <p className="text-xs text-slate-600 max-w-xl leading-relaxed">
+                  Skip the long reading—test your site directly with Metazivo's 32 free interactive SEO tools. Instant live results with zero login required.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                <a
+                  href="/seo-tools"
+                  onClick={(e) => { e.preventDefault(); handleNavigate("seo-tools"); }}
+                  className="px-5 py-2.5 bg-[#FF5722] hover:bg-[#FF7043] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md hover:scale-[1.02] active:scale-95 inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>Launch 32 SEO Tools Suite</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+                <a
+                  href="/tools/seo-audit-checker"
+                  onClick={(e) => { e.preventDefault(); handleNavigateSeoTool("seo-audit-checker"); }}
+                  className="px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                >
+                  Run SEO Audit
+                </a>
+              </div>
+            </div>
+
             {/* List active published posts */}
             {blogs.length === 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8" aria-label="Loading articles">
@@ -2777,6 +3027,61 @@ export default function App() {
               </div>
             )}
 
+            {/* Top High-Visibility Interactive Tool Callout */}
+            {(() => {
+              const relTool = findRelevantToolForBlog(activeBlog);
+              return (
+                <aside className="p-5 sm:p-6 bg-gradient-to-br from-orange-50 via-amber-50/40 to-white border-2 border-orange-300 rounded-2xl shadow-sm space-y-3.5 my-6" id="blog-top-tool-callout">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#FF5722] text-white text-[10px] font-mono font-extrabold uppercase tracking-wider">
+                        ✦ Primary SEO Tool Callout
+                      </span>
+                      <span className="text-xs font-bold text-orange-950 font-sans">
+                        Instant Live Tool Solution
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-100/90 border border-emerald-200 px-2 py-0.5 rounded-full">
+                      100% Free • No Login Required
+                    </span>
+                  </div>
+
+                  <div>
+                    <h2 className="text-base sm:text-lg font-black text-slate-900 leading-snug">
+                      Solve This Issue Instantly: Use Our Free {relTool.name}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+                      {relTool.shortDesc} Run a live diagnostic scan on your website now with immediate actionable Google recommendations.
+                    </p>
+                  </div>
+
+                  <div className="pt-1 flex flex-wrap items-center gap-3">
+                    <a
+                      href={`/tools/${relTool.slug}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavigateSeoTool(relTool.slug);
+                      }}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#FF5722] to-orange-600 hover:from-[#FF7043] hover:to-orange-500 text-white text-xs font-black rounded-xl shadow-[0_4px_14px_rgba(255,87,34,0.3)] transition-all cursor-pointer hover:scale-[1.02] active:scale-95"
+                    >
+                      <span>Launch Free {relTool.name}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                    <a
+                      href="/seo-tools"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleNavigate("seo-tools");
+                      }}
+                      className="text-xs font-semibold text-slate-600 hover:text-[#FF5722] hover:underline"
+                    >
+                      Or view all 32 SEO tools &rarr;
+                    </a>
+                  </div>
+                </aside>
+              );
+            })()}
+
             {/* Blog Post Content Body with Auto-wrapped Responsive Tables */}
             <div
               className="prose prose-slate max-w-none text-slate-700 text-sm leading-relaxed space-y-6"
@@ -2792,8 +3097,50 @@ export default function App() {
               onClick={handleArticleLinkClick}
             />
 
-            {/* Dynamic FAQ Schema Removed */}
-            
+            {/* Bottom High-Visibility Interactive Tool Recommendation Box */}
+            {(() => {
+              const relTool = findRelevantToolForBlog(activeBlog);
+              return (
+                <section className="p-6 sm:p-8 bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-3xl space-y-4 my-10 shadow-xl border border-orange-500/30 relative overflow-hidden" id="blog-bottom-tool-callout">
+                  <div className="absolute right-0 top-0 w-64 h-64 bg-[#FF5722]/15 rounded-full blur-3xl pointer-events-none" />
+                  <div className="relative z-10 space-y-3">
+                    <span className="text-xs font-mono font-extrabold text-[#FF5722] uppercase tracking-wider block">
+                      ✦ Recommended Actionable Software
+                    </span>
+                    <h3 className="text-xl sm:text-2xl font-black text-white">
+                      Fix Your Website Issues with Metazivo's Free {relTool.name}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl font-light">
+                      Don't let technical errors, toxic backlinks, or slow response times hurt your search rankings. Benchmark your site in real-time with our free diagnostic engine with zero login or setup required.
+                    </p>
+                    <div className="flex flex-wrap gap-3 pt-2">
+                      <a
+                        href={`/tools/${relTool.slug}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleNavigateSeoTool(relTool.slug);
+                        }}
+                        className="px-6 py-3 bg-[#FF5722] hover:bg-[#FF7043] text-white text-xs font-black rounded-xl shadow-[0_4px_16px_rgba(255,87,34,0.4)] transition-all cursor-pointer flex items-center gap-2 hover:scale-[1.02] active:scale-95"
+                      >
+                        <span>Launch Free {relTool.name}</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </a>
+                      <a
+                        href="/seo-tools"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleNavigate("seo-tools");
+                        }}
+                        className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/10 text-xs font-bold rounded-xl transition-all cursor-pointer"
+                      >
+                        Explore All 32 Free SEO Tools &rarr;
+                      </a>
+                    </div>
+                  </div>
+                </section>
+              );
+            })()}
+
             {/* Injected schemas JSON-LD verification block */}
             {activeBlog.schemas?.map((sch) => (
               <script

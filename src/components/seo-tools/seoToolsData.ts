@@ -2934,3 +2934,75 @@ export function getToolBySlug(slug?: string): SeoToolDef | undefined {
 
   return SEO_TOOLS_LIST.find((t) => clean.includes(t.slug) || t.slug.includes(clean));
 }
+
+/**
+ * Standardized Title Formula: [Tool Name] - Free Online SEO Tool (Instant & Accurate) | Metazivo
+ */
+export function getToolMetaTitle(tool: SeoToolDef): string {
+  if (!tool) return "Free Online SEO Tool (Instant & Accurate) | Metazivo";
+  return `${tool.name} - Free Online SEO Tool (Instant & Accurate) | Metazivo`;
+}
+
+/**
+ * Action-driven Meta Description Formula under 155 characters:
+ * "Use Metazivo's free [Tool Name] to analyze and fix your website instantly. Fast, accurate, and no login required."
+ */
+export function getToolMetaDescription(tool: SeoToolDef): string {
+  if (!tool) return "Use Metazivo's free online SEO tools to analyze and fix your website instantly. Fast, accurate, and no login required.";
+  const desc = `Use Metazivo's free ${tool.name} to analyze and fix your website instantly. Fast, accurate, and no login required.`;
+  return desc.length <= 155 ? desc : desc.slice(0, 152) + "...";
+}
+
+/**
+ * Intelligently maps any blog post to its most relevant interactive SEO tool
+ */
+export function findRelevantToolForBlog(blog: { title?: string; slug?: string; excerpt?: string; categories?: string[]; tags?: string[]; content?: string }): SeoToolDef {
+  const text = `${blog.slug || ""} ${blog.title || ""} ${blog.excerpt || ""} ${(blog.categories || []).join(" ")} ${(blog.tags || []).join(" ")}`.toLowerCase();
+
+  if (text.includes("toxic") || text.includes("spam link") || text.includes("backlink") || text.includes("inbound") || text.includes("link audit") || text.includes("referring")) {
+    return getToolBySlug("incoming-links-checker") || SEO_TOOLS_LIST[0];
+  }
+  if (text.includes("speed") || text.includes("vitals") || text.includes("lcp") || text.includes("cls") || text.includes("ttfb") || text.includes("pagespeed") || text.includes("slow")) {
+    return getToolBySlug("website-speed-test") || SEO_TOOLS_LIST[0];
+  }
+  if (text.includes("cannibal") || text.includes("keyword conflict") || text.includes("split url")) {
+    return getToolBySlug("keyword-cannibalization-checker") || SEO_TOOLS_LIST[0];
+  }
+  if (text.includes("cluster") || text.includes("topical map") || text.includes("keyword research") || text.includes("semantic")) {
+    return getToolBySlug("keyword-clustering-tool") || SEO_TOOLS_LIST[0];
+  }
+  if (text.includes("intent") || text.includes("search intent") || text.includes("commercial intent")) {
+    return getToolBySlug("search-intent-checker") || SEO_TOOLS_LIST[0];
+  }
+  if (text.includes("schema") || text.includes("json-ld") || text.includes("structured data") || text.includes("rich snippet")) {
+    return getToolBySlug("schema-markup-generator") || SEO_TOOLS_LIST[0];
+  }
+  if (text.includes("meta tag") || text.includes("title tag") || text.includes("meta description") || text.includes("serp preview") || text.includes("serp snippet")) {
+    return getToolBySlug("meta-title-description-generator") || SEO_TOOLS_LIST[0];
+  }
+  if (text.includes("broken link") || text.includes("404") || text.includes("dead link")) {
+    return getToolBySlug("broken-link-checker") || SEO_TOOLS_LIST[0];
+  }
+  if (text.includes("redirect") || text.includes("301") || text.includes("302") || text.includes("chain")) {
+    return getToolBySlug("redirect-checker") || SEO_TOOLS_LIST[0];
+  }
+  if (text.includes("robots.txt") || text.includes("robots txt") || text.includes("crawl directive")) {
+    return getToolBySlug("robots-txt-generator") || SEO_TOOLS_LIST[0];
+  }
+  if (text.includes("sitemap") || text.includes("xml sitemap")) {
+    return getToolBySlug("xml-sitemap-generator") || SEO_TOOLS_LIST[0];
+  }
+  if (text.includes("hreflang") || text.includes("international seo") || text.includes("multilingual")) {
+    return getToolBySlug("hreflang-generator") || SEO_TOOLS_LIST[0];
+  }
+  if (text.includes("ai search") || text.includes("aeo") || text.includes("geo") || text.includes("chatgpt") || text.includes("perplexity") || text.includes("ai overview")) {
+    return getToolBySlug("ai-aeo-geo-checker") || SEO_TOOLS_LIST[0];
+  }
+  if (text.includes("local seo") || text.includes("map pack") || text.includes("google business") || text.includes("nap")) {
+    return getToolBySlug("local-seo-audit-tool") || SEO_TOOLS_LIST[0];
+  }
+
+  // Default fallback to SEO Audit Checker
+  return getToolBySlug("seo-audit-checker") || SEO_TOOLS_LIST[0];
+}
+

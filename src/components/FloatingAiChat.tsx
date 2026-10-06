@@ -129,9 +129,15 @@ export default function FloatingAiChat() {
     setLoading(true);
 
     try {
-      // Build clean conversation history for API (filter out any previous error messages)
+      // Build clean conversation history for API (filter out any previous error or placeholder messages)
       const conversationHistory = [...messages, userMsg]
-        .filter((m) => !m.text.includes("rukawat aayi") && !m.text.includes("network connection"))
+        .filter((m) => 
+          !m.text.includes("rukawat aayi") && 
+          !m.text.includes("network connection") &&
+          !m.text.includes("process ho raha hai") &&
+          !m.text.includes("dobara apna sawal send karein") &&
+          !m.text.includes("Main aapka sawal samajh gaya hoon")
+        )
         .map((m) => ({
           role: m.role === "assistant" ? "model" : "user",
           content: m.text
