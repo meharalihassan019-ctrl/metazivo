@@ -58,7 +58,6 @@ import SeoScoreAnalyzer from "./components/SeoScoreAnalyzer";
 import Floating3DRing from "./components/Floating3DRing";
 import ParallaxBentoCard from "./components/ParallaxBentoCard";
 import HeroVisual from "./components/HeroVisual";
-import FloatingAiChat from "./components/FloatingAiChat";
 import { servicesData, pricingPlans, portfolioItems, workProcessTimeline, faqList, testimonials, trustedCompanies } from "./data";
 import { BlogPost, MediaAsset, ContactEnquiry, RedirectRule, ActivityLog, AnalyticsSummary, ContactInfo, CustomPage, SiteSettings, AgencyService } from "./types";
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
@@ -5037,9 +5036,6 @@ export default function App() {
           </div>
         </div>
       )}
-
-      {/* Floating AI Assistant Chat Widget (Positioned Directly Above WhatsApp Button) */}
-      <FloatingAiChat />
 
       {/* Premium Floating WhatsApp Action Button */}
       <a
