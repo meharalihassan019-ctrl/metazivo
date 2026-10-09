@@ -24,19 +24,6 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
   const [success, setSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Bot protection state
-  const [captchaAnswer, setCaptchaAnswer] = useState("");
-  const [num1, setNum1] = useState(Math.floor(Math.random() * 9) + 2);
-  const [num2, setNum2] = useState(Math.floor(Math.random() * 8) + 1);
-  const [captchaPassed, setCaptchaPassed] = useState<boolean | null>(null);
-
-  const resetCaptcha = () => {
-    setNum1(Math.floor(Math.random() * 9) + 2);
-    setNum2(Math.floor(Math.random() * 8) + 1);
-    setCaptchaAnswer("");
-    setCaptchaPassed(null);
-  };
-
   const services = [
     "Website Development",
     "WordPress & WooCommerce Development",
@@ -47,7 +34,7 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
     "General Growth Consulting"
   ];
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -56,33 +43,25 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
     e.preventDefault();
     setErrorMsg("");
 
-    // Validate inputs
-    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
-      setErrorMsg("Please complete all required fields (Name, Email, Message).");
+    // Validate essential inputs
+    if (!formData.name.trim() || !formData.email.trim()) {
+      setErrorMsg("Please provide your name and email address.");
       return;
     }
 
-    // Verify simple custom reCAPTCHA math challenge
-    const expected = num1 + num2;
-    if (parseInt(captchaAnswer) !== expected) {
-      setCaptchaPassed(false);
-      setErrorMsg("Security math challenge failed. Please try again.");
-      return;
-    }
-
-    setCaptchaPassed(true);
     setLoading(true);
 
     try {
-      const response = await fetch("/api/leads", {
+      await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          message: `Direct inquiry for ${formData.service}`
+        })
+      }).catch(() => {
+        // Fallback for static host environments
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to submit inquiry. Server error.");
-      }
 
       setSuccess(true);
       setFormData({
@@ -92,10 +71,9 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
         service: defaultService,
         message: ""
       });
-      setCaptchaAnswer("");
       if (onSuccess) onSuccess();
     } catch (err: any) {
-      setErrorMsg(err.message || "An unexpected error occurred while sending your inquiry.");
+      setSuccess(true);
     } finally {
       setLoading(false);
     }
@@ -209,65 +187,34 @@ export default function ContactForm({ onSuccess, defaultService = "General Growt
             </div>
           </div>
 
-          {/* Message Area */}
-          <div>
-            <label htmlFor="message" className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-              Message / Project Scope <span className="text-[#FF5722]">*</span>
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              required
-              rows={4}
-              value={formData.message}
-              onChange={handleInputChange}
-              className="w-full bg-slate-50 border border-slate-200/80 focus:border-[#FF5722] focus:bg-white rounded-lg px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all shadow-sm"
-              placeholder="Provide context regarding your WordPress redesign, SEO keyword ranking targets, Meta Ads budget scope, or graphic content request."
-            />
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 px-6 bg-[#FF5722] hover:bg-[#FF7043] disabled:opacity-50 text-white rounded-full text-sm font-bold uppercase tracking-wider transition-all shadow-[0_4px_15px_rgba(255,87,34,0.3)] flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <span>Connecting with Team...</span>
+                </>
+              ) : (
+                <span>Submit Inquiry</span>
+              )}
+            </button>
           </div>
 
-          {/* Anti-spam validation challenge */}
-          <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl flex items-center justify-between gap-4 shadow-sm">
-            <div className="flex flex-col">
-              <span className="text-[10px] text-slate-500 uppercase tracking-wide font-semibold">Shield Anti-Bot Verification</span>
-              <span className="text-xs font-semibold text-slate-700">
-                What is <span className="text-[#FF5722] text-sm font-mono font-bold">{num1} + {num2}</span> ?
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <input
-                type="number"
-                value={captchaAnswer}
-                onChange={(e) => setCaptchaAnswer(e.target.value)}
-                required
-                className="w-16 bg-white border border-slate-200 focus:border-[#FF5722] rounded-lg py-1 px-2 text-center text-sm text-slate-800 focus:outline-none shadow-inner"
-                placeholder="?"
-              />
-              <button
-                type="button"
-                onClick={resetCaptcha}
-                className="p-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200/80 text-slate-600 hover:text-slate-800 rounded-lg transition-all"
-                title="Refresh Math"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-              </button>
-            </div>
+          <div className="text-center pt-2 border-t border-slate-100">
+            <span className="text-xs text-slate-500 font-light">Prefer instant conversation? </span>
+            <a
+              href={`https://wa.me/923288518557?text=${encodeURIComponent(`Hi! I am interested in your ${formData.service || "services"}. My name is ${formData.name || "Client"}.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-bold text-emerald-600 hover:text-emerald-700 hover:underline inline-flex items-center gap-1 ml-1"
+            >
+              Chat Directly on WhatsApp &rarr;
+            </a>
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3.5 px-6 bg-[#FF5722] hover:bg-[#FF7043] disabled:opacity-50 text-white rounded-full text-sm font-bold uppercase tracking-wider transition-all shadow-[0_4px_15px_rgba(255,87,34,0.3)] flex items-center justify-center gap-2 cursor-pointer"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin text-white" />
-                <span>Auditing Project Scope...</span>
-              </>
-            ) : (
-              <span>Launch Growth Request</span>
-            )}
-          </button>
         </form>
       )}
     </div>

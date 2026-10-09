@@ -1428,6 +1428,15 @@ app.post("/api/git/push", async (req, res) => {
       });
     });
 
+    // Ensure git repository is initialized
+    await execPromise("git init 2>/dev/null || true");
+    await execPromise('git config user.name "Metazivo Deployer" || true');
+    await execPromise('git config user.email "deploy@metazivo.com" || true');
+    
+    // Stage all updated files and commit
+    await execPromise("git add -A");
+    await execPromise('git commit -m "Deploy latest changes from Metazivo Studio" 2>/dev/null || true');
+
     await execPromise("git remote remove origin 2>/dev/null || true");
     await execPromise(`git remote add origin "${authenticatedUrl}"`);
     await execPromise(`git branch -M "${branch}"`);

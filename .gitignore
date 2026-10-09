@@ -36,3 +36,5 @@ temp.txt
 *.njsproj
 *.sln
 *.sw?
+*.tar.gz
+*.zip
