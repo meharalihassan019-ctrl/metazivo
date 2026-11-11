@@ -431,11 +431,42 @@ export function buildPageSchemaGraph(
       });
     }
 
-    // Sanitize any existing custom Article schemas to guarantee 100% Google Rich Results compliance
+    // Deeply sanitize every schema entity in the graph to guarantee 100% Google Rich Results and Canonical alignment
     for (const item of graph) {
       if (item && item["@type"]) {
         const typeStr = Array.isArray(item["@type"]) ? item["@type"].join(" ") : String(item["@type"]);
-        if (/Article|BlogPosting|NewsArticle/i.test(typeStr)) {
+
+        // Normalize URL and mainEntityOfPage to strict canonical postUrl
+        if (item.url && typeof item.url === "string") {
+          item.url = postUrl;
+        }
+        if (item.mainEntityOfPage) {
+          item.mainEntityOfPage = postUrl;
+        }
+        if (item.isPartOf && typeof item.isPartOf === "object") {
+          item.isPartOf = { "@id": `${postUrl}#webpage` };
+        }
+
+        // Fix @id to use canonical postUrl prefix
+        if (item["@id"] && typeof item["@id"] === "string") {
+          const hashIndex = item["@id"].indexOf("#");
+          const fragment = hashIndex !== -1 ? item["@id"].substring(hashIndex) : "";
+          if (fragment) {
+            item["@id"] = `${postUrl}${fragment}`;
+          } else if (/Article|BlogPosting|NewsArticle|TechArticle/i.test(typeStr)) {
+            item["@id"] = `${postUrl}#article`;
+          } else if (/HowTo/i.test(typeStr)) {
+            item["@id"] = `${postUrl}#howto`;
+          } else if (/FAQPage/i.test(typeStr)) {
+            item["@id"] = `${postUrl}#faq`;
+          } else if (/BreadcrumbList/i.test(typeStr)) {
+            item["@id"] = `${postUrl}#breadcrumbs`;
+          } else if (/WebPage/i.test(typeStr)) {
+            item["@id"] = `${postUrl}#webpage`;
+          }
+        }
+
+        if (/Article|BlogPosting|NewsArticle|TechArticle/i.test(typeStr)) {
           if (!item.image || typeof item.image !== "string" || item.image.startsWith("data:")) {
             item.image = cleanImage;
           }
@@ -449,9 +480,8 @@ export function buildPageSchemaGraph(
               "url": `${DOMAIN}/about`
             };
           }
-          if (!item.mainEntityOfPage) {
-            item.mainEntityOfPage = postUrl;
-          }
+          item.mainEntityOfPage = postUrl;
+          item.url = postUrl;
         }
       }
     }
@@ -494,15 +524,16 @@ export function buildPageSchemaGraph(
 
   // 6. TOOLS SUITE & FREE TOOLS (/seo-tools, /free-tools)
   if (p === "/seo-tools" || p === "/seo-tool" || p === "/free-tools" || p === "/tools") {
+    const toolsCanonicalUrl = `${DOMAIN}/seo-tools`;
     graph.push({
       "@type": "WebApplication",
-      "@id": `${canonicalUrl}#app`,
-      "name": "31 Free Production SEO Tools & AI Search Optimization Suite",
-      "url": canonicalUrl,
+      "@id": `${toolsCanonicalUrl}#app`,
+      "name": "32 Free Production SEO Tools & AI Search Optimization Suite",
+      "url": toolsCanonicalUrl,
       "applicationCategory": "SEOApplication",
       "operatingSystem": "All",
       "browserRequirements": "Requires JavaScript. Requires HTML5.",
-      "description": "Access 31 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.",
+      "description": "Access 32 free, production-grade SEO and AI search tools. Audit websites, optimize meta tags, generate schema markup, cluster keywords, and optimize for AEO & GEO.",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -513,10 +544,10 @@ export function buildPageSchemaGraph(
 
     graph.push({
       "@type": "BreadcrumbList",
-      "@id": `${canonicalUrl}#breadcrumbs`,
+      "@id": `${toolsCanonicalUrl}#breadcrumbs`,
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Home", "item": `${DOMAIN}/` },
-        { "@type": "ListItem", "position": 2, "name": "SEO Tools Suite", "item": canonicalUrl }
+        { "@type": "ListItem", "position": 2, "name": "SEO Tools Suite", "item": toolsCanonicalUrl }
       ]
     });
     return { "@context": "https://schema.org", "@graph": graph };

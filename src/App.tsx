@@ -602,9 +602,10 @@ export default function App() {
       lowerPath === "/free-seo-tools" ||
       lowerPath === "/free-seo-tool"
     ) {
-      setCurrentTab("free-tools");
-      if (window.location.pathname !== "/free-tools") {
-        window.history.replaceState({}, "", "/free-tools");
+      setActiveSeoToolSlug("");
+      setCurrentTab("seo-tools");
+      if (window.location.pathname !== "/seo-tools") {
+        window.history.replaceState({}, "", "/seo-tools");
       }
     } else {
       const slug = path.replace(/^\/+/, "").replace(/\/+$/, "");
@@ -978,8 +979,9 @@ export default function App() {
       tab === "tools" ||
       tab === "free-seo-tools"
     ) {
-      setCurrentTab("free-tools");
-      window.history.pushState({}, "", "/free-tools");
+      setActiveSeoToolSlug("");
+      setCurrentTab("seo-tools");
+      window.history.pushState({}, "", "/seo-tools");
     } else if (tab === "privacy" || tab === "privacy-policy") {
       setCurrentTab("privacy");
       window.history.pushState({}, "", "/privacy-policy");
@@ -1095,7 +1097,7 @@ export default function App() {
         lower.startsWith("/free-tools") ||
         lower.startsWith("/free-seo-tool")
       ) {
-        handleNavigate("free-tools");
+        handleNavigateSeoTool("");
       } else if (lower.startsWith("/blog/")) {
         const slug = lower.replace("/blog/", "").replace(/^\/+|\/+$/g, "");
         handleOpenBlog(slug);

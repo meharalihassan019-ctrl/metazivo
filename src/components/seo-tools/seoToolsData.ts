@@ -2924,7 +2924,8 @@ export function getToolBySlug(slug?: string): SeoToolDef | undefined {
     "schema-markup": "schema-markup-generator",
     "mobile-friendly-test": "seo-audit-checker",
     "speed-test": "website-speed-test",
-    "page-speed-test": "website-speed-test"
+    "page-speed-test": "website-speed-test",
+    "site-speed-test": "website-speed-test"
   };
 
   const targetSlug = aliasMap[clean];

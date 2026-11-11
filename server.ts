@@ -78,6 +78,17 @@ async function restoreDbFromFirestore() {
       saveDb(db);
     }
     if (postsDoc.exists()) db.posts = postsDoc.data().data || [];
+    if (!db.posts || db.posts.length === 0) {
+      try {
+        const postsSnap = await getDocs(collection(firestoreDb, "posts"));
+        if (!postsSnap.empty) {
+          db.posts = postsSnap.docs.map(d => d.data());
+          saveDb(db);
+        }
+      } catch (err) {
+        console.warn("Could not query posts collection in restore:", err);
+      }
+    }
     if (mediaDoc.exists()) db.media = mediaDoc.data().data || [];
     if (leadsDoc.exists()) db.leads = leadsDoc.data().data || [];
     if (pagesDoc.exists()) db.pages = pagesDoc.data().data || [];
@@ -85,7 +96,8 @@ async function restoreDbFromFirestore() {
     if (oauthDoc.exists()) db.googleOAuth = oauthDoc.data() || null;
 
     // Save back to local cache
-        console.log("Restored DB from Firestore");
+    saveDb(db);
+    console.log("Restored DB from Firestore");
   } catch(e) {
     console.error("Failed to restore from firestore", e);
   }
@@ -244,6 +256,40 @@ export const SERVICE_ALIASES: Record<string, string> = {
   "/service": "/services"
 };
 
+export const KNOWN_BLOG_REDIRECTS: Record<string, string> = {
+  // Legacy / deleted blog posts mapping to active relevant pages
+  "website-speed-optimization-ultimate-guide": "/blog/how-to-make-wordpress-website-faster",
+  "maximize-roi-advanced-meta-ads-funnels": "/service/meta-ads-advertising",
+  "toxic-links-checker-how-to-find-and-remove-harmful-backlinks": "/blog/toxic-links-checker",
+  // All published blog slugs mapping to /blog/:slug
+  "sitemap-generator": "/blog/sitemap-generator",
+  "meta-tag-checker": "/blog/meta-tag-checker",
+  "keyword-density-checker": "/blog/keyword-density-checker",
+  "toxic-links-checker": "/blog/toxic-links-checker",
+  "faq-schema-generator": "/blog/faq-schema-generator",
+  "website-links-checker": "/blog/website-links-checker",
+  "inbound-links-checker-free": "/blog/inbound-links-checker-free",
+  "404-broken-link-checker": "/blog/404-broken-link-checker",
+  "check-page-load-speed-online-free": "/blog/check-page-load-speed-online-free",
+  "why-is-website-speed-slow": "/blog/why-is-website-speed-slow",
+  "free-local-seo-audit-tool": "/blog/free-local-seo-audit-tool",
+  "free-keyword-clustering-tool-group-keywords-and-build-topic-clusters-in-seconds": "/blog/free-keyword-clustering-tool-group-keywords-and-build-topic-clusters-in-seconds",
+  "how-to-write-meta-title-and-description-a-complete-step-by-step-guide": "/blog/how-to-write-meta-title-and-description-a-complete-step-by-step-guide",
+  "free-seo-title-generator": "/blog/free-seo-title-generator",
+  "free-meta-title-generator": "/blog/free-meta-title-generator",
+  "website-speed-tests-complete-guide": "/blog/website-speed-tests-complete-guide",
+  "how-to-check-mobile-site-speed-free": "/blog/how-to-check-mobile-site-speed-free",
+  "how-to-test-website-loading-speed-online": "/blog/how-to-test-website-loading-speed-online",
+  "small-business-website-mistakes-losing-customers": "/blog/small-business-website-mistakes-losing-customers",
+  "small-business-website-design-guide": "/blog/small-business-website-design-guide",
+  "how-to-make-wordpress-website-faster": "/blog/how-to-make-wordpress-website-faster",
+  "rank-google-ai-overviews": "/blog/rank-google-ai-overviews",
+  "on-page-seo-aeo-geo": "/blog/on-page-seo-aeo-geo",
+  "best-wordpress-seo-services": "/blog/best-wordpress-seo-services",
+  "on-page-seo-service": "/blog/on-page-seo-service",
+  "local-seo-for-lawyers": "/blog/local-seo-for-lawyers"
+};
+
 export const SYSTEM_PAGE_REDIRECTS: Record<string, string> = {
   "/page/home": "/",
   "/page/about": "/about",
@@ -308,10 +354,38 @@ export function resolveCanonicalUrl(rawPath: string): string {
 
   if (
     canonical === "/tools" ||
+    canonical === "/free-tools" ||
     canonical === "/free-seo-tools" ||
     canonical === "/free-seo-tool"
   ) {
     return "/seo-tools";
+  }
+
+  // 6. Language directory redirects (/de, /fr, etc. -> /)
+  if (
+    canonical === "/de" ||
+    canonical === "/fr" ||
+    canonical === "/es" ||
+    canonical === "/it" ||
+    canonical === "/pt" ||
+    canonical === "/ru" ||
+    canonical === "/ar"
+  ) {
+    return "/";
+  }
+
+  // 7. Root-level blog post redirects: /:slug -> /blog/:slug
+  const rootSlug = canonical.replace(/^\//, "");
+  if (KNOWN_BLOG_REDIRECTS[rootSlug] && !canonical.startsWith("/blog/")) {
+    return KNOWN_BLOG_REDIRECTS[rootSlug];
+  }
+
+  // 8. Blog post aliases under /blog/:slug
+  if (canonical.startsWith("/blog/")) {
+    const bSlug = canonical.replace(/^\/blog\//, "");
+    if (KNOWN_BLOG_REDIRECTS[bSlug] && KNOWN_BLOG_REDIRECTS[bSlug] !== canonical) {
+      return KNOWN_BLOG_REDIRECTS[bSlug];
+    }
   }
 
   // 6. Legal and Core Page Aliases
@@ -2398,7 +2472,6 @@ app.get("/sitemap.xml", async (req, res) => {
       { path: "/", changefreq: "daily", priority: "1.0" },
       { path: "/services", changefreq: "weekly", priority: "0.9" },
       { path: "/seo-tools", changefreq: "daily", priority: "1.0" },
-      { path: "/free-tools", changefreq: "weekly", priority: "0.9" },
       { path: "/blog", changefreq: "daily", priority: "0.9" },
       { path: "/portfolio", changefreq: "weekly", priority: "0.8" },
       { path: "/pricing", changefreq: "monthly", priority: "0.8" },
@@ -2416,7 +2489,7 @@ app.get("/sitemap.xml", async (req, res) => {
       }
     });
 
-    // 2. All 31 Free Production SEO Tools & Utilities (Canonical /tools/:slug)
+    // 2. All 32 Free Production SEO Tools & Utilities (Canonical /tools/:slug)
     SEO_TOOLS_LIST.forEach((tool) => {
       const locUrl = `${baseUrl}/tools/${tool.slug}`;
       if (!addedUrls.has(locUrl)) {
@@ -2518,9 +2591,20 @@ app.get("/sitemap.xml", async (req, res) => {
 
     xml += `\n</urlset>`;
 
-    // Save in cache
+    // Save in cache & sync physical sitemap.xml on disk for Hostinger static file serving
     sitemapCacheXml = xml;
     sitemapCacheTime = Date.now();
+    sitemapCacheEtag = `W/"${crypto.createHash("md5").update(xml).digest("hex").slice(0, 16)}"`;
+
+    try {
+      fs.writeFileSync(path.join(process.cwd(), "public", "sitemap.xml"), xml, "utf-8");
+      const distSitemap = path.join(process.cwd(), "dist", "sitemap.xml");
+      if (fs.existsSync(path.dirname(distSitemap))) {
+        fs.writeFileSync(distSitemap, xml, "utf-8");
+      }
+    } catch (writeErr) {
+      console.warn("Could not write sitemap.xml to disk:", writeErr);
+    }
     sitemapCacheEtag = `W/"${crypto.createHash("md5").update(xml).digest("hex").slice(0, 16)}"`;
 
     res.setHeader("Content-Type", "application/xml; charset=utf-8");
@@ -4330,6 +4414,62 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
     };
   }
 
+  // 3.1 Individual Service Detail Page (/service/:slug)
+  if (p.startsWith("/service/")) {
+    const rawSlug = p.replace("/service/", "");
+    const slug = decodeURIComponent(rawSlug).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    const service = servicesData.find(s => s.slug === slug || s.id === slug);
+    if (service) {
+      const canonicalServiceUrl = `https://metazivo.com/service/${service.slug}`;
+      const title = service.seoTitle || `${service.title} Services | Metazivo`;
+      const description = service.seoDescription || service.description;
+      const benefitsList = (service.benefits || []).map(b => `<li>${escapeHtml(b)}</li>`).join("");
+      const deliverablesList = (service.deliverables || []).map(d => `<li>${escapeHtml(d)}</li>`).join("");
+      const processList = (service.process || []).map((step, idx) => `<li><strong>Step ${idx + 1}:</strong> ${escapeHtml(step)}</li>`).join("");
+      const faqsList = (service.faqs || []).map(f => `<div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"><h3 itemprop="name">${escapeHtml(f.q)}</h3><div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><p itemprop="text">${escapeHtml(f.a)}</p></div></div>`).join("");
+
+      return {
+        title,
+        description,
+        keywords: `${service.title}, ${service.title} services, agency, Metazivo`,
+        ogTitle: title,
+        ogDescription: description,
+        url: canonicalServiceUrl,
+        html: `
+        <main>
+          <article itemscope itemtype="https://schema.org/Service">
+            <nav aria-label="Breadcrumb">
+              <ol>
+                <li><a href="/">Home</a></li>
+                <li><a href="/services">Services</a></li>
+                <li aria-current="page">${escapeHtml(service.title)}</li>
+              </ol>
+            </nav>
+            <h1 itemprop="name">${escapeHtml(service.title)}</h1>
+            <p itemprop="description">${escapeHtml(service.longDescription || service.description)}</p>
+            ${benefitsList ? `<section><h2>Key Advantages & Capabilities</h2><ul>${benefitsList}</ul></section>` : ""}
+            ${deliverablesList ? `<section><h2>Deliverables & Scope</h2><ul>${deliverablesList}</ul></section>` : ""}
+            ${processList ? `<section><h2>Strategic Delivery Process</h2><ol>${processList}</ol></section>` : ""}
+            ${service.fullFulfillmentCopy ? `<section><h2>Fulfillment & Execution Blueprint</h2><p>${escapeHtml(service.fullFulfillmentCopy)}</p></section>` : ""}
+            ${faqsList ? `<section itemscope itemtype="https://schema.org/FAQPage"><h2>Frequently Asked Questions</h2>${faqsList}</section>` : ""}
+            <p><a href="/contact">Book a Project Consultation</a> | <a href="/seo-tools">Explore Free SEO Tools</a></p>
+          </article>
+        </main>`
+      };
+    } else {
+      return {
+        isNotFound: true,
+        title: "404 - Service Not Found | Metazivo",
+        description: "The requested service could not be found. Explore our full range of digital growth services.",
+        keywords: "service not found, metazivo",
+        ogTitle: "404 - Service Not Found | Metazivo",
+        ogDescription: "The requested service could not be found.",
+        url: `https://metazivo.com/service/${slug}`,
+        html: `<main><article><h1>404 - Service Not Found</h1><p>The requested service is not available.</p><p><a href="/services">Explore All Services</a></p></article></main>`
+      };
+    }
+  }
+
   // 4. Portfolio Page
   if (p === "/portfolio") {
     return {
@@ -4841,20 +4981,62 @@ async function getPageSEOAndContent(pathname: string): Promise<any> {
       };
     }
 
-    // 4. Fallback: clean SEO default (never 500 error!)
-    const humanTitle = slug.replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    // 4. Missing / non-existent blog post: Return 404 Not Found with noindex
     return {
-      title: humanTitle ? `${humanTitle} | Metazivo` : "Blog | Metazivo",
-      description: "Read in-depth SEO, speed optimization, and digital marketing insights published by Metazivo.",
-      keywords: "SEO, technical audit, page speed, Metazivo",
-      ogTitle: humanTitle ? `${humanTitle} | Metazivo` : "Blog | Metazivo",
-      ogDescription: "Read in-depth SEO, speed optimization, and digital marketing insights published by Metazivo.",
+      isNotFound: true,
+      title: "404 - Article Not Found | Metazivo",
+      description: "The requested article is no longer available or has moved to an updated URL.",
+      keywords: "404 not found, metazivo",
+      ogTitle: "404 - Article Not Found | Metazivo",
+      ogDescription: "The requested article could not be found.",
       url: `https://metazivo.com/blog/${slug}`,
-      html: `<main><article><h1>${humanTitle || "Metazivo Blog"}</h1><p>Technical publication</p></article></main>`
+      html: `
+        <main>
+          <article>
+            <h1>404 - Article Not Found</h1>
+            <p>The requested blog post is no longer available or has moved to an updated URL.</p>
+            <p><a href="/blog">Browse All Blog Posts</a> | <a href="/seo-tools">Explore Free SEO Tools</a></p>
+          </article>
+        </main>`
     };
   }
 
-  return base;
+  // Check custom user pages created in admin
+  const userPage = (db?.pages || []).find((pg: any) => {
+    const pgSlug = (pg.slug || "").toLowerCase().replace(/^\/+|\/+$/g, "");
+    return pgSlug && pgSlug === p.replace(/^\/+|\/+$/g, "");
+  });
+  if (userPage) {
+    const pageTitle = userPage.title || "Metazivo";
+    return {
+      title: `${pageTitle} | Metazivo`,
+      description: userPage.metaDescription || userPage.excerpt || base.description,
+      keywords: base.keywords,
+      ogTitle: `${pageTitle} | Metazivo`,
+      ogDescription: userPage.metaDescription || userPage.excerpt || base.description,
+      url: `https://metazivo.com${p}`,
+      html: `<main><article><h1>${escapeHtml(pageTitle)}</h1><div>${userPage.content || ""}</div></article></main>`
+    };
+  }
+
+  // Unknown route -> 404
+  return {
+    isNotFound: true,
+    title: "404 - Page Not Found | Metazivo",
+    description: "The page you are looking for does not exist on Metazivo.",
+    keywords: "404 not found, metazivo",
+    ogTitle: "404 - Page Not Found | Metazivo",
+    ogDescription: "The page you are looking for does not exist on Metazivo.",
+    url: `https://metazivo.com${p}`,
+    html: `
+      <main>
+        <article>
+          <h1>404 - Page Not Found</h1>
+          <p>The page you requested could not be found on Metazivo.</p>
+          <p><a href="/">Return to Homepage</a> | <a href="/seo-tools">Browse Free SEO Tools</a></p>
+        </article>
+      </main>`
+  };
 }
 
 async function generateSchema(pathname: string, preloadedPost?: any): Promise<string> {
@@ -4904,7 +5086,7 @@ async function generateSchema(pathname: string, preloadedPost?: any): Promise<st
   return JSON.stringify(schemaGraph, null, 2);
 }
 
-async function injectSEOAndPrerender(html: string, pathname: string, userAgent: string = ""): Promise<string> {
+async function injectSEOAndPrerender(html: string, pathname: string, userAgent: string = ""): Promise<{ html: string; status: number }> {
   // Normalize path using the single source of truth canonical function
   const canonicalPath = resolveCanonicalUrl(pathname.split("?")[0]);
 
@@ -4914,12 +5096,13 @@ async function injectSEOAndPrerender(html: string, pathname: string, userAgent: 
   // Check memory cache for instant sub-second response (< 10ms TTFB for crawlers & visitors)
   const cached = ssrCache.get(cacheKey);
   if (cached && (Date.now() - cached.timestamp < SSR_CACHE_TTL)) {
-    return cached.html;
+    return { html: cached.html, status: 200 };
   }
 
   try {
     const seoData = await getPageSEOAndContent(canonicalPath);
     let resHtml = html;
+    const httpStatus = seoData.isNotFound ? 404 : 200;
 
     const cleanCanonicalUrl = `https://metazivo.com${canonicalPath === "/" ? "/" : canonicalPath}`;
 
@@ -4928,6 +5111,16 @@ async function injectSEOAndPrerender(html: string, pathname: string, userAgent: 
       resHtml = resHtml.replace(/<title>[\s\S]*?<\/title>/i, `<title>${seoData.title}</title>`);
     } else {
       resHtml = resHtml.replace("</head>", `  <title>${seoData.title}</title>\n</head>`);
+    }
+
+    // Robots Meta Tag (Enforce noindex, follow for 404s)
+    if (seoData.isNotFound) {
+      const robotsRegex = /<meta\s+name=["']robots["']\s+content=["'][\s\S]*?["']\s*\/?>/i;
+      if (robotsRegex.test(resHtml)) {
+        resHtml = resHtml.replace(robotsRegex, '<meta name="robots" content="noindex, follow" />');
+      } else {
+        resHtml = resHtml.replace("</head>", '  <meta name="robots" content="noindex, follow" />\n</head>');
+      }
     }
 
     // Meta Description Replacement
@@ -5030,20 +5223,21 @@ async function injectSEOAndPrerender(html: string, pathname: string, userAgent: 
     }
 
     // Prerender markup handling:
-    // If request comes from a search engine bot / crawler, inject crawlable semantic DOM into #root
-    // For human users in web browsers, DO NOT inject unstyled raw HTML into #root!
-    // Instead keep #root clean with the instant styled shell to prevent unstyled text flash (FOUC),
-    // and deliver crawler content in <noscript> so non-JS indexers still see all content.
+    // Dynamically inject unique semantic DOM into <noscript id="metazivo-crawler-content">
+    // and if crawler bot, into #root so bots index unique content per URL!
+    const noscriptRegex = /<noscript\s+id=["']metazivo-crawler-content["']\s*>([\s\S]*?)<\/noscript>/i;
+    if (seoData.html) {
+      if (noscriptRegex.test(resHtml)) {
+        resHtml = resHtml.replace(noscriptRegex, `<noscript id="metazivo-crawler-content">\n${seoData.html}\n</noscript>`);
+      } else {
+        resHtml = resHtml.replace("</body>", `  <noscript id="metazivo-crawler-content">\n${seoData.html}\n</noscript>\n</body>`);
+      }
+    }
+
     const rootRegex = /<div\s+id=["']root["']\s*>([\s\S]*?)<\/div>/i;
     if (isBot && seoData.html) {
       if (rootRegex.test(resHtml)) {
         resHtml = resHtml.replace(rootRegex, `<div id="root">${seoData.html}</div>`);
-      }
-    } else if (seoData.html) {
-      // For real human visitors, append noscript crawler container so crawlers still get all links/text,
-      // but normal visitors NEVER see raw unstyled black text on white background!
-      if (!resHtml.includes('id="metazivo-crawler-content"') && !resHtml.includes('<!-- Semantic initial crawler DOM')) {
-        resHtml = resHtml.replace("</body>", `  <noscript id="metazivo-crawler-content">\n${seoData.html}\n</noscript>\n</body>`);
       }
     }
 
@@ -5052,13 +5246,14 @@ async function injectSEOAndPrerender(html: string, pathname: string, userAgent: 
       resHtml = resHtml.replace("</head>", `\n  ${db.settings.customHeadTags}\n</head>`);
     }
 
-    // Save to memory cache with unique MD5 ETag
-    const etag = `W/"${crypto.createHash("md5").update(resHtml).digest("hex").slice(0, 16)}"`;
-    ssrCache.set(cacheKey, { html: resHtml, timestamp: Date.now(), etag });
-    return resHtml;
+    if (httpStatus === 200) {
+      const etag = `W/"${crypto.createHash("md5").update(resHtml).digest("hex").slice(0, 16)}"`;
+      ssrCache.set(cacheKey, { html: resHtml, timestamp: Date.now(), etag });
+    }
+    return { html: resHtml, status: httpStatus };
   } catch (err) {
     console.error("injectSEOAndPrerender error, returning raw HTML:", err);
-    return html;
+    return { html, status: 200 };
   }
 }
 
@@ -5097,16 +5292,16 @@ async function initializeServer() {
       try {
         let template = fs.readFileSync(path.join(process.cwd(), "index.html"), "utf-8");
         template = await vite.transformIndexHtml(req.path, template);
-        template = await injectSEOAndPrerender(template, req.path, (req.headers["user-agent"] as string) || "");
+        const { html: renderedHtml, status } = await injectSEOAndPrerender(template, req.path, (req.headers["user-agent"] as string) || "");
 
-        const etag = `W/"${crypto.createHash("md5").update(template).digest("hex").slice(0, 16)}"`;
+        const etag = `W/"${crypto.createHash("md5").update(renderedHtml).digest("hex").slice(0, 16)}"`;
         res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.setHeader("Cache-Control", "public, max-age=300, stale-while-revalidate=3600");
+        res.setHeader("Cache-Control", status === 200 ? "public, max-age=300, stale-while-revalidate=3600" : "no-cache, no-store");
         res.setHeader("ETag", etag);
-        if (req.headers["if-none-match"] === etag) {
+        if (req.headers["if-none-match"] === etag && status === 200) {
           return res.status(304).end();
         }
-        res.status(200).send(template);
+        res.status(status).send(renderedHtml);
       } catch (e) {
         console.warn("Dev SSR fallback:", e);
         try {
@@ -5138,16 +5333,16 @@ async function initializeServer() {
     app.get("*", async (req, res) => {
       try {
         const rawHtml = cachedIndexHtml || fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
-        const preRendered = await injectSEOAndPrerender(rawHtml, req.path, (req.headers["user-agent"] as string) || "");
+        const { html: renderedHtml, status } = await injectSEOAndPrerender(rawHtml, req.path, (req.headers["user-agent"] as string) || "");
 
-        const etag = `W/"${crypto.createHash("md5").update(preRendered).digest("hex").slice(0, 16)}"`;
+        const etag = `W/"${crypto.createHash("md5").update(renderedHtml).digest("hex").slice(0, 16)}"`;
         res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.setHeader("Cache-Control", "public, max-age=1800, stale-while-revalidate=86400");
+        res.setHeader("Cache-Control", status === 200 ? "public, max-age=1800, stale-while-revalidate=86400" : "no-cache, no-store");
         res.setHeader("ETag", etag);
-        if (req.headers["if-none-match"] === etag) {
+        if (req.headers["if-none-match"] === etag && status === 200) {
           return res.status(304).end();
         }
-        res.status(200).send(preRendered);
+        res.status(status).send(renderedHtml);
       } catch (err) {
         console.warn("Failed to pre-render page, using clean 200 fallback:", err);
         const fallback = cachedIndexHtml || (fs.existsSync(path.join(distPath, "index.html")) ? fs.readFileSync(path.join(distPath, "index.html"), "utf-8") : "<!DOCTYPE html><html><head><title>Metazivo</title></head><body><div id='root'></div></body></html>");
